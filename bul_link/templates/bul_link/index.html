@@ -1,0 +1,19 @@
+{% extends "bul_link/base.html" %}
+
+{% block content %}
+
+<p>This is a basic front end to the Serial Solutions 360 Link API.</p>
+
+
+<form action="./" method="get">
+<fieldset>
+DOI <input type="text" name="id" />
+<br/>
+Pumed ID <input type="text" name="pmid" />
+<br/>
+<input type="submit" value="Submit" />
+</fieldset>
+</form>
+
+
+{% endblock %}

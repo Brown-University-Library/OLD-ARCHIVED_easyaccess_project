@@ -1,0 +1,29 @@
+{% extends "bul_link/base.html" %}
+
+{% block content %}
+
+<div id="citation">
+    <span id="title">{{ citation.title }} </span>
+    <span id="source">{{ citation.source }}</span>
+    <span id="creator">{{ citation.creator }}</span>
+    <span id="date">{{ citation.date }}</span>
+</div>
+
+<div id="link-groups">
+    <h4>Available Online</h4>
+    <ul>
+    {% for link in link_groups %}
+        {% if link.url.article %}
+            <li><a href="{{ link.url.article }}">{{ link.holdingData.databaseName }}</a></li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+</div>
+
+{% if not is_permalink %}
+<div id="permalink">
+    <a href="{{ resource.get_absolute_url }}">Permalink</a>
+</div>
+{% endif %}
+
+{% endblock %}

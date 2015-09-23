@@ -1,0 +1,29 @@
+[
+  {
+    "pk": 1, 
+    "model": "bul_link.resource", 
+    "fields": {
+      "query": "rft.issn=0099-2240&rft.issue=12&rft.date=2003&rft.volume=69&rft.spage=7499&rft.epage=7506&rft.stitle=APPL+ENVIRON+MICROB&rft.title=APPLIED+AND+ENVIRONMENTAL+MICROBIOLOGY&rft.aulast=Abedon&rft.atitle=Experimental+examination+of+bacteriophage+latent-period+evolution+as+a+response+to+bacterial+availability&rft.auinit=S&rft.au=Thomas%2C+C&url_ver=Z39.88-2004&rft.genre=article&rft_id=info%3Adoi%2F10.1128%2FAEM.69.12.7499-7506.2003&url_ctx_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Actx&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal", 
+      "date_modified": "2012-02-11 16:15:18", 
+      "date_created": "2012-02-11 16:15:18"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "bul_link.resource", 
+    "fields": {
+      "query": "id=pmid:19282400", 
+      "date_modified": "2012-02-11 16:42:47", 
+      "date_created": "2012-02-11 16:18:41"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "bul_link.resource", 
+    "fields": {
+      "query": "id=pmid%3A20133564", 
+      "date_modified": "2012-02-11 17:21:36", 
+      "date_created": "2012-02-11 17:21:36"
+    }
+  } 
+]
