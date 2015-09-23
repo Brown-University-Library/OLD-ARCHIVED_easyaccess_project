@@ -1,0 +1,68 @@
+<div class="citation">
+    <ul>
+    <li class="title">
+        {% ifequal format "journal" %}
+	    {{ citation.title }}
+        {% else %}
+            {{ citation.source }}
+        {% endifequal %}
+    </li>
+    {% if citation.creator %}
+        <li class="creator">by {{ citation.creator }}</li>
+    {% endif %}
+    <br/>
+    {% ifequal format "journal" %}
+       <li>
+           <span class="source">{{ citation.source }}</span>
+           {% if citation.issn %}
+                &nbsp;{{ citation.issn }}
+           {% endif %}
+           {% if citation.eissn %}
+                &nbsp;{{ citation.eissn }}
+           {% endif %}
+           
+       </li>
+    {% endifequal %}
+    
+    {% comment %}
+    secondary citation info
+    {% endcomment %}
+    <li>
+        {% if citation.date %}
+            {{ citation.date }}
+        {% endif %}
+        
+        {% if citation.volume %}
+            &nbsp;Vol. {{ citation.volume }}
+        {% endif %}
+        
+        {% if citation.issue %}
+            &nbsp;Issue {{ citation.issue }}
+        {% endif %}
+        
+        {% if citation.spage %}
+            &nbsp;Page {{ citation.spage }}
+        {% endif %}
+        
+    </li>
+   
+    {% ifequal format "book" %}
+     <li id="isbn">
+    {% if citation.isbn %}
+        ISBN: {% for i in citation.isbn.0 %}{{ i }}{% endfor %}
+    {% endif %}
+    </li>
+    {% endifequal %}
+  
+    
+    {% if citation.pmid %}
+       <li>Pubmed ID: <span id="pmid">{{ citation.pmid }}</span></li>
+    {% endif %}
+    {% if citation.doi %}
+       <li>DOI: <span id="doi">{{ citation.doi }}</span></li>
+    {% endif %}
+    
+    </ul>
+    
+</div>
+

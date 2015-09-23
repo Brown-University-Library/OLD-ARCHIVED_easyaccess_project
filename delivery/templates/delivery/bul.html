@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>	
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+	
+	<!-- Set the viewport width to device width for mobile -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<meta name="description" content="Brown University Library website." />
+	
+	<title>Brown University Library</title>
+  
+	<!-- Included CSS Files -->
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/globals.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/typography.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/grid.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/ui.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/forms.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/orbit.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/reveal.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/app.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/mobile.css">
+	
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/BULadditions.css">
+
+	<!--[if lt IE 9]>
+		<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/ie.css">
+	<![endif]-->
+	
+	<!-- IE Fix for HTML5 Tags -->
+	<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<style>
+	    .container {
+	        background-color: white;
+	    }
+	</style>
+	{% block extra_css %}
+	{% endblock %}
+    {% block javascripts %}{% endblock %} 
+</head>
+
+<body>
+
+    <div class="row">    
+      <div class="twelve columns">
+  
+        <div id="header" class="container">
+    
+          <div id="header_contents">
+      
+              <div class="BUhomelink">
+                  <a href="http://www.brown.edu"><img src="//library.brown.edu/images/spacer.gif" width="50" alt="Brown University Homepage" title="Brown University Homepage" /></a>
+              </div> <!-- end .BUhomelink -->
+              
+              <div class="BULhomelink">
+                  <a href="//library.brown.edu/"><img src="//library.brown.edu/images/spacer.gif" width="440" height="30" alt="Brown University Library Homepage" title="Brown University Library Homepage" /></a>
+              </div> <!-- end .BULhomelink -->
+          
+              <div class="row">    
+                  <div class=".five.columns.offset-by-six">
+                      <p class="top_header_links"><a href="//library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp; <a href="//library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a>
+                          &nbsp;&nbsp;&#124;&nbsp;&nbsp; 
+                          {% if user and user.is_authenticated %}
+                                   Hello {{ user.first_name}} {{ user.last_name }}
+                                   &nbsp;&nbsp;&#124;&nbsp;&nbsp;
+                                   <a href="{{ logout_link }}">Logout</a>
+                           {% else %}
+                                 <a href="{{ login_link }}">Login</a>
+                           {% endif %} 
+                      </p>
+                  </div> <!-- end .five.columns.offset-by-six -->
+              </div> <!-- end .row -->
+      
+          </div> <!-- end #header_contents -->
+        
+        </div> <!-- end #header -->
+      
+      </div> <!-- end twelve columns -->
+    </div> <!-- end .row -->
+
+	<div class="container">
+		
+        
+		
+		<div class="row">
+			
+            <div class="three columns">
+                {% block left_sidebar %}{% endblock %}
+            </div>
+
+
+            <div class="six columns">
+                {% block content %}{% endblock %}
+			</div> <!-- end six columns -->
+    
+            
+    		<div class="three columns show-on-desktops">
+				<div class="panel">
+					{% block right_sidebar %}{% endblock %}
+				</div> <!-- end .panel -->
+			</div> <!-- end three columns show-on-desktops -->            
+	
+    
+    	</div> <!-- end .row -->
+        
+        
+        <div class="row">
+        
+            <div class="eleven columns centered show-on-tablets">
+				<div class="panel">
+					<h6>Sidebar Title</h6>
+					<p>Sidebar text, sidebar text, <a href="#">sidebar link</a>.</p>
+                    <ul class="square">
+                    	<li>List item 1</li>
+                    	<li>List item 2</li>
+                    	<li>List item 3</li>
+                    </ul>
+					<p>Sidebar text, sidebar text, <a href="#">sidebar link</a>.</p>
+				</div> <!-- end .panel -->
+			</div> <!-- end eleven columns centered show-on-tablets -->
+            
+    	</div> <!-- end .row -->
+
+
+        <div class="row">
+        
+            <div class="twelve columns show-on-phones">
+				<div class="panel">
+				</div> <!-- end .panel -->
+			</div> <!-- end twelve columns show-on-phones -->
+            
+    	</div> <!-- end .row -->
+
+		
+		<div class="row">
+        
+			<div class="one columns show-on-phones">
+            
+                <div id="navbar-mobile">
+                
+				                    <div id="quicklinksinnernav-mobile">
+                      <strong>Quick Links:</strong><br />
+                      <a href="//library.brown.edu/libweb/askalib.php" class="ql">Ask a Librarian</a><br />
+                      <a href="http://josiah.brown.edu/search/" class="ql">Josiah (Catalog)</a><br />
+                      <a href="http://newfirstsearch.oclc.org/dbname=WorldCat;done=//library.brown.edu/research/;FSIP" class="ql">WorldCat</a> / <a href="//library.brown.edu/borrowing/easyBorrow.php" class="ql"><em>easyBorrow</em></a><br />
+                      <a href="//library.brown.edu/eresources/index.php" class="ql">Databases A-Z</a><br />
+                      <a href="http://rl3tp7zf5x.search.serialssolutions.com" class="ql">eJournals A-Z</a><br />
+                      <a href="//library.brown.edu/eresources/ebooks.php" class="ql">eBooks</a><br />
+                      <a href="http://dl.lib.brown.edu/reserves/" class="ql">Course Reserves (OCRA)</a><br/>
+                      <a href="//library.brown.edu/m/" class="ql"><em>MoBUL</em> for your phone</a><br/>
+                  </div>
+                  <div id="researchinnernav-mobile">
+                      <strong>Research:</strong><br />
+                      <a href="//library.brown.edu/libweb/getstarted.php" class="ql">Getting Started</a><br />
+                      <a href="//library.brown.edu/gateway/" class="ql">Guides</a>: <a href="//library.brown.edu/gateway/" class="ql">by Subject</a> / <a href="//library.brown.edu/gateway/classes.php" class="ql">Course</a><br />
+                      <a href="//library.brown.edu/collatoz/videos.php" class="ql">Videos &amp; DVDs</a><br />
+                      <a href="//library.brown.edu/luna/" class="ql">Instructional Images</a><br />
+                      <!-- <a href="//library.brown.edu/gateway/lrg.php?id=80&amp;task=db" class="ql">Virtual Reference</a><br /> -->
+                      <a href="//library.brown.edu/collections/" class="ql">Collections</a> / <a href="//library.brown.edu/collatoz/" class="ql">A-Z</a><br />
+                      <a href="//library.brown.edu/libweb/citations.php" class="ql">Citation Management</a><br />
+                      <a href="http://www.brown.edu/Administration/Copyright/" class="ql">Copyright &amp; Fair Use</a><br />
+                      <a href="//library.brown.edu/cds/" class="ql">Center for Digital Scholarship</a><br />
+                  </div>
+                  <div id="libraryservicesinnernav-mobile">
+                      <strong>Library Services:</strong><br />
+                      <a href="//library.brown.edu/borrowing/index.php" class="ql">Borrowing</a><br />
+                      <a href="//library.brown.edu/forms/" class="ql">Online Forms</a><br />
+                      <a href="//library.brown.edu/about/specialists.php" class="ql">Librarians by Subject</a><br />
+                      <a href="//library.brown.edu/libweb/tips.php" class="ql">Tools &amp; Tutorials</a><br />
+                      <a href="//library.brown.edu/libweb/libx.php" class="ql">LibX</a> / <a href="//library.brown.edu/libweb/google.php" class="ql">Google Scholar</a><br />
+                      <a href="//library.brown.edu/titles/" class="ql">New Titles</a> <span style="color:red">&mdash; <em>new!</em></span><br />
+                      <a href="//library.brown.edu/libweb/visitors.php" class="ql">Visiting the Library</a><br />
+                      <a href="//library.brown.edu/about/index.php" class="ql">About the Library</a><br />
+                  </div>
+                  
+                </div> <!-- end #navbar-mobile -->
+                
+			</div> <!-- end one columns show-on-phones -->
+            
+		</div> <!-- end .row -->
+        
+        
+        <!-- Google Analytics script -->
+
+
+	</div> <!-- end .container -->
+
+
+    <div id="footer">
+    
+	          <div id="footer_contents">
+    
+            <div class="social_media_links">
+              <a href="http://mobul.boopsie.com/"><img src="//library.brown.edu/img_2011/moBUL_icon.png" alt="moBUL - Mobile Brown University Library"></a>
+              <a href="//library.brown.edu/about/public_feeds.php"><img src="//library.brown.edu/img_2011/RSS_footer_icon.png" alt="Brown University Library RSS Feeds"></a>
+              <a href="http://www.facebook.com/pages/Brown-University-Library/278826488901"><img src="//library.brown.edu/img_2011/Facebook_icon.png" alt="Brown University Library Facebook"></a>
+              <a href="http://twitter.com/brownlibrary"><img src="//library.brown.edu/img_2011/twitter_icon.png" alt="Brown University Library Twitter"></a>
+              <a href="//library.brown.edu/gateway/lrg.php?id=67&task=home"><img src="//library.brown.edu/images/fdlp_logo_32x29.gif" alt="Federal Depository Library Program"></a>
+            </div>
+        
+            <p><a href="//library.brown.edu/">Brown University Library</a> &nbsp;&#124;&nbsp; Providence,&nbsp;RI&nbsp;02912 &nbsp;&#124;&nbsp; (401)&nbsp;863-2165 &nbsp;&#124;&nbsp; <a href="//library.brown.edu/about/stafflist.php">Contact</a> &nbsp;&#124;&nbsp; <a href="//library.brown.edu/forms/comments.php">Comments</a> &nbsp;&#124;&nbsp; <a href="//library.brown.edu/forms/feedback.php">Website&nbsp;Feedback</a> &nbsp;&#124;&nbsp; <a href="sitemap.php">Site&nbsp;Map</a></p>
+        
+            <p class='date_stamp_line' style='clear: both'>This page was last modified: April 16 2012 15:36:34 </p>        
+            <p><a href="//library.brown.edu/intranet/">Library Staff Intranet</a></p>
+        
+        </div> <!-- end #footer_contents -->    
+    </div> <!-- end #footer -->
+
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/jquery.reveal.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/jquery.orbit-1.4.0.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/jquery.customforms.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/jquery.placeholder.min.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/modernizr.foundation.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/jquery.tooltips.js"></script>
+	<script src="//library.brown.edu/foundation/javascripts/app.js"></script>
+    {% block footer_javascripts %}{% endblock %}
+
+</body>
+
+
+</html>

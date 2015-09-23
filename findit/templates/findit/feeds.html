@@ -1,0 +1,3 @@
+{% for feed in feeds %}
+	<li><a href="{{ feed.link }}">{{ feed.title }}</a> {% if feed.author %} by {{ feed.author }} {% endif %} </li>
+{% endfor %}

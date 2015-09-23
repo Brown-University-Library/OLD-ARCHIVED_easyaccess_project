@@ -1,0 +1,15 @@
+<ul>
+    <li>{{ bib.title }} </li>
+    {% for author in bib.author %}
+        <li>{{ author.name }}</li>
+    {% endfor %}
+    {% if bib.year and bib.publisher %}
+        <li>{{ bib.publisher }}, {{ bib.year }}</li>
+    {% endif %}
+    {% for id in bib.identifier %}
+        <li id="{{ id.type }}">{{ id.type|upper }}: {{ id.id }}</li>
+    {% endfor %}
+    <li>Book 
+        </li><img class="format-icon" src="http://library.brown.edu/new_titles_media/icons/book.png"/>
+    </li>
+</ul>

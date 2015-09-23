@@ -1,0 +1,137 @@
+
+{% extends "findit/base.html" %}
+
+{% block javascripts%}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ APP_MEDIA }}js/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ APP_MEDIA }}js/helpers.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="error hidden"></div>
+
+{% comment %}
+Need a CSRF token to process AJAX post requests.  
+{% endcomment %}
+
+<div class="main">
+    <p>
+        <span id="name">{{ user.first_name }} {{ user.last_name}}</span>
+    </p>
+    <form>
+          <span id="token">{% csrf_token %}</span>
+    </form>
+    <div id="spinner">
+           <img src="http://library.brown.edu/find/interface/themes/brown/images/ajax_loading.gif" alt="Initially hidden spinner" />
+    </div>
+    
+    <div id="checkoutsContainer"></div>
+    <div id="holdsContainer"></div>
+    <div id="finesContainer"></div>
+</div>
+
+
+
+{% endblock %}
+
+{% block footer_javascripts %}
+<script>
+    //validate the form.  
+    $(document).ready(function() {
+        var APP_BASE_URL = "{{ APP_BASE_URL }}";
+        window.app_base_url = APP_BASE_URL;
+        window.app_https_base_url = "{{ HTTPS_APP_BASE_URL }}";
+        //setup templates
+        setupTemplates();
+        window.logging = true;
+        $('#spinner').show();
+        $('.main').css('margin-left', '2em');
+        //barcode = $('#barcode').text();
+        //name = $('#name').text();
+        //logit(barcode);
+        var path =   window.app_https_base_url + 'josiah/account/';
+        getAccount(path);
+        
+        //posts for place, cancel, cancel all
+        
+        //listen for forms
+        //bib num regex - b2305331
+        //var bibPatt = /b[0-9]{7}/;
+        //$('#bib').keypress(function() {
+        //   logit($(this).attr('value'));
+        //   var val = $(this).attr('value');
+        //   if (bibPatt.test(val)) {
+        //       logit('send it off to find requestable items');
+        //   };
+        //});
+    });
+    
+    function getAccount(path) {
+        var jqxhr = $.getJSON(path, function() {
+          //alert("success");
+        })
+        .success(function(patron) {
+            //checkouts
+            if (patron.checkouts.length > 0) {
+                $('#checkoutsContainer').html($("#checkoutsTemplate").tmpl(patron));
+            }
+            else {
+                $('#checkoutsContainer').html("No items currently checked out.");
+            };
+            //holds
+            if (patron.holds.length > 0) {
+                $('#holdsContainer').html($("#holdsTemplate").tmpl(patron));
+            }
+            else {
+                $('#holdsContainer').html("No items currently on hold.");
+            };
+            if (patron.fines.total) {
+                $('#finesContainer').html($("#finesTemplate").tmpl(patron));
+            };
+            $('#spinner').hide();
+        });
+    };
+    
+    
+    function cancelHold(val) {
+      $('#spinner').show();
+      var key = $(val).attr('id');
+      var token = $('#token input').attr('value');
+      path = window.app_https_base_url + 'josiah/';
+      logit(token);
+      var post_data = new Object();
+      post_data.key = encodeURIComponent(key);
+      post_data.action = 'cancelHold';
+      post_data.csrfmiddlewaretoken = token;
+      $.ajax({
+            type: "POST",
+            url: path,
+            data: post_data,
+            dataType: "json",
+            success: function(data) {
+                if (data.cancelled == true) {
+                    $(".success").text("Hold placed sucessfully.").show();
+                    //hide hold link and strike through text
+                    $('a#' + key).hide();
+                    $('li#' + key).css('text-decoration', 'line-through');
+                    $('#spinner').hide();
+                };                    
+            },
+            error: function(data){
+              //These are post failures which means server side error.
+              makeError();
+            }
+            
+       })
+       return false;  
+    };
+    
+   function makeError() {
+        $(".error").text("You're request could not be processed.  Library staff has been alerted.").show();
+        $('#spinner').hide();
+    };
+    
+    
+</script>
+{% endblock %}

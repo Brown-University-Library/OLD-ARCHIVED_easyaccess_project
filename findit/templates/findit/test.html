@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd"> 
+ 
+<html lang="en"> 
+  <head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+    <title>Easy Article</title> 
+    <!-- Framework CSS --> 
+    <link rel="stylesheet" href="{{ APP_MEDIA }}css/blueprint_screen.css" type="text/css">
+    <!--<link rel="stylesheet" href="http://library.brown.edu/find/interface/themes/brown/css/styles.css" type="text/css">
+    -->
+    <link rel="stylesheet" href="{{ APP_MEDIA }}css/style.css" type="text/css">
+   {% block extra_css %}{% endblock %}
+   {% block javascripts %}{% endblock %} 
+  </head> 
+  <body> 
+      <div class="container">
+          <a id="app_header" href="{{ APP_BASE_URL }}">Home</a>
+          <div id="content" class="main">
+              <div class="span-22"> 
+                    <h1>Sample requests from 2010 SFX logs.</h1>
+                    <p class="notice">This page is not searching a full set of print holdings.</p>
+			        <table id="holdings">
+			            <tr class="header">
+			                <td width="500px">Request</td>
+			                <td>Article</td>
+			                <td>Journal</td>
+			                <td>Easy Borrow</td>
+			                <td>Print</td>
+			                <td>ILL</td>
+			            </tr>
+			                
+			            {% for req in sample_requests %}
+			                <tr>
+			                    <td>{{ req.meta }}&nbsp;&nbsp;<a href="{{ req.link }}" target="_blank">link</a>&nbsp;|&nbsp;<a href="{{ req.citation_form }}" target="_blank">citation form</a>&nbsp;|&nbsp;<a href="{{ req.link360 }}" target="_blank">360Link response</a></td>
+			                    <td>{{ req.elink_article }}</td>
+			                    <td>{{ req.elink_journal }}</td>
+			                    <td>{{ req.easy_borrow }}</td>
+			                    <td>{{ req.print }}</td>
+			                    <td>{{ req.ill }}</td>
+			                </tr>
+			            {% endfor %}
+			        
+			        </table>
+              </div> 
+          </div>
+      </div>
+    {% block footer_javascripts %}{% endblock %}
+  </body> 
+</html> 
+

@@ -1,0 +1,93 @@
+{% ifequal bib.type "book" %}
+    <ul class="citation">
+        <li class="title">
+            {% if gbs %}
+            <div class="wrapper hide-on-phones">
+                <span title="*" class="gbs-thumbnail-large gbs-remove-on-failure gbs-link-to-preview">{{ gbs }}</span>
+            </div>
+            {% endif %}
+            <h5>{{ bib.title }}</h5>
+        </li>
+        {% for author in bib.author %}
+        <li>
+            {{ author.name }}
+        </li>
+        {% endfor %}
+        {% if bib.year and bib.publisher %}
+        <li>
+            {{ bib.publisher }}, {{ bib.year }}
+        </li>
+        {% endif %}
+        {% for id in bib.identifier %}
+        <li id="{{ id.type }}">
+            {% ifnotequal id.id "doi:" %}
+	            {{ id.type|upper }}: {{ id.id }}
+            {% endifnotequal %}
+        </li>
+        {% endfor %}
+        {% comment %}
+        <li>
+            <img class="format-icon" src="http://library.brown.edu/new_titles_media/icons/book.png"/>
+        </li>
+        {% endcomment %}
+    </ul>
+    
+{% else %}
+
+{% ifequal bib.type "article" %}
+        <ul class="citation">
+            <li class="title">
+                <h5>{{ bib.title }}</h5>
+            </li>
+            <li>
+                {{ bib.journal.name }}
+            </li>
+            {% if bib.author %}
+                <li>
+                {% for author in bib.author %}
+                    {{ author.name }}{% if forloop.last %}{%else%},{%endif%}
+                {% endfor %}
+                </li>
+            {% endif %}
+            <li>
+                Volume: {{ bib.volume}}. Issue: {{ bib.issue }}.  Pages: {{ bib.start_page }} {% if bib.end_page %} - {{ bib.end_page}}{% endif %}.  Year: {{ bib.year }}
+            </li>
+            {% comment %}<li>
+                Article <img class="format-icon" src="{{ STATIC_URL }}delivery/images/article.png"/>
+            </li>{% endcomment %}
+        </ul>
+        {% else %}
+        <ul>
+            <li class="title">
+                <h5>{{ bib.title }}</h5>
+            </li>
+            <li>
+                {{ bib.journal.name }}
+            </li>
+            {% for author in bib.author %}
+            <li>
+                {{ author.name }}
+            </li>
+            {% endfor %}
+            {% if bib.publisher and bib.year %}
+            <li>
+                {{ bib.publisher }} {{ bib.year }}
+            </li>
+            {% else %}
+            {% if bib.year %}
+            <li>
+                Year: {{ bib.year }}
+            </li>
+            {% endif %}
+            {% endif %}
+            {% ifnotequal bib.pages "? - ?"%}
+                Pages: {{ bib.pages }}.
+            {% endifnotequal %}
+            {% for id in bib.identifier %}
+            <li id="{{ id.type }}">
+                {{ id.type|upper }}: {{ id.id }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endifequal %}
+{% endifequal %}

@@ -1,0 +1,111 @@
+{% extends "findit/base.html" %}
+{% block extra_css %}
+	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
+{% endblock%}
+{% block javascripts%}
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div style="margin:2em;">
+    <h5 class="intro">easyArticle service</h5>
+    <ul>	
+    <li><a href="{{ BASE_URL }}citation-form/">Citation form</a></li>
+    </ul>
+    <h5 class="intro">Bookmarks</h5>
+    <p>These bookmarklets can help staff test the system.  Drag the links below
+        to your bookmarks bar in your web browser.  Clicking on the bookmark
+        will take you from easyArticle to 360Link or vice versa.</p>
+    <ul>
+        <li>
+            <a href="javascript:(function(){window.location='http://library.brown.edu/easyarticle/'+window.location.search;})();">360Link to easyArticle</a>
+        </li>
+        <li>
+            <a href="javascript:(function(){window.location='http://rl3tp7zf5x.search.serialssolutions.com/'+window.location.search;})();">easyArticle to 360Link</a>
+        </li>
+    </ul>
+    <h5 class="intro">Test form</h5>
+    <div style="margin-bottom:2em;">
+        <form name="ourl" action="./" method="GET">
+            <fieldset>
+            <select name="qtype">
+            <option value="query">OpenURL</option>
+             <option value="pmid">PubmedID</option>
+            <option value="doi">DOI</option>
+            </select>    
+            <input type="text" size="75"/>
+            <input type="submit" value="Go"/>
+            <p>Paste an OpenURL, Pubmed ID, or DOI into the box and click Go.</p>
+            </fieldset>
+        </form>
+    </div>
+    <h5 class="intro">Examples</h5>
+    <ul>
+    <li><a href="{{ BASE_URL }}?sid=google&auinit=T&aulast=SOTA&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+(Coleoptera:+Cicindelidae)+in+East+Asia&id=doi:10.1111/j.1095-8312.2011.01617.x&title=Biological+journal+of+the+Linnean+Society&volume=102&issue=4&date=2011&spage=715&issn=0024-4066">Held electronically.</a></li>
+    <li><a href="{{ BASE_URL }}?rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.spage=80&rft.au=Churchland%2C PS&rft.aulast=Churchland&rft.format=journal&rft.date=1983&rft.aufirst=PS&rft.volume=64&rft.eissn=1468-0114&rft.atitle=Consciousness%3A The transmutation of a concept&rft.jtitle=Pacific philosophical quarterly&rft.issn=0279-0750&rft.genre=article&url_ver=Z39.88-2004&rfr_id=info:sid/libx%3Abrown">Held in print.</a></li>
+    <li><a href="{{ BASE_URL }}?genre=article&issn=00377686&title=Social%20Compass&volume=14&issue=5%2F6&date=19670901&atitle=Religious%20knowledge%20and%20attitudes%20in%20Mexico%20City.&spage=469&pages=469-482&sid=EBSCO:Academic%20Search%20Premier&aulast=Stryckman,%20Paul">Article/Chapter held at Annex</a></li>
+    <li><a href="{{ BASE_URL }}?rft.issn=0301-0066&rft.externalDocID=19806992&rft.date=2009-01-01&rft.volume=38&rft.issue=6&rft.spage=927&rft.jtitle=Perception&rft.au=Rhodes%2C+Gillian&rft.au=Jeffery%2C+Linda&rft.atitle=The+Thatcher+illusion%3A+now+you+see+it%2C+now+you+don%27t&ctx_ver=Z39.88-2004&rft.genre=article&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal">Journal level link, not direct to full text.</a></li>
+    <li><a href="{{ BASE_URL }}?rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rfr_id=info:sid/www.isinet.com:WoK:UA&rft.spage=864&rft.issue=5&rft.epage=875&rft.title=JOURNAL%20OF%20ECOLOGY&rft.aulast=De%20Deyn&url_ctx_fmt=info:ofi/fmt:kev:mtx:ctx&rft.date=2009&rft.volume=97&url_ver=Z39.88-2004&rft.stitle=J%20ECOL&rft.atitle=Vegetation%20composition%20promotes%20carbon%20and%20nitrogen%20storage%20in%20model%20grassland%20communities%20of%20contrasting%20soil%20fertility&rft.au=Bardgett%2C%20R&rft_id=info:doi/10%2E1111%2Fj%2E1365-2745%2E2009%2E01536%2Ex&rft.auinit=G&rft.issn=0022-0477&rft.genre=article">Mutliple full text links.</a></li>
+    <li><a href="{{ BASE_URL }}?issn=1175-5652&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AMEDLINE&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&pid=%3Caccession+number%3E678061209%3C%2Faccession+number%3E%3Cfssessid%3E0%3C%2Ffssessid%3E&rft.date=2010&volume=8&date=2010&rft.volume=8&rfe_dat=%3Caccessionnumber%3E678061209%3C%2Faccessionnumber%3E&url_ver=Z39.88-2004&atitle=The+missing+technology%3A+an+international+comparison+of+human+capital+investment+in+healthcare.&genre=article&epage=71&spage=361&id=doi%3A&rft.spage=361&rft.sici=1175-5652%282010%298%3A6%3C361%3ATMTAIC%3E2.0.TX%3B2-O&aulast=Frogner&rft.issue=6&rft.epage=71&rft.jtitle=Applied+health+economics+and+health+policy&rft.aulast=Frogner&title=Applied+health+economics+and+health+policy&rft.aufirst=BK&rft_id=urn%3AISSN%3A1175-5652&sici=1175-5652%282010%298%3A6%3C361%3ATMTAIC%3E2.0.TX%3B2-O&sid=FirstSearch%3AMEDLINE&rft.atitle=The+missing+technology%3A+an+international+comparison+of+human+capital+investment+in+healthcare.&issue=6&rft.issn=1175-5652&rft.genre=article&aufirst=BK">Not held - by request via Rapid or Illiad.</a></li>
+    <li><a href="{{ BASE_URL }}?volume=9&genre=article&spage=39&sid=EBSCO:qrh&title=Gay+%26+Lesbian+Review+Worldwide&date=20020501&issue=3&issn=15321118&pid=&atitle=Chaste+Take+on+Those+Naughty+Victorian's.">Print and online holdings.  Resolved link isn't direct to the article.</li>
+    <li><a href="{{ BASE_URL }}?rft.issn=0036-8075&rft.externalDocID=10_1126_science_1074128&rft.date=2002-10-11&rft.volume=298&rft.spage=409&rft.epage=412&rft.issue=5592&rft.pub=American+Association+for+the+Advancement+of+Science&rft.externalDBID=GSCI&rft.atitle=Neural+Correlates+for+Perception+of+3D+Surface+Orientation+from+Texture+Gradient&rft.jtitle=Science+%28New+York%2C+N.Y.%29&rft.au=Taira%2C+Masato&rft.au=Tsutsui%2C+Ken-Ichiro&rft.au=Sakata%2C+Hideo&rft.au=Naganuma%2C+Tomoka&ctx_ver=Z39.88-2004&rft.genre=article&rft_id=info%3Adoi%2F10.1126%2Fscience.1074128&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal">Direct links and non-direct links, same citation.  Direct links only displayed.</a></li>
+    <li><a href="{{ BASE_URL }}?pmid=12611747&sid=demo">Pubmed request - item held.</a></li>
+    <li><a href="{{ BASE_URL }}?pmid=18496984&sid=Entrez:PubMed">Pubmed request - item not held.</a></li>
+    <li><a href="{{ BASE_URL }}?pmid=11234459">Pubmed request - no direct link.</a></li>
+    <li><a href="{{ BAE_URL }}?sid=FirstSearch%3AWorldCat&genre=journal&issn=2151-0814&title=Charter+school+law+deskbook.&id=doi%3A&pid=%3Caccession+number%3E436869608%3C%2Faccession+number%3E%3Cfssessid%3E0%3C%2Ffssessid%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E436869608%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F436869608&rft_id=urn%3AISSN%3A2151-0814&rft.jtitle=Charter+school+law+deskbook.&rft.issn=2151-0814&rft.place=Charlottesville++VA&rft.pub=LexisNexis&rft.genre=journal&checksum=25d304e7598efe59760d18e8854b5090&title=Brown University&linktype=openurl&detail=RBN">Request from Worldcat for a citation that resolves to a journal, not an article.</a></li>
+    </ul>
+    
+	{% comment %}
+	<h5 class="intro">Bookmarklets for testing </h5>
+	<ul>
+    <li><a href="javascript:(function(e,a,g,h,f,c,b,d){if(!(f=e.jQuery)||g>f.fn.jquery||h(f)){c=a.createElement(&quot;script&quot;);c.type=&quot;text/javascript&quot;;c.src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/&quot;+g+&quot;/jquery.min.js&quot;;c.onload=c.onreadystatechange=function(){if(!b&&(!(d=this.readyState)||d==&quot;loaded&quot;||d==&quot;complete&quot;)){h((f=e.jQuery).noConflict(1),b=1);f(c).remove()}};a.documentElement.childNodes[0].appendChild(c)}})(window,document,&quot;1.3.2&quot;,function($,L){var u = '{{ BASE_URL }}' + window.location.search;
+    window.location.href = u;
+    });">easyAarticle bookmarklet</a> -- for testing, drag this bookmarklet <a href="javascript:(function(e,a,g,h,f,c,b,d){if(!(f=e.jQuery)||g>f.fn.jquery||h(f)){c=a.createElement(&quot;script&quot;);c.type=&quot;text/javascript&quot;;c.src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/&quot;+g+&quot;/jquery.min.js&quot;;c.onload=c.onreadystatechange=function(){if(!b&&(!(d=this.readyState)||d==&quot;loaded&quot;||d==&quot;complete&quot;)){h((f=e.jQuery).noConflict(1),b=1);f(c).remove()}};a.documentElement.childNodes[0].appendChild(c)}})(window,document,&quot;1.3.2&quot;,function($,L){var u = '{{ BASE_URL }}' + window.location.search;
+    window.location.href = u;
+    });">bookmarklet</a> to your browser toolbar.  Click on it from a FindIt@Brown page and it will route you through the new service.</li>
+    <br/>
+    <li>
+      <a href="javascript:(function(e,a,g,h,f,c,b,d){if(!(f=e.jQuery)||g>f.fn.jquery||h(f)){c=a.createElement(&quot;script&quot;);c.type=&quot;text/javascript&quot;;c.src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/&quot;+g+&quot;/jquery.min.js&quot;;c.onload=c.onreadystatechange=function(){if(!b&&(!(d=this.readyState)||d==&quot;loaded&quot;||d==&quot;complete&quot;)){h((f=e.jQuery).noConflict(1),b=1);f(c).remove()}};a.documentElement.childNodes[0].appendChild(c)}})(window,document,&quot;1.3.2&quot;,function($,L){var u = '{{ BASE_URL }}?pmid=' + window.location.pathname.replace('/pubmed/', '');
+    window.location.href = u;
+    });">easyArticle Pubmed bookmarklet</a> -- from a <a href="http://www.ncbi.nlm.nih.gov/pubmed/21339413">Pubmed article description page</a> use this bookmarklet to simulate an
+    Easy Article service.</li>
+	</ul>
+    {% endcomment %}
+</div>
+    
+    
+</div>
+
+
+{% endblock %}
+
+{% block footer_javascripts %}
+<script>
+$("form").submit(function() {
+    console.debug($('input'));
+    var qtype = $('select').val();
+    var q = $("input:first").val();
+    var base = window.location.href;
+    if (qtype == 'query') {
+        
+        var url = window.location.href + '?' + q;
+        
+    }
+    else if (qtype == 'pmid') {
+        var url = '?pmid=' + q;
+    }
+    else if (qtype == 'doi') {
+        var url = '?doi=' + q;
+    };
+    window.location.href = url;
+    return false;
+    //var q = $("input:first").val();
+    //var url = window.location.href + '?' + q;
+    //window.location.href = url;
+    //return false;
+});
+</script>
+
+{% endblock %}

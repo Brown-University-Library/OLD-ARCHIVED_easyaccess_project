@@ -1,0 +1,25 @@
+{% extends "delivery/bul.html" %}
+
+{% block extra_css %}
+
+<style>
+    #access-denied {
+        padding: 3em;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+<div id="access-denied">
+    <div class="alert-box">Requesting books and articles is limited to Brown University faculty, staff,
+    and students. 
+    If you believe you have reached this page in error, 
+    <a href="https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dFhxbEV6SE0yX2lwOVp1WW92SlBRTWc6MQ&entry_3={{ ip }}&entry_1={{ email }}">please let us know.</a>
+    </div>
+    
+</div>
+{% endblock %}
+
+

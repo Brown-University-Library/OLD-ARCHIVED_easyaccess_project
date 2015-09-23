@@ -1,0 +1,15 @@
+<form action="{% url findit:resolver-view %}" method="get">{% csrf_token %}
+	<fieldset>
+    {% for field in this_form %}
+        {% ifequal field.name "genre" %}
+            <span id="genre">{{ field.label_tag }} {{ field }}</span>
+        {% else %}
+        <div class="form-row {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" id="{{ field.name }}">
+                    {{ field.label_tag }} {{ field }}
+        </div>
+        {% endifequal %}
+    {% endfor %}
+    </fieldset>
+    <div><input class="submit" type="submit" value="Submit" class="submit"/></div>
+	
+</form>

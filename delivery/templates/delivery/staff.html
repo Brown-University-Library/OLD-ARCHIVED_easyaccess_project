@@ -1,0 +1,54 @@
+
+
+{% extends "findit/base.html" %}
+
+{% block javascripts %}
+<link rel="exhibit/data" href="./?exhibit=true" type="application/json"/>
+<script src="http://static.simile.mit.edu/exhibit/api-2.0/exhibit-api.js" type="text/javascript"></script>
+ <script>
+   var monthNames = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+   Exhibit.Functions["month"] = {
+   f: function(args) {
+       var set = new Exhibit.Set();
+      
+       args[0].forEachValue(function(v) {
+           var d = SimileAjax.DateTime.parseIso8601DateTime(v);
+           var m = d.getMonth();
+           set.add(monthNames[m]);
+       });
+      
+       return new Exhibit.Expression._Collection(set, "text");
+           }
+       };
+   </script>
+{% endblock %}
+
+{% block content %}
+<div>
+
+        <div ex:role="facet" id ="facets" ex:expression=".type" ex:facetLabel="Select by Type" ex:scroll="true" ex:sortMode="type"></div>
+
+        <fieldset>
+
+        <legend>Search the list</legend>
+
+        <div ex:role="facet" ex:facetClass="TextSearch"></div>
+
+        </fieldset>
+
+    </div>
+<div ex:role="view"
+                     ex:showAll="true"
+                     ex:orders=".date"
+                     ex:showToolbox="false"
+                     class="exhibit-body" >              
+
+    </div>
+
+    <div ex:role="lens" class="each-entry">
+        <a ex:href-content=".permalink" class="resource_link"><span ex:content=".title"></span></a>
+    </div>
+
+    
+
+{% endblock %}

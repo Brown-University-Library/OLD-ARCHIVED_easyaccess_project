@@ -1,0 +1,115 @@
+
+{% extends "findit/base.html" %}
+
+{% block javascripts%}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ APP_MEDIA }}js/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ APP_MEDIA }}js/helpers.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="error hidden"></div>
+<div class="success hidden"></div>
+
+{% comment %}
+Need a CSRF token to process AJAX post requests.  
+{% endcomment %}
+
+<p class="main">
+    <span id="name">{{ user.first_name }}{{ user.last_name}}</span>
+</p>
+
+<form>
+      <span id="token">{% csrf_token %}</span>
+</form>
+<div class="meta" class="main">
+    <p>{{ meta.title_full }}</p>
+    <p>{{ meta.publisher.0 }} {{ meta.publishDate.0 }}</p>
+    <p>{{ meta.isbn.0 }}</p>
+    <span class="hidden" id="bib">{{ bib }}</span>
+</div>
+
+<div id="spinner">
+       <img src="http://library.brown.edu/find/interface/themes/brown/images/ajax_loading.gif" alt="Initially hidden spinner" />
+</div>
+
+<div id="itemsContainer" class="main"></div>
+
+{% endblock %}
+
+{% block footer_javascripts %}
+<script>
+    //validate the form.  
+    $(document).ready(function() {
+        var APP_BASE_URL = "{{ APP_BASE_URL }}";
+        window.app_base_url = APP_BASE_URL;
+        window.app_https_base_url = "{{ HTTPS_APP_BASE_URL }}";
+        //setup templates
+        setupTemplates();
+        window.logging = true;
+        var bib = $('#bib').text();
+        getItems(bib);
+        $('#spinner').show();
+    });
+    
+    function getItems(bib) {
+        //get the attached items
+        //josiah/items/?bib=b2305331
+        var path =  window.app_https_base_url + 'josiah/items/?bib=' + bib;
+        var jqxhr = $.getJSON(path, function() {
+          //alert("success");
+        })
+        .success(function(item) {
+            logit(item);
+            $('#itemsContainer').html($("#itemsTemplate").tmpl(item));
+            $('#spinner').hide();
+        });
+    };
+    
+    function placeHold(val) {
+      var item = $(val).attr('id');
+      var bib = $('#bib').text();
+      logit(item);
+      logit(bib);
+      var token = $('#token input').attr('value');
+      logit(token);
+      var post_data = new Object();
+      post_data.bib = bib;
+      post_data.item = item;
+      post_data.csrfmiddlewaretoken = token;
+      post_data.action = 'placeHold';
+      var path = window.app_https_base_url + 'josiah/';
+      $.ajax({
+            type: "POST",
+                url: path,
+                data: post_data,
+                dataType: "json",
+                success: function(data) {
+                    logit(data);
+                    if (data.hold.confirmed == true) {
+                        $(".success").text("Hold placed sucessfully.").show();
+                        //hide hold link and strike through text
+                        $('a#' + item).hide();
+                        $('li#' + item).css('text-decoration', 'line-through');
+                    } else {
+                        if (data.hold.message) {
+                            var msg = data.hold.message;
+                            $(".error").text(msg).show();  
+                        } else {
+                            $(".error").text("You're request could not be processed.  Library staff has been alerted.").show();
+                        };  
+                    };                  
+                },
+                error: function(data){
+                  //These are post failures which means server side error.
+                  $(".error").text("You're request could not be processed.  Library staff has been alerted.").show();
+                }
+            
+            })
+      return false;
+    };
+    
+    
+</script>
+{% endblock %}
