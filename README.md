@@ -1,18 +1,20 @@
 
-#easyA
+### easy_access
 
-This project contains the easyArticle and easyBorrow (front-end) applications.  Previously these were in two separate projects - findit and delivery.
+This repository contains code for a project of the Brown University Library to make getting books and articles easier.
 
-##Install
- - set up a virtualenvironment
- - obtain `easyaccess_env_settings.sh` from the development server, and adjust for your environment
- - have the env_eaz/bin/activate file source the `easyaccess_env_settings.sh` file
- - clone the repository
- - `pip install -r requirements` - this will install a number of libraries, both locally developed and external, required for the project.
- - `python manage.py runserver`
+It contains code for the landing pages users see when they click links for books or articles.
+
+It contains code for the handling of article-delivery (easyArticle); for books it hands off to an easyBorrow project.
 
 
-##Notes
- - sample items are available for manual testing at the root path for each app.  These are helpful for testing.
-   - `/` - for findit
-   - `/borrow` - for delivery
+##### Notes
+
+- This code is not yet in production; it is based on work which is in production.
+
+- The main purpose of this code is to merge together two separate projects.
+
+
+##### Acknowledgements
+
+Not shown in the commit history is the fact that this entire project was implemented by [Ted Lawless](https://github.com/lawlesst) from 2012 through 2015. It has made the work of thousands of Brown University students and faculty vastly easier.
