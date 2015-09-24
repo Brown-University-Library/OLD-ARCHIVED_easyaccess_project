@@ -1,26 +1,27 @@
+dj-database-url==0.3.0
+django-jsonfield==0.9.15
+django-shorturls==1.1.0
 Django==1.8.4
-#Django>1.4,<1.5
-#South==0.7.3
-django-jsonfield
-dj-database-url
-django-shorturls
-httplib2
+httplib2==0.9.1
 lxml==3.3.6
+PyMySQL==0.6.6
+shellvars==1.0.0
 
-PyMySQL
-shellvars
 
-#Local repos.
+## Local repos ##
 
-#ILLiad
-git+https://github.com/brown-university-library/illiad-client.git
-#360Link
+## 360Link
 git+https://github.com/birkin/py360link.git
-#BibJson
+
+## BibJson
 git+https://github.com/birkin/bibjsontools.git
 
-#Common views - roll these into the app.  No need for separate app.
-git+https://github.com/birkin/django-bul-link.git
+## Common views - roll these into the app.  No need for separate app.
+## disabling for now so I can install it locally for updates and debugging
+#git+https://github.com/birkin/django-bul-link.git
 
-#Shib
+## ILLiad
+git+https://github.com/brown-university-library/illiad-client.git
+
+## Shib
 git+https://github.com/Brown-University-Library/django-shibboleth-remoteuser.git
