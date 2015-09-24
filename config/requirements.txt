@@ -5,7 +5,7 @@ django-jsonfield
 dj-database-url
 django-shorturls
 httplib2
-lxml
+lxml==3.3.6
 
 PyMySQL
 shellvars
