@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.views.generic import TemplateView
 # from django.conf.urls.defaults import *
-from django.conf.urls import include, url
+from django.conf.urls import include, patterns, url
 
 from views import Resolver, CitationFormView, RequestView,\
                   UserView, MicrosoftView, JstorView, SummonView
@@ -9,7 +9,7 @@ from views import Resolver, CitationFormView, RequestView,\
 from app_settings import PERMALINK_PREFIX
 
 
-urlpatterns = [
+urlpatterns = patterns('',
     #citation form
     url(r'^citation-form/$',
         CitationFormView.as_view(),
@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^',
         Resolver.as_view(),
         name='resolver-view'),
-    ]
+    )
 
 # urlpatterns = patterns('',
 #     #citation form
