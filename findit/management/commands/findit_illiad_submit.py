@@ -4,7 +4,7 @@ Handle Illiad submissions.
 
 -- add delay and run continuously in the background.
 
--- need to add unit tests to the newest py360linkv2 to make sure it's returning
+-- need to add unit tests to the newest py360link2 to make sure it's returning
 print issns.
 
 """
@@ -29,9 +29,9 @@ import logging
 dictConfig(settings.LOGGING)
 ilog = logging.getLogger('illiad')
 
-#from delivery.new360link import py360linkv2
+#from delivery.new360link import py360link2
 #import bibjsontools
-from py360linkv2 import get_sersol_data, Resolved
+from py360link2 import get_sersol_data, Resolved
 
 sersol_key=settings.BUL_LINK_SERSOL_KEY
 import urllib2

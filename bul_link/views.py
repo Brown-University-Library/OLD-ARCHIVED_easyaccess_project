@@ -15,7 +15,7 @@ from lxml import etree
 
 #local
 from baseconv import base62
-from py360linkv2 import get_sersol_data, Resolved
+from py360link2 import get_sersol_data, Resolved
 
 from models import Resource
 

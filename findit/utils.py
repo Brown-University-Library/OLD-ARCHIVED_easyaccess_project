@@ -1,4 +1,4 @@
-from py360linkv2 import Resolved
+from py360link2 import Resolved
 from app_settings import PRINT_PROVIDER
 from app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from models import PrintTitle

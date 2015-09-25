@@ -31,7 +31,7 @@ import logging
 dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 
-from py360linkv2 import get_sersol_data, Resolved
+from py360link2 import get_sersol_data, Resolved
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 
 class ResolveView(DeliveryBaseView):

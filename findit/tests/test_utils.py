@@ -1,7 +1,7 @@
 
 import unittest
 from findit.utils import make_illiad_url, BulSerSol
-from py360linkv2.link360 import get_sersol_data
+from py360link2.link360 import get_sersol_data
 from django.conf import settings
 from pprint import pprint
 
