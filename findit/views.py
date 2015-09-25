@@ -54,8 +54,6 @@ import logging
 dictConfig(settings.LOGGING)
 ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
-# alog.debug( 'PROBLEM_URL, `%s`' % PROBLEM_URL )
-# print 'PROBLEM_URL, `%s`' % PROBLEM_URL
 
 def redirect_to_sersol(query):
     """
@@ -260,7 +258,7 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
             except AttributeError:
                 pass
 
-        #return HttpResponseRedirect('http://rl3tp7zf5x.search.serialssolutions.com/?%s' % self.query)
+        #return HttpResponseRedirect('http://{{ SS_KEY }}.search.serialssolutions.com/?%s' % self.query)
         return super(Resolver, self).get(request)
 
     def get_context_data(self, **kwargs):

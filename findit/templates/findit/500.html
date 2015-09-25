@@ -9,11 +9,11 @@
         <li><a href="https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dFhxbEV6SE0yX2lwOVp1WW92SlBRTWc6MQ&entry_2={{ request.get_full_path}}">Report a problem</a></li>
         <li><a href="http://library.brown.edu/libweb/askalib.php">Ask a Librarian</a></li>
         {% if query %}
-           <li>Visit <a href="http://rl3tp7zf5x.search.serialssolutions.com/?{{ query }}">this page</a>.</li>
+           <li>Visit <a href="http://{{ SS_KEY }}.search.serialssolutions.com/?{{ query }}">this page</a>.</li>
         {% endif %}
         <li>You can also click refresh in your browser to see if the problem goes away.</li>
     </ul>
-	    
+
 </div>
 
 {% endblock %}

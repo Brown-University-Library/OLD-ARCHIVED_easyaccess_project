@@ -116,7 +116,7 @@
     <hr/>
     <p>This bookmarklet will work from 360Link or Worldcat.  Worldcat requires clicking it twice.</p>
     <pre>
-       <a href="javascript:(function(){var easy='http://HOST/easyarticle/borrow/';var script=document.createElement('script');script.type='text/javascript';script.src='https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js';document.getElementsByTagName('head')[0].appendChild(script);if(window.location.href.indexOf('http://www.worldcat')==0){var isbncheck=$('a[href*=%22library.brown%22]').attr('href');var spot=isbncheck.indexOf('isbn_check.php');var ourl=decodeURIComponent(isbncheck.slice(spot)).replace('isbn_check.php','');window.location.href=easy+ourl;};if(window.location.href.indexOf('http://rl3tp7zf5x')==0){window.location.href=easy+window.location.search;};})();">easyAccess bookmarklet</a>
+       <a href="javascript:(function(){var easy='http://HOST/easyarticle/borrow/';var script=document.createElement('script');script.type='text/javascript';script.src='https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js';document.getElementsByTagName('head')[0].appendChild(script);if(window.location.href.indexOf('http://www.worldcat')==0){var isbncheck=$('a[href*=%22library.brown%22]').attr('href');var spot=isbncheck.indexOf('isbn_check.php');var ourl=decodeURIComponent(isbncheck.slice(spot)).replace('isbn_check.php','');window.location.href=easy+ourl;};if(window.location.href.indexOf('http://{{ SS_KEY }}')==0){window.location.href=easy+window.location.search;};})();">easyAccess bookmarklet</a>
     </pre>
 </div>
 <div class="row">

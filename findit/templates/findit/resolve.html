@@ -14,7 +14,7 @@
 {% block content %}
     <div id="cover"></div>
     <div class="citation">
-        <span id="requestedCitationContainer"></span> 
+        <span id="requestedCitationContainer"></span>
 	    {% if not resolved %}
 	        {% if error %}
 	            <p class="error">{{ error_message }}
@@ -23,7 +23,7 @@
                    {% comment %}
 	            <div class="error">
 	                <p>Due to a power outage, the article requesting service
-	                    is temporarily unavailable.  If you <a id="problem-link" style="color: blue;" href="{{ problem_link }}&entry_2={{user.email}}&entry_1=Please%20notify%20me%20when%20the%20article%20requesting%20service%20is%20back%20online.">leave us a brief message</a>, 
+	                    is temporarily unavailable.  If you <a id="problem-link" style="color: blue;" href="{{ problem_link }}&entry_2={{user.email}}&entry_1=Please%20notify%20me%20when%20the%20article%20requesting%20service%20is%20back%20online.">leave us a brief message</a>,
 	                    we will notify you when the service is back online.  Thank you for your patience.</p>
 	            </div>
                     {% endcomment %}
@@ -39,22 +39,22 @@
 	            </div>
 	         {% endif %}
 	    {% endif %}
-	    
-	    {% citation_display citation format direct_link %}    
+
+	    {% citation_display citation format direct_link %}
         <div id="coin">
            <span class="Z3988" title="{{ coin }}"></span>
         </div>
-        <div id="openurl" class="hidden">{{ openurl }}</div> 
-        
+        <div id="openurl" class="hidden">{{ openurl }}</div>
+
         <div id="resolved" class="hidden">{{ resolved }}</div>
 	</div>
-    
+
 	{% if item_request %}
     	<div class="notice">
     		<h3>Your request for this this item was processed on {{ item_request.date_created }}.</h3>
 		</div>
 	{% endif %}
-	
+
 	{% if print or online %}
 	<div class="holdings">
     	{# If we have a direct link - hyperlinked from title - and no other online holdings to display, pass.  Else, print each with the helper messages as necessary.#}
@@ -64,7 +64,7 @@
                 {% for provider in online %}
                     <li class="source"><a href="{{ provider.link }}" title="Full text from {{ provider.name }}">{{ provider.name }}</a>
                         {# Put an asterik up as a warning about journal or issue level links #}
-                        {% if provider.type != "direct" %}<span class="asterisk">&#8727;</span> 
+                        {% if provider.type != "direct" %}<span class="asterisk">&#8727;</span>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -99,38 +99,38 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        
+
         {% if prompt_login %}
             <div id="login-prompt" class="alert-box">
                 <em><a href="{{ login_link }}">Login</a></em> for full services.
             </div>
-        {% endif %} 
-        
-        
+        {% endif %}
+
+
         {# Handle vague links with a notice#}
         {% if has_vague_links %}
         <div class="notice" id="not-direct-link">
             <p><span class="asterisk">&#8727;</span>This is not a direct link to the article. You will need to search for the title or locate the date, volume, and issue on the publisher's website. If you don't find what you are looking for, please <a href="{{ problem_link }}">let us know.</a>
         </div>
         {% endif %}
-        
+
     </div>
     {% endif %}
-    
+
     {% if terminal %}
         <div id="logout-prompt" class="alert-box">
             You are using a public machine.  Please <em><a href="{{ logout_link }}">logout</a></em> when finished.
         </div>
     {% endif %}
-    
+
     {% comment %}
-    jQuery templates to pull in abstract. 
+    jQuery templates to pull in abstract.
     {% endcomment %}
     <div class="extra">
 		<span id="abstractContainer"></span>
 		<span id="relatedResearchContainer"></span>
     </div>
-    
+
 {% endblock %}
 
 {% block tool_list %}
@@ -157,7 +157,7 @@
 <span id="mendeleyExtrasContainer"></span>
 <span id="extrasContainer"></span>
 
-{% if debug_mode %}            
+{% if debug_mode %}
 <div class="toolbox">
     <h3>Debug <span style="font-size: 9px; font-weight: normal;">(this won't appear on live server)</span></h3>
     <hr/>
@@ -168,7 +168,7 @@
         <li class="hidden"><span id="debug" class="hidden">true</span></li>
         <li><a href="{% url findit:resolver-view %}?{{ openurl }}">Full OpenUrl</a></li>
         <li><a href="{% url findit:request-view resource=resource.id %}">Request link</a></li>
-        <li><a href="http://rl3tp7zf5x.search.serialssolutions.com/?{{ openurl }}">360Link</a></li>
+        <li><a href="http://{{ SS_KEY }}.search.serialssolutions.com/?{{ openurl }}">360Link</a></li>
     </ul>
 </div>
 {% endif %}
@@ -178,7 +178,7 @@
 {% endblock %}
 
 {% endblock %}
- 
+
 
 
 
@@ -194,7 +194,7 @@
         //getAbstract();
         getBookLocation();
     });
-    
+
 </script>
 
 
