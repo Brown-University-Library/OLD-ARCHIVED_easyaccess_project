@@ -113,7 +113,7 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
 
     def get(self, request, **kwargs):
         """Process the request."""
-        alog.debug( 'starting views.Resolver.get()' )
+        alog.debug( 'starting findit.views.Resolver.get()' )
         if SERVICE_ACTIVE is False:
             return redirect_to_sersol(self.query)
 
@@ -259,6 +259,7 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
                 pass
 
         #return HttpResponseRedirect('http://{{ SS_KEY }}.search.serialssolutions.com/?%s' % self.query)
+        alog.debug( 'leaving findit.views.Resolver.get()' )
         return super(Resolver, self).get(request)
 
     def get_context_data(self, **kwargs):

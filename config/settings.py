@@ -82,7 +82,7 @@ LOGGING = {
     'formatters': {
         'verbose': {
             # 'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'format': "[%(asctime)s] %(levelname)s [%(module)s-%(funcName)s()::%(lineno)d] %(message)s",
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
         'simple': {

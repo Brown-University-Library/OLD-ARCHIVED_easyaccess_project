@@ -4,10 +4,12 @@ from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.core.urlresolvers import get_script_prefix
 from django.core.exceptions import MultipleObjectsReturned
+from django.utils.log import dictConfig
 
 #standard lib
 import base64
 import json
+import pprint
 import urllib
 import urlparse
 #3rd party
@@ -20,6 +22,13 @@ from py360link2 import get_sersol_data, Resolved
 from models import Resource
 
 from app_settings import SERSOL_KEY, CACHE_TIMEOUT, QUERY_SKIP_KEYS, SERSOL_TIMEOUT
+
+
+import logging
+dictConfig(settings.LOGGING)
+# ilog = logging.getLogger('illiad')
+alog = logging.getLogger('access')
+
 
 class JSONResponseMixin(object):
     def render_to_response(self, context):
@@ -51,18 +60,22 @@ class JSONResponseMixin(object):
 class BulLinkBase(TemplateView, JSONResponseMixin):
 
     def get_base_url(self):
+        alog.debug( 'here' )
         app_prefix = get_script_prefix()
         return ''.join(('http', ('', 's')[self.request.is_secure()], '://', self.request.META['HTTP_HOST']))
 
     def get_context_data(self, **kwargs):
+        alog.debug( 'in bul_link.views.BulLinkBase.get_context_data()' )
         context = super(BulLinkBase, self).get_context_data(**kwargs)
         context['direct_link'] = None
+        alog.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
     def get_referrer(self):
         """
         Get the referring site if possible.  Will be stored in the database.
         """
+        alog.debug( 'here' )
         sid = None
         try:
             qdict = self.resource.query
@@ -88,6 +101,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         Get and process the data from the API and store in Python dictionary.
         This data is where any caching should take place.
         """
+        alog.debug( 'here' )
         #See if this view has created a resource already.
         try:
             query = self.resource.query
@@ -111,6 +125,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         Try to find the requested resource in the local database.  If it doesn't
         exist.  A permalink will be created on save.
         """
+        alog.debug( 'here' )
         try:
             resource, created = Resource.objects.get_or_create(query=scrubbed_query)
         except MultipleObjectsReturned:
@@ -123,6 +138,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
 
 
     def render_to_response(self, context):
+        alog.debug( 'here' )
         # Look for a 'output=json' GET argument
         if (self.request.GET.get('output','html') == 'json')\
             or (self.default_json):
@@ -132,6 +148,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
 
     @property
     def query(self):
+        alog.debug( 'starting bul_link.views.BulLinkBase.query()' )
         return self.request.META.get('QUERY_STRING', None)
 
     def scrub_query(self):
@@ -144,6 +161,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         http://stackoverflow.com/questions/613183/python-sort-a-dictionary-by-value
         http://code.activestate.com/recipes/52306-to-sort-a-dictionary/
         """
+        alog.debug( 'here' )
         query = self.query
         skip_keys = QUERY_SKIP_KEYS
         parsed = urlparse.parse_qs(query)
@@ -155,6 +173,9 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         #as string
         qs = urllib.urlencode(new, doseq=True)
         return qs
+
+    # end class BulLinkBase
+
 
 class ResolveView(BulLinkBase):
     template_name = 'bul_link/resolve.html'
