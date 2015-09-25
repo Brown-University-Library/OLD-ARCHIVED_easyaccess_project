@@ -1,7 +1,7 @@
 
 import unittest
 from findit.utils import make_illiad_url, BulSerSol
-from py360link.link360 import get_sersol_data
+from py360linkv2.link360 import get_sersol_data
 from django.conf import settings
 from pprint import pprint
 
@@ -24,7 +24,7 @@ class IlliadURLTests(unittest.TestCase):
         ill_dict = urlparse.parse_qs(ill)
         #pprint(ill_dict)
         self.assertTrue('FirstSearch:WorldCat' in ill_dict['sid'])
-        
+
     def test_date(self):
         #Dates need to just be the four digit year.
         ourl = 'rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.auinitm=D&rft.spage=392&rft.au=Schlenker%2C+J+D&rft.aulast=Schlenker&sid=bul_easy_article&rft_id=info%3Apmid%2F7252116&rft.date=1981-07&rft.issn=0363-5023&rft.aufirst=J&rft.volume=6&version=1.0&url_ver=Z39.88-2004&rft.atitle=Three+complications+of+untreated+partial+laceration+of+flexor+tendon--entrapment%2C+rupture%2C+and+triggering&rft.eissn=1531-6564&pmid=7252116&rft.jtitle=The+Journal+of+hand+surgery+%28American+ed.%29&rft.issue=4&rft.genre=article'
@@ -32,7 +32,7 @@ class IlliadURLTests(unittest.TestCase):
         ill_dict = urlparse.parse_qs(ill)
         date = ill_dict['rft.date'][0]
         self.assertEqual(date, '1981')
-    
+
     def test_pmid(self):
         """
         Make sure the ILL url has the pubmed ID in the notes field.
@@ -42,18 +42,18 @@ class IlliadURLTests(unittest.TestCase):
         ill_dict = urlparse.parse_qs(ill)
         note = ill_dict['Notes'][0]
         self.assertTrue(note.rfind('7252116') > -1)
-        
+
 class LinkGroupTests(unittest.TestCase):
     """
     Test how the link groups returned by 360 links are parsed.
     """
-    
+
     def _fetch(self, query):
         data = get_sersol_data(query, key=settings.BUL_LINK_SERSOL_KEY)
         resolved = BulSerSol(data)
         return resolved
-        
-    
+
+
     def test_vague_links(self):
         #ourl = "volume=9&genre=article&spage=39&sid=EBSCO:qrh&title=Gay+%26+Lesbian+Review+Worldwide&date=20020501&issue=3&issn=15321118&pid=&atitle=Chaste+Take+on+Those+Naughty+Victorian's."
         ourl = "rft.issn=0301-0066&rft.externalDocID=19806992&rft.date=2009-01-01&rft.volume=38&rft.issue=6&rft.spage=927&rft.jtitle=Perception&rft.au=Rhodes%2C+Gillian&rft.au=Jeffery%2C+Linda&rft.atitle=The+Thatcher+illusion%3A+now+you+see+it%2C+now+you+don%27t&ctx_ver=Z39.88-2004&rft.genre=article&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal"
@@ -64,7 +64,7 @@ class LinkGroupTests(unittest.TestCase):
         self.assertEqual(access['online'][0]['type'], 'journal')
         self.assertEqual(access['print'], [])
         #pprint(resolved.access_points())
-        
+
     def test_direct_link(self):
         """
         This is brittle.  If subscription changes.  This might not pass.
@@ -73,7 +73,7 @@ class LinkGroupTests(unittest.TestCase):
         access = resolved.access_points()
         self.assertFalse(access['has_vague_links'])
         self.assertFalse(access['direct_link']['link'] is None, "Didn't get the expected direct link.")
-    
+
     def test_print(self):
         """
         Need to create database fixture to test print resolving.
@@ -90,12 +90,12 @@ class CitationLinkerTests(unittest.TestCase):
     """
     Test the citation linker logic.
     """
-    
+
     def _fetch(self, query):
         data = get_sersol_data(query, key=settings.BUL_LINK_SERSOL_KEY)
         resolved = BulSerSol(data)
-        return resolved    
-    
+        return resolved
+
     def test_citation_linker(self):
         #Start page only
         resolved = self._fetch('rft.spage=299&rft.volume=32&rft.issue=4&rft.aulast=El-Dib&SS_authors=El-Dib+M&rft.au=El-Dib+M&rft.title=Journal+of+Perinatology&SS_ReferentFormat=JournalFormat&citationsubmit=Look+Up&rft.aufirst=M&rft.atitle=Neurobehavioral+assessment+as+a+predictor+of+neurodevelopmental+outcome+in+preterm+infants&rft.genre=article&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal')
@@ -108,9 +108,9 @@ class CitationLinkerTests(unittest.TestCase):
         self.assertEqual(citation_form.get('pages', None), None)
         #Full page range - not supported at the moment since we are relying
         #on 360link data and it doesn't include end pages.
-        
-        
-        
-        
+
+
+
+
 if __name__ == '__main__':
     unittest.main()

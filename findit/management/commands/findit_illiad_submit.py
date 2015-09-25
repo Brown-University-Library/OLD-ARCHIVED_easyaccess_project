@@ -2,10 +2,10 @@
 Handle Illiad submissions.
 
 
--- add delay and run continuously in the background. 
+-- add delay and run continuously in the background.
 
--- need to add unit tests to the newest py360link to make sure it's returning
-print issns.  
+-- need to add unit tests to the newest py360linkv2 to make sure it's returning
+print issns.
 
 """
 #django
@@ -19,8 +19,8 @@ from optparse import make_option
 import sys
 
 #local
-from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER 
-from illiad.account import IlliadSession 
+from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER
+from illiad.account import IlliadSession
 from findit.utils import make_illiad_url
 #from delivery.utils import make_illiad_url
 
@@ -29,9 +29,9 @@ import logging
 dictConfig(settings.LOGGING)
 ilog = logging.getLogger('illiad')
 
-#from delivery.new360link import py360link
+#from delivery.new360link import py360linkv2
 #import bibjsontools
-from py360link import get_sersol_data, Resolved
+from py360linkv2 import get_sersol_data, Resolved
 
 sersol_key=settings.BUL_LINK_SERSOL_KEY
 import urllib2
@@ -65,7 +65,7 @@ class Command(BaseCommand):
             #Get the OpenURL we will submit.
             ill_url = illiad_request_url
             ilog.info('User %s posted %s for request.' % (ill_username,
-                                                           ill_url)) 
+                                                           ill_url))
             out = {}
             #Get an illiad instance
             illiad = IlliadSession(ILLIAD_REMOTE_AUTH_URL,
@@ -75,20 +75,20 @@ class Command(BaseCommand):
             ilog.info('User %s established Illiad session: %s.' % (ill_username,
                                                                   illiad_session['session_id']))
             out['session'] = illiad_session
-            
+
             if not illiad_session['authenticated']:
                 out['session_error'] = 'Failed login.'
                 ilog.error("Illiad login failed for %s" % ill_username)
             else:
-                #Register users if neccessary.  
+                #Register users if neccessary.
                 if not illiad.registered:
                     ilog.info('Will register %s with illiad.' % (ill_username))
-                    ilog.info('Registering %s with Illiad as %s.' % (ill_username, 
+                    ilog.info('Registering %s with Illiad as %s.' % (ill_username,
                                                                      illiad_profile['status'])
                               )
                     reg = illiad.register_user(illiad_profile)
                     ilog.info('%s registration response: %s' % (ill_username, reg))
-                
+
                 illiad_post_key = illiad.get_request_key(ill_url)
                 #If blocked comes back in the post key, stop here with appropriate status.
                 blocked = illiad_post_key.get('blocked', None)
@@ -104,8 +104,8 @@ class Command(BaseCommand):
                                 (ill_username,
                                  self.msg))
                     out['message'] = msg
-                else:  
-                    #Submit this              
+                else:
+                    #Submit this
                     submit_status = illiad.make_request(illiad_post_key)
                     out['submit_status'] = submit_status
                     #Write the request to the requests table.
@@ -119,6 +119,6 @@ class Command(BaseCommand):
                         ilog.error("%s request failed with message %s." %\
                                    (ill_username,
                                    submit_status['message']))
-                    
+
             illiad.logout()
             #if count == 10: break

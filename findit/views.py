@@ -22,7 +22,7 @@ import re
 from bul_link.baseconv import base62
 from bul_link.views import BulLinkBase, ResolveView
 from bul_link.models import Resource
-from py360link import Link360Exception
+from py360linkv2 import Link360Exception
 
 #local
 from models import Request, UserMessage

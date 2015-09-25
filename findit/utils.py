@@ -1,4 +1,4 @@
-from py360link import Resolved
+from py360linkv2 import Resolved
 from app_settings import PRINT_PROVIDER
 from app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from models import PrintTitle
@@ -22,7 +22,7 @@ class BulSerSol(Resolved):
 #        try:
 #            end = int(end.split('-')[0])
 #        except IndexError:
-#            #set this for open ended dates. 
+#            #set this for open ended dates.
 #            end = 4000
         date = self.citation.get('date', None)
         if date:
@@ -33,7 +33,7 @@ class BulSerSol(Resolved):
             return print_set
         else:
             return []
-    
+
     def get_non_direct(self, group):
         """
         Get non-direct links from a link group.  These are journals only.
@@ -56,12 +56,12 @@ class BulSerSol(Resolved):
         else:
             return
         return d
-    
+
     def do_db_sort(self, link_groups):
         """
         Sort the links returned by library defined criteria.
         http://stackoverflow.com/questions/10274868/sort-a-list-of-python-dictionaries-depending-on-a-ordered-criteria
-    
+
         A low or negative value will bring the link to the top of the list.
         A low or negative value will push the link to the bottom of the list.
         """
@@ -76,18 +76,18 @@ class BulSerSol(Resolved):
                     return criteria.index(provider)
                 except ValueError:
                     #Return 99 .  The lowest value a db in the criteria list
-                    #could have is 0 up to the length of the list.  If the 
+                    #could have is 0 up to the length of the list.  If the
                     #db is not found.  Return something high so that all
                     #dbs not specified are treated the same.
                     return 99
         link_groups.sort(key=lambda x: _mapped(x['holdingData']['providerName']))
         return link_groups
-    
+
     def access_points(self):
         """
         Pull out all of the 'source' urls and put them into a dict
         with name, link keys.
-        
+
         Return dict with direct link and full link groups.
         """
         raw_link_groups = self.link_groups
@@ -98,7 +98,7 @@ class BulSerSol(Resolved):
         resolved_issn = self.citation.get('issn', None)
         if resolved_issn:
             pissn = resolved_issn.get('print', None)
-            if pissn : 
+            if pissn :
                 issns.append(pissn)
         online = []
         direct = None
@@ -111,7 +111,7 @@ class BulSerSol(Resolved):
             name = group['holdingData']['databaseName']
             #Check for print
             if name == PRINT_PROVIDER:
-                #database of print titles to get location and call number.  
+                #database of print titles to get location and call number.
                 print_held = {}
                 #hd = group['holdingData']
                 #print_held['start'] = hd['startDate']
@@ -129,16 +129,16 @@ class BulSerSol(Resolved):
                     if pair not in seen_print:
                         seen_print.append(pair)
                         pholdings.append(print_held)
-            else:                      
+            else:
                 #Handle book and article links.
                 if self.format == 'book':
                     #For 'books' that are actually chapters we want the article
-                    #level link returned by SerSol.  
+                    #level link returned by SerSol.
                     dl = group['url'].get('article', None)
                     #If that is empty, get the book level link.
                     if not dl:
                         dl = group['url'].get('book', None)
-                        
+
                 else:
                     #Handle journals.
                     #Try to get a direct link first
@@ -155,20 +155,20 @@ class BulSerSol(Resolved):
                         if not_direct:
                             vague_links = True
                             this_holding = not_direct
-                
+
                     #Only add links that aren't duplicates
                     if this_holding['link'] not in [n['link'] for n in online]:
                         if this_holding['name'] not in [n['name'] for n in online]:
                             online.append(this_holding)
-            
+
         if ((len(pholdings) == 0) and\
             (len(online) == 0)):
             resolved = False
         else:
             resolved = True
-        
+
         #Change vague_links to false if we did find a direct link.  This prevents
-        #the warning/caveat box from appearing. 
+        #the warning/caveat box from appearing.
         #Template will prevent non direct links from displaying to users.
         if direct:
             vague_links = False
@@ -182,7 +182,7 @@ class BulSerSol(Resolved):
                 'print': pholdings,
                 'resolved': resolved,
                 'has_vague_links': vague_links}
-        
+
     def is_requestable(self):
         """
         Look at the available metadata and make sure that the items is requestable
@@ -207,10 +207,10 @@ class BulSerSol(Resolved):
         #How should we validate other metdata - require OCLC number?
         else:
             return True
-            
+
     def get_citation_form(self):
         return self.prep_resolver_form()
-        
+
     def _mapper(self, key, format):
         """
         Maps 360Link returned values to the citation linker form.
@@ -248,10 +248,10 @@ class BulSerSol(Resolved):
             try:
                 return _b[key]
             except KeyError:
-                pass 
+                pass
         #default is to return original key
         return key
-    
+
     def citation_form_dict(self):
         """
         Map the resolved citation to the form field names.
@@ -284,8 +284,8 @@ class BulSerSol(Resolved):
                     cpages = "%s-EOA" % (spage)
                 citation_form_dict['pages'] = cpages
         return citation_form_dict
-        
-    
+
+
     def prep_resolver_form(self):
         citation_form_dict = self.citation_form_dict()
         d = {}
@@ -296,19 +296,19 @@ class BulSerSol(Resolved):
             d['form_type'] = 'article'
         else:
             d['form_type'] = format
-        
+
         d['article_form'] = forms.ArticleForm(citation_form_dict)
-        d['book_form'] = forms.BookForm(citation_form_dict)   
+        d['book_form'] = forms.BookForm(citation_form_dict)
         d['dissertation_form'] = forms.DissertationForm(citation_form_dict)
         d['patent_form'] = forms.PatentForm(citation_form_dict)
         return d
-    
+
     def easy_borrow_query(self):
         """
         Construct a query that can be passed on to easyBorrow.
-        This is just going to be the SerSol citation plus the original OCLC 
+        This is just going to be the SerSol citation plus the original OCLC
         number passed in, if any.
-        """ 
+        """
         import urllib
         qdict = self.citation
         #Massage authors
@@ -327,8 +327,8 @@ class BulSerSol(Resolved):
         #Add the OCLC number
         qdict['rfe_dat'] = self.oclc_number
         return urllib.urlencode(qdict, doseq=True)
-    
-    
+
+
 #===============================================================================
 # Illiad URLs
 #===============================================================================
@@ -372,11 +372,11 @@ def pull_referrer(odict):
         return sid
         #return ['%s-%s' % (s, ea) for s in sid]
     return []
-        
+
 
 def illiad_date(datestr):
     """
-    Dates should be four digit years - 1990 - without issue or 
+    Dates should be four digit years - 1990 - without issue or
     volume information, 'e.g. 1990-2'.  For RAPID per Bart.
     """
     #Deactivating date massaging per Bart - 3/14/13
@@ -387,7 +387,7 @@ def illiad_date(datestr):
     #   return datestr.split('-')[0]
     #else:
     #   return
-   
+
 
 def make_illiad_url(openurl):
     import urlparse
@@ -440,16 +440,16 @@ class Ourl(object):
         self.query = query
         self.qdict = urlparse.parse_qs(query)
         self.cite = {}
-    
+
     def make_cite(self):
         self.pull_id()
         self.prest()
         self.pull_oclc()
-        
+
     def pull_id(self):
         #get id param
         id = self.qdict.get('id', [])
-        #see if pmid was passed in. 
+        #see if pmid was passed in.
         id += ['pmid:%s' % p for p in self.qdict.get('pmid', []) if p]
         #or doi
         id += ['doi:%s' % d for d in self.qdict.get('doi', []) if d]
@@ -468,14 +468,14 @@ class Ourl(object):
             idt = chunked[0]
             val = ''.join(chunked[1:])
             self.cite[idt] = val
-    
+
     def format(self):
         f = self.qdict.get('rft_val_fmt', [':'])[0].split(':')[-1]
         if f == '':
             return 'unknown'
         else:
             return f
-        
+
     def prest(self):
         #Maybe turn these into items to check rather than items to skip
         skips = ['rft_val_fmt', 'id', 'url_ver',
@@ -491,7 +491,7 @@ class Ourl(object):
             else:
                 k = k.replace('rft.', '')
                 self.cite[k] = v[0]
-                
+
     def pull_oclc(self):
         import re
         oclc_reg = re.compile('\d+')
@@ -502,7 +502,7 @@ class Ourl(object):
             if match:
                 oclc = match.group()
         self.cite['oclc'] = oclc
-        
+
 #===============================================================================
 # Utility for making cache keys for the extra utilities.
 #===============================================================================

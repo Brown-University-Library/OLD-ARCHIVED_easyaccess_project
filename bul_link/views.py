@@ -15,7 +15,7 @@ from lxml import etree
 
 #local
 from baseconv import base62
-from py360link import get_sersol_data, Resolved
+from py360linkv2 import get_sersol_data, Resolved
 
 from models import Resource
 
@@ -49,19 +49,19 @@ class JSONResponseMixin(object):
         return json.dumps(context)
 
 class BulLinkBase(TemplateView, JSONResponseMixin):
-    
+
     def get_base_url(self):
         app_prefix = get_script_prefix()
         return ''.join(('http', ('', 's')[self.request.is_secure()], '://', self.request.META['HTTP_HOST']))
-    
+
     def get_context_data(self, **kwargs):
         context = super(BulLinkBase, self).get_context_data(**kwargs)
         context['direct_link'] = None
         return context
-    
+
     def get_referrer(self):
         """
-        Get the referring site if possible.  Will be stored in the database. 
+        Get the referring site if possible.  Will be stored in the database.
         """
         sid = None
         try:
@@ -77,16 +77,16 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
             if (oclc) and ('accession number' in oclc):
                 sid = 'OCLC'
         if sid:
-            return "%s-%s" % (sid, ea) 
+            return "%s-%s" % (sid, ea)
         else:
             return 'easyArticle-unknown'
-    
+
     def get_data(self,
                  query=None,
                  cache_timeout=CACHE_TIMEOUT):
         """
         Get and process the data from the API and store in Python dictionary.
-        This data is where any caching should take place.  
+        This data is where any caching should take place.
         """
         #See if this view has created a resource already.
         try:
@@ -98,14 +98,14 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
             #Get or make resource
             resource = self.make_resource(query)
             self.resource = resource
-            
+
         cache_key = "resolved-%s" % self.resource.id
         data = cache.get(cache_key, None)
         if not data:
             data = get_sersol_data(query, key=SERSOL_KEY, timeout=SERSOL_TIMEOUT)
             cache.set(cache_key, data, cache_timeout)
         return data
-    
+
     def make_resource(self, scrubbed_query):
         """
         Try to find the requested resource in the local database.  If it doesn't
@@ -120,26 +120,26 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         resource.save()
         #Add logger message here.
         return resource
-        
+
 
     def render_to_response(self, context):
-        # Look for a 'output=json' GET argument  
+        # Look for a 'output=json' GET argument
         if (self.request.GET.get('output','html') == 'json')\
             or (self.default_json):
             return JSONResponseMixin.render_to_response(self, context)
         else:
             return super(BulLinkBase, self).render_to_response(context)
-        
+
     @property
     def query(self):
         return self.request.META.get('QUERY_STRING', None)
-    
+
     def scrub_query(self):
         """
         Scrub the original query request.  This normalizes the
         order of the keys and removes keys that aren't needed to resolve the
         citation.
-        
+
         Dictionary sorting from:
         http://stackoverflow.com/questions/613183/python-sort-a-dictionary-by-value
         http://code.activestate.com/recipes/52306-to-sort-a-dictionary/
@@ -147,7 +147,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         query = self.query
         skip_keys = QUERY_SKIP_KEYS
         parsed = urlparse.parse_qs(query)
-        #Pull out the keys we don't want.  Skip any blank keys.  
+        #Pull out the keys we don't want.  Skip any blank keys.
         new = sorted([(k, v) for k,v in parsed.items() \
                       if v != ''\
                       if k not in skip_keys],
@@ -155,17 +155,17 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         #as string
         qs = urllib.urlencode(new, doseq=True)
         return qs
-    
+
 class ResolveView(BulLinkBase):
     template_name = 'bul_link/resolve.html'
     default_json = False
-    
+
     def get_context_data(self, **kwargs):
         context = super(ResolveView, self).get_context_data(**kwargs)
         #Check for permalink view.
         plink = kwargs.get('tiny', None)
         if plink:
-            #Convert incoming permalink to database pk.  
+            #Convert incoming permalink to database pk.
             rid = base62.to_decimal(plink)
             #Get resource from cache if possible.
             cache_key = "resource-%s" % rid
@@ -183,7 +183,7 @@ class ResolveView(BulLinkBase):
         #Resolve the query
         else:
             sersol = self.get_data()
-        
+
         resolved = Resolved(sersol)
         #Always using the first citation and linkGroups returned.  It's not
         #clear when multiple citations would be useful.
@@ -191,8 +191,8 @@ class ResolveView(BulLinkBase):
         context['link_groups'] = resolved.link_groups
         context['resource'] = self.resource
         return context
-    
 
-    
-    
+
+
+
 

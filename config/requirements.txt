@@ -11,7 +11,7 @@ shellvars==1.0.0
 ## Local repos ##
 
 ## 360Link
-git+https://github.com/birkin/py360link.git
+git+https://github.com/birkin/py360link_v2.git
 
 ## BibJson
 git+https://github.com/birkin/bibjsontools.git
