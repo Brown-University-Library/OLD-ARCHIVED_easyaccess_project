@@ -5,7 +5,7 @@ This repository contains code for a project of the Brown University Library to m
 
 It contains code for the landing pages users see when they click links for books or articles.
 
-It contains code for the handling of article-delivery (easyArticle); for books it hands off to an easyBorrow project.
+It also contains code for the handling of article-delivery (easyArticle); for books it hands off to an easyBorrow project.
 
 
 ##### Notes
@@ -23,12 +23,14 @@ It contains code for the handling of article-delivery (easyArticle); for books i
 - git clone this project in the `stuff` directory, like `easyaccess_project`
 - create a virtual environment at the sibling level of easyaccess_project
 - from the dev-server, get the easyaccess_env_settings.sh file, and update as needed
+- add a `requirements.pth` file to `env/lib/python2.7/site-packages/`, with the path to the `stuff` directory
+    - this is temporary, to allow the temporary bul_link app (for debugging) to work as if it's installed via pip
 - have the env/bin/activate file source the settings file
 - manually create the necessary dbs
 - activate the virtual environment
-- run python ./manage.py migrate to populate the tables
-- run python ./manage.py check
-- run python ./manage.py runserver
+- run `python ./manage.py migrate` to populate the tables
+- run `python ./manage.py check` to ensure all is well with the world
+- run `python ./manage.py runserver`
 
 
 ##### Acknowledgements
