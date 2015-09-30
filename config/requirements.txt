@@ -5,7 +5,7 @@ Django==1.8.4
 httplib2==0.9.1
 lxml==3.3.6
 PyMySQL==0.6.6
-shellvars==1.0.0
+shellvars-py==0.1.2
 
 
 ## Local repos ##
