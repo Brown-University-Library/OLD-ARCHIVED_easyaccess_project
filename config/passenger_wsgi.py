@@ -1,14 +1,8 @@
 """
-WSGI config for easyaccess_project.
+Prepares application environment.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
-"""
-
-"""
-Prepares application environment.
 Variables assume project setup like:
 stuff
     easyaccess_project
@@ -29,7 +23,7 @@ ACTIVATE_FILE = os.path.abspath( u'%s/../../env_eza/bin/activate_this.py' % curr
 PROJECT_DIR = os.path.abspath( u'%s/../../easyaccess_project' % current_directory )
 PROJECT_ENCLOSING_DIR = os.path.abspath( u'%s/../..' % current_directory )
 SETTINGS_MODULE = u'config.settings'
-SITE_PACKAGES_DIR = os.path.abspath( u'%s/../../env_eza/lib/python2.6/site-packages' % current_directory )
+SITE_PACKAGES_DIR = os.path.abspath( u'%s/../../env_eza/lib/python2.7/site-packages' % current_directory )
 
 ## virtualenv
 execfile( ACTIVATE_FILE, dict(__file__=ACTIVATE_FILE) )
@@ -43,7 +37,7 @@ for entry in [PROJECT_DIR, PROJECT_ENCLOSING_DIR, SITE_PACKAGES_DIR]:
 os.environ[u'DJANGO_SETTINGS_MODULE'] = SETTINGS_MODULE  # so django can access its settings
 
 ## load up env vars
-SETTINGS_FILE = os.environ['EZACS__SETTINGS_PATH']  # set in activate_this.py, and activated above
+SETTINGS_FILE = os.environ['EZACS2015__SETTINGS_PATH']  # set in activate_this.py, and activated above
 import shellvars
 var_dct = shellvars.get_vars( SETTINGS_FILE )
 for ( key, val ) in var_dct.items():
