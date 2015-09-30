@@ -1,6 +1,6 @@
 dj-database-url==0.3.0
 django-jsonfield==0.9.15
-#django-shorturls==1.1.0
+django-shorturls==1.1.1
 Django==1.8.4
 httplib2==0.9.1
 lxml==3.3.6
@@ -25,7 +25,3 @@ git+https://github.com/brown-university-library/illiad-client.git
 
 ## Shib
 git+https://github.com/Brown-University-Library/django-shibboleth-remoteuser.git
-
-## Temporary django-shorturls
-## Using local repo to silence django deprecation warning; pull-request submitted.
-git+https://github.com/birkin/django-shorturls.git
