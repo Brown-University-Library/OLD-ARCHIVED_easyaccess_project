@@ -308,7 +308,7 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
         if self.request.user.is_authenticated():
             #This should only trigger an exception on the development server.
             try:
-                profile = self.request.user.get_profile()
+                profile = self.request.user.profile()
                 context['profile'] = profile
                 #Can request print - medical or faculty
                 context['can_request_print'] = profile.can_request_print()
@@ -579,7 +579,7 @@ class RequestView(PublicTerminalMixin, BulLinkBase):
 
         #Illiad testing.
 #        from illiad.account import IlliadSession
-#        profile = self.request.user.get_profile()
+#        profile = self.request.user.profile()
 #        illiad_profile = profile.illiad()
 #        ill_username = illiad_profile['username']
 #        illiad = IlliadSession(ILLIAD_REMOTE_AUTH_URL,
@@ -625,7 +625,7 @@ class RequestView(PublicTerminalMixin, BulLinkBase):
             req.save()
             return HttpResponse(json.dumps(out),
                                mimetype='application/json')
-        profile = self.request.user.get_profile()
+        profile = self.request.user.profile()
         illiad_profile = profile.illiad()
         ill_username = illiad_profile['username']
         #Get the OpenURL we will submit.

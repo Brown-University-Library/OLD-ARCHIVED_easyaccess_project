@@ -41,7 +41,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'config.urls'
 
-AUTH_PROFILE_MODULE = 'delivery.LibraryProfile'
+# AUTH_PROFILE_MODULE = 'delivery.LibraryProfile'  # <http://deathofagremmie.com/2014/05/24/retiring-get-profile-and-auth-profile-module/>
 
 INSTALLED_APPS = (
     'django.contrib.auth',

@@ -150,7 +150,8 @@ class Resource(models.Model):
 #===============================================================================
 class Request(models.Model):
     item = models.ForeignKey(Resource)
-    user = models.ForeignKey(User, related_name='patron')
+    # user = models.ForeignKey(User, related_name='patron')
+    user = models.OneToOneField(User, related_name='patron')  # <http://deathofagremmie.com/2014/05/24/retiring-get-profile-and-auth-profile-module/>
     bib = JSONField()
     #from bibjson
     type = models.CharField(max_length=25, blank=True, null=True)

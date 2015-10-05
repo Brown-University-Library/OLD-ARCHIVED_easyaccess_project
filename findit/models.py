@@ -20,7 +20,8 @@ class PrintTitle(models.Model):
 
 class Request(models.Model):
     item = models.ForeignKey(Resource)
-    user = models.ForeignKey(User)
+    # user = models.ForeignKey(User)
+    user = models.OneToOneField(User)  # <http://deathofagremmie.com/2014/05/24/retiring-get-profile-and-auth-profile-module/>
     illiad_tn = models.CharField(max_length=25, blank=True, null=True)
     #http://djangosnippets.org/snippets/1017/
     date_created = models.DateTimeField()

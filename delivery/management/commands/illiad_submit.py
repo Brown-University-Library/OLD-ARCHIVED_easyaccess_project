@@ -12,9 +12,9 @@ from pprint import pprint
 
 #local
 from findit.models import UserProfile
-from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER 
+from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER
 from delivery.models import Request
-from illiad.account import IlliadSession 
+from illiad.account import IlliadSession
 
 class Command(BaseCommand):
     help = "For submitting existing requests to Illiad."
@@ -25,8 +25,8 @@ class Command(BaseCommand):
     def handle(self, **options):
         if options['request']:
           self.submit_to_illiad(options['request'])
-          
-    
+
+
     def submit_to_illiad(self, request_id):
         print "Submitting: ", request_id
         try:
@@ -34,24 +34,24 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             print>>sys.stderr, "%s was not found in the easyArticle database." % request
             return
-        profile = request.user.get_profile()
+        profile = request.user.profile()
         illiad_profile = profile.illiad()
         ill_username = illiad_profile['username']
-        
+
         #Get an illiad instance
         sess = IlliadSession(ILLIAD_REMOTE_AUTH_URL,
                                ILLIAD_REMOTE_AUTH_HEADER,
                                ill_username)
         illiad_session = sess.login()
-        
+
         #query
         query = request.bib['_query']
-        
+
         #get the request key
         rk = sess.get_request_key(query)
         #submit the request
         submit = sess.make_request(rk)
-        
+
         pprint(submit)
-            
+
         sess.logout()
