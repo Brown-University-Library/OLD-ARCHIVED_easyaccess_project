@@ -11,8 +11,8 @@ import sys
 
 #local
 from findit.models import UserProfile
-from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER 
-from illiad.account import IlliadSession 
+from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER
+from illiad.account import IlliadSession
 
 class Command(BaseCommand):
     help = "For registering Illiad users from the findit database."
@@ -23,8 +23,8 @@ class Command(BaseCommand):
     def handle(self, **options):
         if options['username']:
           self.register_user(options['username'])
-          
-    
+
+
     def register_user(self, username):
         from findit.models import Request
         new_requests = Request.objects.filter(illiad_tn='new')
@@ -38,16 +38,16 @@ class Command(BaseCommand):
 #            except:
 #                print>>sys.stderr, "%s was not found in the easyArticle database." % username
 #                return
-            profile = user.get_profile()
+            profile = user.profile
             illiad_profile = profile.illiad()
             ill_username = illiad_profile['username']
-            
+
             #Get an illiad instance
             sess = IlliadSession(ILLIAD_REMOTE_AUTH_URL,
                                    ILLIAD_REMOTE_AUTH_HEADER,
                                    ill_username)
             illiad_session = sess.login()
-           
+
             #if not sess.registered:
             print>>sys.stderr, "Registering %s with Illliad as %s." % (username, illiad_profile)
             reg = sess.register_user(illiad_profile)

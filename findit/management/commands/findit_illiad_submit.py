@@ -46,7 +46,7 @@ class Command(BaseCommand):
         new_requests = Request.objects.filter(illiad_tn='new')
         for request in new_requests:
             user = request.user
-            profile = user.get_profile()
+            profile = user.profile
             illiad_profile = profile.illiad()
             tries = 0
             while tries < 3:

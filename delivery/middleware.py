@@ -45,7 +45,7 @@ class DeliveryShib(ShibbolethRemoteUserMiddleware):
         """
         #Catch any occurrences where the profile doesn't yet exist.
         try:
-            profile = user.get_profile()
+            profile = user.profile
         except ObjectDoesNotExist:
             profile = LibraryProfile.objects.create(user=user)
         #Add extra information from Shib to complete profile.
