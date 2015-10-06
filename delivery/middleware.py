@@ -47,7 +47,7 @@ class DeliveryShib(ShibbolethRemoteUserMiddleware):
         try:
             alog.debug( 'type(user), `%s`' % type(user) )
             alog.debug( 'user.__dict__, `%s`' % user.__dict__ )
-            profile = user.profile
+            profile = user.libraryprofile
         except ObjectDoesNotExist:
             profile = LibraryProfile.objects.create(user=user)
         #Add extra information from Shib to complete profile.

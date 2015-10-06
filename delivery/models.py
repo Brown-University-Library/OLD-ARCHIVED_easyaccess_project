@@ -332,7 +332,7 @@ def prep_book_request(request):
     req.firstname = user.first_name
     req.lastname = user.last_name
     #Pull barcode from profile.
-    profile = user.profile
+    profile = user.libraryprofile
     req.barcode = profile.barcode
     req.email = user.email
     #import pdb; pdb.set_trace();
@@ -354,7 +354,7 @@ def illiad_client(request, make_request=False):
     from illiad.account import IlliadSession
     from utils import make_illiad_url
     user = request.user
-    profile = user.profile
+    profile = user.libraryprofile
     illiad_profile = profile.illiad()
     ill_username = illiad_profile['username']
     #dict to store output

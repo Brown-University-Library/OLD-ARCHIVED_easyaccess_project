@@ -38,7 +38,7 @@ class Command(BaseCommand):
 #            except:
 #                print>>sys.stderr, "%s was not found in the easyArticle database." % username
 #                return
-            profile = user.profile
+            profile = user.libraryprofile
             illiad_profile = profile.illiad()
             ill_username = illiad_profile['username']
 

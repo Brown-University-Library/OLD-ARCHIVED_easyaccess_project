@@ -604,7 +604,7 @@ class UserInfoView(ResolveView):
         context['query'] = self.query
         context['requested'] = False
         try:
-            profile = self.request.user.profile()
+            profile = self.request.user.libraryprofile()
         except ObjectDoesNotExist:
             #In odd cases a user won't have a profile.
             return context

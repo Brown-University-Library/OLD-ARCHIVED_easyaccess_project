@@ -34,7 +34,7 @@ class Command(BaseCommand):
         except ObjectDoesNotExist:
             print>>sys.stderr, "%s was not found in the easyArticle database." % request
             return
-        profile = request.user.profile()
+        profile = request.user.libraryprofile()
         illiad_profile = profile.illiad()
         ill_username = illiad_profile['username']
 
