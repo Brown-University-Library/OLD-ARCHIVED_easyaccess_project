@@ -57,25 +57,36 @@ class JSONResponseMixin(object):
                 pass
         return json.dumps(context)
 
+
 class BulLinkBase(TemplateView, JSONResponseMixin):
 
     def get_base_url(self):
-        alog.debug( 'here' )
+        alog.debug( 'starting bul_link.BulLinkBase.get_base_url()' )
         app_prefix = get_script_prefix()
         return ''.join(('http', ('', 's')[self.request.is_secure()], '://', self.request.META['HTTP_HOST']))
 
     def get_context_data(self, **kwargs):
-        alog.debug( 'in bul_link.views.BulLinkBase.get_context_data()' )
+        alog.debug( 'starting bul_link.views.BulLinkBase.get_context_data()' )
         context = super(BulLinkBase, self).get_context_data(**kwargs)
         context['direct_link'] = None
         alog.debug( 'context, ```%s```' % pprint.pformat(context) )
+        alog.debug( 'dir(context["view"]), ```%s```' % pprint.pformat(dir(context["view"])) )
+        alog.debug( 'context["view"].__dict__, ```%s```' % pprint.pformat(context["view"].__dict__) )
+        alog.debug( 'context["view"].request, ```%s```' % pprint.pformat(context["view"].request) )
+        alog.debug( 'context["view"].request.__dict__, ```%s```' % pprint.pformat(context["view"].request.__dict__) )
+        alog.debug( 'context["view"].request.user.__dict__, ```%s```' % pprint.pformat(context["view"].request.user.__dict__) )
+        alog.debug( 'context["view"].request.user.username, ```%s```' % pprint.pformat(context["view"].request.user.username) )
+        try:
+            alog.debug( 'context["view"].request.user.libraryprofile, ```%s```' % pprint.pformat(context["view"].request.user.libraryprofile) )
+        except:
+            pass
         return context
 
     def get_referrer(self):
         """
         Get the referring site if possible.  Will be stored in the database.
         """
-        alog.debug( 'here' )
+        alog.debug( 'starting bul_link.views.BulLinkBase.get_referrer()' )
         sid = None
         try:
             qdict = self.resource.query
@@ -101,7 +112,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         Get and process the data from the API and store in Python dictionary.
         This data is where any caching should take place.
         """
-        alog.debug( 'here' )
+        alog.debug( 'starting bul_link.views.BulLinkBase.get_data()' )
         #See if this view has created a resource already.
         try:
             query = self.resource.query
@@ -125,7 +136,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         Try to find the requested resource in the local database.  If it doesn't
         exist.  A permalink will be created on save.
         """
-        alog.debug( 'here' )
+        alog.debug( 'starting bul_link.views.BulLinkBase.make_resource()' )
         try:
             resource, created = Resource.objects.get_or_create(query=scrubbed_query)
         except MultipleObjectsReturned:
@@ -136,9 +147,8 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         #Add logger message here.
         return resource
 
-
     def render_to_response(self, context):
-        alog.debug( 'here' )
+        alog.debug( 'starting bul_link.views.BulLinkBase.render_to_response()' )
         # Look for a 'output=json' GET argument
         if (self.request.GET.get('output','html') == 'json')\
             or (self.default_json):
@@ -161,7 +171,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         http://stackoverflow.com/questions/613183/python-sort-a-dictionary-by-value
         http://code.activestate.com/recipes/52306-to-sort-a-dictionary/
         """
-        alog.debug( 'here' )
+        alog.debug( 'starting bul_link.views.BulLinkBase.scrub_query()' )
         query = self.query
         skip_keys = QUERY_SKIP_KEYS
         parsed = urlparse.parse_qs(query)
@@ -182,6 +192,7 @@ class ResolveView(BulLinkBase):
     default_json = False
 
     def get_context_data(self, **kwargs):
+        alog.debug( 'starting bul_link.views.ResolveView.get_context_data()' )
         context = super(ResolveView, self).get_context_data(**kwargs)
         #Check for permalink view.
         plink = kwargs.get('tiny', None)
@@ -212,8 +223,3 @@ class ResolveView(BulLinkBase):
         context['link_groups'] = resolved.link_groups
         context['resource'] = self.resource
         return context
-
-
-
-
-

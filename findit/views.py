@@ -132,10 +132,12 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
                 check_summon = False
                 break
         if check_summon is True:
+            alog.debug( 'starting findit.views.Resolver.get(); check_summon is True' )
             #Make sure the GET request doesn't override this.
             if self.request.GET.get('direct') == 'false':
                 pass
             else:
+                alog.debug( 'starting findit.views.Resolver.get(); enhanced_link will be built' )
                 enhanced_link = summon.get_enhanced_link(self.query)
                 #TODO - use the metadata from Summon to render the request
                 #page rather than hitting the 360Link API for something
@@ -261,6 +263,7 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
         #return HttpResponseRedirect('http://{{ SS_KEY }}.search.serialssolutions.com/?%s' % self.query)
         alog.debug( 'leaving findit.views.Resolver.get()' )
         return super(Resolver, self).get(request)
+        ## end of def Resolver.get() ##
 
     def get_context_data(self, **kwargs):
         """
@@ -320,6 +323,7 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
             if len(context['print']) > 0:
                 context['prompt_login'] = True
         return context
+
 
 class SummonView(BulLinkBase):
     template_name = 'findit/summon.html'
