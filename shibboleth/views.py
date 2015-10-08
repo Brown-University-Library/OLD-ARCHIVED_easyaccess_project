@@ -85,6 +85,7 @@ class ShibbolethLogoutView(TemplateView):
     redirect_field_name = "target"
 
     def get(self, *args, **kwargs):
+        alog.debug( 'starting shibboleth.views.ShibbolethLogoutView.get()' )
         #Log the user out.
         auth.logout(self.request)
         #Set session key that middleware will use to force
@@ -95,6 +96,7 @@ class ShibbolethLogoutView(TemplateView):
                  quote(self.request.GET.get(self.redirect_field_name)) or\
                  quote(request.build_absolute_uri())
         logout = LOGOUT_URL % target
+        alog.debug( 'in shibboleth.views.ShibbolethLogoutView.get(); redirect_url, `%s`' % logout )
         return redirect(logout)
 
 

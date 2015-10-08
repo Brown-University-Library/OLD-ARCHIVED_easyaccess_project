@@ -69,15 +69,15 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         alog.debug( 'starting bul_link.views.BulLinkBase.get_context_data()' )
         context = super(BulLinkBase, self).get_context_data(**kwargs)
         context['direct_link'] = None
-        alog.debug( 'context, ```%s```' % pprint.pformat(context) )
+        alog.debug( 'bul_link- context, ```%s```' % pprint.pformat(context) )
         # alog.debug( 'dir(context["view"]), ```%s```' % pprint.pformat(dir(context["view"])) )
-        alog.debug( 'context["view"].__dict__, ```%s```' % pprint.pformat(context["view"].__dict__) )
-        alog.debug( 'context["view"].request, ```%s```' % pprint.pformat(context["view"].request) )
+        alog.debug( 'bul_link- context["view"].__dict__, ```%s```' % pprint.pformat(context["view"].__dict__) )
+        alog.debug( 'bul_link- context["view"].request, ```%s```' % pprint.pformat(context["view"].request) )
         # alog.debug( 'context["view"].request.__dict__, ```%s```' % pprint.pformat(context["view"].request.__dict__) )
-        alog.debug( 'context["view"].request.user.__dict__, ```%s```' % pprint.pformat(context["view"].request.user.__dict__) )
-        alog.debug( 'context["view"].request.user.username, ```%s```' % pprint.pformat(context["view"].request.user.username) )
+        alog.debug( 'bul_link- context["view"].request.user.__dict__, ```%s```' % pprint.pformat(context["view"].request.user.__dict__) )
+        alog.debug( 'bul_link- context["view"].request.user.username, ```%s```' % pprint.pformat(context["view"].request.user.username) )
         try:
-            alog.debug( 'context["view"].request.user.libraryprofile, ```%s```' % pprint.pformat(context["view"].request.user.libraryprofile) )
+            alog.debug( 'bul_link- context["view"].request.user.libraryprofile, ```%s```' % pprint.pformat(context["view"].request.user.libraryprofile) )
         except:
             pass
         return context

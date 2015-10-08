@@ -34,17 +34,20 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
         #To support logout.  If this variable is True, do not
         #authenticate user and return now.
         if request.session.get(LOGOUT_SESSION_KEY) == True:
+            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); LOGOUT_SESSION_KEY found' )
             return
         else:
+            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); LOGOUT_SESSION_KEY not found' )
             #Delete the shib reauth session key if present.
-	        request.session.pop(LOGOUT_SESSION_KEY, None)
+            request.session.pop(LOGOUT_SESSION_KEY, None)
 
         #Locate the remote user header.
         try:
-            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); request.META, `%s`' % pprint.pformat(request.META) )
+            # alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); request.META, `%s`' % pprint.pformat(request.META) )
             username = request.META[self.header]
             alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); username found, `%s`' % username )
         except KeyError:
+            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); no REMOTE_USER found' )
             # If specified header doesn't exist then return (leaving
             # request.user set to AnonymousUser by the
             # AuthenticationMiddleware).
@@ -52,7 +55,9 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
                 username = settings.SHIB_MOCK_MAP['Shibboleth-eppn']
                 pass
             else:
+                alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); returning because no remote user was found' )
                 return
+
         # If the user is already authenticated and that user is the user we are
         # getting passed in the headers, then the correct user is already
         # persisted in the session and we don't need to continue.
@@ -70,11 +75,12 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
         #     raise ShibbolethValidationError("All required Shibboleth elements"
         #                                     " not found.  %s" % shib_meta)
 
-
         ## Make sure we have all required Shiboleth elements before proceeding.
         if settings.SHIB_MOCK_HEADERS is True:
+            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); populating shib_meta from SHIB_MOCK_MAP' )
             ( shib_meta, error ) = ( settings.SHIB_MOCK_MAP, False )
         else:
+            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); populating shib_meta from apache header' )
             shib_meta, error = self.parse_attributes(request)
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
@@ -86,7 +92,9 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
         # We are seeing this user for the first time in this session, attempt
         # to authenticate the user.
         user = auth.authenticate(remote_user=username, shib_meta=shib_meta)
+        alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); authentication just occurred' )
         if user:
+            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); auth produced valid user' )
             # User is valid.  Set request.user and persist user in the session
             # by logging the user in.
             request.user = user
@@ -121,6 +129,7 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
         From: https://github.com/russell/django-shibboleth/blob/master/django_shibboleth/utils.py
         Pull the mapped attributes from the apache headers.
         """
+        alog.debug( 'starting shibboleth.middleware.ShibbolethRemoteUserMiddleware.parse_attributes()' )
         shib_attrs = {}
         error = False
         meta = request.META
