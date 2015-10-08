@@ -215,9 +215,17 @@ FINDIT_GSCHOLAR = os.environ['EZACS__FINDIT_GSCHOLAR']
 FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldat', 'pubmed']  # list of referring sites to not consult Summon for.
 
 
-#===============================================================================
+## ============================================================================
+## shibboleth app settings
+## ============================================================================
+
+SHIB_MOCK_HEADERS = json.loads( os.environ['EZACS__SHIBBOLETH_MOCK_HEADERS_JSON'] )
+SHIB_MOCK_MAP = json.loads( os.environ['EZACS__SHIBBOLETH_MOCK_MAP_JSON'] )
+
+
+# ===============================================================================
 # misc settings to properly categorize
-#===============================================================================
+# ===============================================================================
 
 SHIB_EMAIL = os.environ['EZACS__SHIB_EMAIL']
 SHIB_USERNAME = os.environ['EZACS__SHIB_USERNAME']
