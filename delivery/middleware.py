@@ -45,8 +45,8 @@ class DeliveryShib(ShibbolethRemoteUserMiddleware):
         """
         #Catch any occurrences where the profile doesn't yet exist.
         try:
-            alog.debug( 'type(user), `%s`' % type(user) )
-            alog.debug( 'user.__dict__, `%s`' % user.__dict__ )
+            alog.debug( 'in delivery.middleware.DeliveryShib.make_profile(); type(user), `%s`' % type(user) )
+            alog.debug( 'in delivery.middleware.DeliveryShib.make_profile(); user.__dict__, `%s`' % user.__dict__ )
             profile = user.libraryprofile
         except ObjectDoesNotExist:
             profile = LibraryProfile.objects.create(user=user)
