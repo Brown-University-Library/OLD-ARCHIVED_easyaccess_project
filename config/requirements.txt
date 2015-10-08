@@ -24,4 +24,5 @@ git+https://github.com/birkin/bibjsontools.git
 git+https://github.com/brown-university-library/illiad-client.git
 
 ## Shib
-git+https://github.com/Brown-University-Library/django-shibboleth-remoteuser.git
+## disabling for now so I can install it locally for updates and debugging
+#git+https://github.com/Brown-University-Library/django-shibboleth-remoteuser.git
