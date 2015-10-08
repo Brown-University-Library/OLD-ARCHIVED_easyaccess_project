@@ -31,15 +31,16 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
                 " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
                 " before the RemoteUserMiddleware class.")
 
-        #To support logout.  If this variable is True, do not
-        #authenticate user and return now.
-        if request.session.get(LOGOUT_SESSION_KEY) == True:
-            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); LOGOUT_SESSION_KEY found' )
-            return
-        else:
-            alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); LOGOUT_SESSION_KEY not found' )
-            #Delete the shib reauth session key if present.
-            request.session.pop(LOGOUT_SESSION_KEY, None)
+        ## is this needed? ##
+        # #To support logout.  If this variable is True, do not
+        # #authenticate user and return now.
+        # if request.session.get(LOGOUT_SESSION_KEY) == True:
+        #     alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); LOGOUT_SESSION_KEY found' )
+        #     return
+        # else:
+        #     alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); LOGOUT_SESSION_KEY not found' )
+        #     #Delete the shib reauth session key if present.
+        #     request.session.pop(LOGOUT_SESSION_KEY, None)
 
         #Locate the remote user header.
         try:
