@@ -508,9 +508,11 @@ class RequestView(PublicTerminalMixin, BulLinkBase):
     default_json = False
     #@method_decorator(login_required)
 
+    alog.debug( 'in findit.views.RequestView; about to run has_email decorator' )
     @method_decorator(has_email)
     @method_decorator(has_service)
     def dispatch(self, *args, **kwargs):
+        alog.debug( 'starting findit.views.RequestView.dispatch()' )
         return super(RequestView, self).dispatch(*args, **kwargs)
 
     def send_message(self, message_type, **kwargs):

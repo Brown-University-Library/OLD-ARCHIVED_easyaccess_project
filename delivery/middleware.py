@@ -28,6 +28,7 @@ class DeliveryShib(ShibbolethRemoteUserMiddleware):
     """
 
     def process_request(self, request):
+        alog.debug( 'starting delivery.middleware.DeliveryShib.process_request()' )
         try:
             super(DeliveryShib, self).process_request(request)
         except (ImproperlyConfigured, ShibbolethValidationError, IntegrityError):
@@ -43,6 +44,7 @@ class DeliveryShib(ShibbolethRemoteUserMiddleware):
         """
         A method is called on login.
         """
+        alog.debug( 'starting delivery.middleware.DeliveryShib.make_profile()' )
         #Catch any occurrences where the profile doesn't yet exist.
         try:
             alog.debug( 'in delivery.middleware.DeliveryShib.make_profile(); type(user), `%s`' % type(user) )
