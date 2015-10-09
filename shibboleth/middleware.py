@@ -21,6 +21,7 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
     """
     def process_request(self, request):
         alog.debug( 'starting shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request()' )
+        alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); request.META, `%s`' % pprint.pformat(request.META) )
 
         # AuthenticationMiddleware is required so that request.user exists.
         if not hasattr(request, 'user'):
@@ -52,7 +53,7 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
             # If specified header doesn't exist then return (leaving
             # request.user set to AnonymousUser by the
             # AuthenticationMiddleware).
-            if settings.SHIB_MOCK_HEADERS is True:
+            if settings.SHIB_MOCK_HEADERS is True and '/login/' in request.META['REQUEST_URI']:
                 username = settings.SHIB_MOCK_MAP['Shibboleth-eppn']
                 pass
             else:
@@ -77,7 +78,7 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
         #                                     " not found.  %s" % shib_meta)
 
         ## Make sure we have all required Shiboleth elements before proceeding.
-        if settings.SHIB_MOCK_HEADERS is True:
+        if settings.SHIB_MOCK_HEADERS is True and '/login/' in request.META['REQUEST_URI']:
             alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); populating shib_meta from SHIB_MOCK_MAP' )
             ( shib_meta, error ) = ( settings.SHIB_MOCK_MAP, False )
         else:
@@ -85,6 +86,7 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
             shib_meta, error = self.parse_attributes(request)
         # Add parsed attributes to the session.
         request.session['shib'] = shib_meta
+        alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); request.session["shib"] set' )
         if error:
             raise ShibbolethValidationError("All required Shibboleth elements"
                                             " not found.  %s" % shib_meta)
@@ -92,6 +94,7 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
 
         # We are seeing this user for the first time in this session, attempt
         # to authenticate the user.
+        alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); about to authenticate' )
         user = auth.authenticate(remote_user=username, shib_meta=shib_meta)
         alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.process_request(); authentication just occurred' )
         if user:
@@ -141,6 +144,10 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
             if not value or value == '':
                 if required:
                     error = True
+                    # if settings.SHIB_MOCK_HEADERS is False:
+                    #     error = True
+        alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.parse_attributes(); shib_attrs, `%s`' % shib_attrs )
+        alog.debug( 'in shibboleth.middleware.ShibbolethRemoteUserMiddleware.parse_attributes(); error, `%s`' % error )
         return shib_attrs, error
 
 class ShibbolethValidationError(Exception):
