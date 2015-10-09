@@ -10,10 +10,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^user/', include('shibboleth.urls', namespace='shibboleth')),
     url(r'^borrow/', include('delivery.urls', namespace='delivery')),
-    url(r'', include('findit.urls', namespace='findit')),
+    # url(r'^', include('findit.urls', namespace='findit')),
+    url(r'^find/', include('findit.urls', namespace='findit')),
     #These are here just to register the namespace.  All links will be handled
     #by the above.
-    url(r'', include('bul_link.urls', namespace='bul_link')),
+    # url(r'', include('bul_link.urls', namespace='bul_link')),
     ]
 
 # urlpatterns = patterns('',
