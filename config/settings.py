@@ -30,13 +30,27 @@ TIME_ZONE = 'America/New_York'
 STATIC_URL = os.environ['EZACS__STATIC_URL']
 STATIC_ROOT = os.environ['EZACS__STATIC_ROOT']  # needed for collectstatic command
 
+APPEND_SLASH = True
+
+# MIDDLEWARE_CLASSES = (
+#     'django.middleware.common.CommonMiddleware',
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'delivery.middleware.DeliveryShib',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     )
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'delivery.middleware.DeliveryShib',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     )
 
 ROOT_URLCONF = 'config.urls'
