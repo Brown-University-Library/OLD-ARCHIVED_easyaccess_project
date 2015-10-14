@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+import json, pprint
+from urllib import quote
 
 from django.conf import settings
 from django.contrib import auth
@@ -9,7 +13,6 @@ from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 
-from urllib import quote
 
 #Logout settings.
 from shibboleth.app_settings import LOGOUT_URL, LOGOUT_REDIRECT_URL, LOGOUT_SESSION_KEY
@@ -20,6 +23,22 @@ import logging
 from django.utils.log import dictConfig
 dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
+
+
+def info( request ):
+    """ Returns user shib info. """
+    alog.debug( 'starting shibboleth.views.info()' )
+    output_dct = {}
+    for ( key, val ) in request.META.items():
+        # alog.debug( 'key is `%s`; type(val) is `%s`' % (key, type(val)) )
+        if ( 'HTTP_SHIBBOLETH' in key ) and ( type(val) in [bool, int, str, unicode] ) and ( 'session' not in key.lower() ):
+            output_dct[key] = val
+        else:
+            alog.debug( 'skipping key, `%s` and val, `%s`' % (key, unicode(repr(val))) )
+
+    output = json.dumps( output_dct, sort_keys=True, indent=2 )
+    # output = pprint.pformat( rm )
+    return HttpResponse( output, content_type=u'application/json; charset=utf-8' )
 
 
 class ShibbolethView(TemplateView):
