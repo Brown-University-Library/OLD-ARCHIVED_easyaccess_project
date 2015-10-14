@@ -175,6 +175,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 LOGIN_URL = os.environ['EZACS__LOGIN_URL']
 LOGIN_REDIRECT_URL = os.environ['EZACS__LOGIN_REDIRECT_URL']
 
+ALLOWED_HOSTS = json.loads( os.environ['EZACS__ALLOWED_HOSTS_JSON'] )
+
 ## end of project-level settings
 
 
