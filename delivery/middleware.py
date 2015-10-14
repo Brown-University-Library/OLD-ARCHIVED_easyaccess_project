@@ -31,7 +31,8 @@ class DeliveryShib(ShibbolethRemoteUserMiddleware):
         alog.debug( 'starting delivery.middleware.DeliveryShib.process_request()' )
         try:
             super(DeliveryShib, self).process_request(request)
-        except (ImproperlyConfigured, ShibbolethValidationError, IntegrityError):
+        except (ImproperlyConfigured, ShibbolethValidationError, IntegrityError) as e:
+            alog.error( 'in delivery.middleware.DeliveryShib.process_request(); exception, `%s`' % unicode(repr(e)) )
             #User can't be authenticated in these cases.
             #Store shib meta, logout, put shib meta back in session.
             shib = request.session.get('shib')
