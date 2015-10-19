@@ -7,7 +7,7 @@ from views import ShibbolethView, ShibbolethLogoutView, ShibbolethLoginView
 
 
 urlpatterns = patterns('',
-    url( r'^your_shib_info/$', 'shibboleth.views.info', name='shib_info_url' ),
+    url( r'^my_info/$', 'shibboleth.views.info', name='shib_info_url' ),
     url( r'^login/$', ShibbolethLoginView.as_view(), name='login'),
     url( r'^logout/$', ShibbolethLogoutView.as_view(), name='logout'),
     url( r'^$', ShibbolethView.as_view(), name='info' ),
