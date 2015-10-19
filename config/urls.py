@@ -15,4 +15,4 @@ urlpatterns = [
     ]
 
 ## for 500 errors
-# handler500 = 'findit.views.server_error'
+handler500 = 'findit.views.server_error'
