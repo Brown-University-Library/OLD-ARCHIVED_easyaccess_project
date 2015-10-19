@@ -322,6 +322,9 @@ class Resolver(PublicTerminalMixin, BulLinkBase):
             #prompt for login if we have print materials and the user is not authenticated.
             if len(context['print']) > 0:
                 context['prompt_login'] = True
+
+        context['login_link'] = 'foo'
+
         return context
 
 

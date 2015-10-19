@@ -166,10 +166,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # 'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
-    'findit.context_processors.login_link',
-    'findit.context_processors.debug_mode',
-    'shibboleth.context_processors.login_link',
-    'shibboleth.context_processors.logout_link',
+    # 'findit.context_processors.login_link',
+    # 'findit.context_processors.debug_mode',
+    # 'shibboleth.context_processors.login_link',
+    # 'shibboleth.context_processors.logout_link',
     )
 
 LOGIN_URL = os.environ['EZACS__LOGIN_URL']
