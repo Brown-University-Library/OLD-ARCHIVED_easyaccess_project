@@ -1,12 +1,54 @@
-from py360link2 import Resolved
-from app_settings import PRINT_PROVIDER
-from app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
-from models import PrintTitle
-import forms
-import urlparse
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
+import logging, urlparse
 from datetime import datetime
 
+from . import forms
+from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
+from .app_settings import PRINT_PROVIDER
+from .models import PrintTitle
+from django.conf import settings
+from django.utils.log import dictConfig
+from py360link2 import Resolved
+
+
 CURRENT_YEAR = datetime.now().year
+
+
+dictConfig( settings.LOGGING )
+log = logging.getLogger('access')
+
+
+
+class FinditResolver( object ):
+    """ Handles findit resolver calls. """
+
+    def __init__(self):
+        self.foo = 'bar'
+
+    def get_referrer( self, querydict ):
+        """
+        Get the referring site and append to links headed elsewhere.  Helpful for
+        tracking down ILL request sources.  This should really be in a separate
+        OpenURL parsing utility but was having trouble pulling it out given the
+        existing flow.  This ensures that it gets added to the OpenURL
+        that is generated from 360Link data.
+        """
+        ( sid, ea ) = ( None, 'easyAccess' )
+        sid = querydict.get( 'sid', None )
+        if not sid:  # then try rfr_id
+            sid = querydict.get( 'rfr_id', None )
+        if sid:
+            referrer = '%s-%s' % ( sid, ea )
+        else:
+            referrer = ea
+        log.debug( 'referrer, `%s`' % referrer )
+        return referrer
+
+    # end class FinditResolver
+
 
 class BulSerSol(Resolved):
     """

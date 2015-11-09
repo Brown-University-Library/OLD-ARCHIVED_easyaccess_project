@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 """
 Views for the resolver.
 """
@@ -19,15 +22,18 @@ import urllib2
 import re
 
 #installed packages
-from bul_link.baseconv import base62
-from bul_link.views import BulLinkBase, ResolveView
-from bul_link.models import Resource
+# from bul_link.baseconv import base62
+# from bul_link.views import BulLinkBase, ResolveView
+from bul_link.views import BulLinkBase
+# from bul_link.models import Resource
 from py360link2 import Link360Exception
 
 #local
 from models import Request, UserMessage
 import forms
-from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
+# from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
+from utils import BulSerSol, FinditResolver, Ourl
+from utils import get_cache_key, make_illiad_url
 from app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL,\
                          ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM,\
                          MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,\
@@ -48,6 +54,8 @@ EXTRAS_CACHE_TIMEOUT = 604800 #60*60*24*7
 #check for non-standard pubmed queries.
 PMID_QUERY = re.compile('^pmid\:(\d+)')
 
+fresolver = FinditResolver()
+
 
 #logging
 import logging
@@ -58,7 +66,7 @@ alog = logging.getLogger('access')
 
 
 def base_resolver( request ):
-    # return HttpResponse( 'foo' )
+    rfr = fresolver.get_referrer( request.GET ).lower()
     context = { 'login_link': 'foo' }
     return render( request, 'findit/index.html', context )
 

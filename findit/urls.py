@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 from django.conf import settings
 from django.views.generic import TemplateView
 # from django.conf.urls.defaults import *
 from django.conf.urls import include, patterns, url
 
-from views import Resolver, CitationFormView, RequestView,\
-                  UserView, MicrosoftView, JstorView, SummonView
+# from views import Resolver, CitationFormView, RequestView,\
+#                   UserView, MicrosoftView, JstorView, SummonView
+
+from views import CitationFormView, RequestView, UserView, MicrosoftView, JstorView, SummonView
 
 from app_settings import PERMALINK_PREFIX
 
@@ -22,7 +27,8 @@ urlpatterns = patterns('',
     url( r'^user/$',  UserView.as_view(), name='user-view' ),
 
     #Handle permalinks or OpenURL lookups
-    url( r'^get/%s(?P<tiny>.*)/$' % PERMALINK_PREFIX,  Resolver.as_view(), name='permalink-view' ),
+    # url( r'^get/%s(?P<tiny>.*)/$' % PERMALINK_PREFIX,  Resolver.as_view(), name='permalink-view' ),
+    url( r'^get/%s(?P<tiny>.*)/$' % PERMALINK_PREFIX,  'findit.views.base_resolver', name=u'permalink_url' ),
 
     url( r'^get/(?P<id_type>pmid|doi)/(?P<id_value>.*)/$',  SummonView.as_view(), name='summon-view' ),
 
