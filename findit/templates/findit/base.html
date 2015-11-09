@@ -22,7 +22,7 @@
 <script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
 <![endif]-->
 {% block extra_css %}{% endblock %}
-{% block javascripts %}{% endblock %} 
+{% block javascripts %}{% endblock %}
 
 </head>
 
@@ -34,7 +34,7 @@
 
 
     <div id="header">
-            
+
         <p class="top_header_links"><a href="http://library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp; <a href="http://library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a>
             &nbsp;&nbsp;&#124;&nbsp;&nbsp;
             {% if user and user.is_authenticated %}
@@ -43,21 +43,21 @@
 		           <a href="{{ logout_link }}">Logout</a>
             {% else %}
                  <a href="{{ login_link }}">Login</a>
-            {% endif %} 
+            {% endif %}
         </p>
-        
+
         <div class="BUhomelink">
             <a href="http://www.brown.edu"><img src="//library.brown.edu/images/spacer.gif" width="50" alt="Brown University Homepage" title="Brown University Homepage" /></a>
         </div>
-        
+
         <div class="BULhomelink">
-            <a href="http://library.brown.edu/"><img src="//library.brown.edu/images/spacer.gif" width="440" height="30" alt="Brown University Library Homepage" title="Brown University Library Homepage" /></a>        
+            <a href="http://library.brown.edu/"><img src="//library.brown.edu/images/spacer.gif" width="440" height="30" alt="Brown University Library Homepage" title="Brown University Library Homepage" /></a>
         </div>
-    
+
     </div> <!-- end #header -->
 
 
-    
+
     <div class="content-wrapper findit-core">
         <div class="large-content findit-core">
             <h3>
@@ -66,17 +66,17 @@
             {% block content %}
             {% endblock %}
         </div> <!-- end .two-thirds-module-left -->
-        
+
         <div class="small-content findit-core">
             {% block tool_list %}{% endblock %}
             {% block extra_content %}{% endblock %}
             {% comment %}
             For using the base url in Javascript
             {% endcomment %}
-            <span id="home-link" class="hidden">{% url 'findit:resolver-view' %}</span>
+            <span id="home-link" class="hidden">{# {% url 'findit:resolver-view' %} #}</span>
         </div> <!-- end .one-third-module-right-bottom -->
     </div>
-    
+
 
 
 
@@ -93,11 +93,11 @@
           <a href="http://www.facebook.com/pages/Brown-University-Library/278826488901"><img src="//library.brown.edu/img_2011/Facebook_icon.png" alt="Brown University Library Facebook"></a>
           <a href="http://twitter.com/brownlibrary"><img src="//library.brown.edu/img_2011/twitter_icon.png" alt="Brown University Library Twitter"></a>
         </div>
-    
+
         <p><a href="http://library.brown.edu/">Brown University Library</a> &nbsp;&#124;&nbsp; Providence,&nbsp;RI&nbsp;02912 &nbsp;&#124;&nbsp; (401)&nbsp;863-2165 &nbsp;&#124;&nbsp; <a href="http://library.brown.edu/about/stafflist.php">Contact</a> &nbsp;&#124;&nbsp; <a href="http://library.brown.edu/forms/comments.php">Comments</a> &nbsp;&#124;&nbsp; <a href="http://library.brown.edu/forms/feedback.php">Website&nbsp;Feedback</a> &nbsp;&#124;&nbsp; <a href="sitemap.php">Site&nbsp;Map</a></p>
-    
+
         <p><a href="http://library.brown.edu/intranet/">Library Staff Intranet</a></p>
-    
+
     </div> <!-- end #footer_contents -->
 
 </div> <!-- end #footer -->
@@ -106,7 +106,7 @@
 {% if debug_mode %}
     {# pass #}
 {% else %}
-<script type="text/javascript"> 
+<script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-3203647-3']);
   _gaq.push(['_trackPageview']);

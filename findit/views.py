@@ -4,7 +4,7 @@ Views for the resolver.
 #django stuff
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.core.urlresolvers import reverse, get_script_prefix
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -54,6 +54,16 @@ import logging
 dictConfig(settings.LOGGING)
 ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
+
+
+
+def base_resolver( request ):
+    # return HttpResponse( 'foo' )
+    context = { 'login_link': 'foo' }
+    return render( request, 'findit/index.html', context )
+
+
+
 
 def redirect_to_sersol(query):
     """
