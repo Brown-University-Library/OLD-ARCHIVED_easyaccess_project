@@ -228,7 +228,7 @@ FINDIT_DB_PUSH_BOTTOM = ['EBSCOhost', 'LexisNexis']
 
 FINDIT_GSCHOLAR = os.environ['EZACS__FINDIT_GSCHOLAR']
 
-FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldat', 'pubmed']  # list of referring sites to not consult Summon for.
+FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of referring sites to not consult Summon for.
 
 
 ## ============================================================================

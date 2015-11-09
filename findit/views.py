@@ -66,7 +66,14 @@ alog = logging.getLogger('access')
 
 
 def base_resolver( request ):
-    rfr = fresolver.get_referrer( request.GET ).lower()
+    """ Handles link resolution. """
+    alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING', 'no-query-string') )
+    referrer = fresolver.get_referrer( request.GET ).lower()
+    if fresolver.check_summon( referrer ):
+        if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING', None) ):
+            return HttpResponseRedirect( fresolver.enhanced_link )
+    # if fresolver.check_sersol():
+    #     return HttpResponseRedirect( fresolver.sersol_link )
     context = { 'login_link': 'foo' }
     return render( request, 'findit/index.html', context )
 

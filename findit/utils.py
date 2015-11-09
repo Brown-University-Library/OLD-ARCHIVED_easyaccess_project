@@ -5,7 +5,8 @@ from __future__ import unicode_literals
 import logging, urlparse
 from datetime import datetime
 
-from . import forms
+
+from . import forms, summon
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from .app_settings import PRINT_PROVIDER
 from .models import PrintTitle
@@ -26,16 +27,12 @@ class FinditResolver( object ):
     """ Handles findit resolver calls. """
 
     def __init__(self):
-        self.foo = 'bar'
+        self.enhanced_link = False
 
     def get_referrer( self, querydict ):
-        """
-        Get the referring site and append to links headed elsewhere.  Helpful for
-        tracking down ILL request sources.  This should really be in a separate
-        OpenURL parsing utility but was having trouble pulling it out given the
-        existing flow.  This ensures that it gets added to the OpenURL
-        that is generated from 360Link data.
-        """
+        """ Gets the referring site to append to links headed elsewhere.
+            Helpful for tracking down ILL request sources.
+            Called by views.base_resolver() """
         ( sid, ea ) = ( None, 'easyAccess' )
         sid = querydict.get( 'sid', None )
         if not sid:  # then try rfr_id
@@ -47,7 +44,29 @@ class FinditResolver( object ):
         log.debug( 'referrer, `%s`' % referrer )
         return referrer
 
-    # end class FinditResolver
+    def check_summon( self, referrer ):
+        """ Determines whether a summon check is needed.
+            Called by views.base_resolver() """
+        check_summon = True
+        for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
+            if referrer.find( provider ) > 0:
+                check_summon = False
+                break
+        log.debug( 'check_summon, `%s`' % check_summon )
+        return check_summon
+
+    def enhance_link( self, direct_indicator, query_string ):
+        """ Enhances link via summon lookup if necessary. """
+        enhanced = False
+        if direct_indicator is not 'false':  # ensure the GET request doesn't override this (bjd: don't fully understand this; i assume this val is set somewhere)
+            enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
+            log.debug( "enhanced_link, `%s`" % enhanced_link )
+            if enhanced_link:
+                self.enhanced_link = enhanced_link
+                enhanced = True
+        return enhanced
+
+    # end class FinditResolver   request.META.get('QUERY_STRING', None)
 
 
 class BulSerSol(Resolved):
