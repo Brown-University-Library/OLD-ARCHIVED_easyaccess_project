@@ -28,6 +28,7 @@ class FinditResolver( object ):
 
     def __init__(self):
         self.enhanced_link = False
+        self.sersol_link = False
 
     def get_referrer( self, querydict ):
         """ Gets the referring site to append to links headed elsewhere.
@@ -56,15 +57,28 @@ class FinditResolver( object ):
         return check_summon
 
     def enhance_link( self, direct_indicator, query_string ):
-        """ Enhances link via summon lookup if necessary. """
+        """ Enhances link via summon lookup if necessary.
+            Called by views.base_resolver() """
         enhanced = False
         if direct_indicator is not 'false':  # ensure the GET request doesn't override this (bjd: don't fully understand this; i assume this val is set somewhere)
             enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
-            log.debug( "enhanced_link, `%s`" % enhanced_link )
             if enhanced_link:
                 self.enhanced_link = enhanced_link
                 enhanced = True
+        log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
         return enhanced
+
+    def check_sersol( self, rqst_qdict, rqst_qstring ):
+        """ Handles journal requests; passes them on to 360link for now.
+            Called by views.base_resolver() """
+        sersol = False
+        if rqst_qdict.get( 'rft.genre', 'null' ) == 'journal':
+            if rqst_qdict.get( 'sid', 'null' ).startswith( 'FirstSearch' ):
+                issn = rqst_qdict.get( 'rft.issn' )
+                self.sersol_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, query)
+                sersol = True
+        log.debug( "sersol, `%s`; sersol_link, `%s`" % (sersol, self.sersol_link) )
+        return sersol
 
     # end class FinditResolver   request.META.get('QUERY_STRING', None)
 
