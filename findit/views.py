@@ -72,8 +72,8 @@ def base_resolver( request ):
     if fresolver.check_summon( referrer ):
         if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING', None) ):
             return HttpResponseRedirect( fresolver.enhanced_link )
-    if fresolver.check_sersol( request.GET, request.META.get('QUERY_STRING', None) ):
-        return HttpResponseRedirect( fresolver.sersol_link )
+    if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING', None) ):
+        return HttpResponseRedirect( fresolver.sersol_publication_link )
     context = { 'login_link': 'foo' }
     return render( request, 'findit/index.html', context )
 

@@ -28,7 +28,7 @@ class FinditResolver( object ):
 
     def __init__(self):
         self.enhanced_link = False
-        self.sersol_link = False
+        self.sersol_publication_link = False
 
     def get_referrer( self, querydict ):
         """ Gets the referring site to append to links headed elsewhere.
@@ -68,16 +68,16 @@ class FinditResolver( object ):
         log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
         return enhanced
 
-    def check_sersol( self, rqst_qdict, rqst_qstring ):
+    def check_sersol_publication( self, rqst_qdict, rqst_qstring ):
         """ Handles journal requests; passes them on to 360link for now.
             Called by views.base_resolver() """
         sersol = False
         if rqst_qdict.get( 'rft.genre', 'null' ) == 'journal':
             if rqst_qdict.get( 'sid', 'null' ).startswith( 'FirstSearch' ):
                 issn = rqst_qdict.get( 'rft.issn' )
-                self.sersol_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, query)
+                self.sersol_publication_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, query)
                 sersol = True
-        log.debug( "sersol, `%s`; sersol_link, `%s`" % (sersol, self.sersol_link) )
+        log.debug( "sersol, `%s`; sersol_publication_link, `%s`" % (sersol, self.sersol_publication_link) )
         return sersol
 
     # end class FinditResolver   request.META.get('QUERY_STRING', None)
