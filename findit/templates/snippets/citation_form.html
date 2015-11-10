@@ -1,4 +1,5 @@
-<form action="{% url findit:resolver-view %}" method="get">{% csrf_token %}
+{# <form action="{% url 'findit:resolver-view' %}" method="get">{% csrf_token %} #}
+<form action="{% url 'findit:base_resolver_url' %}" method="get">{% csrf_token %}
 	<fieldset>
     {% for field in this_form %}
         {% ifequal field.name "genre" %}
@@ -11,5 +12,5 @@
     {% endfor %}
     </fieldset>
     <div><input class="submit" type="submit" value="Submit" class="submit"/></div>
-	
+
 </form>

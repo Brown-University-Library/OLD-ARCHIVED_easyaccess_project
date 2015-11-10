@@ -10,18 +10,18 @@
     {% if linker_message %}
         {% if format == "journal" %}
             <p class="info">In order to deliver an article we need the article title,
-                journal title, date of publication, and the page in the journal 
+                journal title, date of publication, and the page in the journal
                 where the article starts.  An ISSN, DOI or Pubmed ID will speed
                 up delivery.</p>
         {% else %}{% if format == "book" %}
-            <p class="info">In order to request a book on your behalf, we need 
+            <p class="info">In order to request a book on your behalf, we need
                 the title and date of publication.  An OCLC number or ISBN will
                 speed up delivery.</p>
         {% else %}
             <p class="info">{{ linker_message }}</p>
         {% endif %}{% endif %}
     {% endif %}
-        
+
     <div id="form-select">
             <input type="radio" name="form" value="article">Article
             <input type="radio" name="form" value="book">Book
@@ -30,7 +30,7 @@
             <input type="radio" name="form" value="patent">Patent
             {% endcomment %}
     </div>
-    
+
     	<div id="article-form" class="hidden">
     		{% citation_form article_form %}
     	</div>
@@ -45,7 +45,7 @@
     		{% citation_form patent_form %}
     	</div>
     	{% endcomment %}
-    
+
     </div> <!-- end linker -->
 
 
@@ -59,14 +59,14 @@
 </ul>
 </div>
 
-{% if debug_mode %}            
+{% if debug_mode %}
 <div class="toolbox">
     <h3>Debug <span style="font-size: 9px; font-weight: normal;">(this won't appear on live server)</span></h3>
     <hr/>
     <ul class="tools">
-        <li><a href="{% url findit:resolver-view %}">Easy Article home</a></li>
+        <li><a href="{% url 'findit:resolver-view' %}">Easy Article home</a></li>
         <li class="hidden"><span id="debug" class="hidden">true</span></li>
-        <li><a href="{% url findit:resolver-view %}?{{ openurl }}">Full OpenUrl</a></li>
+        <li><a href="{% url 'findit:resolver-view' %}?{{ openurl }}">Full OpenUrl</a></li>
     </ul>
 </div>
 {% endif %}
@@ -78,10 +78,10 @@
 		var format = "{{ form_type }}";
 		//check the appropriate form radio at page load.
 		$('input:radio[name=form]').filter('[value="' + format + '"]"').attr('checked', true);
-		// show the proper form.  all are hidden on page load.  
+		// show the proper form.  all are hidden on page load.
 		var selected = '#' + format + '-form';
 		$(selected).show();
-		//listen for updates and show the proper form.  
+		//listen for updates and show the proper form.
 	    $('input[type="radio"]').live("click", function() {
 	        $(selected).hide();
             var newf = '#' + $(this).val() + '-form';
@@ -89,8 +89,8 @@
             selected = newf;
             return;
         });
-        
-        
+
+
     });
 </script>
 

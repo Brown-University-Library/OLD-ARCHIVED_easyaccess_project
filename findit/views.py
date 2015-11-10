@@ -24,8 +24,8 @@ from django.core.cache import cache
 
 #installed packages
 # from bul_link.baseconv import base62
-# from bul_link.views import BulLinkBase, ResolveView
-from bul_link.views import BulLinkBase
+from bul_link.views import BulLinkBase, ResolveView
+# from bul_link.views import BulLinkBase
 # from bul_link.models import Resource
 from py360link2 import Link360Exception
 
