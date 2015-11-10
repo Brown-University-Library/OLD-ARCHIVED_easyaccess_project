@@ -4,6 +4,12 @@ from __future__ import unicode_literals
 """
 Views for the resolver.
 """
+
+#stdlib
+import json
+import urllib2
+import re
+
 #django stuff
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
@@ -16,11 +22,6 @@ from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
 
-#stdlib
-import json
-import urllib2
-import re
-
 #installed packages
 # from bul_link.baseconv import base62
 # from bul_link.views import BulLinkBase, ResolveView
@@ -29,17 +30,16 @@ from bul_link.views import BulLinkBase
 from py360link2 import Link360Exception
 
 #local
-from models import Request, UserMessage
-import forms
+from .classes.baseconv import base62
+from .models import Request, UserMessage
+from . import forms, summon
 # from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
-from utils import BulSerSol, FinditResolver, Ourl
-from utils import get_cache_key, make_illiad_url
-from app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL,\
+from .utils import BulSerSol, FinditResolver, Ourl
+from .utils import get_cache_key, make_illiad_url
+from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL,\
                          ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM,\
                          MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,\
                          SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
-
-import summon
 
 try:
     from easy_article.delivery.decorators import has_email, has_service
