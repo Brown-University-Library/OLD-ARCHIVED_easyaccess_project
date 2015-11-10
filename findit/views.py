@@ -7,20 +7,20 @@ Views for the resolver.
 
 #stdlib
 import json
-import urllib2
 import re
+import urllib2
 
 #django stuff
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse, get_script_prefix
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-from django.core.urlresolvers import reverse, get_script_prefix
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.utils.log import dictConfig
-from django.core.mail import send_mail
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.cache import cache
 
 #installed packages
 # from bul_link.baseconv import base62
@@ -30,11 +30,11 @@ from bul_link.views import BulLinkBase
 from py360link2 import Link360Exception
 
 #local
+from . import forms, summon
 from .classes.baseconv import base62
 from .models import Request, UserMessage
-from . import forms, summon
-# from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
 from .utils import BulSerSol, FinditResolver, Ourl
+# from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
 from .utils import get_cache_key, make_illiad_url
 from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL,\
                          ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM,\
@@ -65,6 +65,7 @@ alog = logging.getLogger('access')
 
 
 
+
 def base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING', 'no-query-string') )
@@ -74,7 +75,8 @@ def base_resolver( request ):
             return HttpResponseRedirect( fresolver.enhanced_link )
     if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING', None) ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
-    context = { 'login_link': 'foo' }
+    context = {
+        'login_link': 'foo', 'SS_KEY': settings.BUL_LINK_SERSOL_KEY }
     return render( request, 'findit/index.html', context )
 
 
