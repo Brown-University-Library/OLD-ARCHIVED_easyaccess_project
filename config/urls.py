@@ -11,6 +11,9 @@ urlpatterns = [
     url( r'^user/', include('shibboleth.urls', namespace='shibboleth') ),
     url( r'^borrow/', include('delivery.urls', namespace='delivery') ),
     url( r'^find/', include('findit.urls', namespace='findit') ),
+
+    url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),
+
     url( r'^$',  RedirectView.as_view(url='find/') ),
     ]
 

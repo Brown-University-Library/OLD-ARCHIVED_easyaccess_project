@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import logging, urlparse
+import logging, re, urlparse
 from datetime import datetime
 
 
@@ -71,14 +71,31 @@ class FinditResolver( object ):
     def check_sersol_publication( self, rqst_qdict, rqst_qstring ):
         """ Handles journal requests; passes them on to 360link for now.
             Called by views.base_resolver() """
-        sersol = False
+        sersol_journal = False
         if rqst_qdict.get( 'rft.genre', 'null' ) == 'journal':
             if rqst_qdict.get( 'sid', 'null' ).startswith( 'FirstSearch' ):
-                issn = rqst_qdict.get( 'rft.issn' )
-                self.sersol_publication_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, query)
-                sersol = True
-        log.debug( "sersol, `%s`; sersol_publication_link, `%s`" % (sersol, self.sersol_publication_link) )
-        return sersol
+                issn = rqst_qdict.get( 'rft.issn' )  # TODO: remove this or return it if necessary
+                self.sersol_publication_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, rqst_qstring)
+                sersol_journal = True
+        log.debug( "sersol_journal, `%s`; sersol_publication_link, `%s`" % (sersol_journal, self.sersol_publication_link) )
+        return sersol_journal
+
+    def update_querystring( self, querystring  ):
+        """ Updates querystring if necessary to catch non-standard pubmed queries.
+            Called by views.base_resolver() """
+        PMID_QUERY = re.compile('^pmid\:(\d+)')
+        pmid_match = re.match( PMID_QUERY, querystring )
+        if pmid_match:
+            log.debug( 'non-standard pmid found' )
+            pmid = pmid_match.group(1)
+            updated_querystring = 'pmid=%s' % pmid
+        else:
+            log.debug( 'non-standard pmid not found' )
+            updated_querystring = querystring
+        return updated_querystring
+
+    def get_sersol_dct( self, querystring ):
+        return 'foo'
 
     # end class FinditResolver   request.META.get('QUERY_STRING', None)
 
@@ -543,6 +560,7 @@ class Ourl(object):
             idt = chunked[0]
             val = ''.join(chunked[1:])
             self.cite[idt] = val
+        log.debug( 'self.cite after pull_id(), `%s`' % self.cite )
 
     def format(self):
         f = self.qdict.get('rft_val_fmt', [':'])[0].split(':')[-1]
@@ -566,6 +584,7 @@ class Ourl(object):
             else:
                 k = k.replace('rft.', '')
                 self.cite[k] = v[0]
+        log.debug( 'self.cite after prest(), `%s`' % self.cite )
 
     def pull_oclc(self):
         import re
@@ -577,6 +596,10 @@ class Ourl(object):
             if match:
                 oclc = match.group()
         self.cite['oclc'] = oclc
+        log.debug( 'self.cite after pull_oclc(), `%s`' % self.cite )
+
+    # end class Ourl()
+
 
 #===============================================================================
 # Utility for making cache keys for the extra utilities.

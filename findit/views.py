@@ -27,7 +27,8 @@ from django.utils.log import dictConfig
 # from bul_link.views import BulLinkBase, ResolveView
 from bul_link.views import BulLinkBase
 # from bul_link.models import Resource
-from py360link2 import Link360Exception
+# from py360link2 import Link360Exception
+from py360link2 import get_sersol_data, Link360Exception, Resolved
 
 #local
 from . import forms, summon
@@ -65,19 +66,49 @@ alog = logging.getLogger('access')
 
 
 
+def tiny_resolver( request, tiny ):
+    return HttpResponse( 'tiny url perceived' )
+
+
 
 def base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING', 'no-query-string') )
+
+    ## if summon returns an enhanced link, go to it
     referrer = fresolver.get_referrer( request.GET ).lower()
     if fresolver.check_summon( referrer ):
         if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING', None) ):
             return HttpResponseRedirect( fresolver.enhanced_link )
+
+    ## if journal, redirect to 360link for now
     if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING', None) ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
+
+    ## parse the openurl -- TODO: remove this if it's not used
+    o = Ourl( request.META.get('QUERY_STRING', 'no-query-string') )
+    o.make_cite()
+    ourl_cite = o.cite
+
+    ## get primary-key link if available -- no need; I'll handle that in a different url
+
+    ## update querystring if necessary to catch non-standard pubmed ids
+    querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )
+
+    ## get serials-solution data-dct
+    sersol = fresolver.get_sersol_dct( querystring )
+
+
+
+
+
+    ## return default index page
+    alog.debug( 'about to render index.html' )
     context = {
         'login_link': 'foo', 'SS_KEY': settings.BUL_LINK_SERSOL_KEY }
     return render( request, 'findit/index.html', context )
+
+    # return super(Resolver, self).get(request)
 
 
 

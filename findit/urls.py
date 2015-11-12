@@ -28,7 +28,7 @@ urlpatterns = patterns('',
 
     #Handle permalinks or OpenURL lookups
     # url( r'^get/%s(?P<tiny>.*)/$' % PERMALINK_PREFIX,  Resolver.as_view(), name='permalink-view' ),
-    url( r'^get/%s(?P<tiny>.*)/$' % PERMALINK_PREFIX,  'findit.views.base_resolver', name=u'permalink_url' ),
+    url( r'^get/%s(?P<tiny>.*)/$' % PERMALINK_PREFIX,  'findit.views.tiny_resolver', name=u'permalink_url' ),
 
     url( r'^get/(?P<id_type>pmid|doi)/(?P<id_value>.*)/$',  SummonView.as_view(), name='summon-view' ),
 
