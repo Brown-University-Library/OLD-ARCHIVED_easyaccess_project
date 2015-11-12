@@ -49,7 +49,7 @@ class JSONResponseMixin(object):
         # Note: this needs to be better to ensure that you are seralizing what
         # is needed as JSON.  For now just popping known problems.
         #Also see - https://docs.djangoproject.com/en/dev/topics/serialization/
-        remove = ['user', 'resource', 'profile']
+        remove = ['user', 'resource', 'profile', 'view']
         for rem in remove:
             try:
                 del context[rem]
