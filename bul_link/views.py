@@ -71,10 +71,10 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         context['direct_link'] = None
         alog.debug( 'bul_link- context, ```%s```' % pprint.pformat(context) )
         # alog.debug( 'dir(context["view"]), ```%s```' % pprint.pformat(dir(context["view"])) )
-        alog.debug( 'bul_link- context["view"].__dict__, ```%s```' % pprint.pformat(context["view"].__dict__) )
-        alog.debug( 'bul_link- context["view"].request, ```%s```' % pprint.pformat(context["view"].request) )
+        # alog.debug( 'bul_link- context["view"].__dict__, ```%s```' % pprint.pformat(context["view"].__dict__) )
+        # alog.debug( 'bul_link- context["view"].request, ```%s```' % pprint.pformat(context["view"].request) )
         # alog.debug( 'context["view"].request.__dict__, ```%s```' % pprint.pformat(context["view"].request.__dict__) )
-        alog.debug( 'bul_link- context["view"].request.user.__dict__, ```%s```' % pprint.pformat(context["view"].request.user.__dict__) )
+        # alog.debug( 'bul_link- context["view"].request.user.__dict__, ```%s```' % pprint.pformat(context["view"].request.user.__dict__) )
         alog.debug( 'bul_link- context["view"].request.user.username, ```%s```' % pprint.pformat(context["view"].request.user.username) )
         try:
             alog.debug( 'bul_link- context["view"].request.user.libraryprofile, ```%s```' % pprint.pformat(context["view"].request.user.libraryprofile) )
@@ -115,20 +115,27 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         alog.debug( 'starting bul_link.views.BulLinkBase.get_data()' )
         #See if this view has created a resource already.
         try:
+            alog.debug( 'trying self.resource.query' )
             query = self.resource.query
         except:
+            alog.debug( 'exception on self.resource.query' )
             #If no query is passed in, use the self.scrubbed_query property
             if query is None:
+                alog.debug( 'gonna self.scrub_query()' )
                 query = self.scrub_query()
             #Get or make resource
+            alog.debug( 'gonna make_resource(query)' )
             resource = self.make_resource(query)
             self.resource = resource
 
         cache_key = "resolved-%s" % self.resource.id
         data = cache.get(cache_key, None)
+        alog.debug( 'got data' )
         if not data:
+            alog.debug( 'gonna get_sersol_data() ' )
             data = get_sersol_data(query, key=SERSOL_KEY, timeout=SERSOL_TIMEOUT)
             cache.set(cache_key, data, cache_timeout)
+        alog.debug( 'gonna return data' )
         return data
 
     def make_resource(self, scrubbed_query):
@@ -149,6 +156,7 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
 
     def render_to_response(self, context):
         alog.debug( 'starting bul_link.views.BulLinkBase.render_to_response()' )
+        alog.debug( 'render_to_response() context, ```%s```' % pprint.pformat(context) )
         # Look for a 'output=json' GET argument
         if (self.request.GET.get('output','html') == 'json')\
             or (self.default_json):

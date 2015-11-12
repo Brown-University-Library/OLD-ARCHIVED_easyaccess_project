@@ -6,9 +6,7 @@ Views for the resolver.
 """
 
 #stdlib
-import json
-import re
-import urllib2
+import json, pprint, re, urllib2
 
 #django stuff
 from django.conf import settings
@@ -96,17 +94,24 @@ def base_resolver( request ):
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )
 
     ## get serials-solution data-dct
-    sersol = fresolver.get_sersol_dct( querystring )
+    sersol_dct = fresolver.get_sersol_dct( querystring )
 
 
-
+    context = fresolver.make_context( sersol_dct )
 
 
     ## return default index page
     alog.debug( 'about to render index.html' )
     context = {
         'login_link': 'foo', 'SS_KEY': settings.BUL_LINK_SERSOL_KEY }
-    return render( request, 'findit/index.html', context )
+
+    alog.debug( 'sersol-a, ```%s```' % pprint.pformat(sersol_dct) )
+    alog.debug( 'context-a, ```%s```' % pprint.pformat(context) )
+    context.update( sersol_dct )
+    alog.debug( 'sersol-b, ```%s```' % pprint.pformat(sersol_dct) )
+    alog.debug( 'context-b, ```%s```' % pprint.pformat(context) )
+
+    return render( request, 'findit/resolve.html', context )
 
     # return super(Resolver, self).get(request)
 

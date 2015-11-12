@@ -30,7 +30,7 @@
 	            <div id="request-message" class="notice">
 	                <h3>This article couldn't be located in the library's collections.</h3>
 	                <ul>
-                    <li class="request-link"><a href="{% url 'findit:request-view' resource=resource.id %}">Request from another library</a></li>
+                    <li class="request-link"><a href="{# some link will go here {% url 'findit:request-view' resource=resource.id %} #}">Request from another library</a></li>
                     {% if gscholar %}
                     <li><a href="{{ gscholar }}">Search Google Scholar</a></li>
                     {% endif %}

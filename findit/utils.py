@@ -2,10 +2,10 @@
 
 from __future__ import unicode_literals
 
-import logging, re, urlparse
+import logging, pprint, re, urlparse
 from datetime import datetime
 
-
+import requests
 from . import forms, summon
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from .app_settings import PRINT_PROVIDER
@@ -95,7 +95,78 @@ class FinditResolver( object ):
         return updated_querystring
 
     def get_sersol_dct( self, querystring ):
+        url = 'http://127.0.0.1/easyaccess_new/bul_link/?%s%s' % ( querystring, '&output=json' )
+        log.debug( 'serson_dct url, `%s`' % url )
+        r = requests.get( url )
+        dct = r.json()
+        log.debug( 'dct, ```%s```' % pprint.pformat(dct) )
+        return dct
+
+
+    def make_context( self, sersol_dct ):
         return 'foo'
+        # def get_context_data(self, **kwargs):
+        #     """
+        #     Prep the template view.
+        #     """
+        #     context = super(Resolver, self).get_context_data(**kwargs)
+        #     #This is the home page
+        #     if self.resolved == None:
+        #         return context
+        #     #Always using the first citation and linkGroups returned.  It's not
+        #     #clear when multiple citations would be useful.
+        #     citation = self.resolved.citation
+        #     context['link_groups'] = self.resolved.link_groups
+        #     context['resource'] = self.resource
+        #     context['format'] = self.resolved.format
+        #     context['direct_link'] = self.resolved.access_points()['direct_link']
+        #     #if citation.get('title', '') == '':
+        #     #    citation['title'] = "
+        #     context['citation'] = citation
+        #     #add the access points
+        #     context.update(self.resolved.access_points())
+        #     openurl = self.resolved.openurl
+        #     context['openurl'] = openurl
+        #     context['coin'] = openurl.replace('url_ver', 'ctx_ver')
+        #     ourl_referrer = self.get_referrer()
+        #     illiad_params =  make_illiad_url(context['openurl'])
+        #     illiad_base = 'https://illiad.brown.edu/illiad/illiad.dll/OpenURL'
+        #     context['illiad_url'] = '%s?%s&sid=%s' % (illiad_base, illiad_params, ourl_referrer)
+        #     context['permalink'] = self.get_permalink()
+        #     #Add the permanent link and IP to the problem report url.
+        #     # print 'PROBLEM_URL, `%s`' % PROBLEM_URL
+        #     problem_url = PROBLEM_URL % (self.get_base_url().rstrip('/') + context['permalink'],
+        #                                 self.request.META.get('REMOTE_ADDR', 'unknown'))
+        #     # print 'problem_url, `%s`' % problem_url
+        #     context['problem_link'] = problem_url
+        #     context['is_permalink'] = self.is_permalink
+        #     context['login_url'] = settings.LOGIN_URL
+        #     #Google Scholar search link
+        #     gscholar_base = getattr(settings, 'FINDIT_GSCHOLAR')
+        #     if gscholar_base:
+        #         #Get meta to put into gscholar search
+        #         if (citation.get('title')) and (citation.get('creatorLast')):
+        #             context['gscholar'] = gscholar_base % (citation)
+        #     #For displaying request links
+        #     if self.request.user.is_authenticated():
+        #         #This should only trigger an exception on the development server.
+        #         try:
+        #             profile = self.request.user.libraryprofile
+        #             context['profile'] = profile
+        #             #Can request print - medical or faculty
+        #             context['can_request_print'] = profile.can_request_print()
+        #         except ObjectDoesNotExist:
+        #             context['profile'] = None
+        #     else:
+        #         context['profile'] = None
+        #         #prompt for login if we have print materials and the user is not authenticated.
+        #         if len(context['print']) > 0:
+        #             context['prompt_login'] = True
+
+        #     context['login_link'] = 'foo'
+
+        #     return context
+
 
     # end class FinditResolver   request.META.get('QUERY_STRING', None)
 
