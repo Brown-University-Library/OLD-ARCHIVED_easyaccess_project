@@ -11,6 +11,7 @@ from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from .app_settings import PRINT_PROVIDER
 from .models import PrintTitle
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.log import dictConfig
 from py360link2 import Resolved
 
@@ -94,9 +95,12 @@ class FinditResolver( object ):
             updated_querystring = querystring
         return updated_querystring
 
-    def get_sersol_dct( self, querystring ):
-        url = 'http://127.0.0.1/easyaccess_new/bul_link/?%s%s' % ( querystring, '&output=json' )
-        log.debug( 'serson_dct url, `%s`' % url )
+    def get_sersol_dct( self, scheme, host, querystring ):
+        """ Builds initial data-dict by using bul_link as api.
+            Called by views.base_resolver() """
+        url = '%s://%s/%s?%s%s' % (
+            scheme, host, reverse('bul_link:resolve_view'), querystring, '&output=json' )
+        log.debug( 'sersol_dct url, `%s`' % url )
         r = requests.get( url )
         dct = r.json()
         log.debug( 'dct, ```%s```' % pprint.pformat(dct) )

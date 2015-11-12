@@ -94,7 +94,7 @@ def base_resolver( request ):
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )
 
     ## get serials-solution data-dct
-    sersol_dct = fresolver.get_sersol_dct( querystring )
+    sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
 
     context = fresolver.make_context( sersol_dct )
