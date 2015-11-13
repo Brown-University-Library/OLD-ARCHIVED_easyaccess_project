@@ -13,7 +13,7 @@ from .models import PrintTitle
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.log import dictConfig
-from py360link2 import Resolved
+from py360link2 import get_sersol_data, Resolved
 
 
 CURRENT_YEAR = datetime.now().year
@@ -96,19 +96,21 @@ class FinditResolver( object ):
         return updated_querystring
 
     def get_sersol_dct( self, scheme, host, querystring ):
-        """ Builds initial data-dict by using bul_link as api.
+        """ Builds initial data-dict.
             Called by views.base_resolver() """
-        url = '%s://%s/%s?%s%s' % (
-            scheme, host, reverse('bul_link:resolve_view'), querystring, '&output=json' )
-        log.debug( 'sersol_dct url, `%s`' % url )
-        r = requests.get( url )
-        dct = r.json()
-        log.debug( 'dct, ```%s```' % pprint.pformat(dct) )
-        return dct
-
+        sersol_dct = get_sersol_data(querystring, key='rl3tp7zf5x')
+        log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
+        return sersol_dct
 
     def make_context( self, sersol_dct ):
-        return 'foo'
+        resolved_obj = BulSerSol( sersol_dct )
+        log.debug( 'resolved_obj, ```%s```' % pprint.pformat(resolved_obj) )
+        extracted_dct = resolved_obj.access_points()
+        extracted_dct['citation'] = resolved_obj.citation
+        extracted_dct['login_link'] = 'foo'
+        extracted_dct['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
+        log.debug( 'extracted_dct, ```%s```' % pprint.pformat(extracted_dct) )
+        return extracted_dct
         # def get_context_data(self, **kwargs):
         #     """
         #     Prep the template view.

@@ -1,20 +1,35 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
+import logging, pprint
 from django import template
+from django.conf import settings
+from django.utils.log import dictConfig
 from django.utils.translation import ugettext as _
+
+dictConfig( settings.LOGGING )
+log = logging.getLogger('access')
+
 register = template.Library()
 
-        
+
 def citation_form(context, this_form):
     return {'this_form': this_form}
-register.inclusion_tag('snippets/citation_form.html', 
+register.inclusion_tag('snippets/citation_form.html',
         takes_context=True)(citation_form)
-        
-        
+
+
 def citation_display(context, citation, format, direct_link):
     """
     Make a template tag for display citations on the various pages.
     """
+    log.debug( 'citation_display context, ```%s```' % pprint.pformat(context) )
+    log.debug( 'citation_display citation, ```%s```' % citation )
+    log.debug( 'citation_display format, ```%s```' % format )
+
     #Clean up print citations.
-    #Take the first ISSN we can find,  
+    #Take the first ISSN we can find,
     try:
         issn = citation.get('issn', {}).values()[0]
     except (IndexError, AttributeError):
@@ -27,15 +42,15 @@ def citation_display(context, citation, format, direct_link):
     return {'citation': citation,
             'format': format,
             'direct_link': direct_link}
-register.inclusion_tag('snippets/citation_display.html', 
+register.inclusion_tag('snippets/citation_display.html',
         takes_context=True)(citation_display)
 
 def request_link(context):
     return context
-register.inclusion_tag('snippets/request_link.html', 
+register.inclusion_tag('snippets/request_link.html',
         takes_context=True)(request_link)
 
-    
+
 
 def raw(parser, token):
     """
@@ -65,4 +80,4 @@ def raw(parser, token):
     parser.unclosed_block_tag(parse_until)
 raw = register.tag(raw)
 
-        
+

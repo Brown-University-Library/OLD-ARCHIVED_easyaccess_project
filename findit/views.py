@@ -95,22 +95,12 @@ def base_resolver( request ):
 
     ## get serials-solution data-dct
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
-
-
     context = fresolver.make_context( sersol_dct )
 
 
     ## return default index page
     alog.debug( 'about to render index.html' )
-    context = {
-        'login_link': 'foo', 'SS_KEY': settings.BUL_LINK_SERSOL_KEY }
-
-    alog.debug( 'sersol-a, ```%s```' % pprint.pformat(sersol_dct) )
-    alog.debug( 'context-a, ```%s```' % pprint.pformat(context) )
-    context.update( sersol_dct )
-    alog.debug( 'sersol-b, ```%s```' % pprint.pformat(sersol_dct) )
-    alog.debug( 'context-b, ```%s```' % pprint.pformat(context) )
-
+    alog.debug( 'context, ```%s```' % pprint.pformat(context) )
     return render( request, 'findit/resolve.html', context )
 
     # return super(Resolver, self).get(request)
