@@ -89,9 +89,9 @@ def base_resolver( request ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
     ## parse the openurl -- TODO: remove this if it's not used
-    o = Ourl( request.META.get('QUERY_STRING', 'no-query-string') )
-    o.make_cite()
-    ourl_cite = o.cite
+    # o = Ourl( request.META.get('QUERY_STRING', 'no-query-string') )
+    # o.make_cite()
+    # ourl_cite = o.cite
 
     ## get primary-key link if available -- no need; I'll handle that in a different url
 
