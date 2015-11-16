@@ -80,10 +80,6 @@ def base_resolver( request ):
         return render( request, 'findit/index.html', context )
 
     ## if summon returns an enhanced link, go to it
-    # referrer = fresolver.get_referrer( request.GET ).lower()
-    # if fresolver.check_summon( referrer ):
-    #     if fresolver.enhance_link( request.GET.get('direct', None), qstring ):
-    #         return HttpResponseRedirect( fresolver.enhanced_link )
     if fresolver.check_summon( request.GET ):
         if fresolver.enhance_link( request.GET.get('direct', None), qstring ):
             return HttpResponseRedirect( fresolver.enhanced_link )
@@ -111,9 +107,7 @@ def base_resolver( request ):
     alog.debug( 'context, ```%s```' % pprint.pformat(context) )
     return render( request, 'findit/resolve.html', context )
 
-    # return super(Resolver, self).get(request)
-
-    # end def base_resolver()
+    ## end def base_resolver()
 
 
 

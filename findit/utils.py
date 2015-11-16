@@ -31,10 +31,22 @@ class FinditResolver( object ):
         self.enhanced_link = False
         self.sersol_publication_link = False
 
-    def get_referrer( self, querydict ):
+    def check_summon( self, querydict ):
+        """ Determines whether a summon check is needed.
+            Called by views.base_resolver() """
+        referrer = self._get_referrer( querydict ).lower()
+        check_summon = True
+        for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
+            if referrer.find( provider ) > 0:
+                check_summon = False
+                break
+        log.debug( 'check_summon, `%s`' % check_summon )
+        return check_summon
+
+    def _get_referrer( self, querydict ):
         """ Gets the referring site to append to links headed elsewhere.
             Helpful for tracking down ILL request sources.
-            Called by views.base_resolver() """
+            Called by check_summon() """
         ( sid, ea ) = ( None, 'easyAccess' )
         sid = querydict.get( 'sid', None )
         if not sid:  # then try rfr_id
@@ -45,29 +57,6 @@ class FinditResolver( object ):
             referrer = ea
         log.debug( 'referrer, `%s`' % referrer )
         return referrer
-
-    # def check_summon( self, referrer ):
-    #     """ Determines whether a summon check is needed.
-    #         Called by views.base_resolver() """
-    #     check_summon = True
-    #     for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
-    #         if referrer.find( provider ) > 0:
-    #             check_summon = False
-    #             break
-    #     log.debug( 'check_summon, `%s`' % check_summon )
-    #     return check_summon
-
-    def check_summon( self, querydict ):
-        """ Determines whether a summon check is needed.
-            Called by views.base_resolver() """
-        referrer = self.get_referrer( querydict ).lower()
-        check_summon = True
-        for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
-            if referrer.find( provider ) > 0:
-                check_summon = False
-                break
-        log.debug( 'check_summon, `%s`' % check_summon )
-        return check_summon
 
     def enhance_link( self, direct_indicator, query_string ):
         """ Enhances link via summon lookup if necessary.
@@ -113,20 +102,6 @@ class FinditResolver( object ):
         sersol_dct = get_sersol_data(querystring, key='rl3tp7zf5x')
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
-
-    # def make_context( self, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.base_resolver() """
-    #     resolved_obj = BulSerSol( sersol_dct )
-    #     log.debug( 'resolved_obj, ```%s```' % pprint.pformat(resolved_obj) )
-    #     if resolved_obj == None:
-    #         return sersol_dct
-    #     context = resolved_obj.access_points()
-    #     context['citation'] = resolved_obj.citation
-    #     context['login_link'] = 'foo'
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
 
     def make_context( self, sersol_dct ):
         """ Preps the template view.
@@ -205,8 +180,7 @@ class FinditResolver( object ):
 
         #     return context
 
-
-    # end class FinditResolver   request.META.get('QUERY_STRING', None)
+    ## end class FinditResolver
 
 
 class BulSerSol(Resolved):
