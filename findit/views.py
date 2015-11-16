@@ -71,7 +71,13 @@ def tiny_resolver( request, tiny ):
 
 def base_resolver( request ):
     """ Handles link resolution. """
-    alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING', 'no-query-string') )
+    qstring = request.META.get('QUERY_STRING')
+    alog.debug( 'starting; query_string, `%s`' % qstring )
+
+    ## check index
+    if qstring == '':
+        context = {}
+        return render( request, 'findit/index.html', context )
 
     ## if summon returns an enhanced link, go to it
     referrer = fresolver.get_referrer( request.GET ).lower()

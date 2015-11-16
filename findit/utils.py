@@ -102,15 +102,35 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 
+    # def make_context( self, sersol_dct ):
+    #     """ Preps the template view.
+    #         Called by views.base_resolver() """
+    #     resolved_obj = BulSerSol( sersol_dct )
+    #     log.debug( 'resolved_obj, ```%s```' % pprint.pformat(resolved_obj) )
+    #     if resolved_obj == None:
+    #         return sersol_dct
+    #     context = resolved_obj.access_points()
+    #     context['citation'] = resolved_obj.citation
+    #     context['login_link'] = 'foo'
+    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
+    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
+    #     return context
+
     def make_context( self, sersol_dct ):
-        resolved_obj = BulSerSol( sersol_dct )
-        log.debug( 'resolved_obj, ```%s```' % pprint.pformat(resolved_obj) )
-        extracted_dct = resolved_obj.access_points()
-        extracted_dct['citation'] = resolved_obj.citation
-        extracted_dct['login_link'] = 'foo'
-        extracted_dct['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-        log.debug( 'extracted_dct, ```%s```' % pprint.pformat(extracted_dct) )
-        return extracted_dct
+        """ Preps the template view.
+            Called by views.base_resolver() """
+        context = { 'citation': {} }
+        try:
+            resolved_obj = BulSerSol( sersol_dct )
+            context = resolved_obj.access_points()
+            context['citation'] = resolved_obj.citation
+        except Exception as e:
+            log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
+        context['login_link'] = 'foo'
+        context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
+        log.debug( 'context, ```%s```' % pprint.pformat(context) )
+        return context
+
         # def get_context_data(self, **kwargs):
         #     """
         #     Prep the template view.
