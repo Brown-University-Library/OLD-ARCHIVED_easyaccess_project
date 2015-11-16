@@ -46,9 +46,21 @@ class FinditResolver( object ):
         log.debug( 'referrer, `%s`' % referrer )
         return referrer
 
-    def check_summon( self, referrer ):
+    # def check_summon( self, referrer ):
+    #     """ Determines whether a summon check is needed.
+    #         Called by views.base_resolver() """
+    #     check_summon = True
+    #     for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
+    #         if referrer.find( provider ) > 0:
+    #             check_summon = False
+    #             break
+    #     log.debug( 'check_summon, `%s`' % check_summon )
+    #     return check_summon
+
+    def check_summon( self, querydict ):
         """ Determines whether a summon check is needed.
             Called by views.base_resolver() """
+        referrer = self.get_referrer( querydict ).lower()
         check_summon = True
         for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
             if referrer.find( provider ) > 0:

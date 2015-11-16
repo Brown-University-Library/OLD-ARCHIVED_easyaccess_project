@@ -80,9 +80,12 @@ def base_resolver( request ):
         return render( request, 'findit/index.html', context )
 
     ## if summon returns an enhanced link, go to it
-    referrer = fresolver.get_referrer( request.GET ).lower()
-    if fresolver.check_summon( referrer ):
-        if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING', None) ):
+    # referrer = fresolver.get_referrer( request.GET ).lower()
+    # if fresolver.check_summon( referrer ):
+    #     if fresolver.enhance_link( request.GET.get('direct', None), qstring ):
+    #         return HttpResponseRedirect( fresolver.enhanced_link )
+    if fresolver.check_summon( request.GET ):
+        if fresolver.enhance_link( request.GET.get('direct', None), qstring ):
             return HttpResponseRedirect( fresolver.enhanced_link )
 
     ## if journal, redirect to 360link for now
@@ -103,13 +106,14 @@ def base_resolver( request ):
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
     context = fresolver.make_context( sersol_dct )
 
-
     ## return default index page
     alog.debug( 'about to render index.html' )
     alog.debug( 'context, ```%s```' % pprint.pformat(context) )
     return render( request, 'findit/resolve.html', context )
 
     # return super(Resolver, self).get(request)
+
+    # end def base_resolver()
 
 
 
