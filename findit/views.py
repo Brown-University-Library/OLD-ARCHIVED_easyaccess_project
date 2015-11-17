@@ -76,7 +76,7 @@ def base_resolver( request ):
 
     ## check index
     if qstring == '':
-        context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY }
+        context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
         return render( request, 'findit/index.html', context )
 
     ## if summon returns an enhanced link, go to it

@@ -10,7 +10,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
 
-<title>easyArticle - Brown University Library</title>
+<title>{{ easyWhat }} - Brown University Library</title>
 
 <link href="//library.brown.edu/css_2011/BUL2011.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" type="text/css"/>
@@ -60,9 +60,8 @@
 
     <div class="content-wrapper findit-core">
         <div class="large-content findit-core">
-            <h3>
-                easyArticle {% if debug_mode %} <span style="font-size: small;">-- debug mode</span>{% endif %}
-            </h3>
+            <h3>{{ easyWhat }}</h3>
+            {% if debug_mode %} <span style="font-size: small;"><p>(debug mode)</p></span>{% endif %}
             {% block content %}
             {% endblock %}
         </div> <!-- end .two-thirds-module-left -->
