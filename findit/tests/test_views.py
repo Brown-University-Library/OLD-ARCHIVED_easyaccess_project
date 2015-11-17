@@ -28,6 +28,12 @@ class IndexPageLinksTest( TestCase ):
         self.assertEqual( True, 'class="intro">Examples' in response.content )
         self.assertEqual( True, '>Login<' in response.content )
 
+    def test_held_electronically(self):
+        """ Checks the `Held electronically.` link """
+        response = self.client.get( '/find/?sid=google&auinit=T&aulast=SOTA&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+(Coleoptera:+Cicindelidae)+in+East+Asia&id=doi:10.1111/j.1095-8312.2011.01617.x&title=Biological+journal+of+the+Linnean+Society&volume=102&issue=4&date=2011&spage=715&issn=0024-4066' )
+        self.assertEqual( 200, response.status_code )
+        self.assertEqual( True, '<h3>Available online</h3>' in response.content )
+
     ## end class IndexPageLinksTest
 
 
