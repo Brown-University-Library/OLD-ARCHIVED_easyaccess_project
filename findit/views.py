@@ -74,10 +74,15 @@ def base_resolver( request ):
     qstring = request.META.get('QUERY_STRING')
     alog.debug( 'starting; query_string, `%s`' % qstring )
 
+    # ## check index
+    # if qstring == '':
+    #     context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
+    #     return render( request, 'findit/index.html', context )
+
     ## check index
-    if qstring == '':
-        context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
-        return render( request, 'findit/index.html', context )
+    if fresolver.check_index_page( request.GET ):
+        context = fresolver.make_index_context( request.GET )
+        return fresolver.make_index_response( request, context )
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
@@ -88,24 +93,22 @@ def base_resolver( request ):
     if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING', None) ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
-    ## parse the openurl -- TODO: remove this if it's not used
-    # o = Ourl( request.META.get('QUERY_STRING', 'no-query-string') )
-    # o.make_cite()
-    # ourl_cite = o.cite
-
-    ## get primary-key link if available -- no need; I'll handle that in a different url
+    ## get primary-key link if available -- TODO
 
     ## update querystring if necessary to catch non-standard pubmed ids
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )
 
     ## get serials-solution data-dct
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
-    context = fresolver.make_context( sersol_dct )
 
-    ## return default index page
-    alog.debug( 'about to render index.html' )
+    ## build context
+    context = fresolver.make_resolve_context( sersol_dct )
     alog.debug( 'context, ```%s```' % pprint.pformat(context) )
+
+    ## return response
+    alog.debug( 'about to render index.html' )
     return render( request, 'findit/resolve.html', context )
+
 
     ## end def base_resolver()
 

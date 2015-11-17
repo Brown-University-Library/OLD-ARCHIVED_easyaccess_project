@@ -5,13 +5,15 @@ from __future__ import unicode_literals
 import logging, pprint, re, urlparse
 from datetime import datetime
 
-import requests
+import json, requests
 from . import forms, summon
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from .app_settings import PRINT_PROVIDER
 from .models import PrintTitle
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.utils.log import dictConfig
 from py360link2 import get_sersol_data, Resolved
 
@@ -30,6 +32,32 @@ class FinditResolver( object ):
     def __init__(self):
         self.enhanced_link = False
         self.sersol_publication_link = False
+
+    def check_index_page( self, querydict ):
+        """ Checks to see if it's the demo landing page.
+            Called by views.base_resolver() """
+        log.debug( 'querydict, `%s`' % querydict )
+        return_val = False
+        if querydict == {} or querydict.get('output', '') == 'json':
+            return_val = True
+        log.debug( 'return_val, `%s`' % return_val )
+        return return_val
+
+    def make_index_context( self, querydict ):
+        """ Builds context for index page.
+            Called by views.base_resolver() """
+        context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
+        return context
+
+    def make_index_response( self, request, context ):
+        """ Returns json or html response object.
+            Called by views.base_resolver() """
+        if request.GET.get('output', '') == 'json':
+            output = json.dumps( context, sort_keys=True, indent = 2 )
+            resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
+        else:
+            resp = render( request, 'findit/index.html', context )
+        return resp
 
     def check_summon( self, querydict ):
         """ Determines whether a summon check is needed.
@@ -103,7 +131,7 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 
-    def make_context( self, sersol_dct ):
+    def make_resolve_context( self, sersol_dct ):
         """ Preps the template view.
             Called by views.base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
@@ -115,7 +143,7 @@ class FinditResolver( object ):
 
     def _try_resolved_obj_citation( self, sersol_dct ):
         """ Returns initial context based on a resolved-object.
-            Called by make_context() """
+            Called by make_resolve_context() """
         context = {}
         try:
             resolved_obj = BulSerSol( sersol_dct )
@@ -123,20 +151,33 @@ class FinditResolver( object ):
             context['citation'] = resolved_obj.citation
         except Exception as e:
             log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
+            context['citation'] = {}
         log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
         return context
 
     def _check_genre( self, context ):
         """ Sets `easyBorrow` or `easyArticle`.
-            Called by make_context()"""
-        genre = context['citation'].get( 'genre', '' )
+            Called by make_resolve_context()"""
+        (genre, genre_type) = ('', 'easyArticle')
+        if 'citation' in context.keys() and 'genre' in context['citation'].keys():
+            genre = context['citation']['genre']
         log.debug( 'genre, `%s`' % genre )
         if genre == 'book':
             genre_type = 'easyBorrow'
-        else:
-            genre_type = 'easyArticle'
         log.debug( 'genre_type, `%s`' % genre_type )
         return genre_type
+
+    # def _check_genre( self, context ):
+    #     """ Sets `easyBorrow` or `easyArticle`.
+    #         Called by make_context()"""
+    #     genre = context['citation'].get( 'genre', '' )
+    #     log.debug( 'genre, `%s`' % genre )
+    #     if genre == 'book':
+    #         genre_type = 'easyBorrow'
+    #     else:
+    #         genre_type = 'easyArticle'
+    #     log.debug( 'genre_type, `%s`' % genre_type )
+    #     return genre_type
 
     # def make_context( self, sersol_dct ):
     #     """ Preps the template view.
