@@ -74,11 +74,6 @@ def base_resolver( request ):
     qstring = request.META.get('QUERY_STRING')
     alog.debug( 'starting; query_string, `%s`' % qstring )
 
-    # ## check index
-    # if qstring == '':
-    #     context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
-    #     return render( request, 'findit/index.html', context )
-
     ## check index
     if fresolver.check_index_page( request.GET ):
         context = fresolver.make_index_context( request.GET )
@@ -106,9 +101,9 @@ def base_resolver( request ):
     alog.debug( 'context, ```%s```' % pprint.pformat(context) )
 
     ## return response
-    alog.debug( 'about to render index.html' )
-    return render( request, 'findit/resolve.html', context )
-
+    alog.debug( 'about to render resolve.html' )
+    # return render( request, 'findit/resolve.html', context )
+    return fresolver.make_resolve_response( request, context )
 
     ## end def base_resolver()
 

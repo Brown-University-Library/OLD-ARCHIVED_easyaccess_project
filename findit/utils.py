@@ -38,7 +38,7 @@ class FinditResolver( object ):
             Called by views.base_resolver() """
         log.debug( 'querydict, `%s`' % querydict )
         return_val = False
-        if querydict == {} or querydict.get('output', '') == 'json':
+        if querydict == {} or ( querydict.keys() == ['output'] and querydict.get('output', '') == 'json' ):
             return_val = True
         log.debug( 'return_val, `%s`' % return_val )
         return return_val
@@ -50,7 +50,7 @@ class FinditResolver( object ):
         return context
 
     def make_index_response( self, request, context ):
-        """ Returns json or html response object.
+        """ Returns json or html response object for index page.
             Called by views.base_resolver() """
         if request.GET.get('output', '') == 'json':
             output = json.dumps( context, sort_keys=True, indent = 2 )
@@ -166,6 +166,16 @@ class FinditResolver( object ):
             genre_type = 'easyBorrow'
         log.debug( 'genre_type, `%s`' % genre_type )
         return genre_type
+
+    def make_resolve_response( self, request, context ):
+        """ Returns json or html response object for resolve page.
+            Called by views.base_resolver() """
+        if request.GET.get('output', '') == 'json':
+            output = json.dumps( context, sort_keys=True, indent = 2 )
+            resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
+        else:
+            resp = render( request, 'findit/resolve.html', context )
+        return resp
 
     # def _check_genre( self, context ):
     #     """ Sets `easyBorrow` or `easyArticle`.
