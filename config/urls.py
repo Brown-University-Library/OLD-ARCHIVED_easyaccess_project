@@ -14,7 +14,7 @@ urlpatterns = [
 
     url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),
 
-    url( r'^$',  RedirectView.as_view(url='find/') ),
+    url( r'^$',  RedirectView.as_view(url='find/', permanent=True) ),
     ]
 
 ## for 500 errors

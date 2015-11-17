@@ -22,9 +22,11 @@ class IndexPageLinksTest( TestCase ):
         self.client = Client()
 
     def test_index(self):
+        """ Checks main index page. """
         response = self.client.get( '/find/' )  # project root part of url is assumed
         self.assertEqual( 200, response.status_code )
         self.assertEqual( True, 'class="intro">Examples' in response.content )
+        self.assertEqual( True, '>Login<' in response.content )
 
     ## end class IndexPageLinksTest
 
