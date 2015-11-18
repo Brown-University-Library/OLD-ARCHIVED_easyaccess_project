@@ -88,14 +88,21 @@ EMAIL_PORT = int( os.environ['EZACS__EMAIL_PORT'] )
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-#logging
-#See http://stackoverflow.com/questions/1598823/elegant-setup-of-python-logging-in-django
+## logging
+"""
+See http://stackoverflow.com/questions/1598823/elegant-setup-of-python-logging-in-django
+Note: if disable_existing_loggers is False, result is lots of logging output from imported modules.
+Note: to see the imported modules' loggers, add somewhere, like the top of 'findit/views.py':
+    import logging
+    existing_logger_names = logging.getLogger().manager.loggerDict.keys()
+    print '- HERE, `%s`' % existing_logger_names
+    (from <https://bytes.com/topic/python/answers/830042-dynamically-getting-loggers>)
+"""
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
-            # 'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
             'format': "[%(asctime)s] %(levelname)s [%(module)s-%(funcName)s()::%(lineno)d] %(message)s",
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
