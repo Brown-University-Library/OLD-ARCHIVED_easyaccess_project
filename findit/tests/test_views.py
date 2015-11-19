@@ -30,13 +30,25 @@ class IndexPageLinksTest( TestCase ):
         self.assertEqual( True, 'class="intro">Examples' in response.content )
         self.assertEqual( True, '>Login<' in response.content )
 
-    def test_held_electronically(self):
-        """ Checks the `Held electronically.` link """
+    def test_article_held_electronically(self):
+        """ Checks the `Article held electronically.` link """
         response = self.client.get( '/find/?sid=google&auinit=T&aulast=SOTA&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+(Coleoptera:+Cicindelidae)+in+East+Asia&id=doi:10.1111/j.1095-8312.2011.01617.x&title=Biological+journal+of+the+Linnean+Society&volume=102&issue=4&date=2011&spage=715&issn=0024-4066' )
+        # print 'RESPONSE CONTENT...'; print response.content
         self.assertEqual( 200, response.status_code )
         self.assertEqual( True, '<title>easyArticle - Brown University Library</title>' in response.content )
         self.assertEqual( True, '<h3>easyArticle</h3>' in response.content )
         self.assertEqual( True, '<h3>Available online</h3>' in response.content )
+
+    def test_article_chapter_held_at_annex(self):
+        """ Checks the `Article/Chapter held at Annex.` link """
+        response = self.client.get( '/find/?genre=article&issn=00377686&title=Social+Compass&volume=14&issue=5/6&date=19670901&atitle=Religious+knowledge+and+attitudes+in+Mexico+City.&spage=469&pages=469-482&sid=EBSCO:Academic+Search+Premier&aulast=Stryckman,+Paul' )
+        print 'RESPONSE CONTENT...'; print response.content
+        self.assertEqual( 200, response.status_code )
+        self.assertEqual( True, '<title>easyArticle - Brown University Library</title>' in response.content )
+        self.assertEqual( True, '<h3>easyArticle</h3>' in response.content )
+        self.assertEqual( True, '<h3>Available at the library</h3>' in response.content )
+        self.assertEqual( True, 'z<span class="print-location">Annex</span>' in response.content )
+        self.assertEqual( True, 'z<span class="print-callnumber">BL60.A2 S65</span>' in response.content )
 
     ## end class IndexPageLinksTest
 
