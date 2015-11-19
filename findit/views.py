@@ -77,7 +77,8 @@ def base_resolver( request ):
     ## check index
     if fresolver.check_index_page( request.GET ):
         context = fresolver.make_index_context( request.GET )
-        return fresolver.make_index_response( request, context )
+        # return fresolver.make_index_response( request, context )
+        return fresolver.make_response( request, context, 'findit/index.html' )
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
@@ -102,8 +103,8 @@ def base_resolver( request ):
 
     ## return response
     alog.debug( 'about to render resolve.html' )
-    # return render( request, 'findit/resolve.html', context )
-    return fresolver.make_resolve_response( request, context )
+    # return fresolver.make_resolve_response( request, context )
+    return fresolver.make_response( request, context, 'findit/resolve.html' )
 
     ## end def base_resolver()
 

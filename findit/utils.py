@@ -49,14 +49,24 @@ class FinditResolver( object ):
         context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
         return context
 
-    def make_index_response( self, request, context ):
+    # def make_index_response( self, request, context ):
+    #     """ Returns json or html response object for index page.
+    #         Called by views.base_resolver() """
+    #     if request.GET.get('output', '') == 'json':
+    #         output = json.dumps( context, sort_keys=True, indent = 2 )
+    #         resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
+    #     else:
+    #         resp = render( request, 'findit/index.html', context )
+    #     return resp
+
+    def make_response( self, request, context, template_name ):
         """ Returns json or html response object for index page.
             Called by views.base_resolver() """
         if request.GET.get('output', '') == 'json':
             output = json.dumps( context, sort_keys=True, indent = 2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
-            resp = render( request, 'findit/index.html', context )
+            resp = render( request, template_name, context )
         return resp
 
     def check_summon( self, querydict ):
@@ -141,6 +151,20 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    # def _try_resolved_obj_citation( self, sersol_dct ):
+    #     """ Returns initial context based on a resolved-object.
+    #         Called by make_resolve_context() """
+    #     context = {}
+    #     try:
+    #         resolved_obj = BulSerSol( sersol_dct )
+    #         context = resolved_obj.access_points()
+    #         context['citation'] = resolved_obj.citation
+    #     except Exception as e:
+    #         log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
+    #         context['citation'] = {}
+    #     log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
+    #     return context
+
     def _try_resolved_obj_citation( self, sersol_dct ):
         """ Returns initial context based on a resolved-object.
             Called by make_resolve_context() """
@@ -149,6 +173,7 @@ class FinditResolver( object ):
             resolved_obj = BulSerSol( sersol_dct )
             context = resolved_obj.access_points()
             context['citation'] = resolved_obj.citation
+            context['link_groups'] = resolved_obj.link_groups
         except Exception as e:
             log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
             context['citation'] = {}
@@ -167,42 +192,6 @@ class FinditResolver( object ):
         log.debug( 'genre_type, `%s`' % genre_type )
         return genre_type
 
-    def make_resolve_response( self, request, context ):
-        """ Returns json or html response object for resolve page.
-            Called by views.base_resolver() """
-        if request.GET.get('output', '') == 'json':
-            output = json.dumps( context, sort_keys=True, indent = 2 )
-            resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
-        else:
-            resp = render( request, 'findit/resolve.html', context )
-        return resp
-
-    # def _check_genre( self, context ):
-    #     """ Sets `easyBorrow` or `easyArticle`.
-    #         Called by make_context()"""
-    #     genre = context['citation'].get( 'genre', '' )
-    #     log.debug( 'genre, `%s`' % genre )
-    #     if genre == 'book':
-    #         genre_type = 'easyBorrow'
-    #     else:
-    #         genre_type = 'easyArticle'
-    #     log.debug( 'genre_type, `%s`' % genre_type )
-    #     return genre_type
-
-    # def make_context( self, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.base_resolver() """
-    #     context = { 'citation': {} }
-    #     try:
-    #         resolved_obj = BulSerSol( sersol_dct )
-    #         context = resolved_obj.access_points()
-    #         context['citation'] = resolved_obj.citation
-    #     except Exception as e:
-    #         log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
-    #     context['login_link'] = 'foo'
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
 
         # def get_context_data(self, **kwargs):
         #     """
