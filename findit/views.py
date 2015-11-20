@@ -71,40 +71,29 @@ def tiny_resolver( request, tiny ):
 
 def base_resolver( request ):
     """ Handles link resolution. """
-    qstring = request.META.get('QUERY_STRING')
-    alog.debug( 'starting; query_string, `%s`' % qstring )
+    alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
 
-    ## check index
+    ## index-page call?
     if fresolver.check_index_page( request.GET ):
-        context = fresolver.make_index_context( request.GET )
-        # return fresolver.make_index_response( request, context )
-        return fresolver.make_response( request, context, 'findit/index.html' )
+        return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
-        if fresolver.enhance_link( request.GET.get('direct', None), qstring ):
+        if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING') ):
             return HttpResponseRedirect( fresolver.enhanced_link )
 
     ## if journal, redirect to 360link for now
-    if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING', None) ):
+    if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING') ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
     ## get primary-key link if available -- TODO
 
-    ## update querystring if necessary to catch non-standard pubmed ids
-    querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )
-
     ## get serials-solution data-dct
+    querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
-    ## build context
-    context = fresolver.make_resolve_context( sersol_dct )
-    alog.debug( 'context, ```%s```' % pprint.pformat(context) )
-
-    ## return response
-    alog.debug( 'about to render resolve.html' )
-    # return fresolver.make_resolve_response( request, context )
-    return fresolver.make_response( request, context, 'findit/resolve.html' )
+    ## return resolve response
+    return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
 
     ## end def base_resolver()
 
