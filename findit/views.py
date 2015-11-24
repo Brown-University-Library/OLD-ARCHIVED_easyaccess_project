@@ -77,6 +77,9 @@ def base_resolver( request ):
     if fresolver.check_index_page( request.GET ):
         return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
 
+    ## make permalink if one doesn't exist -- TODO
+
+
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
         if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING') ):
@@ -85,8 +88,6 @@ def base_resolver( request ):
     ## if journal, redirect to 360link for now
     if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING') ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
-
-    ## get primary-key link if available -- TODO
 
     ## get serials-solution data-dct
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )  # update querystring if necessary to catch non-standard pubmed ids

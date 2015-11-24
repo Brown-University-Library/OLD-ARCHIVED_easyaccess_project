@@ -2,10 +2,10 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint, re, urlparse
+import json,logging, pprint, re, urlparse
 from datetime import datetime
 
-import json, requests
+import requests
 from . import forms, summon
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from .app_settings import PRINT_PROVIDER

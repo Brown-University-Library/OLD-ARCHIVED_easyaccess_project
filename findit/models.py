@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import json, os
-from django.db import models
-from django.db import models
-from django.contrib.auth.models import User
 from datetime import datetime
-from django.core.mail import send_mail
 
 from bul_link.models import Resource
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.db import models
+
 
 class PrintTitle(models.Model):
     key = models.CharField(max_length=20, primary_key=True)
@@ -17,6 +21,7 @@ class PrintTitle(models.Model):
 
     def __unicode__(self):
         return "%s %s to %s" % (self.issn, self.start, self.end)
+
 
 class Request(models.Model):
     item = models.ForeignKey(Resource)
@@ -57,6 +62,7 @@ This will be the body of the message.  Confirmation emails will be followed by
 the permanent link to the requested article.
 """
 
+
 class UserMessage(models.Model):
     type = models.CharField(max_length=30, choices=MESSAGE_TYPE_CHOICES)
     subject = models.CharField(max_length=50, help_text="Email subject.")
@@ -73,71 +79,3 @@ class UserMessage(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.type)
-
-
-#class UserProfile(models.Model):
-#    # This field is required.
-#    user = models.OneToOneField(User)
-#    # Other fields here
-#    barcode = models.CharField(max_length=25, blank=True, null=True, default=None)
-#    is_faculty = models.BooleanField(default=False)
-#    is_student = models.BooleanField(default=False)
-#    is_staff = models.BooleanField(default=False)
-#    #More granular status pulled from Shib headers
-#    membership = models.CharField(max_length=25, blank=True, null=True, default='unknown')
-#    #http://djangosnippets.org/snippets/1017/
-#    date_created = models.DateTimeField()
-#    date_modified = models.DateTimeField()
-#
-#    def save(self, *args, **kwargs):
-#        if self.date_created == None:
-#            self.date_created = datetime.now()
-#        self.date_modified = datetime.now()
-#        super(UserProfile, self).save()
-#
-#    def primary_affiliation(self):
-#        """
-#        Used for the Illiad registration piece.  Will attempt to populate
-#        with information from the membership field.  If not, will return
-#        the first valid affiliation.
-#        """
-#        if self.membership != 'unknown':
-#            return self.membership
-#        if self.is_faculty == True:
-#            return "Faculty"
-#        elif self.is_staff == True:
-#            return "Staff"
-#        elif self.is_student == True:
-#            return "Student"
-#        else:
-#            return "Unknown"
-#
-#    def can_request_print(self):
-#        """
-#        Helper for determine if a user can request print document
-#        delivery for locally held items.
-#        """
-#        if self.is_faculty is True:
-#            return True
-#        if "medical" in self.membership.lower():
-#            return True
-#        return False
-#
-#    def illiad(self):
-#        d = {}
-#        d['username'] = self.user.username.replace('@brown.edu', '')
-#        d['first_name'] = self.user.first_name
-#        d['last_name'] = self.user.last_name
-#        d['email'] = self.user.email
-#        #Set status.
-#        d['status'] = self.primary_affiliation()
-#        return d
-#
-#    def __unicode__(self):
-#        return "%s" % self.user.username
-
-
-
-
-
-
