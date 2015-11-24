@@ -78,7 +78,7 @@ def base_resolver( request ):
         return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
 
     ## make permalink if one doesn't exist -- TODO
-
+    permalink = fresolver.make_permalink( request.META.get('QUERY_STRING') )
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
