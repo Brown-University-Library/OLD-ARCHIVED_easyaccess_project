@@ -1,5 +1,8 @@
 
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.conf import settings
 # from django.utils import unittest
 from django.test import TestCase
@@ -8,6 +11,7 @@ from django.test.client import Client
 from django.utils.importlib import import_module
 
 from delivery import views
+
 
 # class ResolverTest(unittest.TestCase):
 # class ResolverTest( TestCase ):

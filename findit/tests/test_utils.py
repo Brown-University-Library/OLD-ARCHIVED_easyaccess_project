@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 
 import unittest
 from findit.utils import make_illiad_url, BulSerSol

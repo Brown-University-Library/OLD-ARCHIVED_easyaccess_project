@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Handle Illiad registration.
 """
@@ -10,8 +14,9 @@ from optparse import make_option
 import sys
 
 #local
-from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER 
-from illiad.account import IlliadSession 
+from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER
+from illiad.account import IlliadSession
+
 
 class Command(BaseCommand):
     help = "For submitting ILLiad findit database."

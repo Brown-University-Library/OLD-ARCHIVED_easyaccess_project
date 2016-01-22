@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Attempts to parse raw OpenURLs to the BibJSON convention.
 """
@@ -40,13 +44,13 @@ def pull_and_map(key_list, cite):
         val = cite.get(k, None)
         if val:
             return val[0].strip()
-    return 
+    return
 
 
 def openurl(query):
     """
-    An attempt to map raw OpenURLs to BibJSON convention.  
-     
+    An attempt to map raw OpenURLs to BibJSON convention.
+
     Loosely based of this nice PHP openurl parser from Rod Page:
     http://code.google.com/p/bioguid/source/search?q=openurl&origq=openurl&btnG=Search+Trunk
     """
@@ -60,7 +64,7 @@ def openurl(query):
     referent['identifier'] = []
     type = None
 
-    #Deterimine a citation type first - 
+    #Deterimine a citation type first -
     if cite.get('rft.atitle') or cite.get('atitle'):
         type = 'article'
     elif cite.get('rft.btitle') or cite.get('btitle'):
@@ -95,9 +99,9 @@ def openurl(query):
                 #Try to pull short title code.
                 stitle = cite.get('rft.stitle', None)
                 if not stitle:
-                    stitle = cite.get('stitle', None) 
+                    stitle = cite.get('stitle', None)
                 if stitle:
-                    ti['shortcode'] = stitle[0] 
+                    ti['shortcode'] = stitle[0]
                 referent['journal'] = ti
                 type = 'article'
             #Issn
@@ -136,12 +140,12 @@ def openurl(query):
             #Authors
             elif (k == 'rft.au') or (k == 'au') or\
                  (k == 'rft.aulast') or (k == 'aulast'):
-                #If it's a full name, set here.  
-                if (k == 'rft.au') or (k == 'au'): 
+                #If it's a full name, set here.
+                if (k == 'rft.au') or (k == 'au'):
                     au = {'name': v}
                 else:
                     au = {}
-                    
+
                 aulast = pull_and_map(['rft.aulast', 'aulast'],
                                       cite)
                 if aulast:
@@ -150,8 +154,8 @@ def openurl(query):
                                        cite)
                 if aufirst:
                     au['firstname'] = aufirst
-                
-                #Put the full name together now if we can. 
+
+                #Put the full name together now if we can.
                 if not au.has_key('name'):
                     if au.has_key('lastname'):
                         if au.has_key('firstname'):
@@ -170,9 +174,9 @@ def openurl(query):
                 referent['year'] = v[:4]
             #Pages are gross
             elif (k == 'rft.pages') or (k == 'pages'):
-                referent['pages'] = v 
+                referent['pages'] = v
             elif (k == 'rft.spage') or (k == 'spage'):
-                referent['start_page'] = v 
+                referent['start_page'] = v
             elif (k == 'rft.epage') or (k == 'epage'):
                 referent['end_page'] = v
             #Look at the type term
@@ -188,7 +192,7 @@ def openurl(query):
             #Referers or sids
             if (k == 'rfr_id') or (k == 'sid'):
                 referent['bul:rfr'] = v
-                
+
             #Add any identifiers picked up on this pass
             if (id['type']) and (id['id']):
                 #Make sure this pair isn't already there.
@@ -196,9 +200,9 @@ def openurl(query):
                     referent['identifier'].append(id)
                     #Re-initialize an identifier so that it's blank on the next trip
                     id = initialize_id()
-    
+
     referent['type'] = type
-    #Add a title if we don't have one - this will be for cases where a format can't be 
+    #Add a title if we don't have one - this will be for cases where a format can't be
     #determined.
     if not referent.get('title', None):
         referent['title'] = cite.get('title', [''])[0]
@@ -214,7 +218,7 @@ def openurl(query):
     referent['_openurl'] = to_openurl(referent)
     return referent
 
-def to_openurl(bib): 
+def to_openurl(bib):
     """
     Convert bibjson to an OpenURL.
     start_page => 361
@@ -286,7 +290,7 @@ def to_openurl(bib):
 
 import unittest
 class TestBibJSON(unittest.TestCase):
-    
+
     def test_book_from_worldcat(self):
         q = 'rft.pub=W+H+Freeman+%26+Co&rft.btitle=Introduction+to+Genetic+Analysis.&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&isbn=9781429233231&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&title=Introduction+to+Genetic+Analysis.&pid=%3Caccession+number%3E277200522%3C%2Faccession+number%3E%3Cfssessid%3E0%3C%2Ffssessid%3E&rft.date=2008&genre=book&rft_id=urn%3AISBN%3A9781429233231&openurl=sid&rfe_dat=%3Caccessionnumber%3E277200522%3C%2Faccessionnumber%3E&rft.isbn=9781429233231&url_ver=Z39.88-2004&date=2008&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&id=doi%3A&rft.genre=book'
         bib = openurl(q)
@@ -298,7 +302,7 @@ class TestBibJSON(unittest.TestCase):
                           'id': '277200522'} in bib['identifier'])
         #pprint(bib)
         #pprint(urlparse.parse_qs(q))
-        
+
     def test_article(self):
         q = 'volume=16&genre=article&spage=538&sid=EBSCO:aph&title=Current+Pharmaceutical+Design&date=20100211&issue=5&issn=13816128&pid=&atitle=Targeting+%ce%b17+Nicotinic+Acetylcholine+Receptors+in+the+Treatment+of+Schizophrenia.'
         bib = openurl(q)
@@ -308,21 +312,21 @@ class TestBibJSON(unittest.TestCase):
                          '2010')
         self.assertTrue({'type': 'issn',
                          'id': '13816128'} in bib['identifier'])
-        
+
     def test_article_stitle(self):
         q = 'rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rfr_id=info:sid/www.isinet.com:WoK:UA&rft.spage=30&rft.issue=1&rft.epage=42&rft.title=INTEGRATIVE%20BIOLOGY&rft.aulast=Castillo&url_ctx_fmt=info:ofi/fmt:kev:mtx:ctx&rft.date=2009&rft.volume=1&url_ver=Z39.88-2004&rft.stitle=INTEGR%20BIOL&rft.atitle=Manipulation%20of%20biological%20samples%20using%20micro%20and%20nano%20techniques&rft.au=Svendsen%2C%20W&rft_id=info:doi/10%2E1039%2Fb814549k&rft.auinit=J&rft.issn=1757-9694&rft.genre=article'
-        
+
         bib = openurl(q)
-        self.assertEqual(bib['title'], 
+        self.assertEqual(bib['title'],
                          'Manipulation of biological samples using micro and nano techniques')
         self.assertEqual(bib['journal']['shortcode'],
                          'INTEGR BIOL')
         #pprint(bib)
         #pprint(urlparse.parse_qs(q))
-        
+
     def test_article_no_full_author(self):
         q = 'issn=1040676X&aulast=Wallace&title=Chronicle%20of%20Philanthropy&pid=<metalib_doc_number>000117190</metalib_doc_number><metalib_base_url>http://sfx.brown.edu:8331</metalib_base_url><opid></opid>&sid=metalib:EBSCO_APH&__service_type=&volume=17&genre=&sici=&epage=23&atitle=Where%20Should%20the%20Money%20Go%3F&date=2005&isbn=&spage=9&issue=24&id=doi:&auinit=&aufirst=%20Nicole'
-    
+
     def test_bad_title(self):
         #This open url has a book title and a journal title.
         #Should do some type of override to handle logical inconsistencies
@@ -354,14 +358,14 @@ class TestBibJSON(unittest.TestCase):
         #pprint(bib2)
         self.assertEqual(bib['journal']['shortcode'],
                          bib2['journal']['shortcode'])
-        
-    
 
 
-       
-        
+
+
+
+
 if __name__ == '__main__':
-    unittest.main()     
-    
+    unittest.main()
 
-            
+
+

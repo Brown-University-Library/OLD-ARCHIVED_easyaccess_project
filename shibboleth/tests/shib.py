@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import os
 
 from django.conf import settings
@@ -10,25 +12,25 @@ from django.test.client import Client
 
 SAMPLE_HEADERS = {
   "REMOTE_USER": 'sampledeveloper@school.edu',
-  "Shib-Application-ID": "default", 
-  "Shib-Authentication-Method": "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", 
-  "Shib-AuthnContext-Class": "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified", 
-  "Shib-Identity-Provider": "https://sso.college.edu/idp/shibboleth", 
-  "Shib-Session-ID": "1", 
-  "Shib-Session-Index": "12", 
-  "Shibboleth-affiliation": "member@college.edu;staff@college.edu", 
+  "Shib-Application-ID": "default",
+  "Shib-Authentication-Method": "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified",
+  "Shib-AuthnContext-Class": "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified",
+  "Shib-Identity-Provider": "https://sso.college.edu/idp/shibboleth",
+  "Shib-Session-ID": "1",
+  "Shib-Session-Index": "12",
+  "Shibboleth-affiliation": "member@college.edu;staff@college.edu",
   "Shibboleth-schoolBarCode": "12345678",
-  "Shibboleth-schoolNetId": "Sample_Developer", 
-  "Shibboleth-schoolStatus": "active", 
-  "Shibboleth-department": "University Library, Integrated Technology Services", 
-  "Shibboleth-displayName": "Sample Developer", 
-  "Shibboleth-eppn": "sampledeveloper@school.edu", 
-  "Shibboleth-givenName": "Sample", 
-  "Shibboleth-isMemberOf": "SCHOOL:COMMUNITY:EMPLOYEE:ADMINISTRATIVE:BASE;SCHOOL:COMMUNITY:EMPLOYEE:STAFF:SAC:P;COMMUNITY:ALL;SCHOOL:COMMUNITY:EMPLOYEE:STAFF:SAC:M;", 
-  "Shibboleth-mail": "Sample_Developer@school.edu", 
-  "Shibboleth-persistent-id": "https://sso.college.edu/idp/shibboleth!https://server.college.edu/shibboleth-sp!sk1Z9qKruvXY7JXvsq4GRb8GCUk=", 
-  "Shibboleth-sn": "Developer", 
-  "Shibboleth-title": "Library Developer", 
+  "Shibboleth-schoolNetId": "Sample_Developer",
+  "Shibboleth-schoolStatus": "active",
+  "Shibboleth-department": "University Library, Integrated Technology Services",
+  "Shibboleth-displayName": "Sample Developer",
+  "Shibboleth-eppn": "sampledeveloper@school.edu",
+  "Shibboleth-givenName": "Sample",
+  "Shibboleth-isMemberOf": "SCHOOL:COMMUNITY:EMPLOYEE:ADMINISTRATIVE:BASE;SCHOOL:COMMUNITY:EMPLOYEE:STAFF:SAC:P;COMMUNITY:ALL;SCHOOL:COMMUNITY:EMPLOYEE:STAFF:SAC:M;",
+  "Shibboleth-mail": "Sample_Developer@school.edu",
+  "Shibboleth-persistent-id": "https://sso.college.edu/idp/shibboleth!https://server.college.edu/shibboleth-sp!sk1Z9qKruvXY7JXvsq4GRb8GCUk=",
+  "Shibboleth-sn": "Developer",
+  "Shibboleth-title": "Library Developer",
   "Shibboleth-unscoped-affiliation": "member;staff"
 }
 
@@ -64,18 +66,18 @@ from shibboleth.views import ShibbolethView
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-class AttributesTest(unittest.TestCase):   
+class AttributesTest(unittest.TestCase):
     def setUp(self):
         self.c = Client()
-        
+
     def test_decorator_not_authenticated(self):
         """
         """
         resp = self.c.get('/')
         self.assertEqual(resp.status_code, 302)
         #Test the context - shouldn't exist
-        self.assertEqual(resp.context, None) 
-        
+        self.assertEqual(resp.context, None)
+
     def test_decorator_authenticated(self):
         """
         """
@@ -89,10 +91,10 @@ class AttributesTest(unittest.TestCase):
         self.assertTrue(user.is_authenticated())
         self.assertFalse(user.is_anonymous())
 
-class LogoutTest(unittest.TestCase):   
+class LogoutTest(unittest.TestCase):
     def setUp(self):
         self.c = Client()
-             
+
     def test_logout(self):
         """
         """
@@ -115,4 +117,4 @@ class LogoutTest(unittest.TestCase):
         self.assertEqual(resp.status_code, 302)
         #Make sure the context is empty.
         self.assertEqual(resp.context, None)
-        
+

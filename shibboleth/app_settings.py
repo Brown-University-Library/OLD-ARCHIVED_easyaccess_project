@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-#At a minimum you will need username, 
+
+#At a minimum you will need username,
 default_shib_attributes = {
   "Shibboleth-eppn": (True, "username"),
-} 
+}
 
 SHIB_ATTRIBUTE_MAP = getattr(settings, 'SHIBBOLETH_ATTRIBUTE_MAP', default_shib_attributes)
 #Set to true if you are testing and want to insert sample headers.
@@ -23,7 +27,7 @@ LOGOUT_URL = getattr(settings, 'SHIBBOLETH_LOGOUT_URL', None)
 #LOGOUT_REDIRECT_URL specifies a default logout page that will always be used when
 #users logout from Shibboleth.
 LOGOUT_REDIRECT_URL = getattr(settings, 'SHIBBOLETH_LOGOUT_REDIRECT_URL', None)
-#Name of key.  Probably no need to change this.  
+#Name of key.  Probably no need to change this.
 LOGOUT_SESSION_KEY = getattr(settings, 'SHIBBOLETH_FORCE_REAUTH_SESSION_KEY', 'shib_force_reauth')
 
 

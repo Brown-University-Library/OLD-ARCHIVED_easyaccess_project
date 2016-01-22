@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 
 #Types
 #Article/Journal
@@ -9,6 +12,7 @@
 #DOI
 #rft.title - patent/dissertation labeling varies
 from django import forms
+
 
 def _short(label):
     """Helper for creating a short char form field."""
@@ -25,7 +29,7 @@ def _long(label):
     return forms.CharField(max_length=250,
                              label=label,
                              required=False)
-    
+
 ARTICLE_GENRE_CHOICES = (
                          ('article', 'Article'),
                          ('conference', 'Conference'),
@@ -66,22 +70,22 @@ class ArticleForm(forms.Form):
     #aufirst = _long("Author (first)")
     rfe_dat = _medium("OCLC number")
 
-    
+
     def _cleaner(self, values):
         as_string = ','.join([v for v in values])
         return as_string.lstrip(',')
-    
+
     def clean_issn(self):
         data = self.cleaned_data['issn']
         data = self._cleaner(data)
         #if not data:
         #    raise forms.ValidationError("An ISSN is required.")
-        return data 
-    
+        return data
+
     def clean_genre(self):
         data = self.cleaned_data['genre']
         return self._cleaner(data)
-        
+
 
 class BookForm(forms.Form):
     #genre = forms.ChoiceField(choices=BOOK_GENRE_CHOICES,
@@ -100,7 +104,7 @@ class BookForm(forms.Form):
     epage = _short('End page')
     rfe_dat = _medium("OCLC number")
 
-    
+
 class DissertationForm(forms.Form):
     title = _long("Dissertation")
     isbn = _short("ISBN")
@@ -125,5 +129,5 @@ class PatentForm(forms.Form):
     invlast = _long("Inventor (last name)")
     invfirst = _long("Inventor (first)")
     rfe_dat = _medium("OCLC number")
-    
+
 

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.db import models
 
 # Create your models here.
@@ -12,6 +16,7 @@ from django.db import models
 
 from django.db import models
 from datetime import datetime
+
 
 class EasyBorrowRequest(models.Model):
     id = models.IntegerField(primary_key=True, editable=False)
@@ -35,10 +40,10 @@ class EasyBorrowRequest(models.Model):
     group = models.CharField(max_length=60, default='')
     staffnote = models.CharField(max_length=765, default='')
     request_status = models.CharField(max_length=90, default='not_yet_processed')
-    
+
     def __unicode__(self):
         return str(self.id)
-    
+
     class Meta:
         db_table = u'requests'
 

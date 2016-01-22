@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import os
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
@@ -33,6 +37,7 @@ alog = logging.getLogger('access')
 
 from py360link2 import get_sersol_data, Resolved
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
+
 
 class ResolveView(DeliveryBaseView):
     template_name = 'delivery/resolve.html'

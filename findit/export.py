@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Export citation in various formats.  Using service built into 360Link.
-RIS format is the only type implemented at the moment.  
+RIS format is the only type implemented at the moment.
 """
 
 """
@@ -33,7 +37,7 @@ JO  - In pursuit of ancient pasts : a history of classical archaeology in the ni
 PY  - 2006
 PB  - Yale University Press
 CP  - New Haven
-ER  - 
+ER  -
 
 #Book part
 Provider: 360 Link
@@ -54,7 +58,7 @@ VL  - Chapter 7
 CP  - Hoboken, NJ, USA
 DO  - 10.1002/0471142956.cy0733s42
 N1  - PMID: 18770855
-ER  - 
+ER  -
 
 Provider: 360 Link
 Database:
@@ -74,7 +78,7 @@ VL  - 102
 IS  - 4
 PB  - Published for the Linnean Society of London by Blackwell [etc
 DO  - 10.1111/j.1095-8312.2011.01617.x
-ER  - 
+ER  -
 
 citation: {
 issn: {
@@ -97,7 +101,7 @@ def _mapper(key, format):
         """
         Maps 360Link citation to RIS.
         http://en.wikipedia.org/wiki/RIS_(file_format)
-        
+
         Adding pubmed IDS to the AN field per:
         http://forums.zotero.org/discussion/5404/pubmed-id/
         """
@@ -136,7 +140,7 @@ def _mapper(key, format):
                 pass
         #default is to return original key
         return key
-    
+
 
 def ris(citation, format):
     import re
@@ -153,7 +157,7 @@ def ris(citation, format):
     Content: text/plain; charset="UTF-8"\n\n
     """
     out = ""
-    
+
     for k,v in ris.items():
         #Skip non-RIS keys.
         if not re.match('[A-Z]{2}', k):
@@ -162,5 +166,5 @@ def ris(citation, format):
         if k == 'PY':
             v = v.split('-')[0] + '///'
         out += "%s  - %s\n" % (k, v)
-    
+
     return out

@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
 
 # def login_link(request):
 #     from app_settings import LOGIN_URL

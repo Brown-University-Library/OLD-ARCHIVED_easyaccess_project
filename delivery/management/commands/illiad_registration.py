@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Handle Illiad registration.
 """
@@ -12,11 +16,11 @@ from pprint import pprint
 from datetime import date, timedelta
 
 """
-Register or update registration for users in the easyA database. 
+Register or update registration for users in the easyA database.
 """
 from delivery.models import LibraryProfile
-from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER 
-from illiad.account import IlliadSession 
+from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER
+from illiad.account import IlliadSession
 
 #logging
 from django.conf import settings
@@ -35,7 +39,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-#Day interval to re-register users. 
+#Day interval to re-register users.
 DAYS = 180
 
 class Command(BaseCommand):
@@ -45,7 +49,7 @@ class Command(BaseCommand):
             help='Maximum users to register.  Useful for debugging.'),
     )
     def handle(self, **options):
-        #Time delta for querying users that haven't been registerd in X 
+        #Time delta for querying users that haven't been registerd in X
         #number of days.
         today = date.today()
         cutoff = today - timedelta(days=DAYS)

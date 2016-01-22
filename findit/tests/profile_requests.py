@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Profile calls to HTTP
 http://coreygoldberg.blogspot.com/2009/09/python-http-request-profiler.html

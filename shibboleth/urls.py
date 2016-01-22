@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+
 import django
 from django.conf.urls import patterns, url
 # from views import ShibbolethView, ShibbolethLogoutView, ShibbolethLoginView

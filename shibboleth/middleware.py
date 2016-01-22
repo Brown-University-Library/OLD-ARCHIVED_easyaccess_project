@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import pprint
 from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.contrib import auth

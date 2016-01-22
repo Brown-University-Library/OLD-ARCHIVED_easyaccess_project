@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
 
 import httplib2
 import os, urllib
@@ -13,6 +15,7 @@ import sys
 
 api_id = os.environ['EZACS__SUMMON_API_ID']
 api_key = os.environ['EZACS__SUMMON_API_KEY']
+
 
 class SummonSearch(object):
     def __init__(self, api_id, api_key):

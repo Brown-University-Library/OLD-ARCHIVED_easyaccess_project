@@ -1,4 +1,8 @@
-#!/usr/bin/python 
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
+#!/usr/bin/python
 #
 # Convert Link360 XML To JSON
 # follows http://xml.serialssolutions.com/ns/openurl/v1.0/ssopenurl.xsd
@@ -7,6 +11,7 @@
 #
 
 from lxml import etree
+
 
 class Link360JSON(object):
     def __init__(self, doc):
@@ -36,7 +41,7 @@ class Link360JSON(object):
                     dict[k] = v
             return dict
 
-        return m({ 
+        return m({
             'version' : t("//ss:version/text()"),
             'echoedQuery' : {
                 'queryString' : t("//ss:echoedQuery/ss:queryString/text()"),
@@ -74,33 +79,33 @@ class Link360JSON(object):
                 ),
                 'linkGroups' : [ {
                     'type' : t("./@type", group),
-                    'holdingData' : m({ 
+                    'holdingData' : m({
                             'providerId' : t(".//ss:providerId/text()", group),
                             'providerName' : t(".//ss:providerName/text()", group),
                             'databaseId' : t(".//ss:databaseId/text()", group),
                             'databaseName' : t(".//ss:databaseName/text()", group),
                         },
-                        # output normalizedData/startDate instead of startDate, 
+                        # output normalizedData/startDate instead of startDate,
                         # assuming that 'startDate' is redundant
                         ('startDate' , t(".//ss:normalizedData/ss:startDate/text()", group)),
                         ('endDate' , t(".//ss:normalizedData/ss:endDate/text()", group))),
                     # assumes at most one URL per type
-                    'url' : dict([ (t("./@type", url), t("./text()", url)) 
+                    'url' : dict([ (t("./@type", url), t("./text()", url))
                                    for url in x("./ss:url", group) ])
                 } for group in x("//ss:linkGroups/ss:linkGroup")]
-            } for result in x("//ss:result") ] }, 
+            } for result in x("//ss:result") ] },
             # optional
-            ('diagnostics', 
+            ('diagnostics',
                 [ m({ 'uri' : t("./sd:uri/text()", diag) },
-                    ('details', t("./sd:details/text()", diag)), 
+                    ('details', t("./sd:details/text()", diag)),
                     ('message', t("./sd:message/text()", diag))
                 ) for diag in x("//sd:diagnostic")]
             )
             # TBD derivedQueryData
         )
-        
+
 #Brown additions
-#Make the OpenURL for passing on. 
+#Make the OpenURL for passing on.
 SERSOL_MAP = {
     'journal': {
         'title': 'title',

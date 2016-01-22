@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Load a mirror database with Serial Solutions holdings for querying.
 """
@@ -15,6 +19,7 @@ from datetime import datetime
 
 CURRENT_YEAR = datetime.now().year
 
+
 class Command(BaseCommand):
     help = "For loading SerSol exports."
     option_list = BaseCommand.option_list + (
@@ -22,7 +27,7 @@ class Command(BaseCommand):
                     help='Specify file in SerSol holdings format.'),
 
     )
-    
+
     def handle(self, **options):
         self.process(options['export_file'])
 #        if (options['marc_file']) and (options['solr']):
@@ -34,11 +39,11 @@ class Command(BaseCommand):
 
     def load_fixture(self, db_fixture):
         """
-        Create temp file with fixture and use call_command to load 
-        it into the db.   
-        
+        Create temp file with fixture and use call_command to load
+        it into the db.
+
         http://stackoverflow.com/questions/887627/programmatically-using-djangos-loaddata
-        
+
         """
         #Write fixture to temporary file.
         f = open('phfix.json', 'wb')
@@ -59,7 +64,7 @@ class Command(BaseCommand):
     def process(self, export_file):
         """
         Handle the file.
-        
+
         Title (Required)        Type (Required) Default URL     Publisher       Publication Date (Book)    Public Note     Display Public Note     Location Note   Display Location Note      ISSN (Journal)  Coverage Date From (Journal)    Coverage Date To (Journal) ISBN (Book)     Author (Book)   Editor (Book)   Edition (Book)  Language IDAlphabetization
         Economic review /       Journal http://library.brown.edu/find/Search/Results?lookfor=0000-0027&type=ISN                            No      Rock    Yes     0000-0027 1975     1995
 
@@ -67,8 +72,8 @@ class Command(BaseCommand):
         #Load the db with x items at a time.
         commit_freq = 1000
         sersol = csv.DictReader(open(export_file), delimiter='\t')
-        #Map the CSV export fields to solr fields.  
-        
+        #Map the CSV export fields to solr fields.
+
         fixture = []
         for count, row in enumerate(sersol):
             issn = row.get('ISSN (Journal)')
@@ -78,7 +83,7 @@ class Command(BaseCommand):
                 #print>>sys.stderr, row
                 end = CURRENT_YEAR
             location, call_number = row.get('Location Note').split(' - ')
-            
+
             fixd = {}
             fixd['model'] = "findit.printtitle"
             fixd['pk'] = "%s%s" % (issn.replace('-', ''),
@@ -93,7 +98,7 @@ class Command(BaseCommand):
             except ValueError:
                 fields['end'] = None
             fixd['fields'] = fields
-            #ToDo: add location and call number.  
+            #ToDo: add location and call number.
             fixture.append(fixd)
             #print issn, start, end
             if count != 0:
@@ -101,11 +106,11 @@ class Command(BaseCommand):
                     self.load_fixture(fixture)
                     print>>sys.stderr, 'Committing set at %s.' % count
                     fixture = []
-        
-        #One last commit           
+
+        #One last commit
         print>>sys.stderr, "Committing final set."
         self.load_fixture(fixture)
-            
-        
-        
-        
+
+
+
+

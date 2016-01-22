@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.views.generic import TemplateView
 # from django.conf.urls.defaults import *
@@ -5,6 +9,7 @@ from django.conf.urls import include, patterns, url
 
 from views import ResolveView
 from app_settings import PERMALINK_PREFIX
+
 
 urlpatterns = patterns('',
 

@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
 
 SERSOL_KEY = getattr(settings, 'BUL_LINK_SERSOL_KEY', None)
 

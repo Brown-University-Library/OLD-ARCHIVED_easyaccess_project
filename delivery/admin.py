@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.contrib import admin
 from easyborrow_models import EasyBorrowRequest
 from models import Resource, Request, UserMessage, LibraryProfile
+
 
 class MultiDBModelAdmin(admin.ModelAdmin):
     # A handy constant for the name of the alternate database.
@@ -27,7 +32,7 @@ class MultiDBModelAdmin(admin.ModelAdmin):
         # Tell Django to populate ManyToMany widgets using a query
         # on the 'other' database.
         return super(MultiDBModelAdmin, self).formfield_for_manytomany(db_field, request=request, using=self.using, **kwargs)
-    
+
 class EzbRequestAdmin(MultiDBModelAdmin):
     #pass
     search_fields = ['id', 'patronid']
@@ -56,7 +61,7 @@ class UserMessageAdmin(admin.ModelAdmin):
     list_display = ['type', 'subject']
     readonly_fields=('date_created', 'date_modified')
 admin.site.register(UserMessage, UserMessageAdmin)
-    
+
 class LibraryProfileAdmin(admin.ModelAdmin):
     search_fields = ['membership', 'barcode', 'user__last_name', 'user__username', 'user__first_name']
     list_display = ['user', 'membership', 'date_created']

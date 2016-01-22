@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Handle Illiad submissions.
 
@@ -36,6 +40,7 @@ from py360link2 import get_sersol_data, Resolved
 sersol_key=settings.BUL_LINK_SERSOL_KEY
 import urllib2
 import sys
+
 
 class Command(BaseCommand):
     help = "For submitting ILLiad findit database."

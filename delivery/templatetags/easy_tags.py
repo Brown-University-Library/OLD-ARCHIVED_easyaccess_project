@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django import template
 register = template.Library()
 
-        
-        
+
+
 def book(context):
     """
     Make a template tag for display citations on the various pages.
     """
     #Clean up print citations.
-    #Take the first ISSN we can find,  
+    #Take the first ISSN we can find,
 #    try:
 #        issn = citation.get('issn', {}).values()[0]
 #    except (IndexError, AttributeError):
@@ -21,7 +25,7 @@ def book(context):
     return {'bib': context['bib']}
 register.inclusion_tag('snippets/book.html', takes_context=True)(book)
 
-    
+
 
 def raw(parser, token):
     """
@@ -51,4 +55,4 @@ def raw(parser, token):
     parser.unclosed_block_tag(parse_until)
 raw = register.tag(raw)
 
-        
+

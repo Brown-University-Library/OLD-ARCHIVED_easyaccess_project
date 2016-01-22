@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Handle Illiad registration.
 """
@@ -15,6 +19,7 @@ from findit.models import UserProfile
 from findit.app_settings import ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER
 from delivery.models import Request
 from illiad.account import IlliadSession
+
 
 class Command(BaseCommand):
     help = "For submitting existing requests to Illiad."

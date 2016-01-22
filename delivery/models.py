@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import json, pprint, requests
 from django.db import models
 from django.contrib.auth.models import User
@@ -12,6 +16,7 @@ dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 #logging illiad.
 ilog = logging.getLogger('illiad')
+
 
 #===============================================================================
 # User profiles.

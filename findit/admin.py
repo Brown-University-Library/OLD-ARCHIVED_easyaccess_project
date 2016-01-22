@@ -1,13 +1,18 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.contrib import admin
 from models import PrintTitle, Request,\
                    UserMessage
-                   
+
+
 class RequestAdmin(admin.ModelAdmin):
     search_fields = ['illiad_tn', 'user']
     list_display = ['item', 'user', 'illiad_tn', 'date_created', 'date_modified']
     list_filter = ['date_created']
     pass
-    
+
 #class UserProfileAdmin(admin.ModelAdmin):
 #    search_fields = ['membership', 'barcode']
 #    list_display = ['user', 'membership', 'date_created']

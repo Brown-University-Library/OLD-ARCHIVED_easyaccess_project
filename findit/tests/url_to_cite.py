@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 This is an attempt to parse out incoming OpenUrls into
 citation objects that can be displayed to user and trigger

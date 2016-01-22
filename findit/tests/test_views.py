@@ -41,6 +41,10 @@ class IndexPageLinksTest( TestCase ):
 
     def test_article_chapter_held_at_annex(self):
         """ Checks the `Article/Chapter held at Annex.` link """
+        from findit.models import PrintTitle
+        print_title = PrintTitle(
+            key='003776861966', issn='issn', start='1966', end='1992', call_number='Annex   BL60.A2 S65' )
+        print_title.save()
         response = self.client.get( '/find/?genre=article&issn=00377686&title=Social+Compass&volume=14&issue=5/6&date=19670901&atitle=Religious+knowledge+and+attitudes+in+Mexico+City.&spage=469&pages=469-482&sid=EBSCO:Academic+Search+Premier&aulast=Stryckman,+Paul' )
         print 'RESPONSE CONTENT...'; print response.content
         self.assertEqual( 200, response.status_code )

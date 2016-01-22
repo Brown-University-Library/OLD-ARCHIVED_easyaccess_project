@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.db import connection
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth.backends import RemoteUserBackend
+
 
 class ShibbolethRemoteUserBackend(RemoteUserBackend):
     """

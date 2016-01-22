@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 From: https://raw.github.com/jacobian/django-shorturls/master/src/shorturls/baseconv.py
 Will use this method of converting primary keys to short strings that can be used
@@ -18,18 +22,19 @@ Sample usage:
 1234
 """
 
+
 class BaseConverter(object):
     decimal_digits = "0123456789"
-    
+
     def __init__(self, digits):
         self.digits = digits
-    
+
     def from_decimal(self, i):
         return self.convert(i, self.decimal_digits, self.digits)
-    
+
     def to_decimal(self, s):
         return int(self.convert(s, self.digits, self.decimal_digits))
-    
+
     def convert(number, fromdigits, todigits):
         # Based on http://code.activestate.com/recipes/111286/
         if str(number)[0] == '-':
@@ -42,7 +47,7 @@ class BaseConverter(object):
         x = 0
         for digit in str(number):
            x = x * len(fromdigits) + fromdigits.index(digit)
-    
+
         # create the result in base 'len(todigits)'
         if x == 0:
             res = todigits[0]

@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
-Lookup PMIDS and parse the returned metadata into the BibJSON format.  
+Lookup PMIDS and parse the returned metadata into the BibJSON format.
 
 See: http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
 

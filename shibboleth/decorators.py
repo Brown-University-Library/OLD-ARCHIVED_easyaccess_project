@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 """
 Decorators to use with Shibboleth.
 """
@@ -5,9 +9,10 @@ from django.conf import settings
 from django.contrib import auth
 from middleware import ShibbolethRemoteUserMiddleware
 
+
 def login_optional(func):
   """
-  Decorator to pull Shib attributes and log user in, if possible.  Does not 
+  Decorator to pull Shib attributes and log user in, if possible.  Does not
   enforce login.
   """
   def decorator(request,*args, **kwargs):
@@ -20,4 +25,4 @@ def login_optional(func):
         #user in if we can.
         proc = shib.process_request(request)
     return func(request, *args, **kwargs)
-  return decorator 
+  return decorator
