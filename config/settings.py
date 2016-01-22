@@ -11,10 +11,7 @@ import dj_database_url
 
 SECRET_KEY = os.environ['EZACS__SECRET_KEY']
 
-temp_DEBUG = json.loads( os.environ['EZACS__DEBUG_JSON'] )
-assert temp_DEBUG in [ True, False ], Exception( 'DEBUG env setting is, "%s"' )
-DEBUG = temp_DEBUG
-
+DEBUG = json.loads( os.environ['EZACS__DEBUG_JSON'] )  # will be True or False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = json.loads( os.environ['EZACS__ADMINS_JSON'] )
@@ -25,6 +22,8 @@ SITE_ID = 1
 DATABASES = json.loads( os.environ['EZACS__DATABASES_JSON'] )
 
 TIME_ZONE = 'America/New_York'
+
+USE_TZ = True
 
 ## https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_URL = os.environ['EZACS__STATIC_URL']
