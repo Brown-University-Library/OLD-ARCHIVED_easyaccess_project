@@ -57,6 +57,7 @@ class FinditResolver( object ):
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
             resp = render( request, template_name, context )
+        log.debug( 'returning response' )
         return resp
 
     def make_permalink( self, querystring ):

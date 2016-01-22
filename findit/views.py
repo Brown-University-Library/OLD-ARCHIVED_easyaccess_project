@@ -23,22 +23,19 @@ from django.utils.log import dictConfig
 #installed packages
 # from bul_link.baseconv import base62
 # from bul_link.views import BulLinkBase, ResolveView
-from bul_link.views import BulLinkBase
 # from bul_link.models import Resource
 # from py360link2 import Link360Exception
 from py360link2 import get_sersol_data, Link360Exception, Resolved
 
 #local
+# from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
 from . import forms, summon
+from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM, MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
 from .classes.baseconv import base62
 from .models import Request, UserMessage
 from .utils import BulSerSol, FinditResolver, Ourl
-# from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
 from .utils import get_cache_key, make_illiad_url
-from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL,\
-                         ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM,\
-                         MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,\
-                         SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
+from bul_link.views import BulLinkBase
 
 try:
     from easy_article.delivery.decorators import has_email, has_service
@@ -46,6 +43,7 @@ try:
 except ImportError:
     from delivery.decorators import has_email, has_service
     from delivery.utils import PublicTerminalMixin
+
 
 #One week.
 EXTRAS_CACHE_TIMEOUT = 604800 #60*60*24*7
@@ -1087,3 +1085,239 @@ def not_found_error(request, template_name='404.html'):
     )
 
 
+# class RequestView(PublicTerminalMixin, BulLinkBase):
+#     template_name = 'findit/request.html'
+#     default_json = False
+#     #@method_decorator(login_required)
+
+#     alog.debug( 'in findit.views.RequestView; about to run has_email decorator' )
+#     @method_decorator(has_email)
+#     @method_decorator(has_service)
+#     def dispatch(self, *args, **kwargs):
+#         alog.debug( 'starting findit.views.RequestView.dispatch()' )
+#         return super(RequestView, self).dispatch(*args, **kwargs)
+
+#     def send_message(self, message_type, **kwargs):
+#         addr = self.request.user.email
+#         message = UserMessage.objects.get(type=message_type)
+#         message_from = EMAIL_FROM
+#         if message_type == 'confirmation':
+#             request_object = kwargs.get('request', None)
+#             #full_path = ''.join(full_path)
+#             illiad_request_url = settings.FINDIT_ILLIAD_URL.replace('OpenURL?%s', '') + '?Action=10&Form=63&Value=%s' % request_object.illiad_tn
+
+#             msg = message.text.replace('{{ILLIAD_TN}}', request_object.illiad_tn)
+#             msg = msg.replace('{{ILLIAD_TRANS_URL}}', illiad_request_url)
+
+#             body = "%s" % (msg)
+#         elif message_type == 'blocked':
+#             resource = kwargs.get('resource', None)
+#             rid = resource.id
+#             tiny = base62.from_decimal(rid)
+#             plink = reverse('findit:permalink-view', kwargs={'tiny': tiny})
+#             full_path = ('http', ('', 's')[self.request.is_secure()], '://', self.request.META['HTTP_HOST'], plink)
+#             full_path = ''.join(full_path)
+#             body = "%s\n%s" % (message.text, full_path)
+#         else:
+#             body = message.text
+#         #sendit
+#         send_mail(message.subject,
+#                   body,
+#                   message_from,
+#                   [addr],
+#                   fail_silently=True)
+
+
+#     def get(self, request, *args, **kwargs):
+#         """
+#         Handle the request.  Ensure enough metadata is available for requesting.
+#         """
+#         resource_id = kwargs.get('resource', None)
+#         #Handle users not already authenticated.
+#         if not self.request.user.is_authenticated():
+#             url = "%s?target=%s" % (
+#                                   settings.LOGIN_URL,
+#                                   reverse('findit:request-view', kwargs={'resource': resource_id}))
+#             return redirect(url)
+
+#         ilog.info('User %s is at request page %s.' % (self.request.user.id,
+#                                                   resource_id))
+#         resource = Resource.objects.get(id=resource_id)
+#         #Check to see if the user has requested the given resource.
+#         try:
+#             requested = Request.objects.filter(item=resource_id,
+#                                                user=self.request.user)
+#             self.existing_request = requested[0]
+#         except IndexError:
+#             self.existing_request = None
+#         sersol = self.get_data(resource.query)
+#         self.resolved = BulSerSol(sersol)
+#         self.item = resource
+#         #Make sure we have enough metadata.  If we don't, send it along to the
+#         #citation linker.  In some cases a DOI won't return a page number
+#         #but will have a direct link.  We don't want to display the citation
+#         #link in that case.
+#         #if not self.resolved.access_points()['resolved']:
+#         #   if self.resolved.is_requestable() == False:
+#         #       cite_url = "%s?%s" % (reverse('findit:citation-form-view'),
+#         #                             resource.query)
+#         #       return redirect(cite_url)
+
+
+
+#         #Illiad testing.
+# #        from illiad.account import IlliadSession
+# #        profile = self.request.user.libraryprofile
+# #        illiad_profile = profile.illiad()
+# #        ill_username = illiad_profile['username']
+# #        illiad = IlliadSession(ILLIAD_REMOTE_AUTH_URL,
+# #                               ILLIAD_REMOTE_AUTH_HEADER,
+# #                               ill_username)
+# #        illiad_session = illiad.login()
+# #        ilog.info('User %s established Illiad session: %s.' % (ill_username,
+# #                                                              illiad_session['session_id']))
+# #        illiad.registered = False
+# #        if not illiad_session['authenticated']:
+# #            out['session_error'] = 'Failed login.'
+# #            ilog.error("Illiad login failed for %s" % ill_username)
+# #        else:
+# #            #Register users if neccessary.
+# #            if not illiad.registered:
+# #                ilog.info('Will register %s with illiad.' % (ill_username))
+# #                ilog.info('Registering %s with Illiad as %s.' % (ill_username,
+# #                                                                 illiad_profile['status'])
+# #                          )
+# #                reg = illiad.register_user(illiad_profile)
+# #                ilog.info('%s registration response: %s' % (ill_username, reg))
+# #        #end testing block
+
+#         return super(RequestView, self).get(request)
+
+#     @method_decorator(login_required)
+#     def post(self, *args, **kwargs):
+#         from illiad.account import IlliadSession
+#         posted = self.request.POST
+#         resource = Resource.objects.get(id=posted['resource'])
+#         #Mock what the JS is expecting.
+#         out = {}
+#         #For development - requests aren't sent to ILLiad.
+#         if self.request.META.get('SERVER_NAME') in settings.DEV_SERVERS:
+#             out['submit_status'] = {'submitted': True, 'id': 1234}
+#             out['blocked'] = False
+#             out['session'] = {'authenticated': True}
+#             req = Request.objects.create(
+#                                         item=resource,
+#                                         user=self.request.user,
+#                                         illiad_tn='new'
+#             )
+#             req.save()
+#             return HttpResponse(json.dumps(out),
+#                                mimetype='application/json')
+#         profile = self.request.user.libraryprofile
+#         illiad_profile = profile.illiad()
+#         ill_username = illiad_profile['username']
+#         #Get the OpenURL we will submit.
+#         ill_url = posted['ill_openurl']
+#         ilog.info('User %s posted %s for request.' % (ill_username,
+#                                                        ill_url))
+#         out = {}
+#         #Get an illiad instance
+#         illiad = IlliadSession(ILLIAD_REMOTE_AUTH_URL,
+#                                ILLIAD_REMOTE_AUTH_HEADER,
+#                                ill_username)
+#         illiad_session = illiad.login()
+#         ilog.info('User %s established Illiad session: %s.' % (ill_username,
+#                                                               illiad_session['session_id']))
+#         out['session'] = illiad_session
+
+#         if not illiad_session['authenticated']:
+#             out['session_error'] = 'Failed login.'
+#             ilog.error("Illiad login failed for %s" % ill_username)
+#         else:
+#             #Register users if neccessary.
+#             if not illiad.registered:
+#                 ilog.info('Will register %s with illiad.' % (ill_username))
+#                 ilog.info('Registering %s with Illiad as %s.' % (ill_username,
+#                                                                  illiad_profile['status'])
+#                           )
+#                 reg = illiad.register_user(illiad_profile)
+#                 ilog.info('%s registration response: %s' % (ill_username, reg))
+
+#             illiad_post_key = illiad.get_request_key(ill_url)
+#             #If blocked comes back in the post key, stop here with appropriate status.
+#             blocked = illiad_post_key.get('blocked', None)
+#             errors = illiad_post_key.get('errors', None)
+#             if blocked:
+#                 out['blocked'] = blocked
+#                 ilog.info("%s is blocked in Illiad." % ill_username)
+#                 self.send_message('blocked', resource=resource)
+#             elif errors:
+#                 out['errors'] = True
+#                 msg = illiad_post_key['message']
+#                 ilog.info("Request errors during Illiad submission: %s %s" %\
+#                             (ill_username,
+#                              self.msg))
+#                 out['message'] = msg
+#             else:
+#                 #Submit this
+#                 #out['submit_key'] = illiad_post_key
+#                 submit_status = illiad.make_request(illiad_post_key)
+#                 #Mock a request for testing.
+# #                submit_status = {
+# #                               'transaction_number': '1234',
+# #                               'submitted': True,
+# #                               'error': False,
+# #                               'message': None
+# #                               }
+#                 out['submit_status'] = submit_status
+#                 #Write the request to the requests table.
+#                 if submit_status['submitted']:
+#                     illiad_tn = submit_status['transaction_number']
+#                     req = Request.objects.create(item=resource,
+#                                                  user=self.request.user,
+#                                                  illiad_tn=illiad_tn)
+#                     self.send_message('confirmation', request=req)
+#                     ilog.info("%s request submitted for %s with transaction %s." %\
+#                             (ill_username,
+#                              req.id,
+#                              illiad_tn))
+#                 else:
+#                     ilog.error("%s request failed with message %s." %\
+#                                (ill_username,
+#                                submit_status['message']))
+#         illiad.logout()
+#         return HttpResponse(json.dumps(out),
+#                             mimetype='application/json')
+
+
+#     def get_context_data(self, **kwargs):
+#         context = super(RequestView, self).get_context_data(**kwargs)
+#         #Get the article id, if not raise an error.
+#         #These are client side requests to see if the authenticated user has already requested the item.
+#         #Check to see if this user has requested this item already.
+# #        lookup = self.request.GET.get('lookup', None)
+# #        if (lookup) and (self.request.user):
+# #            self.default_json = True
+# #            try:
+# #                item_request = Request.objects.get(item=perma_key,
+# #                                          user=self.request.user)
+# #                out = {}
+# #                out['requested'] = True
+# #                out['date'] = item_request.date_created.isoformat()
+# #                return out
+# #            except ObjectDoesNotExist:
+# #                out = {}
+# #                out['requested'] = False
+# #                return out
+#         #hit the resolver
+#         citation = self.resolved.citation
+#         context['format'] = self.resolved.format
+#         context['citation'] = self.resolved.citation
+#         context['resource'] = self.resource
+#         context['openurl'] = self.resolved.openurl
+#         #Build the openurl from the citation metadata plus the original referrer.
+#         context['ill_openurl'] = "%s&sid=%s" % (make_illiad_url(context['openurl']), self.item.referrer)
+#         context['illiad_url'] = 'https://illiad.brown.edu/illiad/illiad.dll/OpenURL?' + context['ill_openurl']
+#         context['existing_request'] = self.existing_request
+#         ilog.info('Illiad url to be submitted: %s' % context['illiad_url'])
+#         return context
