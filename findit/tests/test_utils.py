@@ -2,14 +2,18 @@
 
 from __future__ import unicode_literals
 
-import unittest
+import logging, pprint, unittest, urllib, urlparse
+
+from django.conf import settings
+from django.utils.log import dictConfig
 from findit.utils import make_illiad_url, BulSerSol
 from py360link2.link360 import get_sersol_data
-from django.conf import settings
-from pprint import pprint
 
-import urllib
-import urlparse
+
+## logging
+dictConfig(settings.LOGGING)
+alog = logging.getLogger('access')
+ilog = logging.getLogger('illiad')
 
 
 class IlliadURLTests(unittest.TestCase):
@@ -29,12 +33,15 @@ class IlliadURLTests(unittest.TestCase):
         self.assertTrue('FirstSearch:WorldCat' in ill_dict['sid'])
 
     def test_date(self):
-        #Dates need to just be the four digit year.
-        ourl = 'rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.auinitm=D&rft.spage=392&rft.au=Schlenker%2C+J+D&rft.aulast=Schlenker&sid=bul_easy_article&rft_id=info%3Apmid%2F7252116&rft.date=1981-07&rft.issn=0363-5023&rft.aufirst=J&rft.volume=6&version=1.0&url_ver=Z39.88-2004&rft.atitle=Three+complications+of+untreated+partial+laceration+of+flexor+tendon--entrapment%2C+rupture%2C+and+triggering&rft.eissn=1531-6564&pmid=7252116&rft.jtitle=The+Journal+of+hand+surgery+%28American+ed.%29&rft.issue=4&rft.genre=article'
-        ill = make_illiad_url(ourl)
-        ill_dict = urlparse.parse_qs(ill)
-        date = ill_dict['rft.date'][0]
-        self.assertEqual(date, '1981')
+        """ Checks that raw dates are returned.
+            See delivery.utils.illiad_date() for policy. """
+        orig_ourl = 'rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.auinitm=D&rft.spage=392&rft.au=Schlenker%2C+J+D&rft.aulast=Schlenker&sid=bul_easy_article&rft_id=info%3Apmid%2F7252116&rft.date=1981-07&rft.issn=0363-5023&rft.aufirst=J&rft.volume=6&version=1.0&url_ver=Z39.88-2004&rft.atitle=Three+complications+of+untreated+partial+laceration+of+flexor+tendon--entrapment%2C+rupture%2C+and+triggering&rft.eissn=1531-6564&pmid=7252116&rft.jtitle=The+Journal+of+hand+surgery+%28American+ed.%29&rft.issue=4&rft.genre=article'
+        ill_ourl = make_illiad_url( orig_ourl )
+        # ilog.debug( 'ill_ourl, `%s`' % ill_ourl )
+        ill_ourl_dct = urlparse.parse_qs( ill_ourl )  # all dct values are lists
+        # ilog.debug( 'ill_ourl_dct, `%s`' % pprint.pformat(ill_ourl_dct) )
+        date = ill_ourl_dct['rft.date'][0]
+        self.assertEqual( '1981-07', date )
 
     def test_pmid(self):
         """

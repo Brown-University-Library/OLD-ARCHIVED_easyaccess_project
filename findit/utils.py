@@ -543,13 +543,13 @@ def pull_referrer(odict):
 
 
 def illiad_date(datestr):
-    """
-    Dates should be four digit years - 1990 - without issue or
-    volume information, 'e.g. 1990-2'.  For RAPID per Bart.
-    """
-    #Deactivating date massaging per Bart - 3/14/13
-    #Reactivating date massaging per Bart - 8/1/13
-    #Bart wants raw dates again - 4/24/14
+    """ Returns raw date.
+        Commented out code converts extra info to a 4-digit year, eg '1990-2' -> '1990'
+        Called by make_illiad_url()
+        Changes:
+        - Deactivating date massaging per Bart - 3/14/13
+        - Reactivating date massaging per Bart - 8/1/13
+        - Deactivating date massaging per Bart - 4/24/14 """
     return datestr
     #if datestr:
     #   return datestr.split('-')[0]
