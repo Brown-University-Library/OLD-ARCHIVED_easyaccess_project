@@ -181,27 +181,45 @@ class BulSerSol(Resolved):
     """
     Sub-class of the main Resolved class to handle Browns specific needs.
     """
+
     def pull_print(self, issns):
-        """
-        Get the print title information and return Django query object.
-        """
+        """ Get the print title information and return Django query object.
+            Called by self.access_points() """
         #Normalize start and end - dates are 2007-01-01.
-        #import ipdb; ipdb.set_trace()
-#        start = int(start.split('-')[0])
-#        try:
-#            end = int(end.split('-')[0])
-#        except IndexError:
-#            #set this for open ended dates.
-#            end = 4000
-        date = self.citation.get('date', None)
+        date = self.citation.get( 'date', None )
         if date:
             date = date[:4]
-            print_set = PrintTitle.objects.filter(issn__in=issns,
-                                                     start__lte=date,
-                                                     end__gte=date)
-            return print_set
+            log.debug( 'len( PrintTitle.objects.all() ), `%s`' % len(PrintTitle.objects.all()) )
+            log.debug( 'issns, `%s`; date, `%s`' % (issns, date) )
+            print_set = PrintTitle.objects.filter(
+                issn__in=issns, start__lte=date, end__gte=date)
+            rslt = print_set
         else:
-            return []
+            rslt = []
+        log.debug( 'rslt, `%s`' % rslt )
+        return rslt
+
+#     def pull_print(self, issns):
+#         """
+#         Get the print title information and return Django query object.
+#         """
+#         #Normalize start and end - dates are 2007-01-01.
+#         #import ipdb; ipdb.set_trace()
+# #        start = int(start.split('-')[0])
+# #        try:
+# #            end = int(end.split('-')[0])
+# #        except IndexError:
+# #            #set this for open ended dates.
+# #            end = 4000
+#         date = self.citation.get('date', None)
+#         if date:
+#             date = date[:4]
+#             print_set = PrintTitle.objects.filter(issn__in=issns,
+#                                                      start__lte=date,
+#                                                      end__gte=date)
+#             return print_set
+#         else:
+#             return []
 
     def get_non_direct(self, group):
         """
