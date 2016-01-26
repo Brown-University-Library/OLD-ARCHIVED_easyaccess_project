@@ -73,7 +73,10 @@ def base_resolver( request ):
 
     ## index-page call?
     if fresolver.check_index_page( request.GET ):
-        return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
+        # return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
+        context = fresolver.make_index_context( request.GET )
+        resp = fresolver.make_index_response( request, context )
+        return resp
 
     ## make permalink if one doesn't exist -- TODO
     permalink = fresolver.make_permalink( request.META.get('QUERY_STRING') )
@@ -91,8 +94,13 @@ def base_resolver( request ):
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
+    ## build response context
+    context = fresolver.make_resolve_context( sersol_dct )
+
     ## return resolve response
-    return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
+    # return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
+    resp = fresolver.make_resolve_response( request, context )
+    return resp
 
     ## end def base_resolver()
 

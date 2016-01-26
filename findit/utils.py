@@ -43,27 +43,27 @@ class FinditResolver( object ):
         log.debug( 'return_val, `%s`' % return_val )
         return return_val
 
+    def make_permalink( self, querystring ):
+        """ Creates a bul_link.models.Resource entry if one doesn't exist, and creates and returns a permalink string.
+            Called by views.base_resolver() """
+        return 'foo'
+
     def make_index_context( self, querydict ):
         """ Builds context for index page.
             Called by views.base_resolver() """
         context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
         return context
 
-    def make_response( self, request, context, template_name ):
+    def make_index_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.
             Called by views.base_resolver() """
         if request.GET.get('output', '') == 'json':
             output = json.dumps( context, sort_keys=True, indent = 2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
-            resp = render( request, template_name, context )
+            resp = render( request, 'findit/index.html', context )
         log.debug( 'returning response' )
         return resp
-
-    def make_permalink( self, querystring ):
-        """ Creates a bul_link.models.Resource entry if one doesn't exist, and creates and returns a permalink string.
-            Called by views.base_resolver() """
-        return 'foo'
 
     def check_summon( self, querydict ):
         """ Determines whether a summon check is needed.
@@ -76,21 +76,6 @@ class FinditResolver( object ):
                 break
         log.debug( 'check_summon, `%s`' % check_summon )
         return check_summon
-
-    def _get_referrer( self, querydict ):
-        """ Gets the referring site to append to links headed elsewhere.
-            Helpful for tracking down ILL request sources.
-            Called by check_summon() """
-        ( sid, ea ) = ( None, 'easyAccess' )
-        sid = querydict.get( 'sid', None )
-        if not sid:  # then try rfr_id
-            sid = querydict.get( 'rfr_id', None )
-        if sid:
-            referrer = '%s-%s' % ( sid, ea )
-        else:
-            referrer = ea
-        log.debug( 'referrer, `%s`' % referrer )
-        return referrer
 
     def enhance_link( self, direct_indicator, query_string ):
         """ Enhances link via summon lookup if necessary.
@@ -133,7 +118,7 @@ class FinditResolver( object ):
     def get_sersol_dct( self, scheme, host, querystring ):
         """ Builds initial data-dict.
             Called by views.base_resolver() """
-        sersol_dct = get_sersol_data(querystring, key='rl3tp7zf5x')
+        sersol_dct = get_sersol_data( querystring, key='rl3tp7zf5x' )  # get_sersol_data() is a function of pylink3602
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 
@@ -147,15 +132,46 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    def make_resolve_response( self, request, context ):
+        """ Returns json or html response object for index.html or resolve.html template.
+            Called by views.base_resolver()
+            TODO: refactor. """
+        if request.GET.get('output', '') == 'json':
+            output = json.dumps( context, sort_keys=True, indent = 2 )
+            resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
+        else:
+            resp = render( request, 'findit/resolve.html', context )
+        log.debug( 'returning response' )
+        return resp
+
+    ## helper defs
+
+    def _get_referrer( self, querydict ):
+        """ Gets the referring site to append to links headed elsewhere.
+            Helpful for tracking down ILL request sources.
+            Called by check_summon() """
+        ( sid, ea ) = ( None, 'easyAccess' )
+        sid = querydict.get( 'sid', None )
+        if not sid:  # then try rfr_id
+            sid = querydict.get( 'rfr_id', None )
+        if sid:
+            referrer = '%s-%s' % ( sid, ea )
+        else:
+            referrer = ea
+        log.debug( 'referrer, `%s`' % referrer )
+        return referrer
+
     def _try_resolved_obj_citation( self, sersol_dct ):
         """ Returns initial context based on a resolved-object.
             Called by make_resolve_context() """
         context = {}
         try:
             resolved_obj = BulSerSol( sersol_dct )
+            log.debug( 'resolved_obj.__dict__, ```%s```' % pprint.pformat(resolved_obj.__dict__) )
             context = resolved_obj.access_points()
             context['citation'] = resolved_obj.citation
             context['link_groups'] = resolved_obj.link_groups
+            context['format'] = resolved_obj.format
         except Exception as e:
             log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
             context['citation'] = {}
