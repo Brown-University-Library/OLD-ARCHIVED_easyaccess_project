@@ -12,6 +12,8 @@ from django.db import models
 
 
 class PrintTitle(models.Model):
+    """ Stores data from file produced by rapid.
+        See <https://github.com/birkin/rapid_exports/blob/5bb05dda389113661703bb682c9542b4599a9566/rapid_app/views.py#L24> """
     key = models.CharField(max_length=20, primary_key=True)
     issn = models.CharField(max_length=15)
     start = models.IntegerField()

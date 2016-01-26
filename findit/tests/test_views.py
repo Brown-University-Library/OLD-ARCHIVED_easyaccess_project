@@ -43,7 +43,7 @@ class IndexPageLinksTest( TestCase ):
         """ Checks the `Article/Chapter held at Annex.` link """
         from findit.models import PrintTitle
         print_title = PrintTitle(
-            key='003776861966', issn='0037-7686', start='1966', end='1992', call_number='Annex   BL60.A2 S65' )
+            key='003776861966', issn='0037-7686', start='1966', end='1992', location='Annex', call_number='BL60.A2 S65' )
         print_title.save()
         response = self.client.get( '/find/?genre=article&issn=00377686&title=Social+Compass&volume=14&issue=5/6&date=19670901&atitle=Religious+knowledge+and+attitudes+in+Mexico+City.&spage=469&pages=469-482&sid=EBSCO:Academic+Search+Premier&aulast=Stryckman,+Paul' )
         print 'RESPONSE CONTENT...'; print response.content
@@ -51,8 +51,8 @@ class IndexPageLinksTest( TestCase ):
         self.assertEqual( True, '<title>easyArticle - Brown University Library</title>' in response.content )
         self.assertEqual( True, '<h3>easyArticle</h3>' in response.content )
         self.assertEqual( True, '<h3>Available at the library</h3>' in response.content )
-        self.assertEqual( True, 'z<span class="print-location">Annex</span>' in response.content )
-        self.assertEqual( True, 'z<span class="print-callnumber">BL60.A2 S65</span>' in response.content )
+        self.assertEqual( True, '<span class="print-location">Annex</span>' in response.content )
+        self.assertEqual( True, '<span class="print-callnumber">BL60.A2 S65</span>' in response.content )
 
     ## end class IndexPageLinksTest
 
