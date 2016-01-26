@@ -90,6 +90,10 @@ def base_resolver( request ):
     if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING') ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
+    ## if book, redirect to /borrow
+    if fresolver.check_book( request.GET, request.META.get('QUERY_STRING') ):
+        return HttpResponseRedirect( fresolver.borrow_link )
+
     ## get serials-solution data-dct
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
