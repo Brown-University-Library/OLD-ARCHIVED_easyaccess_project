@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url(r'staff', StaffView.as_view(), name='staff'),
     url(r'user-info', UserInfoView.as_view(), name='user-info'),
     url(r'^$', ResolveView.as_view(), name='resolve'),
+    # url( r'^$',  'delivery.views.base_resolver', name=u'delivery_base_resolver_url' ),  # will be new
     )
 
 # urlpatterns = patterns('',
