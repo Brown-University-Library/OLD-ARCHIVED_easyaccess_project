@@ -107,7 +107,7 @@ class FinditResolver( object ):
             Called by views.base_resolver() """
         is_book = False
         if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
-            url = reverse( 'delivery:resolve' ) + rqst_qstring
+            url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
             log.debug( 'book url, `%s`' % url )
             self.borrow_link = url
             is_book = True
