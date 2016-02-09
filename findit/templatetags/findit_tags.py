@@ -3,7 +3,10 @@
 from __future__ import unicode_literals
 
 import logging, pprint
+
 from django import template
+from django.template.base import TOKEN_TEXT, TOKEN_VAR, TOKEN_BLOCK, TOKEN_COMMENT, TextNode  # django 1.9
+
 from django.conf import settings
 from django.utils.log import dictConfig
 from django.utils.translation import ugettext as _
@@ -88,10 +91,10 @@ def raw(parser, token):
     text = []
     parse_until = 'endraw'
     tag_mapping = {
-        template.TOKEN_TEXT: ('', ''),
-        template.TOKEN_VAR: ('{{', '}}'),
-        template.TOKEN_BLOCK: ('{%', '%}'),
-        template.TOKEN_COMMENT: ('{#', '#}'),
+        TOKEN_TEXT: ('', ''),
+        TOKEN_VAR: ('{{', '}}'),
+        TOKEN_BLOCK: ('{%', '%}'),
+        TOKEN_COMMENT: ('{#', '#}'),
     }
     # By the time this template tag is called, the template system has already
     # lexed the template into tokens. Here, we loop over the tokens until
@@ -100,8 +103,13 @@ def raw(parser, token):
     # stripped off in a previous part of the template-parsing process.
     while parser.tokens:
         token = parser.next_token()
-        if token.token_type == template.TOKEN_BLOCK and token.contents == parse_until:
-            return template.TextNode(u''.join(text))
+
+        # if token.token_type == template.TOKEN_BLOCK and token.contents == parse_until:
+        #     return template.TextNode(u''.join(text))
+
+        if token.token_type == TOKEN_BLOCK and token.contents == parse_until:
+            return TextNode(u''.join(text))
+
         start, end = tag_mapping[token.token_type]
         text.append(u'%s%s%s' % (start, token.contents, end))
     parser.unclosed_block_tag(parse_until)
