@@ -101,18 +101,38 @@ class PmidResolverTest(TestCase):
         self.assertIn('0008-350X', context['citation']['issn']['print'])
 
 
+# class PrintResolverTest(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
+#     def test_print_holding(self):
+#         request = self.factory.get('?rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.spage=80&rft.au=Churchland%2C%20PS&rft.aulast=Churchland&rft.format=journal&rft.date=1983&rft.aufirst=PS&rft.volume=64&rft.eissn=1468-0114&rft.atitle=Consciousness%3A%20The%20transmutation%20of%20a%20concept&rft.jtitle=Pacific%20philosophical%20quarterly&rft.issn=0279-0750&rft.genre=article&url_ver=Z39.88-2004&rfr_id=info:sid/libx%3Abrown')
+#         response = views.ResolveView(request=request)
+#         context = response.get_context_data()
+#         citation = context['citation']
+#         self.assertTrue(citation['source'], 'Pacific philosophical quarterly')
+#         self.assertTrue(citation['creatorLast'], 'Churchland')
+#         self.assertTrue(context['link_groups'][0]['holdingData']['providerName'],
+#                         'Library Specific Holdings')
+
+
 class PrintResolverTest(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
+    """ Checks held-book context. """
+
     def test_print_holding(self):
-        request = self.factory.get('?rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.spage=80&rft.au=Churchland%2C%20PS&rft.aulast=Churchland&rft.format=journal&rft.date=1983&rft.aufirst=PS&rft.volume=64&rft.eissn=1468-0114&rft.atitle=Consciousness%3A%20The%20transmutation%20of%20a%20concept&rft.jtitle=Pacific%20philosophical%20quarterly&rft.issn=0279-0750&rft.genre=article&url_ver=Z39.88-2004&rfr_id=info:sid/libx%3Abrown')
-        response = views.ResolveView(request=request)
-        context = response.get_context_data()
-        citation = context['citation']
-        self.assertTrue(citation['source'], 'Pacific philosophical quarterly')
-        self.assertTrue(citation['creatorLast'], 'Churchland')
-        self.assertTrue(context['link_groups'][0]['holdingData']['providerName'],
-                        'Library Specific Holdings')
+        """ Checks held-book context. """
+        url = '/find/?rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.spage=80&rft.au=Churchland%2C%20PS&rft.aulast=Churchland&rft.format=journal&rft.date=1983&rft.aufirst=PS&rft.volume=64&rft.eissn=1468-0114&rft.atitle=Consciousness%3A%20The%20transmutation%20of%20a%20concept&rft.jtitle=Pacific%20philosophical%20quarterly&rft.issn=0279-0750&rft.genre=article&url_ver=Z39.88-2004&rfr_id=info:sid/libx%3Abrown'
+        c = Client()
+        response = c.get( url, SERVER_NAME='127.0.0.1' )
+        # log.debug( 'context.keys(), `%s`' % pprint.pformat( sorted(response.context.keys()) ) )
+        citation = response.context['citation']
+        link_groups = response.context['link_groups']
+        # log.debug( 'citation, `%s`' % pprint.pformat(citation) )
+        # log.debug( 'link_groups, `%s`' % pprint.pformat(link_groups) )
+        self.assertEqual( 'Pacific philosophical quarterly', citation['source'] )
+        self.assertEqual( 'Churchland', citation['creatorLast'] )
+        self.assertEqual( 'Library Specific Holdings', link_groups[0]['holdingData']['providerName'] )
+
+    # end class PrintResolverTest
 
 
 class EasyBorrowResolverTest(TestCase):
@@ -129,7 +149,7 @@ class EasyBorrowResolverTest(TestCase):
         # log.debug( 'type(content), `%s`' % type(content) )
         self.assertTrue( content.rfind('easyBorrow') > -1 )
         self.assertTrue( content.rfind('17803510') > -1 )  # accession number
-        ## testing context's bibjson
+        ## testing context's bibjson...
         log.debug( 'context.keys(), `%s`' % pprint.pformat( sorted(response2.context.keys()) ) )
         bibjson_dct = json.loads( response2.context['bibjson'] )
         self.assertEqual( 'Russo, Richard', bibjson_dct['author'][0]['name'] )
