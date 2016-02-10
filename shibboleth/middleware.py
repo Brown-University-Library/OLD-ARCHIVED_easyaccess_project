@@ -57,7 +57,8 @@ class ShibbolethRemoteUserMiddleware(RemoteUserMiddleware):
             # If specified header doesn't exist then return (leaving
             # request.user set to AnonymousUser by the
             # AuthenticationMiddleware).
-            if settings.SHIB_MOCK_HEADERS is True and '/login/' in request.META['REQUEST_URI']:
+            # if settings.SHIB_MOCK_HEADERS is True and '/login/' in request.META['REQUEST_URI']:
+            if settings.SHIB_MOCK_HEADERS is True and '/login/' in request.META.get('REQUEST_URI', ''):
                 username = settings.SHIB_MOCK_MAP['Shibboleth-eppn']
                 pass
             else:
