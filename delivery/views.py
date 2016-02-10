@@ -89,7 +89,7 @@ class ResolveView(DeliveryBaseView):
             return
 
     def get(self, request, **kwargs):
-        # alog.debug( u'bjd/in ResolveView.get()' )
+        # alog.debug( 'bjd/in ResolveView.get()' )
         import pubmed
         from models import JosiahAvailabilityManager
 
@@ -115,7 +115,7 @@ class ResolveView(DeliveryBaseView):
                 bibj = from_openurl(self.resource.query)
             else:
                 raise Exception('Cant build a bibjson object.  Check ResolveView.get')
-            alog.debug( u'bjd/in ResolveView.get(); bibj: %s' % pprint.pformat(bibj) )
+            alog.debug( 'in delivery.views.ResolveView.get(); bibj: %s' % pprint.pformat(bibj) )
 
             #update ezb table if book & available
             try:
@@ -124,7 +124,7 @@ class ResolveView(DeliveryBaseView):
                 if jam.available:
                     jam.update_ezb_availability( bibj )
             except Exception as e:
-                alog.error( u'bjd/in ResolveView.get(); exception: %s' % repr(e).decode(u'utf-8', u'replace') )
+                alog.error( 'in delivery.views.ResolveView.get(); exception: %s' % unicode(repr(e)) )
                 pass
 
             #if there is a pubmed ID in the incoming request,
@@ -164,6 +164,7 @@ class ResolveView(DeliveryBaseView):
             self.cite = urlparse.parse_qs(self.query)
 
         self.request.session['last_visited_resource'] = self.query
+        alog.debug( 'in delivery.views.ResolveView.get(); about to return response' )
         return super(ResolveView, self).get(request)
 
     def get_context_data(self, **kwargs):
