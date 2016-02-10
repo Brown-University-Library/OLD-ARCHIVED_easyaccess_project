@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint
+import json, logging, pprint
 from django.conf import settings
 from django.test import Client, TestCase
 from django.test.client import RequestFactory
@@ -129,6 +129,14 @@ class EasyBorrowResolverTest(TestCase):
         # log.debug( 'type(content), `%s`' % type(content) )
         self.assertTrue( content.rfind('easyBorrow') > -1 )
         self.assertTrue( content.rfind('17803510') > -1 )  # accession number
+        ## testing context's bibjson
+        log.debug( 'context.keys(), `%s`' % pprint.pformat( sorted(response2.context.keys()) ) )
+        bibjson_dct = json.loads( response2.context['bibjson'] )
+        self.assertEqual( 'Russo, Richard', bibjson_dct['author'][0]['name'] )
+        self.assertEqual( '9780394565279', bibjson_dct['identifier'][0]['id'] )
+        self.assertEqual( 'isbn', bibjson_dct['identifier'][0]['type'] )
+        self.assertEqual( '17803510', bibjson_dct['identifier'][1]['id'] )
+        self.assertEqual( 'oclc', bibjson_dct['identifier'][1]['type'] )
 
     ## end class EasyBorrowResolverTest
 
