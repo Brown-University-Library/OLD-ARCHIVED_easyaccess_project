@@ -67,7 +67,7 @@ def tiny_resolver( request, tiny ):
 
 
 
-def base_resolver( request ):
+def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
 

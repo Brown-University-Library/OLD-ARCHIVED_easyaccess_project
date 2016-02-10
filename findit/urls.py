@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     url( r'^get/(?P<id_type>pmid|doi)/(?P<id_value>.*)/$',  SummonView.as_view(), name='summon-view' ),
 
     # url( r'^$',  Resolver.as_view(), name='resolver-view' ),
-    url( r'^$',  'findit.views.base_resolver', name=u'base_resolver_url' ),
+    url( r'^$',  'findit.views.findit_base_resolver', name=u'findit_base_resolver_url' ),
 
     )
 
