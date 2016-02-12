@@ -124,7 +124,6 @@ class PmidResolverTest(TestCase):
 
 
 class PrintResolverTest(TestCase):
-    """ Checks held-book context. """
 
     def test_print_holding(self):
         """ Checks held-book context. """
@@ -144,7 +143,6 @@ class PrintResolverTest(TestCase):
 
 
 class EasyBorrowResolverTest(TestCase):
-    """ Checks 'find' url redirect to 'borrow' url. """
 
     def test_pass_to_easy_borrow(self):
         """ Checks that book request hands off to easyBorrow landing page. """
@@ -169,23 +167,39 @@ class EasyBorrowResolverTest(TestCase):
     ## end class EasyBorrowResolverTest
 
 
-class EbookResolverTest(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
+# class EbookResolverTest(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
 
-    def test_ebook(self):
-        o = '?rft.pub=Yale+University+Press&rft.aulast=Dyson&rft.isbn=9780300110975&rft.isbn=9780300110975&rft.author=Dyson%2C+Stephen+L&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.aufirst=Stephen&rft.place=New+Haven&rft.date=2006&rft.auinitm=L&url_ver=Z39.88-2004&version=1.0&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rfe_dat=%3Caccessionnumber%3E70062939%3C%2Faccessionnumber%3E'
-        request = self.factory.get(o)
-        response = views.ResolveView(request=request)
-        context = response.get_context_data()
-        citation = context['citation']
-        lg = context['link_groups']
-        self.assertTrue('In pursuit of ancient pasts : a history of classical archaeology in the nineteenth and twentieth centuries',
-                        citation['title'])
-        self.assertTrue('Yale University Press',
-                        citation['publisher'])
-        self.assertTrue('Ebrary Academic Complete Subscription Collection',
-                        lg[0]['holdingData']['databaseName'])
+#     def test_ebook(self):
+#         o = '?rft.pub=Yale+University+Press&rft.aulast=Dyson&rft.isbn=9780300110975&rft.isbn=9780300110975&rft.author=Dyson%2C+Stephen+L&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.aufirst=Stephen&rft.place=New+Haven&rft.date=2006&rft.auinitm=L&url_ver=Z39.88-2004&version=1.0&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rfe_dat=%3Caccessionnumber%3E70062939%3C%2Faccessionnumber%3E'
+#         request = self.factory.get(o)
+#         response = views.ResolveView(request=request)
+#         context = response.get_context_data()
+#         citation = context['citation']
+#         lg = context['link_groups']
+#         self.assertTrue('In pursuit of ancient pasts : a history of classical archaeology in the nineteenth and twentieth centuries',
+#                         citation['title'])
+#         self.assertTrue('Yale University Press',
+#                         citation['publisher'])
+#         self.assertTrue('Ebrary Academic Complete Subscription Collection',
+#                         lg[0]['holdingData']['databaseName'])
+
+class EbookResolverTest(TestCase):
+
+    def test_book_with_ebook_available_redirect(self):
+        """ Checks book resolution when an ebook is available.
+            Handled as a regular book -- the ebook info is displayed in 'delivery' """
+        url = '/find/?rft.pub=Yale+University+Press&rft.aulast=Dyson&rft.isbn=9780300110975&rft.isbn=9780300110975&rft.author=Dyson%2C+Stephen+L&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.aufirst=Stephen&rft.place=New+Haven&rft.date=2006&rft.auinitm=L&url_ver=Z39.88-2004&version=1.0&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rfe_dat=%3Caccessionnumber%3E70062939%3C%2Faccessionnumber%3E'
+        c = Client()
+        response = c.get( url, SERVER_NAME='127.0.0.1' )
+        # log.debug( 'response._headers, ```%s```' % pprint.pformat(response._headers) )
+        # log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( 'http://127.0.0.1/borrow/?rft.pub=Yale+University+Press', redirect_url[0:54] )
+
+    # end class EbookResolverTest
+
 
 class ConferenceReportResolverTest(TestCase):
     def setUp(self):
