@@ -13,6 +13,20 @@ from django.utils.importlib import import_module
 from delivery import views
 
 
+
+# class ConferenceReportResolverTest(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
+#     def test_econference_report(self):
+#         request = self.factory.get('?id=10.1109/CCECE.2011.6030651')
+#         response = views.ResolveView(request=request)
+#         context = response.get_context_data()
+#         citation = context['citation']
+#         self.assertTrue('Electrical and Computer Engineering (CCECE), 2011 24th Canadian Conference on', citation['source'])
+#         self.assertTrue('Islam', citation['creatorLast'])
+
+
+
 # class ResolverTest(unittest.TestCase):
 # class ResolverTest( TestCase ):
 #     def setUp(self):

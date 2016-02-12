@@ -136,19 +136,19 @@ class FinditResolver( object ):
         return sersol_dct
 
     def check_book_after_sersol( self, sersol_dct, rqst_qstring ):
-        """ Handles book requests; builds /borrow redirect link.
+        """ Handles book requests after sersol lookup; builds /borrow redirect link.
             Called by views.base_resolver() """
         is_book = False
-        log.debug( 'sersol_dct.keys(), ```%s```' % pprint.pformat(sersol_dct.keys()) )
-        1/0
-        if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
-            url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
-            log.debug( 'book url, `%s`' % url )
-            self.borrow_link = url
-            is_book = True
-        log.debug( 'is_book, `%s`' % is_book )
+        results = sersol_dct.get( 'results', '' )
+        if type( results ) == list:
+            if len( results ) > 0:
+                if type( results[0] ) == dict:
+                    if results[0].get( 'format', '' ) == 'book':
+                        url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
+                        self.borrow_link = url
+                        is_book = True
+        log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )
         return is_book
-
 
     def make_resolve_context( self, sersol_dct ):
         """ Preps the template view.

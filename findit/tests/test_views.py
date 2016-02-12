@@ -183,34 +183,17 @@ class EbookResolverTest(TestCase):
     # end class EbookResolverTest
 
 
-# class ConferenceReportResolverTest(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-#     def test_econference_report(self):
-#         request = self.factory.get('?id=10.1109/CCECE.2011.6030651')
-#         response = views.ResolveView(request=request)
-#         context = response.get_context_data()
-#         citation = context['citation']
-#         self.assertTrue('Electrical and Computer Engineering (CCECE), 2011 24th Canadian Conference on', citation['source'])
-#         self.assertTrue('Islam', citation['creatorLast'])
-
-
 class ConferenceReportResolverTest(TestCase):
 
     def test_econference_report(self):
-        """ Checks econference-report resolution. """
+        """ Checks conference-report resolution for minimal id where sersol lookup indicates book.
+            Should redirect to `borrow` url where easyBorrow request button will appear and any online options will appear. """
         url = '/find/?id=10.1109/CCECE.2011.6030651'
         c = Client()
         response = c.get( url, SERVER_NAME='127.0.0.1' )
-        log.debug( 'response.content, ```%s```' % response.content.decode('utf-8') )
-
-        1/0
-
-        response = views.ResolveView(request=request)
-        context = response.get_context_data()
-        citation = context['citation']
-        self.assertTrue('Electrical and Computer Engineering (CCECE), 2011 24th Canadian Conference on', citation['source'])
-        self.assertTrue('Islam', citation['creatorLast'])
+        redirect_url = response._headers['location'][1]
+        log.debug( 'redirect_url, ```%s```' % redirect_url )
+        self.assertEqual( 'http://127.0.0.1/borrow/?id=10.1109/CCECE.2011.6030651', redirect_url )
 
     # end class ConferenceReportResolverTest
 
