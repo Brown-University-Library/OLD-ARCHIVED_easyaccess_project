@@ -111,6 +111,7 @@ class FinditResolver( object ):
             log.debug( 'book url, `%s`' % url )
             self.borrow_link = url
             is_book = True
+        log.debug( 'is_book, `%s`' % is_book )
         return is_book
 
     def update_querystring( self, querystring  ):
@@ -133,6 +134,21 @@ class FinditResolver( object ):
         sersol_dct = get_sersol_data( querystring, key='rl3tp7zf5x' )  # get_sersol_data() is a function of pylink3602
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
+
+    def check_book_after_sersol( self, sersol_dct, rqst_qstring ):
+        """ Handles book requests; builds /borrow redirect link.
+            Called by views.base_resolver() """
+        is_book = False
+        log.debug( 'sersol_dct.keys(), ```%s```' % pprint.pformat(sersol_dct.keys()) )
+        1/0
+        if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
+            url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
+            log.debug( 'book url, `%s`' % url )
+            self.borrow_link = url
+            is_book = True
+        log.debug( 'is_book, `%s`' % is_book )
+        return is_book
+
 
     def make_resolve_context( self, sersol_dct ):
         """ Preps the template view.

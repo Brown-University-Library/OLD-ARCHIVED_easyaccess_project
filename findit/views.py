@@ -98,6 +98,10 @@ def findit_base_resolver( request ):
     querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
+    ## if sersol shows it's a book, redirect to /borrow
+    if fresolver.check_book_after_sersol( sersol_dct, request.META.get('QUERY_STRING') ):
+        return HttpResponseRedirect( fresolver.borrow_link )
+
     ## build response context
     context = fresolver.make_resolve_context( sersol_dct )
 

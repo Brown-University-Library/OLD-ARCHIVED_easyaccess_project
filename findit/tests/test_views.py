@@ -167,24 +167,6 @@ class EasyBorrowResolverTest(TestCase):
     ## end class EasyBorrowResolverTest
 
 
-# class EbookResolverTest(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-
-#     def test_ebook(self):
-#         o = '?rft.pub=Yale+University+Press&rft.aulast=Dyson&rft.isbn=9780300110975&rft.isbn=9780300110975&rft.author=Dyson%2C+Stephen+L&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.btitle=In+pursuit+of+ancient+pasts+%3A+a+history+of+classical+archaeology+in+the+nineteenth+and+twentieth+centuries&rft.aufirst=Stephen&rft.place=New+Haven&rft.date=2006&rft.auinitm=L&url_ver=Z39.88-2004&version=1.0&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&rfe_dat=%3Caccessionnumber%3E70062939%3C%2Faccessionnumber%3E'
-#         request = self.factory.get(o)
-#         response = views.ResolveView(request=request)
-#         context = response.get_context_data()
-#         citation = context['citation']
-#         lg = context['link_groups']
-#         self.assertTrue('In pursuit of ancient pasts : a history of classical archaeology in the nineteenth and twentieth centuries',
-#                         citation['title'])
-#         self.assertTrue('Yale University Press',
-#                         citation['publisher'])
-#         self.assertTrue('Ebrary Academic Complete Subscription Collection',
-#                         lg[0]['holdingData']['databaseName'])
-
 class EbookResolverTest(TestCase):
 
     def test_book_with_ebook_available_redirect(self):
@@ -201,16 +183,36 @@ class EbookResolverTest(TestCase):
     # end class EbookResolverTest
 
 
+# class ConferenceReportResolverTest(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
+#     def test_econference_report(self):
+#         request = self.factory.get('?id=10.1109/CCECE.2011.6030651')
+#         response = views.ResolveView(request=request)
+#         context = response.get_context_data()
+#         citation = context['citation']
+#         self.assertTrue('Electrical and Computer Engineering (CCECE), 2011 24th Canadian Conference on', citation['source'])
+#         self.assertTrue('Islam', citation['creatorLast'])
+
+
 class ConferenceReportResolverTest(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
+
     def test_econference_report(self):
-        request = self.factory.get('?id=10.1109/CCECE.2011.6030651')
+        """ Checks econference-report resolution. """
+        url = '/find/?id=10.1109/CCECE.2011.6030651'
+        c = Client()
+        response = c.get( url, SERVER_NAME='127.0.0.1' )
+        log.debug( 'response.content, ```%s```' % response.content.decode('utf-8') )
+
+        1/0
+
         response = views.ResolveView(request=request)
         context = response.get_context_data()
         citation = context['citation']
         self.assertTrue('Electrical and Computer Engineering (CCECE), 2011 24th Canadian Conference on', citation['source'])
         self.assertTrue('Islam', citation['creatorLast'])
+
+    # end class ConferenceReportResolverTest
 
 
 class PublicationView(TestCase):
