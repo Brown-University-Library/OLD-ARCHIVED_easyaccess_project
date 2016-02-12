@@ -110,21 +110,15 @@ class PmidResolverTest(TestCase):
         """ Checks non-book, non-article item. """
         url = '/find/?pmid=21221393'
         c = Client()
-        response = c.get( url, SERVER_NAME='127.0.0.1' )
-        log.debug( 'response.content, ```%s```' % response.content )
-        log.debug( 'response.context, ```%s```' % pprint.pformat(response.context) )
-        1/0
-        ## Call get context data to simulate browser hit.
-        context = response.get_context_data()
-        ## Verify returned links
-        names = [link['holdingData']['providerName'] for link in context['link_groups']]
-        self.assertIn("National Library of Medicine", names)
-        #Verify citation.
-        citation = context['citation']
-        self.assertTrue(citation['source'], 'Canadian family physician')
-        self.assertTrue(citation['volume'], '38')
-        self.assertTrue(citation['pmid'], '21221393')
-        self.assertIn('0008-350X', context['citation']['issn']['print'])
+        response = c.get( url )
+        # log.debug( 'response.content, ```%s```' % response.content )
+        # log.debug( 'response.context, ```%s```' % pprint.pformat(response.context) )
+        # log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
+        # log.debug( 'dir(response), ```%s```' % pprint.pformat(dir(response)) )
+        # log.debug( 'response._headers, ```%s```' % pprint.pformat(response._headers) )
+        log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
 
     # end class PmidResolverTest
 
