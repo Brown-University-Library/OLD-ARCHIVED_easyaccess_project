@@ -57,11 +57,3 @@ from delivery import views
 #         context = response.get_context_data()
 
 #         self.assertEqual( 'a', 'b' )
-
-
-class SimpleTest( TestCase ):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 3)
