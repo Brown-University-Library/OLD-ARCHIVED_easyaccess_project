@@ -59,35 +59,61 @@ class IndexPageLinksTest( TestCase ):
     ## end class IndexPageLinksTest
 
 
-#Non-book, non-article item
-#http://www.worldcat.org/title/einstein-on-the-beach/oclc/29050194
-#coins
-#http://generator.ocoins.info/?sitePage=info/journal.html
-class PmidResolverTest(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
+# #Non-book, non-article item
+# #http://www.worldcat.org/title/einstein-on-the-beach/oclc/29050194
+# #coins
+# #http://generator.ocoins.info/?sitePage=info/journal.html
+# class PmidResolverTest(TestCase):
+#     def setUp(self):
+#         self.factory = RequestFactory()
 
-    # def test_pmid(self):
-    #     request = self.factory.get('?pmid=21221393')
-    #     response = views.ResolveView(request=request)
-    #     #Call get context data to simulate browser hit.
-    #     context = response.get_context_data()
-    #     #Verify returned links
-    #     names = [link['holdingData']['providerName'] for link in context['link_groups']]
-    #     self.assertIn("National Library of Medicine", names)
-    #     #Verify citation.
-    #     citation = context['citation']
-    #     self.assertTrue(citation['source'], 'Canadian family physician')
-    #     self.assertTrue(citation['volume'], '38')
-    #     self.assertTrue(citation['pmid'], '21221393')
-    #     self.assertIn('0008-350X', context['citation']['issn']['print'])
+#     # def test_pmid(self):
+#     #     request = self.factory.get('?pmid=21221393')
+#     #     response = views.ResolveView(request=request)
+#     #     #Call get context data to simulate browser hit.
+#     #     context = response.get_context_data()
+#     #     #Verify returned links
+#     #     names = [link['holdingData']['providerName'] for link in context['link_groups']]
+#     #     self.assertIn("National Library of Medicine", names)
+#     #     #Verify citation.
+#     #     citation = context['citation']
+#     #     self.assertTrue(citation['source'], 'Canadian family physician')
+#     #     self.assertTrue(citation['volume'], '38')
+#     #     self.assertTrue(citation['pmid'], '21221393')
+#     #     self.assertIn('0008-350X', context['citation']['issn']['print'])
+
+#     def test_pmid(self):
+#         request = self.factory.get('?pmid=21221393')
+#         # response = views.ResolveView(request=request)
+#         response = views.base_resolver( request=request )
+#         log.debug( 'response, ```%s```' % pprint.pformat(response.__dict__) )
+
+#         ## Call get context data to simulate browser hit.
+#         context = response.get_context_data()
+#         ## Verify returned links
+#         names = [link['holdingData']['providerName'] for link in context['link_groups']]
+#         self.assertIn("National Library of Medicine", names)
+#         #Verify citation.
+#         citation = context['citation']
+#         self.assertTrue(citation['source'], 'Canadian family physician')
+#         self.assertTrue(citation['volume'], '38')
+#         self.assertTrue(citation['pmid'], '21221393')
+#         self.assertIn('0008-350X', context['citation']['issn']['print'])
+
+
+class PmidResolverTest(TestCase):
+    """ Checks non-book, non-article item.
+        - http://www.worldcat.org/title/einstein-on-the-beach/oclc/29050194
+        - coins -- http://generator.ocoins.info/?sitePage=info/journal.html """
 
     def test_pmid(self):
-        request = self.factory.get('?pmid=21221393')
-        # response = views.ResolveView(request=request)
-        response = views.base_resolver( request=request )
-        log.debug( 'response, ```%s```' % pprint.pformat(response.__dict__) )
-
+        """ Checks non-book, non-article item. """
+        url = '/find/?pmid=21221393'
+        c = Client()
+        response = c.get( url, SERVER_NAME='127.0.0.1' )
+        log.debug( 'response.content, ```%s```' % response.content )
+        log.debug( 'response.context, ```%s```' % pprint.pformat(response.context) )
+        1/0
         ## Call get context data to simulate browser hit.
         context = response.get_context_data()
         ## Verify returned links
@@ -100,19 +126,7 @@ class PmidResolverTest(TestCase):
         self.assertTrue(citation['pmid'], '21221393')
         self.assertIn('0008-350X', context['citation']['issn']['print'])
 
-
-# class PrintResolverTest(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-#     def test_print_holding(self):
-#         request = self.factory.get('?rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.spage=80&rft.au=Churchland%2C%20PS&rft.aulast=Churchland&rft.format=journal&rft.date=1983&rft.aufirst=PS&rft.volume=64&rft.eissn=1468-0114&rft.atitle=Consciousness%3A%20The%20transmutation%20of%20a%20concept&rft.jtitle=Pacific%20philosophical%20quarterly&rft.issn=0279-0750&rft.genre=article&url_ver=Z39.88-2004&rfr_id=info:sid/libx%3Abrown')
-#         response = views.ResolveView(request=request)
-#         context = response.get_context_data()
-#         citation = context['citation']
-#         self.assertTrue(citation['source'], 'Pacific philosophical quarterly')
-#         self.assertTrue(citation['creatorLast'], 'Churchland')
-#         self.assertTrue(context['link_groups'][0]['holdingData']['providerName'],
-#                         'Library Specific Holdings')
+    # end class PmidResolverTest
 
 
 class PrintResolverTest(TestCase):
@@ -150,7 +164,7 @@ class EasyBorrowResolverTest(TestCase):
         self.assertTrue( content.rfind('easyBorrow') > -1 )
         self.assertTrue( content.rfind('17803510') > -1 )  # accession number
         ## testing context's bibjson...
-        log.debug( 'context.keys(), `%s`' % pprint.pformat( sorted(response2.context.keys()) ) )
+        # log.debug( 'context.keys(), `%s`' % pprint.pformat( sorted(response2.context.keys()) ) )
         bibjson_dct = json.loads( response2.context['bibjson'] )
         self.assertEqual( 'Russo, Richard', bibjson_dct['author'][0]['name'] )
         self.assertEqual( '9780394565279', bibjson_dct['identifier'][0]['id'] )
