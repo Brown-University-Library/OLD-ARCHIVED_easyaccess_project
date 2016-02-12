@@ -44,6 +44,8 @@ class ResolveViewTest(unittest.TestCase):
 
     #To do: More tests for unresolved citations
 
+    # end class ResolveViewTest
+
 
 class PermalinkTest(TestCase):
     fixtures = ['bul-link-test-data.json']
@@ -77,3 +79,5 @@ class PermalinkTest(TestCase):
         self.assertEqual('APPL ENVIRON MICROB', qdict['rft.stitle'][0])
         self.assertEqual('Experimental examination of bacteriophage latent-period evolution as a response to bacterial availability',
                          qdict['rft.atitle'][0])
+
+    # end class PermalinkTest
