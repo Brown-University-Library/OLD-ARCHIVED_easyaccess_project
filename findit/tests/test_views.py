@@ -10,7 +10,7 @@ from django.utils.log import dictConfig
 from findit import utils, views
 
 settings.BUL_LINK_CACHE_TIMEOUT = 0
-settings.CACHES = {}
+# settings.CACHES = {}
 
 dictConfig(settings.LOGGING)
 log = logging.getLogger('access')
