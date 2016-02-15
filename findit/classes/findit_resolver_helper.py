@@ -14,7 +14,7 @@ from django.utils.log import dictConfig
 from findit import forms, summon
 from py360link2 import get_sersol_data
 # from py360link2 import get_sersol_data, Resolved
-
+from findit.utils import BulSerSol
 
 dictConfig( settings.LOGGING )
 log = logging.getLogger('access')
