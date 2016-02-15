@@ -33,8 +33,10 @@ from . import forms, summon
 from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM, MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
 from .classes.baseconv import base62
 from .classes.citation_form_helper import CitationFormHelper
+from .classes.findit_resolver_helper import FinditResolver
 from .models import Request, UserMessage
-from .utils import BulSerSol, FinditResolver, Ourl
+# from .utils import BulSerSol, FinditResolver, Ourl
+from .utils import BulSerSol, Ourl
 from .utils import get_cache_key, make_illiad_url
 from bul_link.views import BulLinkBase
 
