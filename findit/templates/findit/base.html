@@ -36,6 +36,7 @@
     <div id="header">
 
         <p class="top_header_links"><a href="http://library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp; <a href="http://library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a>
+            {% comment %}
             &nbsp;&nbsp;&#124;&nbsp;&nbsp;
             {% if user and user.is_authenticated %}
 	               Hello {{ user.first_name}} {{ user.last_name }}
@@ -44,6 +45,7 @@
             {% else %}
                  <a href="{{ login_link }}">Login</a>
             {% endif %}
+            {% endcomment %}
         </p>
 
         <div class="BUhomelink">
