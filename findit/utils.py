@@ -27,7 +27,7 @@ log = logging.getLogger('access')
 
 
 class FinditResolver( object ):
-    """ Handles findit resolver calls. """
+    """ Handles views.findit_base_resolver() calls. """
 
     def __init__(self):
         self.enhanced_link = False

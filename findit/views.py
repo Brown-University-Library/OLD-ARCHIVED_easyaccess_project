@@ -32,6 +32,7 @@ from py360link2 import get_sersol_data, Link360Exception, Resolved
 from . import forms, summon
 from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM, MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
 from .classes.baseconv import base62
+from .classes.citation_form_helper import CitationFormHelper
 from .models import Request, UserMessage
 from .utils import BulSerSol, FinditResolver, Ourl
 from .utils import get_cache_key, make_illiad_url
@@ -51,8 +52,9 @@ EXTRAS_CACHE_TIMEOUT = 604800 #60*60*24*7
 #check for non-standard pubmed queries.
 PMID_QUERY = re.compile('^pmid\:(\d+)')
 
+# view helpers
 fresolver = FinditResolver()
-
+form_helper = CitationFormHelper()
 
 #logging
 import logging
@@ -471,6 +473,20 @@ class SummonView(BulLinkBase):
 
 
 def citation_form( request ):
+    """ Displays citation form on GET; redirects built url to /find/?... on POST. """
+    if request.method == u'GET':
+        context = form_helper.build_context( request )
+        response = form_helper.build_get_response( request, context )
+        return response
+    else:  # form POST
+        form = CitationForm( request.POST )
+        if form.is_valid():
+            redirect_url = request_view_post_helper.handle_valid_form( request )
+            return HttpResponseRedirect( redirect_url )
+        else:
+            request.session[u'form_data'] = request.POST; log.debug( u'in views.request_def(); posted form invalid' )
+            return HttpResponseRedirect( reverse(u'request_url'), {u'form': form} )
+
     return HttpResponse( 'coming' )
 
 
@@ -572,6 +588,7 @@ class CitationFormView(BulLinkBase):
         problem_url = PROBLEM_URL % (self.get_base_url().rstrip('/') + plink,
                                     self.request.META.get('REMOTE_ADDR', 'unknown'))
         context['problem_link'] = problem_url
+        alog.debug( 'in findit.views.CitationFormView; context, ```%s```' % pprint.pformat(context) )
         return context
 
     # end class CitationFormView

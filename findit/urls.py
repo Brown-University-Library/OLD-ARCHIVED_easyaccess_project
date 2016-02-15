@@ -12,7 +12,7 @@ from views import CitationFormView, JstorView, MicrosoftView, RequestView, Summo
 urlpatterns = patterns('',
 
     url( r'^old-citation-form/$',  CitationFormView.as_view(), name='citation-form-view' ),
-    url( r'^citation-form/$',  'findit.views.citation_form', name='citation-form-view' ),
+    url( r'^citation_form/$',  'findit.views.citation_form', name='citation-form-view' ),
 
     # url( r'^request/(?P<resource>[0-9]+)/$',  RequestView.as_view(), name='request-view' )  # might be needed for illiad requests, but I'd think they would go to /borrow
 
