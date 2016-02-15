@@ -476,20 +476,14 @@ class SummonView(BulLinkBase):
 
 def citation_form( request ):
     """ Displays citation form on GET; redirects built url to /find/?... on POST. """
-    if request.method == u'GET':
-        context = form_helper.build_context( request )
-        response = form_helper.build_get_response( request, context )
-        return response
-    else:  # form POST
-        form = CitationForm( request.POST )
-        if form.is_valid():
-            redirect_url = request_view_post_helper.handle_valid_form( request )
-            return HttpResponseRedirect( redirect_url )
-        else:
-            request.session[u'form_data'] = request.POST; log.debug( u'in views.request_def(); posted form invalid' )
-            return HttpResponseRedirect( reverse(u'request_url'), {u'form': form} )
-
-    return HttpResponse( 'coming' )
+    alog.debug( 'request.GET, ```%s```' % pprint.pformat(request.GET) )
+    alog.debug( 'len(request.GET.keys()), `%s`' % len(request.GET.keys()) )
+    if len( request.GET.keys() ) == 0:
+        context = form_helper.build_simple_context( request )
+    else:
+        context = form_helper.build_context_from_url( request )
+    response = form_helper.build_get_response( request, context )
+    return response
 
 
 class CitationFormView(BulLinkBase):
