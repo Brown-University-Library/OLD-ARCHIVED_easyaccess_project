@@ -26,10 +26,10 @@ class IndexPageLinksTest( TestCase ):
         """ Checks main index page. """
         response = self.client.get( '/find/' )  # project root part of url is assumed
         self.assertEqual( 200, response.status_code )
-        self.assertEqual( True, '<title>easyAccess - Brown University Library</title>' in response.content )
-        self.assertEqual( True, '<h3>easyAccess</h3>' in response.content )
-        self.assertEqual( True, 'class="intro">Examples' in response.content )
-        self.assertEqual( True, '>Login<' in response.content )
+        self.assertEqual( True, '<title>easyAccess - Brown University Library</title>' in response.content.decode('utf-8') )
+        self.assertEqual( True, '<h3>easyAccess</h3>' in response.content.decode('utf-8') )
+        self.assertEqual( True, 'class="intro">Article Examples' in response.content.decode('utf-8') )
+        # self.assertEqual( True, '>Login<' in response.content.decode('utf-8') )
 
     def test_article_held_electronically(self):
         """ Checks the `Article held electronically.` link """
