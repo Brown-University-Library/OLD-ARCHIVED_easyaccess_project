@@ -470,11 +470,17 @@ class SummonView(BulLinkBase):
         return context
 
 
+def citation_form( request ):
+    return HttpResponse( 'coming' )
+
+
 class CitationFormView(BulLinkBase):
+    alog.debug( 'in findit.views.CitationFormView; class accessed' )
     template_name = 'findit/citation_linker.html'
     default_json = False
 
     def get_permalink(self):
+        alog.debug( 'in findit.views.CitationFormView; get_permalink() accessed' )
         tiny = base62.from_decimal(self.resource.id)
         return reverse('findit:permalink-view', kwargs={'tiny': tiny})
 
@@ -486,6 +492,7 @@ class CitationFormView(BulLinkBase):
         We could potentially hit the Worldcat API to get more metadata for those
         OpenURLs passed on from worldcat.org.
         """
+        alog.debug( 'in findit.views.CitationFormView; make_form_from_query() accessed' )
         #import pdb; pdb.set_trace()
         citation_form_dict = {}
         for k,v in qdict.items():
@@ -507,11 +514,13 @@ class CitationFormView(BulLinkBase):
         return d
 
     def get_base_url(self):
+        alog.debug( 'in findit.views.CitationFormView; get_base_url() accessed' )
         app_prefix = get_script_prefix()
         return ''.join(('http', ('', 's')[self.request.is_secure()], '://', self.request.META['HTTP_HOST']))
 
 
     def get_context_data(self, **kwargs):
+        alog.debug( 'in findit.views.CitationFormView; get_context_data() accessed' )
         import urlparse
         context = super(CitationFormView, self).get_context_data(**kwargs)
         query = self.request.META.get('QUERY_STRING', None)
@@ -564,6 +573,8 @@ class CitationFormView(BulLinkBase):
                                     self.request.META.get('REMOTE_ADDR', 'unknown'))
         context['problem_link'] = problem_url
         return context
+
+    # end class CitationFormView
 
 
 class RequestView(PublicTerminalMixin, BulLinkBase):
