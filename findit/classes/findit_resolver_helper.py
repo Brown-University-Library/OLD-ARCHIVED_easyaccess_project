@@ -20,7 +20,6 @@ dictConfig( settings.LOGGING )
 log = logging.getLogger('access')
 
 
-
 class FinditResolver( object ):
     """ Handles views.findit_base_resolver() calls. """
 
