@@ -16,11 +16,11 @@ log = logging.getLogger('access')
 
 register = template.Library()
 
-
-# def citation_form(context, this_form):
-#     return {'this_form': this_form}
-# register.inclusion_tag('snippets/citation_form.html',
-#         takes_context=True)(citation_form)
+## TODO: remove after tests are working on newer citation form
+def citation_form(context, this_form):
+    return {'this_form': this_form}
+register.inclusion_tag('snippets/citation_form.html',
+        takes_context=True)(citation_form)
 
 
 # def citation_display(context, citation, format, direct_link):
