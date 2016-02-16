@@ -64,20 +64,37 @@ class CitationFormHelper( object ):
 
     ## helpers
 
-    def make_form_dct(self, querydct):
+    def make_form_dct( self, querydct ):
         """ Transfers metadata from openurl to dct for citation-linker form.
             Called by build_context_from_url(). """
+        log.debug( 'querydct, ```%s```' % pprint.pformat(querydct) )
         citation_form_dct = {}
         for k,v in querydct.items():
-            if (v) and (v != '') and (type(v)==list):
-                v = v[0]
-            if k == 'id':
-                if v.startswith('doi'):
-                    ( k,v ) = ( 'doi', v.replace('doi:', '') )
-            v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
+            v = self._handle_v_list( v )
+            ( k,v ) = self._handle_k( k,v )
             citation_form_dct[k] = v
         log.debug( 'citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
+
+    def _handle_v_list(self, v):
+        """ Handles querydict list values, and checks for a replace.
+            Called by make_form_dct(). """
+        if (v) and (v != '') and (type(v)==list):
+            v = v[0]
+        v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
+        log.debug( 'v, `%s`' % v )
+        return v
+
+    def _handle_k( self, k, v ):
+        """ Handles two key situations.
+            Called by make_form_dct(). """
+        if k == 'id':
+            if v.startswith('doi'):
+                ( k,v ) = ( 'id', v.replace('doi:', '') )
+        elif k == 'doi':
+            k = 'id'
+        log.debug( '(k,v), `(%s,%s)`' % (k,v) )
+        return ( k,v )
 
     def make_form_type( self, dct ):
         """ Tries to get the default form right.
