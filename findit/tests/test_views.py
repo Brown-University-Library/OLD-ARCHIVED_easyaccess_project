@@ -29,16 +29,15 @@ class IndexPageLinksTest( TestCase ):
         self.assertEqual( True, '<title>easyAccess - Brown University Library</title>' in response.content.decode('utf-8') )
         self.assertEqual( True, '<h3>easyAccess</h3>' in response.content.decode('utf-8') )
         self.assertEqual( True, 'class="intro">Article Examples' in response.content.decode('utf-8') )
-        # self.assertEqual( True, '>Login<' in response.content.decode('utf-8') )
 
     def test_article_held_electronically(self):
-        """ Checks the `Article held electronically.` link """
+        """ Checks the `Article held electronically.` link, which redirects to a shib-protected proxy link. """
         response = self.client.get( '/find/?sid=google&auinit=T&aulast=SOTA&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+(Coleoptera:+Cicindelidae)+in+East+Asia&id=doi:10.1111/j.1095-8312.2011.01617.x&title=Biological+journal+of+the+Linnean+Society&volume=102&issue=4&date=2011&spage=715&issn=0024-4066' )
-        # print 'RESPONSE CONTENT...'; print response.content
-        self.assertEqual( 200, response.status_code )
-        self.assertEqual( True, '<title>easyArticle - Brown University Library</title>' in response.content )
-        self.assertEqual( True, '<h3>easyArticle</h3>' in response.content )
-        self.assertEqual( True, '<h3>Available online</h3>' in response.content )
+        log.debug( 'response.content, ```%s```' % response.content.decode('utf-8') )
+        log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
+        self.assertEqual( 302, response.status_code )
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
 
     def test_article_chapter_held_at_annex(self):
         """ Checks the `Article/Chapter held at Annex.` link """
