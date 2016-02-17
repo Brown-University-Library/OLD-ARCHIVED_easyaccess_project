@@ -14,14 +14,14 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 from py360link2 import get_sersol_data, Resolved
 
 
 CURRENT_YEAR = datetime.now().year
 
 
-dictConfig( settings.LOGGING )
+# dictConfig( settings.LOGGING )
 log = logging.getLogger('access')
 
 

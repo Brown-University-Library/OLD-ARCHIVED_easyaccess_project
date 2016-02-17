@@ -2,20 +2,22 @@
 
 from __future__ import unicode_literals
 
-import json, pprint, requests
+import json, logging, pprint, requests
 from django.db import models
 from django.contrib.auth.models import User
 from jsonfield import JSONField
 from datetime import datetime, timedelta
 
 #logging
-from django.conf import settings
-from django.utils.log import dictConfig
-import logging
-dictConfig(settings.LOGGING)
-alog = logging.getLogger('access')
-#logging illiad.
-ilog = logging.getLogger('illiad')
+# from django.conf import settings
+# # from django.utils.log import dictConfig
+# import logging
+# dictConfig(settings.LOGGING)
+# alog = logging.getLogger('access')
+# #logging illiad.
+# ilog = logging.getLogger('illiad')
+
+log = logging.getLogger(__name__)
 
 
 #===============================================================================

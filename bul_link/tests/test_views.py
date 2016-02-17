@@ -8,7 +8,7 @@ specified in settings.py for these to run.
 """
 
 from django.conf import settings
-from django.utils import unittest
+# from django.utils import unittest
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
@@ -21,7 +21,7 @@ from bul_link import models
 from bul_link import urls
 
 
-class ResolveViewTest(unittest.TestCase):
+class ResolveViewTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()

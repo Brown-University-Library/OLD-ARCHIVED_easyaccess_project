@@ -24,9 +24,9 @@ from illiad.account import IlliadSession
 
 #logging
 from django.conf import settings
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 import logging
-dictConfig(settings.LOGGING)
+# dictConfig(settings.LOGGING)
 #logging illiad.
 ilog = logging.getLogger('illiad')
 

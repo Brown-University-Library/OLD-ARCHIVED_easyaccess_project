@@ -19,8 +19,8 @@ from middleware import make_denied_context
 #logging
 import logging
 from django.conf import settings
-from django.utils.log import dictConfig
-dictConfig(settings.LOGGING)
+# from django.utils.log import dictConfig
+# dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 alog.debug( 'test log entry' )
 

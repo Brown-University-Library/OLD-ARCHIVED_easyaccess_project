@@ -16,7 +16,7 @@ print issns.
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 from django.conf import settings
 #stdlib
 from optparse import make_option
@@ -30,7 +30,7 @@ from findit.utils import make_illiad_url
 
 #logging
 import logging
-dictConfig(settings.LOGGING)
+# dictConfig(settings.LOGGING)
 ilog = logging.getLogger('illiad')
 
 #from delivery.new360link import py360link2

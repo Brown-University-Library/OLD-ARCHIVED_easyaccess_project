@@ -21,8 +21,8 @@ from shibboleth.app_settings import LOGOUT_URL, LOGOUT_REDIRECT_URL, LOGOUT_SESS
 
 #logging
 import logging
-from django.utils.log import dictConfig
-dictConfig(settings.LOGGING)
+# from django.utils.log import dictConfig
+# dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 
 

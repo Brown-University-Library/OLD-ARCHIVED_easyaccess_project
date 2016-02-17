@@ -13,8 +13,8 @@ from shibboleth.app_settings import SHIB_ATTRIBUTE_MAP, LOGOUT_SESSION_KEY
 #logging
 import logging
 from django.conf import settings
-from django.utils.log import dictConfig
-dictConfig(settings.LOGGING)
+# from django.utils.log import dictConfig
+# dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 
 

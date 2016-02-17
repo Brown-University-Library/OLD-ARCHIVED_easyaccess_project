@@ -8,11 +8,12 @@ from django.http import HttpResponse
 from django.views.generic import TemplateView
 from django.core.urlresolvers import get_script_prefix
 from django.core.exceptions import MultipleObjectsReturned
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 
 #standard lib
 import base64
 import json
+import logging
 import pprint
 import urllib
 import urlparse
@@ -28,9 +29,9 @@ from models import Resource
 from app_settings import SERSOL_KEY, CACHE_TIMEOUT, QUERY_SKIP_KEYS, SERSOL_TIMEOUT
 
 
-import logging
-dictConfig(settings.LOGGING)
-# ilog = logging.getLogger('illiad')
+# import logging
+# dictConfig(settings.LOGGING)
+ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
 
 

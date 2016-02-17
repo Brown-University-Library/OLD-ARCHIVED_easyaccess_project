@@ -1,7 +1,7 @@
 dj-database-url==0.3.0
 django-jsonfield==0.9.15
 django-shorturls==1.1.1
-Django==1.8.4
+Django==1.9.2
 httplib2==0.9.1
 lxml==3.3.6
 PyMySQL==0.6.6

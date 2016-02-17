@@ -12,7 +12,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.conf import settings
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 
 from shibboleth.middleware import ShibbolethRemoteUserMiddleware
 from shibboleth.middleware import ShibbolethValidationError
@@ -20,7 +20,7 @@ from models import LibraryProfile
 
 
 import logging
-dictConfig(settings.LOGGING)
+# dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 
 class DeliveryShib(ShibbolethRemoteUserMiddleware):

@@ -14,7 +14,7 @@ from django.shortcuts import redirect
 from django.template import Context
 from django.template import loader
 from django.views.generic import TemplateView
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 
 from datetime import datetime
 import json
@@ -32,7 +32,7 @@ from utils import DeliveryBaseView, JSONResponseMixin,\
 from decorators import has_email, has_service
 
 import logging
-dictConfig(settings.LOGGING)
+# dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 
 from py360link2 import get_sersol_data, Resolved

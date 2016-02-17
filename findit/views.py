@@ -6,7 +6,7 @@ Views for the resolver.
 """
 
 #stdlib
-import json, pprint, re, urllib2
+import json, logging, pprint, re, urllib2
 
 #django stuff
 from django.conf import settings
@@ -18,7 +18,7 @@ from django.core.urlresolvers import reverse, get_script_prefix
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.decorators import method_decorator
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 
 #installed packages
 # from bul_link.baseconv import base62
@@ -59,8 +59,8 @@ fresolver = FinditResolver()
 form_helper = CitationFormHelper()
 
 #logging
-import logging
-dictConfig(settings.LOGGING)
+# import logging
+# dictConfig(settings.LOGGING)
 ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
 

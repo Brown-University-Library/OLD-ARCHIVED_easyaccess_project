@@ -6,14 +6,16 @@ import json, logging, pprint
 from django.conf import settings
 from django.test import Client, TestCase
 from django.test.client import RequestFactory
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 from findit import utils, views
 
 settings.BUL_LINK_CACHE_TIMEOUT = 0
 # settings.CACHES = {}
 
-dictConfig(settings.LOGGING)
-log = logging.getLogger('access')
+# dictConfig(settings.LOGGING)
+# log = logging.getLogger('access')
+log = logging.getLogger(__name__)
+
 
 
 class IndexPageLinksTest( TestCase ):
@@ -177,7 +179,7 @@ class EbookResolverTest(TestCase):
         # log.debug( 'response._headers, ```%s```' % pprint.pformat(response._headers) )
         # log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
         redirect_url = response._headers['location'][1]
-        self.assertEqual( 'http://127.0.0.1/borrow/?rft.pub=Yale+University+Press', redirect_url[0:54] )
+        self.assertEqual( '/borrow/?rft.pub=Yale+University+Press&rft.aulast=Dyson', redirect_url[0:55] )
 
     # end class EbookResolverTest
 
@@ -192,7 +194,7 @@ class ConferenceReportResolverTest(TestCase):
         response = c.get( url, SERVER_NAME='127.0.0.1' )
         redirect_url = response._headers['location'][1]
         log.debug( 'redirect_url, ```%s```' % redirect_url )
-        self.assertEqual( 'http://127.0.0.1/borrow/?id=10.1109/CCECE.2011.6030651', redirect_url )
+        self.assertEqual( '/borrow/?id=10.1109/CCECE.2011.6030651', redirect_url )
 
     # end class ConferenceReportResolverTest
 

@@ -5,13 +5,13 @@ from __future__ import unicode_literals
 import logging, pprint, unittest, urllib, urlparse
 
 from django.conf import settings
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 from findit.utils import make_illiad_url, BulSerSol
 from py360link2.link360 import get_sersol_data
 
 
 ## logging
-dictConfig(settings.LOGGING)
+# dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
 ilog = logging.getLogger('illiad')
 

@@ -8,10 +8,10 @@ from django import template
 from django.template.base import TOKEN_TEXT, TOKEN_VAR, TOKEN_BLOCK, TOKEN_COMMENT, TextNode  # django 1.9
 
 from django.conf import settings
-from django.utils.log import dictConfig
+# from django.utils.log import dictConfig
 from django.utils.translation import ugettext as _
 
-dictConfig( settings.LOGGING )
+# dictConfig( settings.LOGGING )
 log = logging.getLogger('access')
 
 register = template.Library()
