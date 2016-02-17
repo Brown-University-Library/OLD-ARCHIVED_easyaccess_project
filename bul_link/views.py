@@ -136,10 +136,12 @@ class BulLinkBase(TemplateView, JSONResponseMixin):
         cache_key = "resolved-%s" % self.resource.id
         data = cache.get(cache_key, None)
         alog.debug( 'got data' )
+        alog.debug( 'data, ```%s```' % pprint.pformat(data) )
         if not data:
             alog.debug( 'gonna get_sersol_data() ' )
             data = get_sersol_data(query, key=SERSOL_KEY, timeout=SERSOL_TIMEOUT)
             cache.set(cache_key, data, cache_timeout)
+        alog.debug( 'data after sersol lookup, ```%s```' % pprint.pformat(data) )
         alog.debug( 'gonna return data' )
         return data
 
