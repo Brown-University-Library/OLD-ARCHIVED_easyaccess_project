@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-import json, os
+import json, logging, os
 import dj_database_url
 
 
@@ -91,12 +91,19 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 """
 See http://stackoverflow.com/questions/1598823/elegant-setup-of-python-logging-in-django
 Note: if disable_existing_loggers is False, result is lots of logging output from imported modules.
-Note: to see the imported modules' loggers, add somewhere, like the top of 'findit/views.py':
+Note: to see the imported modules' loggers, add somewhere:
     import logging
     existing_logger_names = logging.getLogger().manager.loggerDict.keys()
-    print '- HERE, `%s`' % existing_logger_names
+    print '- EXISTING_LOGGER_NAMES, `%s`' % existing_logger_names
     (from <https://bytes.com/topic/python/answers/830042-dynamically-getting-loggers>)
 """
+
+## disabling module loggers
+logging.getLogger('bibjsontools').setLevel( logging.WARNING )
+logging.getLogger('requests').setLevel( logging.WARNING )
+
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

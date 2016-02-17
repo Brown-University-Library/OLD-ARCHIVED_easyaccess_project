@@ -6,14 +6,10 @@ import json, logging, pprint
 from django.conf import settings
 from django.test import Client, TestCase
 from django.test.client import RequestFactory
-# from django.utils.log import dictConfig
 from findit import utils, views
 
 settings.BUL_LINK_CACHE_TIMEOUT = 0
-# settings.CACHES = {}
 
-# dictConfig(settings.LOGGING)
-# log = logging.getLogger('access')
 log = logging.getLogger(__name__)
 
 
