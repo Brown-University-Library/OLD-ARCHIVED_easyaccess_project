@@ -6,11 +6,9 @@ import json, logging, pprint
 from django.conf import settings
 from django.http import QueryDict
 from django.test import Client, TestCase
-from django.utils.log import dictConfig
 from findit.classes.citation_form_helper import CitationFormHelper
 
 
-dictConfig(settings.LOGGING)
 log = logging.getLogger('access')
 TestCase.maxDiff = None
 
@@ -29,7 +27,7 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'some_oclc_key': '<accessionnumber>1234</accessionnumber>' }
         self.qdct.update(dct)
         self.assertEqual(
-            { 'some_oclc_key': '1234' }, self.helper.make_form_dct( self.qdct )
+            { 'some_oclc_key': 'z1234' }, self.helper.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__id_and_doi(self):
@@ -83,7 +81,29 @@ class CitationFormHelperTest( TestCase ):
             'url_ver': 'Z39.88-2004'}
         self.qdct.update(dct)
         self.assertEqual(
-            { 'foo': 'bar' }, self.helper.make_form_dct( self.qdct )
+            {u'au': u'Yoshioka, T\u014dichi',
+             u'aufirst': u'T\u014dichi',
+             u'aulast': u'Yoshioka',
+             u'date': u'1978',
+             u'genre': u'book',
+             u'id': u'',
+             u'pid': u'6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+             u'req_dat': u'<sessionid>0</sessionid>',
+             u'rfe_dat': u'6104671',
+             u'rfr_id': u'info:sid/firstsearch.oclc.org:WorldCat',
+             u'rft.aufirst': u'T\u014dichi',
+             u'rft.aulast': u'Yoshioka',
+             u'rft.btitle': u'Zen',
+             u'rft.date': u'1978',
+             u'rft.edition': u'1st ed.',
+             u'rft.genre': u'book',
+             u'rft.place': u'Osaka  Japan',
+             u'rft.pub': u'Hoikusha',
+             u'rft_id': u'info:oclcnum/6104671',
+             u'rft_val_fmt': u'info:ofi/fmt:kev:mtx:book',
+             u'sid': u'FirstSearch:WorldCat',
+             u'title': u'Zen',
+             u'url_ver': u'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
             )
 
     # end class CitationFormHelperTest

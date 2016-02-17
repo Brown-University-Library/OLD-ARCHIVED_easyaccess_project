@@ -66,38 +66,6 @@ class CitationFormHelper( object ):
 
     ## helpers
 
-    # def make_form_dct( self, querydct ):
-    #     """ Transfers metadata from openurl to dct for citation-linker form.
-    #         Called by build_context_from_url(). """
-    #     log.debug( 'querydct, ```%s```' % pprint.pformat(querydct) )
-    #     citation_form_dct = {}
-    #     for k,v in querydct.items():
-    #         v = self._handle_v_list( v )
-    #         ( k,v ) = self._handle_k( k,v )
-    #         citation_form_dct[k] = v
-    #     log.debug( 'citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
-    #     return citation_form_dct
-
-    # def _handle_v_list(self, v):
-    #     """ Handles querydict list values, and checks for a replace.
-    #         Called by make_form_dct(). """
-    #     if (v) and (v != '') and (type(v)==list):
-    #         v = v[0]
-    #     v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
-    #     log.debug( 'v, `%s`' % v )
-    #     return v
-
-    # def _handle_k( self, k, v ):
-    #     """ Handles two key situations.
-    #         Called by make_form_dct(). """
-    #     if k == 'id':
-    #         if v.startswith('doi'):
-    #             ( k,v ) = ( 'id', v.replace('doi:', '') )
-    #     elif k == 'doi':
-    #         k = 'id'
-    #     log.debug( '(k,v), `(%s,%s)`' % (k,v) )
-    #     return ( k,v )
-
     def make_form_type( self, dct ):
         """ Tries to get the default form right.
             Called by build_context_from_url() """
@@ -109,8 +77,6 @@ class CitationFormHelper( object ):
 
     ## form prep for openurl ##
 
-
-
     def make_form_dct( self, querydct ):
         """ Transfers metadata from openurl to dct for citation-linker form.
             Called by build_context_from_url(). """
@@ -120,7 +86,8 @@ class CitationFormHelper( object ):
             qstring = qstring + '%s=%s&' % (k,v)
         qstring = qstring[0:-1]
         log.debug( 'qstring, `%s`' % qstring )
-        bibjson_dct = bibjsontools.from_openurl( qstring.encode('utf-8') )
+        log.debug( 'type(qstring), `%s`' % type(qstring) )
+        bibjson_dct = bibjsontools.from_openurl( qstring )
         log.debug( 'bibjson_dct, ```%s```' % pprint.pformat(bibjson_dct) )
         citation_form_dct = {}
         for k,v in querydct.items():
@@ -147,6 +114,7 @@ class CitationFormHelper( object ):
                     for entry in bibjson_dct['identifier']:
                         if entry.get( 'type', '' ) == 'issn':
                             citation_form_dct['issn'] = bibjson_dct['identifier']['id']
+                            break
             if citation_form_dct.get('pmid', '').strip() == '':
                 pass  # TODO: implement
             if citation_form_dct.get('volume', '').strip() == '':
@@ -161,11 +129,21 @@ class CitationFormHelper( object ):
                     if entry.get( 'name', '' ) is not '':
                         authors.append( entry['name'] )
                         citation_form_dct['au'] = ', '.join( authors )
-
-
-
-
-
+                        break
+        if citation_form_dct.get( 'date', '' ).strip() is '':
+            if bibjson_dct.get( 'year', '' ) is not '':
+                citation_form_dct['date'] = bibjson_dct['year']
+        if citation_form_dct.get( 'id', '' ).strip() is '':
+                if bibjson_dct.get( 'identifier', '' ) is not '':
+                    for entry in bibjson_dct['identifier']:
+                        if entry.get( 'type', '' ) == 'doi':
+                            citation_form_dct['issn'] = bibjson_dct['identifier']['id']
+                            break
+        if citation_form_dct.get( 'pages', '' ).strip() is '':
+            if bibjson_dct.get( 'pages', '' ) is not '':
+                citation_form_dct['pages'] = bibjson_dct['pages']
+        # TODO: try rfe_dat (oclcnum)
+        log.debug( 'final citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
 
     def _check_genre( self, querydct ):
@@ -177,15 +155,6 @@ class CitationFormHelper( object ):
             genre = 'book'
         log.debug( 'genre, `%s`' % genre )
         return genre
-
-    # def _get_title( self, genre, querydct ):
-    #     """ Looks for title.
-    #         Called by make_form_dct() """
-    #     if genre == 'book':
-    #         # if if querydct.get('title')
-    #         pass
-
-
 
     def _handle_v_list(self, v):
         """ Handles querydict list values, and checks for a replace.
