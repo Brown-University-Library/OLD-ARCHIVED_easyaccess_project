@@ -27,7 +27,9 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'some_oclc_key': '<accessionnumber>1234</accessionnumber>' }
         self.qdct.update(dct)
         self.assertEqual(
-            { 'some_oclc_key': 'z1234' }, self.helper.make_form_dct( self.qdct )
+            # { 'some_oclc_key': '1234' },
+            {u'volume': u'', u'some_oclc_key': u'1234', u'issue': u'', u'atitle': u'Unknown' },
+            self.helper.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__id_and_doi(self):
@@ -35,7 +37,8 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'id': 'doi:1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            { 'id': '1234' }, self.helper.make_form_dct( self.qdct )
+            {u'volume': u'', u'issue': u'', u'id': u'1234', u'atitle': u'Unknown'},
+            self.helper.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__doi_key(self):
@@ -43,7 +46,8 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'doi': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            { 'id': '1234' }, self.helper.make_form_dct( self.qdct )
+            {u'atitle': u'Unknown', u'id': u'1234', u'issue': u'', u'volume': u''},
+            self.helper.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__simple_isbn(self):
@@ -139,7 +143,7 @@ class CitationFormClientTest( TestCase ):
         response = self.client.get( '/find/citation_form/?doi=12611747' )  # project root part of url is assumed
         # print response.content
         self.assertEqual( 200, response.status_code )
-        self.assertEqual( True, 'z12611747z' in response.content.decode('utf-8') )
+        self.assertEqual( True, '12611747' in response.content.decode('utf-8') )
         self.assertEqual( 'article', response.context['form_type'] )
         pprint.pformat( response.context )
         for key in ['article_form', 'book_form', 'csrf_token', 'form_type', 'messages', 'problem_link' ]:
