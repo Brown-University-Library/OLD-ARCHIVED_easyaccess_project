@@ -38,6 +38,8 @@
 
       {# {% citation_display citation format direct_link %} #}
 
+      {% include 'article_request_app/snippets/citation_display.html' %}
+
       {% if debug_mode %}
         <a href="{{ illiad_url }}">Illiad url - debugging</a>
         <span id="debug" class="hidden">true</span>
