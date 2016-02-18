@@ -82,9 +82,9 @@ def findit_base_resolver( request ):
         resp = fresolver.make_index_response( request, context )
         return resp
 
-    ## make permalink if one doesn't exist -- TODO
+    ## make permalink if one doesn't exist
     permalink = fresolver.make_permalink(
-        request.GET.get('rfr_id',''), request.META.get('QUERY_STRING', ''), request.scheme, request.get_host() )
+        referrer=request.GET.get('rfr_id',''), qstring=request.META.get('QUERY_STRING', ''), scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url') )['permalink']
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
@@ -108,7 +108,8 @@ def findit_base_resolver( request ):
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## build response context
-    context = fresolver.make_resolve_context( sersol_dct )
+    # context = fresolver.make_resolve_context( sersol_dct )
+    context = fresolver.make_resolve_context( permalink, sersol_dct )
 
     ## return resolve response
     # return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
