@@ -71,6 +71,12 @@ def tiny_resolver( request, tiny ):
 
 
 
+def permalink( request, permalink ):
+    """ Handles expansion and redirection back to '/find/?...' """
+    return HttpResponse( 'coming: `%s`' % permalink )
+
+
+
 def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
