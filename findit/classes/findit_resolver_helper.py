@@ -6,14 +6,17 @@ import json,logging, pprint, re, urlparse
 from datetime import datetime
 
 import requests
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
-# from django.utils.log import dictConfig
+from py360link2 import get_sersol_data
+from shorturls import baseconv
+
 from findit import forms, summon
 from findit.utils import BulSerSol
-from py360link2 import get_sersol_data
+from delivery.models import Resource
 
 
 # dictConfig( settings.LOGGING )
@@ -38,10 +41,30 @@ class FinditResolver( object ):
         log.debug( 'return_val, `%s`' % return_val )
         return return_val
 
-    def make_permalink( self, querystring ):
+    def make_permalink( self, referrer, qstring, scheme, host ):
         """ Creates a bul_link.models.Resource entry if one doesn't exist, and creates and returns a permalink string.
             Called by views.base_resolver() """
-        return 'foo'
+        resource_id = self._get_resource( qstring, referrer )
+        permastring = baseconv.base62.from_decimal( resource_id )
+        permalink = '%s://%s/easyaccess/find/permalink/%s/' % ( scheme, host, permastring )
+        return_dct = { 'permalink': permalink, 'querystring': qstring, 'referrer': referrer, 'resource_id': resource_id, 'permastring': permastring  }
+        log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
+        return return_dct
+
+    def _get_resource( self, qstring, referrer ):
+        """ Gets or creates resource entry and returns id.
+            Called by make_permalink() """
+        try:
+            rsc = Resource.objects.get( query=qstring, referrer=referrer )
+            log.debug( 'rsc found' )
+        except:
+            log.debug( 'rsc not found' )
+            rsc = Resource()
+            rsc.query = qstring
+            rsc.referrer = referrer
+            rsc.save()
+        log.debug( 'rsc.__dict__, ```%s```' % pprint.pformat(rsc.__dict__) )
+        return rsc.id
 
     def make_index_context( self, querydict ):
         """ Builds context for index page.

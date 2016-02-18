@@ -83,7 +83,8 @@ def findit_base_resolver( request ):
         return resp
 
     ## make permalink if one doesn't exist -- TODO
-    permalink = fresolver.make_permalink( request.META.get('QUERY_STRING') )
+    permalink = fresolver.make_permalink(
+        request.GET.get('rfr_id',''), request.META.get('QUERY_STRING', ''), request.scheme, request.get_host() )
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
