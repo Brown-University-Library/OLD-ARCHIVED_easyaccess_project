@@ -11,14 +11,20 @@ admin.autodiscover()
 
 
 urlpatterns = [
+
     url( r'^admin/', include(admin.site.urls) ),
-    url( r'^user/', include('shibboleth.urls', namespace='shibboleth') ),
-    url( r'^borrow/', include('delivery.urls', namespace='delivery') ),
-    url( r'^find/', include('findit.urls', namespace='findit') ),
 
-    url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),
+    url( r'^user/', include('shibboleth.urls', namespace='shibboleth') ),  # will likely retire
 
-    url( r'^$',  RedirectView.as_view(url='find/', permanent=True) ),
+    url( r'^borrow/', include('delivery.urls', namespace='delivery') ),  # submits to easyBorrow
+
+    url( r'^find/', include('findit.urls', namespace='findit') ),  # resolver -- enhances, finds, redirects
+
+    url( r'^article_request/', include('article_request_app.urls_app', namespace='article_request') ),  # article-requests
+
+    url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),  # will likely retire
+
+    url( r'^$',  RedirectView.as_view(url='find/', permanent=True) ),  # will likely retire
     ]
 
 ## for 500 errors

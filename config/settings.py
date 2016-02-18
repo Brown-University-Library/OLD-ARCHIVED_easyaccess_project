@@ -70,6 +70,7 @@ INSTALLED_APPS = (
     # 'south',
     'shorturls',
     'shibboleth',
+    'article_request_app'
     )
 
 SESSION_ENGINE="django.contrib.sessions.backends.signed_cookies"
