@@ -34,6 +34,7 @@ from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_A
 from .classes.baseconv import base62
 from .classes.citation_form_helper import CitationFormHelper
 from .classes.findit_resolver_helper import FinditResolver
+from .classes.permalink_helper import Permalink
 from .models import Request, UserMessage
 # from .utils import BulSerSol, FinditResolver, Ourl
 from .utils import BulSerSol, Ourl
@@ -57,6 +58,7 @@ PMID_QUERY = re.compile('^pmid\:(\d+)')
 # view helpers
 fresolver = FinditResolver()
 form_helper = CitationFormHelper()
+permalink_helper = Permalink()
 
 #logging
 # import logging
@@ -89,7 +91,7 @@ def findit_base_resolver( request ):
         return resp
 
     ## make permalink if one doesn't exist
-    permalink = fresolver.make_permalink(
+    permalink_url = permalink_helper.make_permalink(
         referrer=request.GET.get('rfr_id',''), qstring=request.META.get('QUERY_STRING', ''), scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url') )['permalink']
 
     ## if summon returns an enhanced link, go to it
@@ -115,7 +117,7 @@ def findit_base_resolver( request ):
 
     ## build response context
     # context = fresolver.make_resolve_context( sersol_dct )
-    context = fresolver.make_resolve_context( permalink, sersol_dct )
+    context = fresolver.make_resolve_context( permalink_url, sersol_dct )
 
     ## return resolve response
     # return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
