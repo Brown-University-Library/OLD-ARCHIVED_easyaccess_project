@@ -15,7 +15,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, get_script_prefix
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.decorators import method_decorator
 # from django.utils.log import dictConfig
@@ -73,9 +73,14 @@ def tiny_resolver( request, tiny ):
 
 
 
-def permalink( request, permalink ):
+def permalink( request, permalink_str ):
     """ Handles expansion and redirection back to '/find/?...' """
-    return HttpResponse( 'coming: `%s`' % permalink )
+    openurl = permalink_helper.get_openurl( permalink_str )
+    if openurl:
+        redirect_url = '%s://%s%s?%s/' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
+        return HttpResponsePermanentRedirect( redirect_url )
+    else:
+        return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
 
 
 

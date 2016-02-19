@@ -40,3 +40,19 @@ class Permalink( object ):
             rsc.save()
         log.debug( 'rsc.__dict__, ```%s```' % pprint.pformat(rsc.__dict__) )
         return rsc.id
+
+    def get_openurl( self, permalink_str ):
+        """ Retreives querystring for given permalink_str.
+            Called by views.permalink() """
+        record_id = permastring = baseconv.base62.to_decimal( permalink_str )
+        try:
+            rsc = Resource.objects.get( id=record_id )
+            qstring = rsc.query
+            log.debug( 'rsc found' )
+        except:
+            log.debug( 'rsc not found' )
+            qstring = None
+        log.debug( 'qstring, ```%s```' % pprint.pformat(qstring) )
+        return qstring
+
+    # end class Permalink()

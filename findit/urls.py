@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url( r'^old-citation-form/$',  CitationFormView.as_view(), name='citation-form-view' ),
     url( r'^citation_form/$',  'findit.views.citation_form', name='citation_form_url' ),
 
-    url( r'^permalink/(?P<permalink>.*)/$',  'findit.views.permalink', name='permalink_url' ),
+    url( r'^permalink/(?P<permalink_str>.*)/$',  'findit.views.permalink', name='permalink_url' ),
 
     url( r'^request/(?P<resource>[0-9]+)/$',  RequestView.as_view(), name='request-view' ),  # might be needed for illiad requests, but I'd think they would go to /borrow
 
