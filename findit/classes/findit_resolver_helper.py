@@ -41,31 +41,6 @@ class FinditResolver( object ):
         log.debug( 'return_val, `%s`' % return_val )
         return return_val
 
-    # def make_permalink( self, referrer, qstring, scheme, host, path ):
-    #     """ Creates a bul_link.models.Resource entry if one doesn't exist, and creates and returns a permalink string.
-    #         Called by views.base_resolver() """
-    #     resource_id = self._get_resource( qstring, referrer )
-    #     permastring = baseconv.base62.from_decimal( resource_id )
-    #     permalink = '%s://%s%spermalink/%s/' % ( scheme, host, path, permastring )
-    #     return_dct = { 'permalink': permalink, 'querystring': qstring, 'referrer': referrer, 'resource_id': resource_id, 'permastring': permastring  }
-    #     log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
-    #     return return_dct
-
-    # def _get_resource( self, qstring, referrer ):
-    #     """ Gets or creates resource entry and returns id.
-    #         Called by make_permalink() """
-    #     try:
-    #         rsc = Resource.objects.get( query=qstring, referrer=referrer )
-    #         log.debug( 'rsc found' )
-    #     except:
-    #         log.debug( 'rsc not found' )
-    #         rsc = Resource()
-    #         rsc.query = qstring
-    #         rsc.referrer = referrer
-    #         rsc.save()
-    #     log.debug( 'rsc.__dict__, ```%s```' % pprint.pformat(rsc.__dict__) )
-    #     return rsc.id
-
     def make_index_context( self, querydict ):
         """ Builds context for index page.
             Called by views.base_resolver() """
@@ -167,16 +142,6 @@ class FinditResolver( object ):
         log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )
         return is_book
 
-    # def make_resolve_context( self, permalink, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.base_resolver() """
-    #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     context['easyWhat'] = self._check_genre( context )
-    #     context['permalink'] = permalink
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
-
     def make_resolve_context( self, permalink, qstring, sersol_dct ):
         """ Preps the template view.
             Called by views.base_resolver() """
@@ -225,9 +190,7 @@ class FinditResolver( object ):
             resolved_obj = BulSerSol( sersol_dct )
             log.debug( 'resolved_obj.__dict__, ```%s```' % pprint.pformat(resolved_obj.__dict__) )
             context = resolved_obj.access_points()
-            context['citation'] = resolved_obj.citation
-            context['link_groups'] = resolved_obj.link_groups
-            context['format'] = resolved_obj.format
+            ( context['citation'], context['link_groups'], context['format'] ) = ( resolved_obj.citation, resolved_obj.link_groups, resolved_obj.format )
         except Exception as e:
             log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
             context['citation'] = {}
