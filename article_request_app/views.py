@@ -23,4 +23,7 @@ def illiad_request( request ):
     context = {}
     resp = render( request, 'article_request_app/request.html', context )
     return resp
-    # return HttpResponse( 'coming' )
+
+
+def confirmation( request ):
+    return HttpResponse( 'coming' )
