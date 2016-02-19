@@ -96,33 +96,34 @@ def findit_base_resolver( request ):
         return resp
 
     ## make permalink if one doesn't exist
+    querystring = request.META.get('QUERY_STRING', '')
     permalink_url = permalink_helper.make_permalink(
-        referrer=request.GET.get('rfr_id',''), qstring=request.META.get('QUERY_STRING', ''), scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url') )['permalink']
+        referrer=request.GET.get('rfr_id',''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url') )['permalink']
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
-        if fresolver.enhance_link( request.GET.get('direct', None), request.META.get('QUERY_STRING') ):
+        if fresolver.enhance_link( request.GET.get('direct', None), querystring ):
             return HttpResponseRedirect( fresolver.enhanced_link )
 
     ## if journal, redirect to 360link for now
-    if fresolver.check_sersol_publication( request.GET, request.META.get('QUERY_STRING') ):
+    if fresolver.check_sersol_publication( request.GET, querystring ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
     ## if book, redirect to /borrow
-    if fresolver.check_book( request.GET, request.META.get('QUERY_STRING') ):
+    if fresolver.check_book( request.GET, querystring ):
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## get serials-solution data-dct
-    querystring = fresolver.update_querystring( request.META.get('QUERY_STRING', '') )  # update querystring if necessary to catch non-standard pubmed ids
+    querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
     ## if sersol-data shows it's a book, redirect to /borrow
-    if fresolver.check_book_after_sersol( sersol_dct, request.META.get('QUERY_STRING') ):
+    if fresolver.check_book_after_sersol( sersol_dct, querystring ):
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## build response context
-    # context = fresolver.make_resolve_context( sersol_dct )
-    context = fresolver.make_resolve_context( permalink_url, sersol_dct )
+    # context = fresolver.make_resolve_context( permalink_url, sersol_dct )
+    context = fresolver.make_resolve_context( permalink_url, querystring, sersol_dct )
 
     ## return resolve response
     # return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
