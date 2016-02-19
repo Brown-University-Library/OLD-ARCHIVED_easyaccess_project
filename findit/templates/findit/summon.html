@@ -14,7 +14,7 @@
 {% block content %}
     <div id="cover"></div>
     <div class="citation">
-       
+
         {% if not citation.held %}
         <div id="request-message" class="notice">
                     <h3>This article couldn't be located in the library's collections.</h3>
@@ -24,15 +24,15 @@
                     </ul>
         </div>
         {% endif %}
-	    
-	    {% citation_display citation format direct_link %} 
+
+	    {% citation_display citation format direct_link %}
 	    {% comment %}
 	    Client side holdings lookup
 	    {% endcomment %}
 	    {% if citation.held %}
             <span id="holdingsContainer" class="hidden"></span>
             <div id="spinner">
-                <span> 
+                <span>
                 Locating the link..
                     <img src="https://library.brown.edu/find/interface/themes/brown/images/ajax_loading.gif" alt="Initially hidden spinner" />
                 </span>
@@ -40,10 +40,10 @@
         {% endif %}
         {# Handle vague links with a notice#}
         <div class="notice hidden" id="not-direct-link">
-            <p><span class="asterisk">&#8727;</span> This is not a direct link to the article.  Make note of the citation before 
+            <p><span class="asterisk">&#8727;</span> This is not a direct link to the article.  Make note of the citation before
             proceeding to the link above at the publisher's website.  If you don't find what you are looking for, please <a href="{{ problem_link }}{{ permalink }}">let us know.</a>
             </p>
-        </div>   
+        </div>
         <div class="extra">
             {% if citation.abstract %}
             <h3>Abstract</h3>
@@ -56,13 +56,13 @@
         <div id="coin">
            <span class="Z3988" title="{{ coin }}"></span>
         </div>
-        <div id="openurl" class="hidden">{{ openurl }}</div> 
-        
-        
-        
-        
+        <div id="openurl" class="hidden">{{ openurl }}</div>
+
+
+
+
 	</div>
-    
+
 {% endblock %}
 
 {% block tool_list %}
@@ -85,7 +85,7 @@
 <span id="mendeleyExtrasContainer"></span>
 <span id="extrasContainer"></span>
 
-{% if debug_mode %}            
+{% if debug_mode %}
 <div class="toolbox">
     <h3>Debug <span style="font-size: 9px; font-weight: normal;">(this won't appear on live server)</span></h3>
     <hr/>
@@ -115,7 +115,7 @@
         //getAbstract();
         getBookLocation();
     });
-    
+
 </script>
 
 

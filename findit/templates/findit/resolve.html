@@ -20,17 +20,18 @@
 	            <p class="error">{{ error_message }}
                 </p>
 	        {% else %}
-                   {% comment %}
+               {% comment %}
 	            <div class="error">
 	                <p>Due to a power outage, the article requesting service
 	                    is temporarily unavailable.  If you <a id="problem-link" style="color: blue;" href="{{ problem_link }}&entry_2={{user.email}}&entry_1=Please%20notify%20me%20when%20the%20article%20requesting%20service%20is%20back%20online.">leave us a brief message</a>,
 	                    we will notify you when the service is back online.  Thank you for your patience.</p>
 	            </div>
-                    {% endcomment %}
+                {% endcomment %}
 	            <div id="request-message" class="notice">
 	                <h3>This article couldn't be located in the library's collections.</h3>
 	                <ul>
-                    <li class="request-link"><a href="{# some link will go here {% url 'findit:request-view' resource=resource.id %} #}">Request from another library</a></li>
+                    {% url 'article_request:illiad_request_url' as illiad_request_url %}
+                    <li class="request-link"><a href="{{ illiad_request_url }}?{{ querystring }}">Request from another library</a></li>
                     {% if gscholar %}
                     <li><a href="{{ gscholar }}">Search Google Scholar</a></li>
                     {% endif %}
