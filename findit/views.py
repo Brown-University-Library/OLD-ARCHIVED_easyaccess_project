@@ -77,7 +77,7 @@ def permalink( request, permalink_str ):
     """ Handles expansion and redirection back to '/find/?...' """
     openurl = permalink_helper.get_openurl( permalink_str )
     if openurl:
-        redirect_url = '%s://%s%s/?%s/' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
+        redirect_url = '%s://%s%s/?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
         return HttpResponsePermanentRedirect( redirect_url )
     else:
         return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )

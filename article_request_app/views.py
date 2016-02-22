@@ -37,21 +37,20 @@ def check_login( request ):
 
     ## shib check to see if we need to force logout
     log.debug( 'starting shib check' )
+    redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url') )  # the url shib-logout will redirect to
+    qstring = request.META.get('QUERY_STRING', '')
+    if qstring is not '':
+        redirect_url = '%s?%s' % ( redirect_url, qstring )
     eppn = request.META.get( 'Shibboleth-eppn', '' )
     if '@brown.edu' in eppn:
-        redirect_url = '%s://%s%s/' % ( request.scheme, request.get_host(), reverse('article_request:login_url') )  # the url shib-logout will redirect to
-        qstring = request.META.get('QUERY_STRING', '')
-        if qstring is not '':
-            redirect_url = '%s?%s' % ( redirect_url, qstring )
         logout( request )  # from django.contrib.auth import logout
         if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
             pass
         else:
             encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
             redirect_url = '%s?return=%s' % ( os.environ['EZRQST__SHIB_LOGOUT_URL_ROOT'], encoded_redirect_url )
-        log.debug( 'final redirect_url, `%s`' % redirect_url )
-        return HttpResponseRedirect( redirect_url )
-    # return HttpResponse( 'login_check-coming' )
+    log.debug( 'final redirect_url, `%s`' % redirect_url )
+    return HttpResponseRedirect( redirect_url )
 
 
 def login( request ):
