@@ -8,22 +8,22 @@ from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
 
-    # ensures user comes from correct 'findit' url, and that user is logged out of shib; then redirects to `login`
     url( r'^check_login/$',  'article_request_app.views.check_login', name='check_login_url' ),
+    # ensures user comes from correct 'findit' url, and that user is logged out of shib; then redirects to `login`
 
-    # shib-protected; checks illiad; then redirects to `illiad`
     url( r'^login/$',  'article_request_app.views.login', name='login_url' ),
+    # shib-protected; checks illiad for new-user or blocked; if happy, redirects to `illiad`
 
-    # on GET, displays confirmation button and citation; on POST, submits to illiad; redirects to `confirmation`
     url( r'^illiad/$',  'article_request_app.views.illiad_request', name='illiad_request_url' ),
+    # on GET, displays confirmation button and citation; on POST, submits to illiad; redirects to `confirmation`
 
-    # shows confirmation message
     url( r'^confirmation/$',  'article_request_app.views.confirmation', name='confirmation' ),
+    # shows confirmation message
 
-    # for optional manual logout
     url( r'^logout/$',  'article_request_app.views.logout', name='logout_url' ),
+    # for optional manual logout
 
-    # displays brief message; redirects user to easyAccess landing page
     url( r'^$',  'article_request_app.views.oops', name='oops_url' ),
+    # displays brief message; redirects user to easyAccess landing page
 
     )

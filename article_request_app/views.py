@@ -42,6 +42,7 @@ def check_login( request ):
     if qstring is not '':
         redirect_url = '%s?%s' % ( redirect_url, qstring )
     eppn = request.META.get( 'Shibboleth-eppn', '' )
+    log.debug( 'eppn, `%s`' % eppn )
     if '@brown.edu' in eppn:
         logout( request )  # from django.contrib.auth import logout
         if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
