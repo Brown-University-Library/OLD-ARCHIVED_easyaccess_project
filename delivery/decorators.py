@@ -22,7 +22,7 @@ from django.conf import settings
 # from django.utils.log import dictConfig
 # dictConfig(settings.LOGGING)
 alog = logging.getLogger('access')
-alog.debug( 'test log entry' )
+alog.debug( 'delivery/decorators.py; test log entry' )
 
 
 

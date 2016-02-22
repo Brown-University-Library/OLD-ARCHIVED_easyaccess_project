@@ -10,13 +10,44 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 # from .models import Validator, ViewHelper
 from django.shortcuts import get_object_or_404, render
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('access')
 # validator = Validator()
 # view_helper = ViewHelper()
 
 
 def check_login( request ):
-    return HttpResponse( 'check_login-coming' )
+    """ Ensures user comes from correct 'findit' url, and that user is logged out of shib; then redirects to `login` """
+    log.debug( 'starting' )
+    ## findit check
+    findit_check = False
+    findit_illiad_check_flag = request.session.get( 'findit_illiad_check_flag', '' )
+    findit_illiad_check_openurl = request.session.get( 'findit_illiad_check_openurl', '' )
+    if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == request.META.get('QUERY_STRING', ''):
+        findit_check = True
+    log.debug( 'findit_check, `%s`' % findit_check )
+    if findit_check is True:
+        request.session['findit_illiad_check_flag'] = ''
+        request.session['findit_illiad_check_openurl'] = ''
+    elif findit_check is not True:
+        log.warning( 'Bad attempt from source-url, ```%s```; ip, `%s`' % (
+            request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+        message = 'To request an article, first'
+        return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example usage.`' )
+
+    ## shib check to see if we need to force logout
+    # log.debug( 'starting shib check' )
+    # eppn = request.META.get( 'Shibboleth-eppn', '' )
+    # if '@brown.edu' in eppn:
+    #     redirect_url = shib_logout_helper.build_redirect_url( request )  # the url shib-logout will redirect to
+    #     logout( request )  # from django.contrib.auth import logout
+    #     if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
+    #         pass
+    #     else:
+    #         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
+    #         redirect_url = '%s?return=%s' % ( os.environ['EZRQST__SHIB_LOGOUT_URL_ROOT'], encoded_redirect_url )
+    #     log.debug( 'final redirect_url, `%s`' % redirect_url )
+    #     return HttpResponseRedirect( redirect_url )
+    return HttpResponse( 'login_check-coming' )
 
 
 def login( request ):
