@@ -15,8 +15,12 @@ log = logging.getLogger(__name__)
 # view_helper = ViewHelper()
 
 
-def hi( request ):
-    return HttpResponse( 'hi' )
+def check_login( request ):
+    return HttpResponse( 'check_login-coming' )
+
+
+def login( request ):
+    return HttpResponse( 'login-coming' )
 
 
 def illiad_request( request ):
@@ -26,4 +30,12 @@ def illiad_request( request ):
 
 
 def confirmation( request ):
-    return HttpResponse( 'coming' )
+    return HttpResponse( 'confirmation-coming' )
+
+
+def logout( request ):
+    return HttpResponse( 'logout-coming' )
+
+
+def oops( request ):
+    return HttpResponse( 'oops-coming' )
