@@ -153,6 +153,16 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    def update_session( self, request, context ):
+        """ Updates session for illiad-request-check if necessary.
+            Called by views.base_resolver() """
+        if context.get( 'resolved', False ) == False:
+            request.session['findit_illiad_check_flag'] = 'good'
+            if request.META.get('QUERY_STRING', '') is not '':
+                request.session['findit_illiad_check_openurl'] = request.META['QUERY_STRING']
+        log.debug( "request.session.get('findit_illiad_check_flag', ''), `%s`" % request.session.get('findit_illiad_check_flag', '') )
+        return
+
     def make_resolve_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.
             Called by views.base_resolver()

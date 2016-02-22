@@ -77,7 +77,7 @@ def permalink( request, permalink_str ):
     """ Handles expansion and redirection back to '/find/?...' """
     openurl = permalink_helper.get_openurl( permalink_str )
     if openurl:
-        redirect_url = '%s://%s%s?%s/' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
+        redirect_url = '%s://%s%s/?%s/' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
         return HttpResponsePermanentRedirect( redirect_url )
     else:
         return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
@@ -125,13 +125,15 @@ def findit_base_resolver( request ):
     # context = fresolver.make_resolve_context( permalink_url, sersol_dct )
     context = fresolver.make_resolve_context( permalink_url, querystring, sersol_dct )
 
+    ## update session if necessary
+    fresolver.update_session( request, context )
+
     ## return resolve response
     # return fresolver.make_response( request, fresolver.make_resolve_context(sersol_dct), 'findit/resolve.html' )
     resp = fresolver.make_resolve_response( request, context )
     return resp
 
     ## end def base_resolver()
-
 
 
 
