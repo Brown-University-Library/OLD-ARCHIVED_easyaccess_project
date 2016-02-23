@@ -72,7 +72,7 @@ def login( request ):
         request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
         redirect_url = settings_app.SHIB_LOGIN_URL
         return HttpResponseRedirect( redirect_url )
-    elif request.session['login_forced'] == 'in_process':
+    elif login_forced == 'in_process':
         ## do work
         request.session['login_forced'] = ''
         eppn = request.META.get( 'Shibboleth-eppn', 'anonymous' )
