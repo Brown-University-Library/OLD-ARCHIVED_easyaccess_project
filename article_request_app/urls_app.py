@@ -8,7 +8,7 @@ from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
 
-    url( r'^check_login/$',  'article_request_app.views.check_login', name='check_login_url' ),
+    # url( r'^check_login/$',  'article_request_app.views.check_login', name='check_login_url' ),
     # ensures user comes from correct 'findit' url, and that user is logged out of shib; then redirects to `login`
 
     url( r'^login/$',  'article_request_app.views.login', name='login_url' ),
