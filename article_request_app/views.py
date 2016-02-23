@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
+from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
@@ -29,6 +30,8 @@ def check_login( request ):
     if findit_check is True:
         request.session['findit_illiad_check_flag'] = ''
         request.session['findit_illiad_check_openurl'] = ''
+        request.session['check_login_flag'] = 'good'
+        request.session['check_login_openurl'] = request.META.get('QUERY_STRING', '')
     elif findit_check is not True:
         log.warning( 'Bad attempt from source-url, ```%s```; ip, `%s`' % (
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
@@ -48,7 +51,7 @@ def check_login( request ):
     eppn = request.META.get( 'Shibboleth-eppn', '' )
     log.debug( 'eppn, `%s`' % eppn )
     if '@brown.edu' in eppn:
-        logout( request )  # from django.contrib.auth import logout
+        # logout( request )  # from django.contrib.auth import logout  # no, we don't want to destroy the session
         if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
             pass
         else:
@@ -59,7 +62,23 @@ def check_login( request ):
 
 
 def login( request ):
-    return HttpResponse( 'login-coming' )
+    check_login_flag = request.session.get( 'check_login_flag', '' )
+    check_login_openurl = request.session.get( 'check_login_openurl', '' )
+    login_forced = request.session.get( 'login_forced', '' )
+    if check_login_flag == 'good' and check_login_openurl == request.META.get('QUERY_STRING', '') and login_forced == '':
+        request.session['check_login_flag'] = ''
+        request.session['check_login_openurl'] = ''
+        request.session['login_forced'] = 'in_process'
+        request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+        redirect_url = settings_app.SHIB_LOGIN_URL
+        return HttpResponseRedirect( redirect_url )
+    elif request.session['login_forced'] == 'in_process':
+        ## do work
+        request.session['login_forced'] = ''
+        eppn = request.META.get( 'Shibboleth-eppn', '' )
+        return HttpResponse( 'hi %s' % eppn )
+    else:
+        return HttpResponse( 'login-under-construction' )
 
 
 def illiad_request( request ):
