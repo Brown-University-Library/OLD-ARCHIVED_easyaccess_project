@@ -39,7 +39,7 @@ def check_login( request ):
     log.debug( 'starting shib check' )
 
     # redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url') )  # the url shib-logout will redirect to
-    redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:check_login_url') )  # the url shib-logout will redirect to
+    redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:confirmation_url') )  # the url shib-logout will redirect to
 
     qstring = request.META.get('QUERY_STRING', '')
     if qstring is not '':

@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     url( r'^illiad/$',  'article_request_app.views.illiad_request', name='illiad_request_url' ),
     # on GET, displays confirmation button and citation; on POST, submits to illiad; redirects to `confirmation`
 
-    url( r'^confirmation/$',  'article_request_app.views.confirmation', name='confirmation' ),
+    url( r'^confirmation/$',  'article_request_app.views.confirmation', name='confirmation_url' ),
     # shows confirmation message
 
     url( r'^logout/$',  'article_request_app.views.logout', name='logout_url' ),
