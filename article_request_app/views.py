@@ -41,6 +41,7 @@ def check_login( request ):
     qstring = request.META.get('QUERY_STRING', '')
     if qstring is not '':
         redirect_url = '%s?%s' % ( redirect_url, qstring )
+    log.debug( 'request.META, ```%s```' % pprint.pformat(request.META) )
     eppn = request.META.get( 'Shibboleth-eppn', '' )
     log.debug( 'eppn, `%s`' % eppn )
     if '@brown.edu' in eppn:
