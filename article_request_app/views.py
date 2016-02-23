@@ -75,7 +75,7 @@ def login( request ):
     elif request.session['login_forced'] == 'in_process':
         ## do work
         request.session['login_forced'] = ''
-        eppn = request.META.get( 'Shibboleth-eppn', '' )
+        eppn = request.META.get( 'Shibboleth-eppn', 'anonymous' )
         return HttpResponse( 'hi %s' % eppn )
     else:
         return HttpResponse( 'login-under-construction' )
