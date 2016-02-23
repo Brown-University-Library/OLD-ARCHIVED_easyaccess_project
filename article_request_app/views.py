@@ -98,20 +98,23 @@ def login( request ):
 
     ## see if we need to force logout
     login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
+    encoded_login_url = urlquote( login_url )  # django's urlquote()
     log.debug( 'login_url, `%s`' % login_url )
     localdev = False
     shib_status = request.session.get('shib_status', '')
+    log.debug( 'shib_status, `%s`' % shib_status )
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
         localdev = True
     if not localdev and shib_status == '':  # we need to force logout
         request.session['shib_status'] = 'will_force_logout'
-        encoded_login_url = urlquote( login_url )  # django's urlquote()
+
         force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_login_url )
         log.debug( 'force_logout_redirect_url, `%s`' % force_logout_redirect_url )
         return HttpResponseRedirect( force_logout_redirect_url )
     if not localdev and shib_status == 'will_force_logout':  # force login
         request.session['shib_status'] = 'will_force_login'
-        force_login_redirect_url = '%s' % settings_app.SHIB_LOGIN_URL
+        # force_login_redirect_url = '%s' % settings_app.SHIB_LOGIN_URL
+        force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_login_url )
         log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
         return HttpResponseRedirect( force_login_redirect_url )
 
