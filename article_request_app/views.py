@@ -97,7 +97,7 @@ def login( request ):
         return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example usage.`' )
 
     ## see if we need to force logout
-    login_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url') )  # for logout and login redirections
+    login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
     log.debug( 'login_url, `%s`' % login_url )
     localdev = False
     shib_status = request.session.get('shib_status', '')
