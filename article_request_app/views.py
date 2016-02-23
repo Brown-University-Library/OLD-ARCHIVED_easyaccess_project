@@ -37,7 +37,10 @@ def check_login( request ):
 
     ## shib check to see if we need to force logout
     log.debug( 'starting shib check' )
-    redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url') )  # the url shib-logout will redirect to
+
+    # redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url') )  # the url shib-logout will redirect to
+    redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('article_request:check_login_url') )  # the url shib-logout will redirect to
+
     qstring = request.META.get('QUERY_STRING', '')
     if qstring is not '':
         redirect_url = '%s?%s' % ( redirect_url, qstring )
