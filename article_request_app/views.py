@@ -50,7 +50,7 @@ def check_login( request ):
             pass
         else:
             encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
-            redirect_url = '%s?return=%s' % ( os.environ['EZRQST__SHIB_LOGOUT_URL_ROOT'], encoded_redirect_url )
+            redirect_url = '%s?return=%s' % ( os.environ['EZACS__SHIB_LOGOUT_URL_ROOT'], encoded_redirect_url )
     log.debug( 'final redirect_url, `%s`' % redirect_url )
     return HttpResponseRedirect( redirect_url )
 
