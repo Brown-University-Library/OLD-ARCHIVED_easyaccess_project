@@ -11,8 +11,11 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 # from .models import Validator, ViewHelper
 from django.shortcuts import get_object_or_404, render
 from django.utils.http import urlquote
+from illiad.account import IlliadSession
 
-log = logging.getLogger('access')
+
+log = logging.getLogger( 'access' )
+ilog = logging.getLogger( 'illiad' )
 # validator = Validator()
 # view_helper = ViewHelper()
 
@@ -125,8 +128,15 @@ def login( request ):
         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
         eppn = shib_dct['eppn']
 
+
     ## log user into illiad
+    ilog.debug( 'about to initialize an illiad session' )
+    illiad = IlliadSession(
+        ILLIAD_REMOTE_AUTH_URL,
+        ILLIAD_REMOTE_AUTH_HEADER,
+        ill_username )
     pass
+
 
     ## build redirect to illiad-landing-page for submit (if happy) or oops (on problem)
     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
