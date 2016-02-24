@@ -4,68 +4,69 @@ from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
 
+from article_request_app import settings_app
+
 
 log = logging.getLogger('access')
 
 
-class ShibViewHelper( object ):
-    """ Contains helpers for views.check_login() and views.login() """
+# class ShibViewHelper( object ):
+#     """ Contains helpers for views.check_login() and views.login() """
 
-    def check_shib_existance( self, request ):
-        """ Grabs and checks shib headers, returns boolean.
-            Called by views.check_login() """
-        shib_checker = ShibChecker()
-        shib_dict = shib_checker.grab_shib_info( request )
-        log.debug( 'returning shib validity `%s`' % validity )
-        return ( validity, shib_dict )
+#     def check_shib_existance( self, request ):
+#         """ Grabs and checks shib headers, returns boolean.
+#             Called by views.check_login() """
+#         shib_checker = ShibChecker()
+#         shib_dict = shib_checker.grab_shib_info( request )
+#         log.debug( 'returning shib validity `%s`' % validity )
+#         return ( validity, shib_dict )
 
-    def check_shib_headers( self, request ):
-        """ Grabs and checks shib headers, returns boolean.
-            Called by views.login() """
-        shib_checker = ShibChecker()
-        shib_dict = shib_checker.grab_shib_info( request )
-        validity = shib_checker.evaluate_shib_info( shib_dict )
-        log.debug( 'returning shib validity `%s`' % validity )
-        return ( validity, shib_dict )
+#     def check_shib_headers( self, request ):
+#         """ Grabs and checks shib headers, returns boolean.
+#             Called by views.login() """
+#         shib_checker = ShibChecker()
+#         shib_dict = shib_checker.grab_shib_info( request )
+#         validity = shib_checker.evaluate_shib_info( shib_dict )
+#         log.debug( 'returning shib validity `%s`' % validity )
+#         return ( validity, shib_dict )
 
-    def prep_login_redirect( self, request ):
-        """ Prepares redirect response-object to views.oops() on bad authZ (p-type problem).
-            Called by views.shib_login() """
-        request.session['shib_login_error'] = 'Problem on authorization.'
-        request.session['shib_authorized'] = False
-        redirect_url = '%s?bibnum=%s&barcode=%s' % ( reverse('login_url'), request.session['item_bib'], request.session['item_barcode'] )
-        log.debug( 'ShibViewHelper redirect_url, `%s`' % redirect_url )
-        resp = HttpResponseRedirect( redirect_url )
-        return resp
+#     def prep_login_redirect( self, request ):
+#         """ Prepares redirect response-object to views.oops() on bad authZ (p-type problem).
+#             Called by views.shib_login() """
+#         request.session['shib_login_error'] = 'Problem on authorization.'
+#         request.session['shib_authorized'] = False
+#         redirect_url = '%s?bibnum=%s&barcode=%s' % ( reverse('login_url'), request.session['item_bib'], request.session['item_barcode'] )
+#         log.debug( 'ShibViewHelper redirect_url, `%s`' % redirect_url )
+#         resp = HttpResponseRedirect( redirect_url )
+#         return resp
 
-    def build_response( self, request, shib_dict ):
-        """ Sets session vars and redirects to the hidden processor page.
-            Called by views.shib_login() """
-        log.debug( 'starting ShibViewHelper.build_response()' )
-        self.update_session( request, shib_dict )
-        scheme = 'https' if request.is_secure() else 'http'
-        redirect_url = '%s://%s%s' % ( scheme, request.get_host(), reverse('processor_url') )
-        log.debug( 'leaving ShibViewHelper; redirect_url `%s`' % redirect_url )
-        return_response = HttpResponseRedirect( redirect_url )
-        log.debug( 'returning shib response' )
-        return return_response
+#     def build_response( self, request, shib_dict ):
+#         """ Sets session vars and redirects to the hidden processor page.
+#             Called by views.shib_login() """
+#         log.debug( 'starting ShibViewHelper.build_response()' )
+#         self.update_session( request, shib_dict )
+#         scheme = 'https' if request.is_secure() else 'http'
+#         redirect_url = '%s://%s%s' % ( scheme, request.get_host(), reverse('processor_url') )
+#         log.debug( 'leaving ShibViewHelper; redirect_url `%s`' % redirect_url )
+#         return_response = HttpResponseRedirect( redirect_url )
+#         log.debug( 'returning shib response' )
+#         return return_response
 
-    def update_session( self, request, shib_dict ):
-        """ Updates session with shib info.
-            Called by build_response() """
-        request.session['shib_login_error'] = False
-        request.session['shib_authorized'] = True
-        request.session['user_full_name'] = '%s %s' % ( shib_dict['firstname'], shib_dict['lastname'] )
-        request.session['user_last_name'] = shib_dict['lastname']
-        request.session['user_email'] = shib_dict['email']
-        request.session['shib_login_error'] = False
-        request.session['josiah_api_name'] = shib_dict['firstname']
-        request.session['josiah_api_barcode'] = shib_dict['patron_barcode']
-        log.debug( 'ShibViewHelper.update_session() completed' )
-        return
+#     def update_session( self, request, shib_dict ):
+#         """ Updates session with shib info.
+#             Called by build_response() """
+#         request.session['shib_login_error'] = False
+#         request.session['shib_authorized'] = True
+#         request.session['user_full_name'] = '%s %s' % ( shib_dict['firstname'], shib_dict['lastname'] )
+#         request.session['user_last_name'] = shib_dict['lastname']
+#         request.session['user_email'] = shib_dict['email']
+#         request.session['shib_login_error'] = False
+#         request.session['josiah_api_name'] = shib_dict['firstname']
+#         request.session['josiah_api_barcode'] = shib_dict['patron_barcode']
+#         log.debug( 'ShibViewHelper.update_session() completed' )
+#         return
 
-    # end class ShibViewHelper
-
+#     # end class ShibViewHelper
 
 
 class ShibChecker( object ):
@@ -73,8 +74,8 @@ class ShibChecker( object ):
         Called by ShibViewHelper """
 
     def __init__( self ):
-        self.TEST_SHIB_JSON = os.environ.get( 'EZRQST__TEST_SHIB_JSON', '' )
-        self.SHIB_ERESOURCE_PERMISSION = os.environ['EZRQST__SHIB_ERESOURCE_PERMISSION']
+        self.TEST_SHIB_JSON = settings_app.DEVELOPMENT_SHIB_DCT
+        # self.SHIB_ERESOURCE_PERMISSION = os.environ['EZRQST__SHIB_ERESOURCE_PERMISSION']
 
     def grab_shib_info( self, request ):
         """ Grabs shib values from http-header or dev-settings.

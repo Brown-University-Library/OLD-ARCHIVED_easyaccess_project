@@ -9,6 +9,7 @@ from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from .classes.illiad_helper import IlliadHelper
+from .classes.shib_helper import ShibChecker
 from django.shortcuts import get_object_or_404, render
 from django.utils.http import urlquote
 from illiad.account import IlliadSession
@@ -16,8 +17,8 @@ from illiad.account import IlliadSession
 
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
-ill_helper = IlliadHelper
-# view_helper = ViewHelper()
+ill_helper = IlliadHelper()
+shib_checker = ShibChecker()
 
 
 def login( request ):
@@ -66,21 +67,19 @@ def login( request ):
 
     ## get user info
     if not localdev and shib_status == 'will_force_login':
-        eppn = request.META.get( 'Shibboleth-eppn', 'anonymous' )
+        shib_dct = shib_checker.grab_shib_info( request )
     else:  # localdev
         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
-        eppn = shib_dct['eppn']
 
 
 
     ## log user into illiad
     log.debug( 'about to initialize an illiad session' )
-    ill_username = eppn.split('@')[0]
+    ill_username = shib_dct['eppn'].split('@')[0]
     log.debug( 'ill_username, `%s`' % ill_username )
     illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
     log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
     try:
-        1/0
         illiad_session = illiad_instance.login()
     except Exception as e:
         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
@@ -92,7 +91,8 @@ def login( request ):
     log.debug( 'illiad_session, ```%s```' % pprint.pformat(illiad_session) )
     if illiad_session['blocked'] is True:
         citation_json = request.session.get( 'citation', '{}' )
-        message = ill_helper.make_illiad_blocked_message( firstname, lastname, json.loads(citation_json) )
+        message = ill_helper.make_illiad_blocked_message(
+            shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
         request.session['problem_message'] = message
         return HttpResponseRedirect( reverse('article_request:oops_url') )
     pass
