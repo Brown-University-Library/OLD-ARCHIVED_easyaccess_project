@@ -39,7 +39,6 @@ def login( request ):
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
         return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example usage.`' )
 
-
     ## force login, by forcing a logout if necessary
     login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
     log.debug( 'login_url, `%s`' % login_url )
@@ -55,12 +54,15 @@ def login( request ):
         log.debug( 'force_logout_redirect_url, `%s`' % force_logout_redirect_url )
         return HttpResponseRedirect( force_logout_redirect_url )
     if not localdev and shib_status == 'will_force_logout':  # force login
+        """ Note, fyi, normally a shib httpd.conf entry triggers login via a config line like `require valid-user`.
+            This SHIB_LOGIN_URL setting, though, is a url like: `https://host/shib.sso/login?target=/this_url_path`
+            ...so it's that shib.sso/login url that triggers the login, not this app login url.
+            This app login url _is_ shib-configured, though to perceive shib headers if they exist. """
         request.session['shib_status'] = 'will_force_login'
         encoded_openurl = urlquote( request.session['login_openurl'] )
         force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
         log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
         return HttpResponseRedirect( force_login_redirect_url )
-
 
     ## get user info
     if not localdev and shib_status == 'will_force_login':
