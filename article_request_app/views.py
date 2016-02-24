@@ -66,13 +66,12 @@ def login( request ):
     login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
     log.debug( 'login_url, `%s`' % login_url )
     localdev = False
-    # shib_status = request.session.get('shib_status', '')
+    shib_status = request.session.get('shib_status', '')
     # log.debug( 'shib_status, `%s`' % shib_status )
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
         localdev = True
-    if not localdev:  # force login
-        # request.session['shib_status'] = 'will_force_login'
-        # force_login_redirect_url = '%s' % settings_app.SHIB_LOGIN_URL
+    if not localdev and shib_status == '':  # force login
+        request.session['shib_status'] = 'will_force_login'
         encoded_openurl = urlquote( request.session['login_openurl'] )
         force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
         log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
