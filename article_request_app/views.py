@@ -67,7 +67,7 @@ def login( request ):
     log.debug( 'login_url, `%s`' % login_url )
     localdev = False
     # shib_status = request.session.get('shib_status', '')
-    log.debug( 'shib_status, `%s`' % shib_status )
+    # log.debug( 'shib_status, `%s`' % shib_status )
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
         localdev = True
     if not localdev:  # force login
