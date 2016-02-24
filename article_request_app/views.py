@@ -8,7 +8,7 @@ from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
-# from .models import Validator, ViewHelper
+from .classes.illiad_helper import IlliadHelper
 from django.shortcuts import get_object_or_404, render
 from django.utils.http import urlquote
 from illiad.account import IlliadSession
@@ -16,7 +16,7 @@ from illiad.account import IlliadSession
 
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
-# validator = Validator()
+ill_helper = IlliadHelper
 # view_helper = ViewHelper()
 
 
@@ -80,14 +80,21 @@ def login( request ):
     illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
     log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
     try:
+        1/0
         illiad_session = illiad_instance.login()
     except Exception as e:
         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-        return HttpResponseServerError( 'oops; a problem occurred' )
+        message = 'oops; a problem occurred'
+        request.session['problem_message'] = message
+        return HttpResponseRedirect( reverse('article_request:oops_url') )
     log.info( 'user %s established Illiad session_id: %s.' % (ill_username, illiad_session['session_id']) )
     log.debug( 'illiad_instance.__dict__ now, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
     log.debug( 'illiad_session, ```%s```' % pprint.pformat(illiad_session) )
-
+    if illiad_session['blocked'] is True:
+        citation_json = request.session.get( 'citation', '{}' )
+        message = ill_helper.make_illiad_blocked_message( firstname, lastname, json.loads(citation_json) )
+        request.session['problem_message'] = message
+        return HttpResponseRedirect( reverse('article_request:oops_url') )
     pass
 
 
@@ -138,4 +145,5 @@ def logout( request ):
 
 
 def oops( request ):
-    return HttpResponse( 'oops-coming' )
+    message = request.session.get( 'problem_message', 'sorry; a problem occurred' )
+    return HttpResponse( message )
