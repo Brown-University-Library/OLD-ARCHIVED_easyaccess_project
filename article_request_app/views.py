@@ -71,13 +71,19 @@ def login( request ):
         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
         eppn = shib_dct['eppn']
 
+
+
     ## log user into illiad
-    ilog.debug( 'about to initialize an illiad session' )
-    # illiad = IlliadSession(
-    #     ILLIAD_REMOTE_AUTH_URL,
-    #     ILLIAD_REMOTE_AUTH_HEADER,
+    log.debug( 'about to initialize an illiad session' )
+    ill_username = eppn.split('@')[0]
+    log.debug( 'ill_username, `%s`' % ill_username )
+    # illiad_session = IlliadSession(
+    #     settings_app.ILLIAD_REMOTE_AUTH_URL,
+    #     settings_app.ILLIAD_REMOTE_AUTH_HEADER,
     #     ill_username )
+    # log.debug( 'illiad_session.__dict__, ```%s```' % pprint.pformat(illiad_session.__dict__) )
     pass
+
 
 
     ## build redirect to illiad-landing-page for submit (if happy) or oops (on problem)
@@ -93,6 +99,8 @@ def login( request ):
 
     ## redirect
     return HttpResponseRedirect( illiad_landing_redirect_url )
+
+    # end def login()
 
 
 def illiad_request( request ):
