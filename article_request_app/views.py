@@ -85,6 +85,7 @@ def login( request ):
     log.debug( 'illiad_landing_redirect_url, `%s`' % illiad_landing_redirect_url )
 
     ## cleanup
+    request.session['illiad_login_check_flag'] = 'good'
     request.session['findit_illiad_check_flag'] = ''
     request.session['findit_illiad_check_openurl'] = ''
     request.session['login_openurl'] = ''
@@ -95,6 +96,14 @@ def login( request ):
 
 
 def illiad_request( request ):
+    ## check that we're here legitimately
+    illiad_login_check_flag = request.session.get('illiad_login_check_flag', '')
+    log.debug( 'illiad_login_check_flag, `%s`' % illiad_login_check_flag )
+    if illiad_login_check_flag != 'good':
+        log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
+            request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+        return HttpResponseBadRequest( 'Bad request; see "https://library.brown.edu/easyaccess/" for example usage.`' )
+    ## prep data
     citation_json = request.session.get( 'citation', '{}' )
     format = request.session.get( 'format', '' )
     context = { 'citation': json.loads(citation_json), 'format': format }
