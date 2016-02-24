@@ -39,7 +39,7 @@ def login( request ):
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
         return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example usage.`' )
 
-    ## force login, by forcing a logout if necessary
+    ## force login, by forcing a logout
     login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
     log.debug( 'login_url, `%s`' % login_url )
     localdev = False
@@ -47,7 +47,7 @@ def login( request ):
     log.debug( 'shib_status, `%s`' % shib_status )
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
         localdev = True
-    if not localdev and shib_status == '':  # we need to force logout
+    if not localdev and shib_status == '':  # let's force logout
         request.session['shib_status'] = 'will_force_logout'
         encoded_login_url = urlquote( login_url )  # django's urlquote()
         force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_login_url )

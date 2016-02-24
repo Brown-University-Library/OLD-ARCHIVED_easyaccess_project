@@ -23,7 +23,7 @@ git+https://github.com/birkin/bibjsontools.git@v0.4c
 #git+https://github.com/birkin/django-bul-link.git
 
 ## ILLiad
-git+https://github.com/Brown-University-Library/illiad-client.git@v0.7
+git+https://github.com/Brown-University-Library/illiad-client.git@v0.8
 
 ## Shib
 ## disabling for now so I can install it locally for updates and debugging
