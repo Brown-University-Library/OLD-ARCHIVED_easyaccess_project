@@ -77,11 +77,13 @@ def login( request ):
     log.debug( 'about to initialize an illiad session' )
     ill_username = eppn.split('@')[0]
     log.debug( 'ill_username, `%s`' % ill_username )
-    # illiad_session = IlliadSession(
-    #     settings_app.ILLIAD_REMOTE_AUTH_URL,
-    #     settings_app.ILLIAD_REMOTE_AUTH_HEADER,
-    #     ill_username )
-    # log.debug( 'illiad_session.__dict__, ```%s```' % pprint.pformat(illiad_session.__dict__) )
+    illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
+    log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
+    illiad_session = illiad_instance.login()
+    log.info( 'user %s established Illiad session_id: %s.' % (ill_username, illiad_session['session_id']) )
+    log.debug( 'illiad_instance.__dict__ now, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
+    log.debug( 'illiad_session, ```%s```' % pprint.pformat(illiad_session) )
+
     pass
 
 
