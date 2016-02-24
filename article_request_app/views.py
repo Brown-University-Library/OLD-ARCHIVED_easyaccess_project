@@ -7,7 +7,7 @@ from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 # from .models import Validator, ViewHelper
 from django.shortcuts import get_object_or_404, render
 from django.utils.http import urlquote
@@ -79,7 +79,11 @@ def login( request ):
     log.debug( 'ill_username, `%s`' % ill_username )
     illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
     log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
-    illiad_session = illiad_instance.login()
+    try:
+        illiad_session = illiad_instance.login()
+    except Exception as e:
+        log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
+        return HttpResponseServerError( 'oops; a problem occurred' )
     log.info( 'user %s established Illiad session_id: %s.' % (ill_username, illiad_session['session_id']) )
     log.debug( 'illiad_instance.__dict__ now, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
     log.debug( 'illiad_session, ```%s```' % pprint.pformat(illiad_session) )
