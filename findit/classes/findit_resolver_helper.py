@@ -153,6 +153,16 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    # def update_session( self, request, context ):
+    #     """ Updates session for illiad-request-check if necessary.
+    #         Called by views.base_resolver() """
+    #     if context.get( 'resolved', False ) == False:
+    #         request.session['findit_illiad_check_flag'] = 'good'
+    #         if request.META.get('QUERY_STRING', '') is not '':
+    #             request.session['findit_illiad_check_openurl'] = request.META['QUERY_STRING']
+    #     log.debug( "request.session.get('findit_illiad_check_flag', ''), `%s`" % request.session.get('findit_illiad_check_flag', '') )
+    #     return
+
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.base_resolver() """
@@ -160,7 +170,11 @@ class FinditResolver( object ):
             request.session['findit_illiad_check_flag'] = 'good'
             if request.META.get('QUERY_STRING', '') is not '':
                 request.session['findit_illiad_check_openurl'] = request.META['QUERY_STRING']
+            citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
+            request.session['citation'] = citation_json
+            request.session['format'] = context.get( 'format', '' )
         log.debug( "request.session.get('findit_illiad_check_flag', ''), `%s`" % request.session.get('findit_illiad_check_flag', '') )
+        log.debug( "request.session['citation'], `%s`; request.session['format'], `%s`" % (request.session['citation'], request.session['format']) )
         return
 
     def make_resolve_response( self, request, context ):

@@ -95,7 +95,13 @@ def login( request ):
 
 
 def illiad_request( request ):
-    context = {}
+    citation_json = request.session.get( 'citation', '{}' )
+    format = request.session.get( 'format', '' )
+    context = { 'citation': json.loads(citation_json), 'format': format }
+    ## cleanup
+    request.session['citation'] = ''
+    request.session['format'] = ''
+    ## respond
     resp = render( request, 'article_request_app/request.html', context )
     return resp
 
