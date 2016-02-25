@@ -93,12 +93,20 @@ class ShibChecker( object ):
         """ Extracts shib values from http-header.
             Called by grab_shib_info() """
         shib_dict = {
-            'eppn': request.META.get( 'Shibboleth-eppn', '' ),
-            'firstname': request.META.get( 'Shibboleth-givenName', '' ),
-            'lastname': request.META.get( 'Shibboleth-sn', '' ),
+            'brown_status': request.META.get( 'Shibboleth-brownStatus', '' ),  # eg. 'active'
+            'brown_type': request.META.get( 'Shibboleth-brownType', '' ),  # eg. 'Staff'
+            'department': request.META.get( 'Shibboleth-department', '' ),
+            'edu_person_primary_affiliation': request.META.get( 'Shibboleth-eduPersonPrimaryAffiliation', '' ),  # eg. 'staff'
             'email': request.META.get( 'Shibboleth-mail', '' ).lower(),
+            'eppn': request.META.get( 'Shibboleth-eppn', '' ),
+            'id_net': request.META.get( 'Shibboleth-brownNetId', '' ),
+            'id_short': request.META.get( 'Shibboleth-brownShortId', '' ),
+            'member_of': request.META.get( 'Shibboleth-isMemberOf', '' ).split(';'),
+            'name_first': request.META.get( 'Shibboleth-givenName', '' ),
+            'name_last': request.META.get( 'Shibboleth-sn', '' ),
             'patron_barcode': request.META.get( 'Shibboleth-brownBarCode', '' ),
-            'member_of': request.META.get( 'Shibboleth-isMemberOf', '' ) }
+            'title': request.META.get( 'Shibboleth-title', '' ),
+            }
         return shib_dict
 
     def evaluate_shib_info( self, shib_dict ):
