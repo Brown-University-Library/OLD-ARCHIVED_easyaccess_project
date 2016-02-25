@@ -44,6 +44,8 @@ ILLIAD_REMOTE_AUTH_HEADER = getattr(settings, 'FINDIT_ILLIAD_REMOTE_AUTH_HEADER'
 if ILLIAD_REMOTE_AUTH_HEADER is None:
      raise ImproperlyConfigured('Illiad remote auth header is required.')
 
+ILLIAD_URL_ROOT = os.environ['EZACS__FINDIT_ILLIAD_URL']  # `http...OpenURL?%s`
+
 EMAIL_FROM = getattr(settings, 'FINDIT_EMAIL_FROM', None)
 
 if EMAIL_FROM is None:

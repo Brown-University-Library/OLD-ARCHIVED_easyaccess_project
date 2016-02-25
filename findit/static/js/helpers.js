@@ -459,6 +459,7 @@ function requestResource(path) {
                 error: function(data){
                   //These are post failures which means server side error.
                   $('#spinner').toggle();
+                  console.log( "- `findit/static/js/helpers.js` error detected" );
                   $(".error").text("Server side.  Your request could not be processed.  Library staff has been alerted.").show();
                 }
 

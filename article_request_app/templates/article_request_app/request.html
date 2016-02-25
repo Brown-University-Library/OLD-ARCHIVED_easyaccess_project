@@ -4,7 +4,7 @@
 {% block javascripts%}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tmpl.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/helpers.js"></script>
+    <!-- <script type="text/javascript" src="{{ STATIC_URL }}js/helpers.js"></script> -->
 {% endblock %}
 
 {% block content %}
@@ -18,17 +18,15 @@
             refer to your email for delivery confirmation.</p>
     {% else %}
         <div id="spinner">
-           <img src="https://library.brown.edu/find/interface/themes/brown/images/ajax_loading.gif" alt="Initially hidden spinner" />
+           <!-- <img src="https://library.brown.edu/find/interface/themes/brown/images/ajax_loading.gif" alt="Initially hidden spinner" /> -->
          </div>
          <div>
              <p class="info">This resource will be requested and delivered to you.
                  You will receive an email with access information after your
                  request is processed.<br/> <br/>Please click submit to confirm.</p>
               <!-- Our submit form -->
-            <form>
+            <form action="{% url 'article_request:illiad_handler_url' %}">
                 <span id="token">{% csrf_token %}</span>
-                <input type="hidden" name="resource" value="{{ resource.id }}"/>
-                <input type="hidden" name="ill_openurl" value="{{ ill_openurl }}"/>
                 <input type="submit" id="btnRequest" value="Submit"/>
             </form>
             <p class="error hidden"></p>

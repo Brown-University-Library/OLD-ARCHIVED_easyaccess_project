@@ -14,7 +14,7 @@ from django.shortcuts import render
 from py360link2 import get_sersol_data
 from shorturls import baseconv
 
-from findit import forms, summon
+from findit import app_settings, forms, summon
 from findit.utils import BulSerSol
 from delivery.models import Resource
 
@@ -30,6 +30,7 @@ class FinditResolver( object ):
         self.enhanced_link = False
         self.sersol_publication_link = False
         self.borrow_link = False
+        self.referrer = ''
 
     def check_index_page( self, querydict ):
         """ Checks to see if it's the demo landing page.
@@ -153,6 +154,7 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+
     # def update_session( self, request, context ):
     #     """ Updates session for illiad-request-check if necessary.
     #         Called by views.base_resolver() """
@@ -160,7 +162,27 @@ class FinditResolver( object ):
     #         request.session['findit_illiad_check_flag'] = 'good'
     #         if request.META.get('QUERY_STRING', '') is not '':
     #             request.session['findit_illiad_check_openurl'] = request.META['QUERY_STRING']
+    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
+    #         request.session['citation'] = citation_json
+    #         request.session['format'] = context.get( 'format', '' )
     #     log.debug( "request.session.get('findit_illiad_check_flag', ''), `%s`" % request.session.get('findit_illiad_check_flag', '') )
+    #     log.debug( "request.session['citation'], `%s`; request.session['format'], `%s`" % (request.session['citation'], request.session['format']) )
+    #     return
+
+    # def update_session( self, request, context ):
+    #     """ Updates session for illiad-request-check if necessary.
+    #         Called by views.base_resolver() """
+    #     if context.get( 'resolved', False ) == False:
+    #         request.session['findit_illiad_check_flag'] = 'good'
+    #         openurl = request.META.get('QUERY_STRING', '')
+    #         if openurl is not '':
+    #             request.session['findit_illiad_check_openurl'] = request.META.get('QUERY_STRING', '')
+    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
+    #         request.session['citation'] = citation_json
+    #         request.session['format'] = context.get( 'format', '' )
+    #         initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
+    #         request.session['illiad_url'] = '%s&sid=%s' % (initial_illiad_url, self.referrer)
+    #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
     #     return
 
     def update_session( self, request, context ):
@@ -168,13 +190,14 @@ class FinditResolver( object ):
             Called by views.base_resolver() """
         if context.get( 'resolved', False ) == False:
             request.session['findit_illiad_check_flag'] = 'good'
-            if request.META.get('QUERY_STRING', '') is not '':
-                request.session['findit_illiad_check_openurl'] = request.META['QUERY_STRING']
+            request.session['format'] = context.get( 'format', '' )
+            openurl = request.META.get('QUERY_STRING', '')
+            request.session['findit_illiad_check_openurl'] = openurl
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation'] = citation_json
-            request.session['format'] = context.get( 'format', '' )
-        log.debug( "request.session.get('findit_illiad_check_flag', ''), `%s`" % request.session.get('findit_illiad_check_flag', '') )
-        log.debug( "request.session['citation'], `%s`; request.session['format'], `%s`" % (request.session['citation'], request.session['format']) )
+            initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
+            request.session['illiad_url'] = '%s&sid=%s' % (initial_illiad_url, self.referrer)
+        log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
         return
 
     def make_resolve_response( self, request, context ):
@@ -200,11 +223,11 @@ class FinditResolver( object ):
         if not sid:  # then try rfr_id
             sid = querydict.get( 'rfr_id', None )
         if sid:
-            referrer = '%s-%s' % ( sid, ea )
+            self.referrer = '%s-%s' % ( sid, ea )
         else:
-            referrer = ea
-        log.debug( 'referrer, `%s`' % referrer )
-        return referrer
+            self.referrer = ea
+        log.debug( 'self.referrer, `%s`' % self.referrer )
+        return self.referrer
 
     def _try_resolved_obj_citation( self, sersol_dct ):
         """ Returns initial context based on a resolved-object.
