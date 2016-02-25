@@ -75,7 +75,7 @@ class FinditResolver( object ):
         """ Enhances link via summon lookup if necessary.
             Called by views.base_resolver() """
         enhanced = False
-        if direct_indicator is not 'false':  # ensure the GET request doesn't override this (bjd: don't fully understand this; i assume this val is set somewhere)
+        if direct_indicator is not 'false':  # "ensure the GET request doesn't override this" -- (bjd: don't fully understand this; i assume this val is set somewhere)
             enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
             if enhanced_link:
                 self.enhanced_link = enhanced_link
@@ -87,7 +87,7 @@ class FinditResolver( object ):
         """ Handles journal requests; passes them on to 360link for now.
             Called by views.base_resolver() """
         sersol_journal = False
-        if rqst_qdict.get( 'rft.genre', 'null' ) == 'journal':
+        if rqst_qdict.get('rft.genre', 'null') == 'journal' or rqst_qdict.get('genre', 'null') == 'journal':
             if rqst_qdict.get( 'sid', 'null' ).startswith( 'FirstSearch' ):
                 issn = rqst_qdict.get( 'rft.issn' )  # TODO: remove this or return it if necessary
                 self.sersol_publication_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, rqst_qstring)
@@ -154,21 +154,6 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
-
-    # def update_session( self, request, context ):
-    #     """ Updates session for illiad-request-check if necessary.
-    #         Called by views.base_resolver() """
-    #     if context.get( 'resolved', False ) == False:
-    #         request.session['findit_illiad_check_flag'] = 'good'
-    #         if request.META.get('QUERY_STRING', '') is not '':
-    #             request.session['findit_illiad_check_openurl'] = request.META['QUERY_STRING']
-    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
-    #         request.session['citation'] = citation_json
-    #         request.session['format'] = context.get( 'format', '' )
-    #     log.debug( "request.session.get('findit_illiad_check_flag', ''), `%s`" % request.session.get('findit_illiad_check_flag', '') )
-    #     log.debug( "request.session['citation'], `%s`; request.session['format'], `%s`" % (request.session['citation'], request.session['format']) )
-    #     return
-
     # def update_session( self, request, context ):
     #     """ Updates session for illiad-request-check if necessary.
     #         Called by views.base_resolver() """
@@ -185,6 +170,21 @@ class FinditResolver( object ):
     #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
     #     return
 
+    # def update_session( self, request, context ):
+    #     """ Updates session for illiad-request-check if necessary.
+    #         Called by views.base_resolver() """
+    #     if context.get( 'resolved', False ) == False:
+    #         request.session['findit_illiad_check_flag'] = 'good'
+    #         request.session['format'] = context.get( 'format', '' )
+    #         openurl = request.META.get('QUERY_STRING', '')
+    #         request.session['findit_illiad_check_openurl'] = openurl
+    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
+    #         request.session['citation'] = citation_json
+    #         initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
+    #         request.session['illiad_url'] = '%s&sid=%s' % (initial_illiad_url, self.referrer)
+    #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
+    #     return
+
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.base_resolver() """
@@ -195,8 +195,8 @@ class FinditResolver( object ):
             request.session['findit_illiad_check_openurl'] = openurl
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation'] = citation_json
-            initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
-            request.session['illiad_url'] = '%s&sid=%s' % (initial_illiad_url, self.referrer)
+            genre = self._make_genre( openurl, request.GET )
+            request.session['illiad_url'] = self._make_illiad_url( openurl, context.get('format', ''), genre )
         log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
         return
 
@@ -255,5 +255,28 @@ class FinditResolver( object ):
             genre_type = 'easyBorrow'
         log.debug( 'genre_type, `%s`' % genre_type )
         return genre_type
+
+    def _make_genre( self, openurl, rqst_qdict ):
+        """ Gets genre for illiad url.
+            Called by update_session()
+            TODO, think about how to combine with _check_genre() """
+        if 'genre' not in openurl:
+            genre = rqst_qdict.get('rft.genre', '')
+            if genre == '':
+                genre = rqst_qdict.get('genre', '')
+            if genre == '':
+                genre = 'article'
+        return genre
+
+    def _make_illiad_url( self, openurl, format, genre ):
+        """ Builds illiad url for storage in session on failed resolve.
+            Called by update_session() """
+        openurl = '%s&genre=%s' % ( openurl, genre )
+        if 'format' not in openurl:
+            openurl = '%s&format=%s' % ( openurl, format )
+        initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
+        illiad_url = '%s&sid=%s' % ( initial_illiad_url, self.referrer )
+        log.debug( 'illiad_url, ```%s```' % illiad_url )
+        return illiad_url
 
     ## end class FinditResolver
