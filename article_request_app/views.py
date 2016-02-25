@@ -89,13 +89,12 @@ def login( request ):
     log.info( 'user %s established Illiad session_id: %s.' % (ill_username, illiad_session['session_id']) )
     log.debug( 'illiad_instance.__dict__ now, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
     log.debug( 'illiad_session, ```%s```' % pprint.pformat(illiad_session) )
-    if illiad_session['blocked'] is True:
+    if illiad_session.get('blocked', False) is True:
         citation_json = request.session.get( 'citation', '{}' )
         message = ill_helper.make_illiad_blocked_message(
             shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
         request.session['problem_message'] = message
         return HttpResponseRedirect( reverse('article_request:oops_url') )
-    pass
 
 
 
