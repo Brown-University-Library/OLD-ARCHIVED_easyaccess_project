@@ -71,8 +71,6 @@ def login( request ):
     else:  # localdev
         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
 
-
-
     ## log user into illiad
     log.debug( 'about to initialize an illiad session' )
     ill_username = shib_dct['eppn'].split('@')[0]
@@ -95,10 +93,33 @@ def login( request ):
             shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
         request.session['problem_message'] = message
         return HttpResponseRedirect( reverse('article_request:oops_url') )
+    if not illiad_instance.registered:
+        illiad_profile = {
+            'first_name': shib_dict['name_first'],
+            'last_name': shib_dict['name_last'],
+            'email': shib_dict['email'],
+            'status': shib_dict['brown_type'],
+            'phone': shib_dict['phone'],
+            'department': shib_dict[''],
+            }
+        log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (ill_username, pprint.pformat(illiad_profile)) )
+        reg_response = illiad_instance.register_user( illiad_profile )
+        log.info( 'illiad registration response for `%s` is `%s`' % (ill_username, reg_response) )
+    if not illiad_instance.registered:
+        log.info( 'auto-registration for `%s` was not successful; will build web-page message' % ill_username )
+        message = ill_helper.make_illiad_unregistered_message(
+            shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
+        request.session['problem_message'] = message
+        return HttpResponseRedirect( reverse('article_request:oops_url') )
 
+    ## illiad logout
+    try:
+        illiad_instance.logout()
+        log.debug( 'illiad logout successful' )
+    except Exception as e:
+        log.debug( 'illiad logout exception, ```%s```' % unicode(repr(e)) )
 
-
-    ## build redirect to illiad-landing-page for submit (if happy) or oops (on problem)
+    ## build redirect to illiad-landing-page for submit
     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
     log.debug( 'illiad_landing_redirect_url, `%s`' % illiad_landing_redirect_url )
 
@@ -130,6 +151,7 @@ def illiad_request( request ):
     ## cleanup
     request.session['citation'] = ''
     request.session['format'] = ''
+    request.session['illiad_login_check_flag'] = ''
     ## respond
     resp = render( request, 'article_request_app/request.html', context )
     return resp
@@ -145,4 +167,5 @@ def logout( request ):
 
 def oops( request ):
     message = request.session.get( 'problem_message', 'sorry; a problem occurred' )
+    request.session['problem_message'] = ''
     return HttpResponse( message )

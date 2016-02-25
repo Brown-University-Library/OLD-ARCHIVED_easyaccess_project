@@ -105,6 +105,7 @@ class ShibChecker( object ):
             'name_first': request.META.get( 'Shibboleth-givenName', '' ),
             'name_last': request.META.get( 'Shibboleth-sn', '' ),
             'patron_barcode': request.META.get( 'Shibboleth-brownBarCode', '' ),
+            'phone': request.META.get( 'Shibboleth-phone', '' ),  # valid?
             'title': request.META.get( 'Shibboleth-title', '' ),
             }
         return shib_dict
