@@ -175,7 +175,7 @@ def illiad_handler( request ):
     if len( openurl ) == 0:
         here_check = 'problem'
     if here_check == 'init':
-    shib_dct = json.loads( request.sesion.get('user', '{}') )
+        shib_dct = json.loads( request.session.get('user', '{}') )
     if 'eppn' not in shib_dct.keys():
         here_check = 'problem'
     if here_check == 'problem':
@@ -218,7 +218,7 @@ def illiad_handler( request ):
     ## update db eventually
 
     ## redirect
-    confirmation_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:confirmation_url'), request.session['openurl'] )
+    confirmation_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:confirmation_url'), openurl )
     log.debug( 'confirmation_redirect_url, `%s`' % confirmation_redirect_url )
 
     ## cleanup
