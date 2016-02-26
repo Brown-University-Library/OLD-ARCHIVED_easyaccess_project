@@ -11,7 +11,6 @@ log = logging.getLogger('access')
 class IlliadHelper( object ):
     """ Contains helpers for views.login() """
 
-
     def make_illiad_blocked_message( self, firstname, lastname, citation ):
         """ Preps illiad blocked message.
             Called by build_message() """
@@ -30,7 +29,6 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
         log.debug( 'illiad blocked message built, ```%s```' % message )
         return message
         ### end make_illiad_blocked_message() ###
-
 
     def make_illiad_unregistered_message( self, firstname, lastname, citation ):
         """ Preps illiad blocked message.
