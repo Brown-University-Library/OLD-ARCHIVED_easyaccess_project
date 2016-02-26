@@ -15,11 +15,13 @@ from py360link2 import get_sersol_data
 from shorturls import baseconv
 
 from findit import app_settings, forms, summon
+from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
 from delivery.models import Resource
 
 
 log = logging.getLogger('access')
+ill_url_builder = IlliadUrlBuilder()
 # plink = Permalink()
 
 
@@ -195,8 +197,7 @@ class FinditResolver( object ):
             request.session['findit_illiad_check_openurl'] = openurl
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation'] = citation_json
-            genre = self._make_genre( openurl, request.GET )
-            request.session['illiad_url'] = self._make_illiad_url( openurl, context.get('format', ''), genre )
+            request.session['illiad_url'] = ill_url_builder.make_illiad_url( openurl )
         log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
         return
 
@@ -256,27 +257,27 @@ class FinditResolver( object ):
         log.debug( 'genre_type, `%s`' % genre_type )
         return genre_type
 
-    def _make_genre( self, openurl, rqst_qdict ):
-        """ Gets genre for illiad url.
-            Called by update_session()
-            TODO, think about how to combine with _check_genre() """
-        if 'genre' not in openurl:
-            genre = rqst_qdict.get('rft.genre', '')
-            if genre == '':
-                genre = rqst_qdict.get('genre', '')
-            if genre == '':
-                genre = 'article'
-        return genre
+    # def _make_genre( self, openurl, rqst_qdict ):
+    #     """ Gets genre for illiad url.
+    #         Called by update_session()
+    #         TODO, think about how to combine with _check_genre() """
+    #     if 'genre' not in openurl:
+    #         genre = rqst_qdict.get('rft.genre', '')
+    #         if genre == '':
+    #             genre = rqst_qdict.get('genre', '')
+    #         if genre == '':
+    #             genre = 'article'
+    #     return genre
 
-    def _make_illiad_url( self, openurl, format, genre ):
-        """ Builds illiad url for storage in session on failed resolve.
-            Called by update_session() """
-        openurl = '%s&genre=%s' % ( openurl, genre )
-        if 'format' not in openurl:
-            openurl = '%s&format=%s' % ( openurl, format )
-        initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
-        illiad_url = '%s&sid=%s' % ( initial_illiad_url, self.referrer )
-        log.debug( 'illiad_url, ```%s```' % illiad_url )
-        return illiad_url
+    # def _make_illiad_url( self, openurl, format, genre ):
+    #     """ Builds illiad url for storage in session on failed resolve.
+    #         Called by update_session() """
+    #     openurl = '%s&genre=%s' % ( openurl, genre )
+    #     if 'format' not in openurl:
+    #         openurl = '%s&format=%s' % ( openurl, format )
+    #     initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
+    #     illiad_url = '%s&sid=%s' % ( initial_illiad_url, self.referrer )
+    #     log.debug( 'illiad_url, ```%s```' % illiad_url )
+    #     return illiad_url
 
     ## end class FinditResolver
