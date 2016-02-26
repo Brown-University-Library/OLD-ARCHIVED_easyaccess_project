@@ -29,20 +29,44 @@ class IlliadHelper( object ):
         valid_check = True
         if bib_dct['type'] == 'article':
             ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
+        elif bib['type'] == 'book':
+            ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
+        elif (bib['type'] == 'bookitem') or (bib['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
+            ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
+
 
     def _handle_article( self, bib_dct ):
         """ Updates bib_dct with article values.
             Called by add_required_kvs() """
-        if bib.get('journal') is None:
-            bib['journal'] = {'name': 'Not provided'}; valid_check = False
-        if bib.get('year') is None:
-            bib['year'] = '?'; valid_check = False
-        if bib.get('title') is None:
-            bib['title'] = 'Title not specified'; valid_check = False
-        if bib.get('pages') is None:
-            bib['pages'] = '? - ?'; valid_check = False
-        return ( bib, valid_check )
+        if bib_dct.get('journal') is None:
+            bib_dct['journal'] = {'name': 'Not provided'}; valid_check = False
+        if bib_dct.get('year') is None:
+            bib_dct['year'] = '?'; valid_check = False
+        if bib_dct.get('title') is None:
+            bib_dct['title'] = 'Title not specified'; valid_check = False
+        if bib_dct.get('pages') is None:
+            bib_dct['pages'] = '? - ?'; valid_check = False
+        return ( bib_dct, valid_check )
 
+    def _handle_book( self, bib_dct ):
+        """ Updates bib_dct with book values.
+            Called by add_required_kvs() """
+        if bib.get('title') is None:
+            bib['title'] = 'Not available'
+            valid = False
+        return ( bib_dct, valid_check )
+
+    def _handle_bookish( self, bib_dct ):
+        """ Updates bib_dct with bookitem or inbook values.
+            Called by add_required_kvs() """
+        if bib.get('title') is None:
+            bib['title'] = 'Title not specified'; valid = False
+        if bib.get('journal') is None:
+            bib['journal'] = {'name': 'Source not provided'}; valid = False
+        pages = bib.get('pages')
+        if (pages == []) or (pages is None):
+            bib['pages'] = '? - ?'; valid = False
+        return ( bib_dct, valid_check )
 
     # def make_illiad_url( self, bibjson ):
     #     """
