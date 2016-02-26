@@ -10,18 +10,20 @@ from findit import app_settings
 
 
 log = logging.getLogger('access')
-validator = IlliadValidator()
 
 
-class IlliadHelper( object ):
+class IlliadUrlBuilder( object ):
     """ Constructs url sent to illiad.
         Called by FinditResolver() code. """
+
+    def __init__( self ):
+        self.validator = IlliadValidator()
 
     def make_illiad_url( self, initial_querystring ):
         """ Manages steps of constructing illiad url.
             Called by FinditResolver.x() """
         bib_dct = bibjsontools.from_openurl( initial_querystring )
-        ill_bib_dct = validator.add_required_kvs( bib_dct )
+        ill_bib_dct = self.validator.add_required_kvs( bib_dct )
         extra_dct = self.check_identifiers( ill_bib_dct, extra_dct )
         extra_dct  self.check_validity( ill_bib_dct, extra_dct )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
