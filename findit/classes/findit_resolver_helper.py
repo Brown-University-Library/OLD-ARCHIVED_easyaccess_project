@@ -14,10 +14,10 @@ from django.shortcuts import render
 from py360link2 import get_sersol_data
 from shorturls import baseconv
 
+# from delivery.models import Resource
 from findit import app_settings, forms, summon
 from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
-from delivery.models import Resource
 
 
 log = logging.getLogger('access')

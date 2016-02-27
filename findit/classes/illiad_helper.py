@@ -8,7 +8,6 @@ import bibjsontools  # requirements.txt module
 from findit import app_settings
 
 
-
 log = logging.getLogger('access')
 
 
@@ -24,8 +23,8 @@ class IlliadUrlBuilder( object ):
             Called by FinditResolver.x() """
         bib_dct = bibjsontools.from_openurl( initial_querystring )
         ill_bib_dct = self.validator.add_required_kvs( bib_dct )
-        extra_dct = self.check_identifiers( ill_bib_dct, extra_dct )
-        extra_dct  self.check_validity( ill_bib_dct, extra_dct )
+        extra_dct = self.check_identifiers( ill_bib_dct )
+        extra_dct = self.check_validity( ill_bib_dct, extra_dct )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
         for k,v in extra_dct.iteritems():
             openurl += '&%s=%s' % ( urllib.quote_plus(k), urllib.quote_plus(v) )
@@ -71,7 +70,7 @@ class IlliadValidator( object ):
             ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
-        bib_dct['_valid'] = valid
+        bib_dct['_valid'] = valid_check
         return bib_dct
 
     def _handle_article( self, bib_dct, valid_check ):
