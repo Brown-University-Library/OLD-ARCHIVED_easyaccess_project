@@ -38,6 +38,8 @@ def login( request ):
     log.debug( 'shib_status, `%s`' % shib_status )
     if localdev is False and shib_status == '':  # force logout
         return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
+    elif localdev is False and shib_status == 'will_force_login' and request.META.get('Shibboleth-eppn', '') == '':  # handling issue
+        return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
     elif localdev is False and shib_status == 'will_force_logout':  # force login
         return HttpResponseRedirect( login_helper.make_force_login_redirect_url( request ) )
 
