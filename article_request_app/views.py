@@ -149,7 +149,7 @@ def illiad_handler( request ):
     ## update db eventually
 
     ## send email
-    subject = 'the subject'
+    subject = 'easyAccess request confirmation'
     body = ill_helper.make_illiad_success_message(
         shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation'), illiad_transaction_number, shib_dct['email'] )
     ffrom = settings_app.EMAIL_FROM
