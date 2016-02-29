@@ -70,7 +70,8 @@ class LoginHelper( object ):
     def grab_user_info( self, request, localdev, shib_status ):
         """ Updates session with real-shib or development-shib info.
             Called by views.login() """
-        if localdev is False and shib_status == 'will_force_login':
+        # if localdev is False and shib_status == 'will_force_login':
+        if localdev is False:
             request.session['shib_status'] = ''
             shib_dct = shib_checker.grab_shib_info( request )
         else:  # localdev
