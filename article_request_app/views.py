@@ -27,6 +27,7 @@ def login( request ):
         then forces login;
         then checks illiad for new-user or blocked;
         if happy, redirects to `illiad`, otherwise to `oops`. """
+    log.debug( 'request.__dict__, ```%s```' % pprint.pformat(request.__dict__) )
 
     ## check that request is from findit
     if login_helper.check_referrer( request ) is False:
@@ -34,6 +35,7 @@ def login( request ):
 
     ## force login, by forcing a logout
     ( localdev, shib_status ) = login_helper.assess_status( request )
+    log.debug( 'shib_status, `%s`' % shib_status )
     if localdev is False and shib_status == '':  # force logout
         return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
     elif localdev is False and shib_status == 'will_force_logout':  # force login
