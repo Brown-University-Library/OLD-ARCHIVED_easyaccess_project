@@ -9,61 +9,71 @@ from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from .classes.illiad_helper import IlliadHelper
+from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibChecker
 from django.shortcuts import get_object_or_404, render
-from django.utils.http import urlquote
+# from django.utils.http import urlquote
 from illiad.account import IlliadSession
 
 
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 ill_helper = IlliadHelper()
+login_helper = LoginHelper()
 shib_checker = ShibChecker()
 
 
 def login( request ):
     """ Ensures user comes from correct 'findit' url;
-        then forces login; then checks illiad for new-user or blocked;
+        then forces login;
+        then checks illiad for new-user or blocked;
         if happy, redirects to `illiad`, otherwise to `oops`. """
 
     ## check that request is from findit
-    findit_check = False
-    findit_illiad_check_flag = request.session.get( 'findit_illiad_check_flag', '' )
-    findit_illiad_check_openurl = request.session.get( 'findit_illiad_check_openurl', '' )
-    if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == request.META.get('QUERY_STRING', ''):
-        findit_check = True
-    log.debug( 'findit_check, `%s`' % findit_check )
-    if findit_check is True:
-        request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
-    elif findit_check is not True:
-        log.warning( 'Bad attempt from source-url, ```%s```; ip, `%s`' % (
-            request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-        return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example usage.`' )
+    if login_helper.check_referrer( request ) is False:
+        return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example easyAccess requests.`' )
+
+
 
     ## force login, by forcing a logout
-    login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
-    log.debug( 'login_url, `%s`' % login_url )
-    localdev = False
-    shib_status = request.session.get('shib_status', '')
-    log.debug( 'shib_status, `%s`' % shib_status )
-    if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
-        localdev = True
-    if not localdev and shib_status == '':  # let's force logout
-        request.session['shib_status'] = 'will_force_logout'
-        encoded_login_url = urlquote( login_url )  # django's urlquote()
-        force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_login_url )
-        log.debug( 'force_logout_redirect_url, `%s`' % force_logout_redirect_url )
-        return HttpResponseRedirect( force_logout_redirect_url )
-    if not localdev and shib_status == 'will_force_logout':  # force login
-        """ Note, fyi, normally a shib httpd.conf entry triggers login via a config line like `require valid-user`.
-            This SHIB_LOGIN_URL setting, though, is a url like: `https://host/shib.sso/login?target=/this_url_path`
-            ...so it's that shib.sso/login url that triggers the login, not this app login url.
-            This app login url _is_ shib-configured, though to perceive shib headers if they exist. """
-        request.session['shib_status'] = 'will_force_login'
-        encoded_openurl = urlquote( request.session['login_openurl'] )
-        force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
-        log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
-        return HttpResponseRedirect( force_login_redirect_url )
+    ( localdev, shib_status ) = login_helper.assess_status( request )
+    if not localdev and shib_status == '':  # force logout
+        return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
+    elif not localdev and shib_status == 'will_force_logout':  # force login
+        return HttpResponseRedirect( login_helper.make_force_login_redirect_url( request ) )
+
+
+
+    # ## force login, by forcing a logout
+    # login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
+    # log.debug( 'login_url, `%s`' % login_url )
+    # localdev = False
+    # shib_status = request.session.get('shib_status', '')
+    # log.debug( 'shib_status, `%s`' % shib_status )
+    # if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
+    #     localdev = True
+    # if not localdev and shib_status == '':  # let's force logout
+    #     request.session['shib_status'] = 'will_force_logout'
+    #     encoded_login_url = urlquote( login_url )  # django's urlquote()
+    #     force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_login_url )
+    #     log.debug( 'force_logout_redirect_url, `%s`' % force_logout_redirect_url )
+    #     return HttpResponseRedirect( force_logout_redirect_url )
+    # if not localdev and shib_status == 'will_force_logout':  # force login
+    #     """ Note, fyi, normally a shib httpd.conf entry triggers login via a config line like `require valid-user`.
+    #         This SHIB_LOGIN_URL setting, though, is a url like: `https://host/shib.sso/login?target=/this_url_path`
+    #         ...so it's that shib.sso/login url that triggers the login, not this app login url.
+    #         This app login url _is_ shib-configured, though to perceive shib headers if they exist. """
+    #     request.session['shib_status'] = 'will_force_login'
+    #     encoded_openurl = urlquote( request.session['login_openurl'] )
+    #     force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
+    #     log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
+    #     return HttpResponseRedirect( force_login_redirect_url )
+
+
+
+    1/0
+
+
 
     ## get user info
     if not localdev and shib_status == 'will_force_login':
