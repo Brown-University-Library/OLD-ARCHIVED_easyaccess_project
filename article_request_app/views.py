@@ -151,7 +151,7 @@ def illiad_handler( request ):
     ## send email
     subject = 'the subject'
     body = ill_helper.make_illiad_success_message(
-        shib_dct['firstname'], shib_dct['lastname'], request.session.get('citation'), illiad_transaction_number, shib_dct['email'] )
+        shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation'), illiad_transaction_number, shib_dct['email'] )
     ffrom = settings_app.EMAIL_FROM
     addr = shib_dct['email']
     send_mail(

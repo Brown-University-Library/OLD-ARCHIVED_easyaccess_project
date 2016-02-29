@@ -13,9 +13,8 @@ log = logging.getLogger('access')
 class ShibChecker( object ):
     """ Contains helpers for checking Shib. """
 
-    def __init__( self ):
-        self.TEST_SHIB_JSON = settings_app.DEVELOPMENT_SHIB_DCT
-        # self.SHIB_ERESOURCE_PERMISSION = os.environ['EZRQST__SHIB_ERESOURCE_PERMISSION']
+    # def __init__( self ):
+    #     self.TEST_SHIB_JSON = settings_app.DEVELOPMENT_SHIB_DCT
 
     def grab_shib_info( self, request ):
         """ Grabs shib values from http-header or dev-settings.
@@ -25,7 +24,7 @@ class ShibChecker( object ):
             shib_dct = self.grab_shib_from_meta( request )
         else:
             if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:
-                shib_dct = json.loads( self.TEST_SHIB_JSON )
+                shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
         log.debug( 'in models.ShibChecker.grab_shib_info(); shib_dct is: %s' % pprint.pformat(shib_dct) )
         return shib_dct
 
