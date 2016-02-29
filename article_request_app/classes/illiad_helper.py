@@ -94,9 +94,12 @@ class IlliadHelper( object ):
             log.error( 'illiad logout exception, ```%s```' % unicode(repr(e)) )
         return
 
+    ##########################
+    ### illiad blocked message
+    ##########################
     def make_illiad_blocked_message( self, firstname, lastname, citation ):
         """ Preps illiad blocked message.
-            Called by build_message() """
+            Called by _check_blocked() """
         message = '''
 Greetings %s %s,
 
@@ -111,8 +114,10 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
         citation )
         log.debug( 'illiad blocked message built, ```%s```' % message )
         return message
-        ### end make_illiad_blocked_message() ###
 
+    ###############################
+    ### illiad unregistered message
+    ###############################
     def make_illiad_unregistered_message( self, firstname, lastname, citation ):
         """ Preps illiad blocked message.
             Called by build_message() """
@@ -130,4 +135,42 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
         citation )
         log.debug( 'illiad unregistered message built, ```%s```' % message )
         return message
-        ### end make_illiad_unregistered_message() ###
+
+    ##########################
+    ### illiad success message
+    ##########################
+    def make_illiad_success_message( self, firstname, lastname, citation_jsn, illiad_transaction_number, email ):
+        """ Preps illiad success message.
+            Called by _handle_new_user() """
+        citation_dct = json.loads( citation_jsn )
+        if citation_dct.get( 'title', '' ) != '':
+            title = citation_dct['title']
+        else:
+            title = citation_dct['source']
+        message = '''
+Greetings {firstname} {lastname},
+
+We've located the title '{title}' and have ordered it for you. You'll be notified when it arrives.
+
+Some useful information for your records:
+
+- Title: '{title}'
+- Ordered from service: 'Illiad'
+- Your Illiad reference number: '{illiad_num}'
+- Notification of arrival will be sent to email address: '{email}'
+
+You can check your Illiad account at the link:
+<https://illiad.brown.edu/illiad/>
+
+If you have any questions, contact the Library's Interlibrary Loan office at interlibrary_loan@brown.edu or call 401-863-2169.
+
+  '''.format(
+        firstname=firstname,
+        lastname=lastname,
+        title=title,
+        illiad_num=illiad_transaction_number,
+        email=email )
+        log.debug( 'illiad success message built' )
+        return message
+
+    ## end class IlliadHelper

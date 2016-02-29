@@ -9,6 +9,7 @@ from .classes.shib_helper import ShibChecker
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render
@@ -35,7 +36,7 @@ def login( request ):
     ## force login, by forcing a logout
     ( localdev, shib_status ) = login_helper.assess_status( request )
     if localdev is False:
-        if shib_status == '':  # clean entry, force logout, sets shib_status to 'will_force_logout'
+        if shib_status == '':  # clean entry: forces logout, sets shib_status to 'will_force_logout'
             return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
         elif shib_status == 'will_force_logout':  # sets shib_status to 'will_force_login'
             return HttpResponseRedirect( login_helper.make_force_login_redirect_url( request ) )
@@ -86,7 +87,7 @@ def illiad_request( request ):
     format = request.session.get( 'format', '' )
     context = { 'citation': json.loads(citation_json), 'format': format }
     ## cleanup
-    request.session['citation'] = ''
+    # request.session['citation'] = ''
     request.session['format'] = ''
     request.session['illiad_login_check_flag'] = ''
     ## respond
@@ -131,6 +132,8 @@ def illiad_handler( request ):
     errors = illiad_post_key.get( 'errors', None )
     if errors:
         log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
+        request.session['problem_message'] = 'There was a problem submitting your request; please try again later.'
+        return HttpResponseRedirect( reverse('article_request:oops_url') )
     else:
         submit_status = illiad_instance.make_request( illiad_post_key )
         log.debug( 'submit_status, ```%s```' % pprint.pformat(submit_status) )
@@ -145,11 +148,21 @@ def illiad_handler( request ):
 
     ## update db eventually
 
+    ## send email
+    subject = 'the subject'
+    body = ill_helper.make_illiad_success_message(
+        shib_dct['firstname'], shib_dct['lastname'], request.session.get['citation'], illiad_transaction_number, shib_dct['email'] )
+    ffrom = settings_app.EMAIL_FROM
+    addr = shib_dct['email']
+    send_mail(
+        subject, body, ffrom, [addr], fail_silently=True )
+
     ## redirect
     confirmation_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:confirmation_url'), openurl )
     log.debug( 'confirmation_redirect_url, `%s`' % confirmation_redirect_url )
 
     ## cleanup
+    request.session['citation'] = ''
 
     ## redirect
     return HttpResponseRedirect( confirmation_redirect_url )
