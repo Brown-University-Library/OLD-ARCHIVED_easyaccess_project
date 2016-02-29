@@ -150,12 +150,12 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
         message = '''
 Greetings {firstname} {lastname},
 
-We've located the title '{title}' and have ordered it for you. You'll be notified when it arrives.
+We're getting the title '{title}' for you. You'll be notified when it arrives.
 
 Some useful information for your records:
 
 - Title: '{title}'
-- Ordered from service: 'Illiad'
+- Ordered from service: 'ILLiad'
 - Your Illiad reference number: '{illiad_num}'
 - Notification of arrival will be sent to email address: '{email}'
 
