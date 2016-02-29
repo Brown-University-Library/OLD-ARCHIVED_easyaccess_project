@@ -37,7 +37,7 @@ class LoginHelper( object ):
         """ Assesses localdev status and shib_status.
             Called by views.login() """
         localdev = False
-        shib_status = request.session.get('shib_status', '')
+        shib_status = request.session.get( 'shib_status', '' )
         if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
             localdev = True
         log.debug( 'localdev, `%s`; shib_status, `%s`' % (localdev, shib_status) )
@@ -46,9 +46,9 @@ class LoginHelper( object ):
     def make_force_logout_redirect_url( self, request ):
         """ Builds logout-redirect url
             Called by views.login() """
+        request.session['shib_status'] = 'will_force_logout'
         login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
         log.debug( 'login_url, `%s`' % login_url )
-        request.session['shib_status'] = 'will_force_logout'
         encoded_login_url = urlquote( login_url )  # django's urlquote()
         force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_login_url )
         log.debug( 'force_logout_redirect_url, `%s`' % force_logout_redirect_url )
@@ -70,7 +70,8 @@ class LoginHelper( object ):
     def grab_user_info( self, request, localdev, shib_status ):
         """ Updates session with real-shib or development-shib info.
             Called by views.login() """
-        if not localdev and shib_status == 'will_force_login':
+        if localdev is False and shib_status == 'will_force_login':
+            request.session['shib_status'] = ''
             shib_dct = shib_checker.grab_shib_info( request )
         else:  # localdev
             shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
@@ -84,7 +85,7 @@ class LoginHelper( object ):
         request.session['illiad_login_check_flag'] = 'good'
         request.session['findit_illiad_check_flag'] = ''
         request.session['findit_illiad_check_openurl'] = ''
-        request.session['shib_status'] = ''
+        # request.session['shib_status'] = ''
         return
 
     # end class LoginHelper

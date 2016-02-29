@@ -34,9 +34,9 @@ def login( request ):
 
     ## force login, by forcing a logout
     ( localdev, shib_status ) = login_helper.assess_status( request )
-    if not localdev and shib_status == '':  # force logout
+    if localdev is False and shib_status == '':  # force logout
         return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
-    elif not localdev and shib_status == 'will_force_logout':  # force login
+    elif localdev is False and shib_status == 'will_force_logout':  # force login
         return HttpResponseRedirect( login_helper.make_force_login_redirect_url( request ) )
 
     ## get user info
