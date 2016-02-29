@@ -39,79 +39,26 @@ def login( request ):
     elif not localdev and shib_status == 'will_force_logout':  # force login
         return HttpResponseRedirect( login_helper.make_force_login_redirect_url( request ) )
 
-
-
     ## get user info
     shib_dct = login_helper.grab_user_info( request, localdev, shib_status )  # updates session with user info
 
-
-
-    1/0
-
-
-
     ## log user into illiad
-    log.debug( 'about to initialize an illiad session' )
-    ill_username = shib_dct['eppn'].split('@')[0]
-    log.debug( 'ill_username, `%s`' % ill_username )
-    illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
-    log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
-    try:
-        illiad_session = illiad_instance.login()
-    except Exception as e:
-        log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-        message = 'oops; a problem occurred'
-        request.session['problem_message'] = message
-        return HttpResponseRedirect( reverse('article_request:oops_url') )
-    log.info( 'user %s established Illiad session_id: %s.' % (ill_username, illiad_session['session_id']) )
-    log.debug( 'illiad_instance.__dict__ now, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
-    log.debug( 'illiad_session, ```%s```' % pprint.pformat(illiad_session) )
-    if illiad_session.get('blocked', False) is True:
-        citation_json = request.session.get( 'citation', '{}' )
-        message = ill_helper.make_illiad_blocked_message(
-            shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
-        request.session['problem_message'] = message
-        return HttpResponseRedirect( reverse('article_request:oops_url') )
-    if not illiad_instance.registered:
-        illiad_profile = {
-            'first_name': shib_dict['name_first'],
-            'last_name': shib_dict['name_last'],
-            'email': shib_dict['email'],
-            'status': shib_dict['brown_type'],
-            'phone': shib_dict['phone'],
-            'department': shib_dict[''],
-            }
-        log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (ill_username, pprint.pformat(illiad_profile)) )
-        reg_response = illiad_instance.register_user( illiad_profile )
-        log.info( 'illiad registration response for `%s` is `%s`' % (ill_username, reg_response) )
-    if not illiad_instance.registered:
-        log.info( 'auto-registration for `%s` was not successful; will build web-page message' % ill_username )
-        message = ill_helper.make_illiad_unregistered_message(
-            shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
-        request.session['problem_message'] = message
-        return HttpResponseRedirect( reverse('article_request:oops_url') )
+    ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
+    if success is False:
+        return HttpResponseRedirect( reverse('article_request:oops_url') )  # handles blocked or failed-user-registration problems
 
     ## illiad logout
-    try:
-        illiad_instance.logout()
-        log.debug( 'illiad logout successful' )
-    except Exception as e:
-        log.debug( 'illiad logout exception, ```%s```' % unicode(repr(e)) )
+    ill_helper.logout_user( illiad_instance )
 
     ## build redirect to illiad-landing-page for submit
     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
     log.debug( 'illiad_landing_redirect_url, `%s`' % illiad_landing_redirect_url )
 
     ## cleanup
-    request.session['illiad_login_check_flag'] = 'good'
-    request.session['findit_illiad_check_flag'] = ''
-    request.session['findit_illiad_check_openurl'] = ''
-    request.session['shib_status'] = ''
+    login_helper.update_session( request )
 
     ## redirect
     return HttpResponseRedirect( illiad_landing_redirect_url )
-
-    # end def login()
 
 
 def illiad_request( request ):

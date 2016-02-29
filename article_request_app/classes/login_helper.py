@@ -78,4 +78,13 @@ class LoginHelper( object ):
         log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
         return shib_dct
 
+    def update_session( self, request ):
+        """ Updates necessary session attributes.
+            Called by views.login() """
+        request.session['illiad_login_check_flag'] = 'good'
+        request.session['findit_illiad_check_flag'] = ''
+        request.session['findit_illiad_check_openurl'] = ''
+        request.session['shib_status'] = ''
+        return
+
     # end class LoginHelper
