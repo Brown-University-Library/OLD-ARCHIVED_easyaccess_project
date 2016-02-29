@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
+from .shib_helper import ShibChecker
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.core.urlresolvers import reverse
@@ -10,6 +11,7 @@ from django.utils.http import urlquote
 
 
 log = logging.getLogger('access')
+shib_checker = ShibChecker()
 
 
 class LoginHelper( object ):
@@ -64,5 +66,16 @@ class LoginHelper( object ):
         force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
         log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
         return force_login_redirect_url
+
+    def grab_user_info( self, request, localdev, shib_status ):
+        """ Updates session with real-shib or development-shib info.
+            Called by views.login() """
+        if not localdev and shib_status == 'will_force_login':
+            shib_dct = shib_checker.grab_shib_info( request )
+        else:  # localdev
+            shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
+        request.session['user'] = json.dumps( shib_dct )
+        log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
+        return shib_dct
 
     # end class LoginHelper

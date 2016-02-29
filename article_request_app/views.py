@@ -3,16 +3,15 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random, time
+from .classes.illiad_helper import IlliadHelper
+from .classes.login_helper import LoginHelper
+from .classes.shib_helper import ShibChecker
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
-from .classes.illiad_helper import IlliadHelper
-from .classes.login_helper import LoginHelper
-from .classes.shib_helper import ShibChecker
 from django.shortcuts import get_object_or_404, render
-# from django.utils.http import urlquote
 from illiad.account import IlliadSession
 
 
@@ -33,8 +32,6 @@ def login( request ):
     if login_helper.check_referrer( request ) is False:
         return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example easyAccess requests.`' )
 
-
-
     ## force login, by forcing a logout
     ( localdev, shib_status ) = login_helper.assess_status( request )
     if not localdev and shib_status == '':  # force logout
@@ -44,43 +41,14 @@ def login( request ):
 
 
 
-    # ## force login, by forcing a logout
-    # login_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:login_url'), request.session['login_openurl'] )  # for logout and login redirections
-    # log.debug( 'login_url, `%s`' % login_url )
-    # localdev = False
-    # shib_status = request.session.get('shib_status', '')
-    # log.debug( 'shib_status, `%s`' % shib_status )
-    # if request.get_host() == '127.0.0.1' and project_settings.DEBUG == True:  # eases local development
-    #     localdev = True
-    # if not localdev and shib_status == '':  # let's force logout
-    #     request.session['shib_status'] = 'will_force_logout'
-    #     encoded_login_url = urlquote( login_url )  # django's urlquote()
-    #     force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_login_url )
-    #     log.debug( 'force_logout_redirect_url, `%s`' % force_logout_redirect_url )
-    #     return HttpResponseRedirect( force_logout_redirect_url )
-    # if not localdev and shib_status == 'will_force_logout':  # force login
-    #     """ Note, fyi, normally a shib httpd.conf entry triggers login via a config line like `require valid-user`.
-    #         This SHIB_LOGIN_URL setting, though, is a url like: `https://host/shib.sso/login?target=/this_url_path`
-    #         ...so it's that shib.sso/login url that triggers the login, not this app login url.
-    #         This app login url _is_ shib-configured, though to perceive shib headers if they exist. """
-    #     request.session['shib_status'] = 'will_force_login'
-    #     encoded_openurl = urlquote( request.session['login_openurl'] )
-    #     force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
-    #     log.debug( 'force_login_redirect_url, `%s`' % force_login_redirect_url )
-    #     return HttpResponseRedirect( force_login_redirect_url )
+    ## get user info
+    shib_dct = login_helper.grab_user_info( request, localdev, shib_status )  # updates session with user info
 
 
 
     1/0
 
 
-
-    ## get user info
-    if not localdev and shib_status == 'will_force_login':
-        shib_dct = shib_checker.grab_shib_info( request )
-    else:  # localdev
-        shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
-    request.session['user'] = json.dumps( shib_dct )
 
     ## log user into illiad
     log.debug( 'about to initialize an illiad session' )
