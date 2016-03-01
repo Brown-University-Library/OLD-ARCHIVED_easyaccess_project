@@ -11,18 +11,15 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
-from py360link2 import get_sersol_data
-from shorturls import baseconv
-
-# from delivery.models import Resource
 from findit import app_settings, forms, summon
 from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
+from py360link2 import get_sersol_data
+from shorturls import baseconv
 
 
 log = logging.getLogger('access')
 ill_url_builder = IlliadUrlBuilder()
-# plink = Permalink()
 
 
 class FinditResolver( object ):
@@ -156,37 +153,6 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
-    # def update_session( self, request, context ):
-    #     """ Updates session for illiad-request-check if necessary.
-    #         Called by views.base_resolver() """
-    #     if context.get( 'resolved', False ) == False:
-    #         request.session['findit_illiad_check_flag'] = 'good'
-    #         openurl = request.META.get('QUERY_STRING', '')
-    #         if openurl is not '':
-    #             request.session['findit_illiad_check_openurl'] = request.META.get('QUERY_STRING', '')
-    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
-    #         request.session['citation'] = citation_json
-    #         request.session['format'] = context.get( 'format', '' )
-    #         initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
-    #         request.session['illiad_url'] = '%s&sid=%s' % (initial_illiad_url, self.referrer)
-    #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
-    #     return
-
-    # def update_session( self, request, context ):
-    #     """ Updates session for illiad-request-check if necessary.
-    #         Called by views.base_resolver() """
-    #     if context.get( 'resolved', False ) == False:
-    #         request.session['findit_illiad_check_flag'] = 'good'
-    #         request.session['format'] = context.get( 'format', '' )
-    #         openurl = request.META.get('QUERY_STRING', '')
-    #         request.session['findit_illiad_check_openurl'] = openurl
-    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
-    #         request.session['citation'] = citation_json
-    #         initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
-    #         request.session['illiad_url'] = '%s&sid=%s' % (initial_illiad_url, self.referrer)
-    #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
-    #     return
-
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.base_resolver() """
@@ -256,28 +222,5 @@ class FinditResolver( object ):
             genre_type = 'easyBorrow'
         log.debug( 'genre_type, `%s`' % genre_type )
         return genre_type
-
-    # def _make_genre( self, openurl, rqst_qdict ):
-    #     """ Gets genre for illiad url.
-    #         Called by update_session()
-    #         TODO, think about how to combine with _check_genre() """
-    #     if 'genre' not in openurl:
-    #         genre = rqst_qdict.get('rft.genre', '')
-    #         if genre == '':
-    #             genre = rqst_qdict.get('genre', '')
-    #         if genre == '':
-    #             genre = 'article'
-    #     return genre
-
-    # def _make_illiad_url( self, openurl, format, genre ):
-    #     """ Builds illiad url for storage in session on failed resolve.
-    #         Called by update_session() """
-    #     openurl = '%s&genre=%s' % ( openurl, genre )
-    #     if 'format' not in openurl:
-    #         openurl = '%s&format=%s' % ( openurl, format )
-    #     initial_illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # root already has an '%s' in it
-    #     illiad_url = '%s&sid=%s' % ( initial_illiad_url, self.referrer )
-    #     log.debug( 'illiad_url, ```%s```' % illiad_url )
-    #     return illiad_url
 
     ## end class FinditResolver
