@@ -142,9 +142,9 @@
      {% if not plink_view %}
         <li><a href="{{ permalink }}">Permalink</a></li>
      {% endif %}
-     <li><a href="http://www.refworks.com/express/expressimport.asp?{{ openurl }}">Export to Refworks</a></li>
+     <li><a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}">Export to Refworks</a></li>
      <li><a href="{{ permalink }}?export=ris">Export to EndNote</a></li>
-     <li><a href="{% url 'findit:citation-form-view' %}?{{ openurl }}">Update this citation</a></li>
+     <li><a href="{% url 'findit:citation_form_url' %}?{{ querystring }}">Update this citation</a></li>
      <li><a href="http://library.brown.edu/libweb/askalib.php">Ask a librarian</a></li>
      <li><a id="problem-link" href="{{ problem_link }}">Report a problem</a></li>
      {% if not resolved %}

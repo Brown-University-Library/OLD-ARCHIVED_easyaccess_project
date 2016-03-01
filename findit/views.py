@@ -682,9 +682,9 @@ class RequestView(PublicTerminalMixin, BulLinkBase):
         #link in that case.
         #if not self.resolved.access_points()['resolved']:
         #   if self.resolved.is_requestable() == False:
-        #       cite_url = "%s?%s" % (reverse('findit:citation-form-view'),
+#                 cite_url = "%s?%s" % (reverse('findit:citation-form-view'),
         #                             resource.query)
-        #       return redirect(cite_url)
+#                 return redirect(cite_url)
 
 
 
@@ -703,7 +703,7 @@ class RequestView(PublicTerminalMixin, BulLinkBase):
 #        if not illiad_session['authenticated']:
 #            out['session_error'] = 'Failed login.'
 #            ilog.error("Illiad login failed for %s" % ill_username)
-#        else:
+#                 else:
 #            #Register users if neccessary.
 #            if not illiad.registered:
 #                ilog.info('Will register %s with illiad.' % (ill_username))
@@ -821,14 +821,14 @@ class RequestView(PublicTerminalMixin, BulLinkBase):
 #        lookup = self.request.GET.get('lookup', None)
 #        if (lookup) and (self.request.user):
 #            self.default_json = True
-#            try:
+#             try:
 #                item_request = Request.objects.get(item=perma_key,
 #                                          user=self.request.user)
 #                out = {}
 #                out['requested'] = True
 #                out['date'] = item_request.date_created.isoformat()
 #                return out
-#            except ObjectDoesNotExist:
+#             except ObjectDoesNotExist:
 #                out = {}
 #                out['requested'] = False
 #                return out
