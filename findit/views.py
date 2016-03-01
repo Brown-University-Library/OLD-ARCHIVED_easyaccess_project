@@ -122,8 +122,8 @@ def findit_base_resolver( request ):
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## build response context
-    # context = fresolver.make_resolve_context( permalink_url, sersol_dct )
-    context = fresolver.make_resolve_context( permalink_url, querystring, sersol_dct )
+    # context = fresolver.make_resolve_context( permalink_url, querystring, sersol_dct )
+    context = fresolver.make_resolve_context( request, permalink_url, querystring, sersol_dct )
 
     ## update session if necessary
     fresolver.update_session( request, context )
