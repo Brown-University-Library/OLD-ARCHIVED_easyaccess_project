@@ -13,11 +13,11 @@ from datetime import datetime, timedelta
 # # from django.utils.log import dictConfig
 # import logging
 # dictConfig(settings.LOGGING)
-# alog = logging.getLogger('access')
+alog = logging.getLogger('access')
 # #logging illiad.
 # ilog = logging.getLogger('illiad')
 
-log = logging.getLogger(__name__)
+# log = logging.getLogger(__name__)
 
 
 #===============================================================================
