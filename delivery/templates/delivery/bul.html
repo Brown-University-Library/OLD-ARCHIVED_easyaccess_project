@@ -68,14 +68,6 @@
               <div class="row">
                   <div class=".five.columns.offset-by-six">
                       <p class="top_header_links"><a href="//library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp; <a href="//library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a>
-                          &nbsp;&nbsp;&#124;&nbsp;&nbsp;
-                          {% if user and user.is_authenticated %}
-                                   Hello {{ user.first_name}} {{ user.last_name }}
-                                   &nbsp;&nbsp;&#124;&nbsp;&nbsp;
-                                   <a href="{{ logout_link }}">Logout</a>
-                           {% else %}
-                                 <a href="{{ login_link }}">Login</a>
-                           {% endif %}
                       </p>
                   </div> <!-- end .five.columns.offset-by-six -->
               </div> <!-- end .row -->
