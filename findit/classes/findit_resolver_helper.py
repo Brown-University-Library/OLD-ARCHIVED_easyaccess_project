@@ -99,6 +99,7 @@ class FinditResolver( object ):
         is_book = False
         if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
             url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
+            # url = reverse( 'delivery:availability_url' ) + '?%s' % rqst_qstring
             log.debug( 'book url, `%s`' % url )
             self.borrow_link = url
             is_book = True
@@ -165,7 +166,7 @@ class FinditResolver( object ):
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation'] = citation_json
             request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'] )
-        log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
+        log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return
 
     def make_resolve_response( self, request, context ):

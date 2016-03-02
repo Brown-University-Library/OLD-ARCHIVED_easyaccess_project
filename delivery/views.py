@@ -24,7 +24,7 @@ from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_val
 from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
 
 
-alog = logging.getLogger('access')
+log = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 availability_checker = AvailabilityChecker()
 
@@ -32,8 +32,8 @@ availability_checker = AvailabilityChecker()
 def availability( request ):
     """ Manages borrow landing page where availability checks happen.
         Should get here after landing at 'find' urls, when item is a book. """
-    alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
-
+    log.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
+    log.debug( 'availability() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
     ## get bib_dct
 
     ## run josiah availability check
@@ -97,7 +97,8 @@ class ResolveView(DeliveryBaseView):
             return
 
     def get(self, request, **kwargs):
-        # alog.debug( 'bjd/in ResolveView.get()' )
+        # log.debug( 'bjd/in ResolveView.get()' )
+        log.debug( 'ResolveView.get() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
         import pubmed
         from models import JosiahAvailabilityManager
 
@@ -123,7 +124,7 @@ class ResolveView(DeliveryBaseView):
                 bibj = from_openurl(self.resource.query)
             else:
                 raise Exception('Cant build a bibjson object.  Check ResolveView.get')
-            alog.debug( 'in delivery.views.ResolveView.get(); bibj: %s' % pprint.pformat(bibj) )
+            log.debug( 'in delivery.views.ResolveView.get(); bibj: %s' % pprint.pformat(bibj) )
 
             #update ezb table if book & available
             try:
@@ -132,7 +133,7 @@ class ResolveView(DeliveryBaseView):
                 if jam.available:
                     jam.update_ezb_availability( bibj )
             except Exception as e:
-                alog.error( 'in delivery.views.ResolveView.get(); exception: %s' % unicode(repr(e)) )
+                log.error( 'in delivery.views.ResolveView.get(); exception: %s' % unicode(repr(e)) )
                 pass
 
             #if there is a pubmed ID in the incoming request,
@@ -141,7 +142,7 @@ class ResolveView(DeliveryBaseView):
             if pmid:
                 bibj = pubmed.to_bibjson(pmid)
 
-            alog.debug(bibj)
+            log.debug(bibj)
             doi = self.pull_doi(bibj)
             #Fill in metadta by pulling in data from 360link.
             #We will skip any books coming from worldcat.
@@ -155,12 +156,12 @@ class ResolveView(DeliveryBaseView):
                     # #Send this openurl to 360link for more metadata
                     # data = new360link.link360.get(ourl, key=SERSOL_KEY, timeout=10)
                     # sersol_bibj = data.json().get('records')[0]
-                    # alog.debug('Sersol bibjson:')
-                    # alog.debug(sersol_bibj)
+                    # log.debug('Sersol bibjson:')
+                    # log.debug(sersol_bibj)
                     # bibj = merge_bibjson(bibj, sersol_bibj)
                 except Exception, e:
-                    alog.exception('Error querying 360Link for %s.' % doi)
-                #alog.debug('Adding values to validate ILLiad URL.')
+                    log.exception('Error querying 360Link for %s.' % doi)
+                #log.debug('Adding values to validate ILLiad URL.')
                 #bibj = illiad_validate(bibj)
 
             bibj['_query'] = self.query
@@ -172,7 +173,7 @@ class ResolveView(DeliveryBaseView):
             self.cite = urlparse.parse_qs(self.query)
 
         self.request.session['last_visited_resource'] = self.query
-        alog.debug( 'in delivery.views.ResolveView.get(); about to return response' )
+        log.debug( 'in delivery.views.ResolveView.get(); about to return response' )
         return super(ResolveView, self).get(request)
 
     def get_context_data(self, **kwargs):
@@ -490,12 +491,12 @@ class RequestView(ResolveView):
                 #We will try to return the user to the last visited resource.
                 #If we can't, we will display an error message where they
                 #can leave us feedback about what happened.
-                alog.warning("User %s accessed request page via GET and no request in session." % self.request.user)
+                log.warning("User %s accessed request page via GET and no request in session." % self.request.user)
                 last_query = self.request.session.get('last_visited_resource', None)
                 if (last_query is not None) and (last_query != ''):
                     return HttpResponseRedirect('./?%s' % last_query)
                 else:
-                    alog.warning("No resource or last visited resource found.  User accessed request view without a plink in kwargs or request in session.")
+                    log.warning("No resource or last visited resource found.  User accessed request view without a plink in kwargs or request in session.")
                     t = loader.get_template('delivery/denied.html')
                     c = Context({})
                     return HttpResponse(t.render(c))
@@ -525,7 +526,7 @@ class RequestView(ResolveView):
                 self.request.session['transaction_number'] = transaction_number
 
             else:
-                alog.warning("User %s accessed requst page via GET and no request in session." % self.request.user)
+                log.warning("User %s accessed requst page via GET and no request in session." % self.request.user)
                 self.request.session['attempted_request_message'] = \
                                      "Were you trying to request this item?  Something went wrong.\
                                      Please click \"Request this item\" again."

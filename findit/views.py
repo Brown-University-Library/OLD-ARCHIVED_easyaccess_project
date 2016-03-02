@@ -95,7 +95,7 @@ def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
 
-    ## index-page call?
+    ## if index-page call
     if fresolver.check_index_page( request.GET ):
         # return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
         context = fresolver.make_index_context( request.GET )
@@ -117,6 +117,10 @@ def findit_base_resolver( request ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
     ## if book, redirect to /borrow
+    request.session['test123'] = '123test'
+    alog.debug( 'findit_base_resolver() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
+    request.session.modified = True
+    alog.debug( 'findit_base_resolver() request.session.items() NOW, ```%s```' % pprint.pformat(request.session.items()) )
     if fresolver.check_book( request.GET, querystring ):
         return HttpResponseRedirect( fresolver.borrow_link )
 
