@@ -141,32 +141,6 @@ class FinditResolver( object ):
         log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )
         return is_book
 
-    # def make_resolve_context( self, request, permalink, qstring, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.base_resolver() """
-    #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     context['easyWhat'] = self._check_genre( context )
-    #     context['permalink'] = permalink
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     context['querystring'] = qstring
-    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
-
-    # def make_resolve_context( self, request, permalink, qstring, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.base_resolver() """
-    #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
-    #     context['permalink'] = permalink
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     context['querystring'] = qstring
-    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
-
     def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
         """ Preps the template view.
             Called by views.base_resolver() """
@@ -180,20 +154,6 @@ class FinditResolver( object ):
         context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
-
-    # def update_session( self, request, context ):
-    #     """ Updates session for illiad-request-check if necessary.
-    #         Called by views.base_resolver() """
-    #     if context.get( 'resolved', False ) == False:
-    #         request.session['findit_illiad_check_flag'] = 'good'
-    #         request.session['format'] = context.get( 'format', '' )
-    #         openurl = request.META.get('QUERY_STRING', '')
-    #         request.session['findit_illiad_check_openurl'] = openurl
-    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
-    #         request.session['citation'] = citation_json
-    #         request.session['illiad_url'] = ill_url_builder.make_illiad_url( openurl )
-    #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
-    #     return
 
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
@@ -251,19 +211,6 @@ class FinditResolver( object ):
             context['citation'] = {}
         log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
         return context
-
-    # def _check_genre( self, context ):
-    #     """ Sets `easyBorrow` or `easyArticle`.
-    #         Called by make_resolve_context()"""
-    #     ( genre, genre_type ) = ( 'article', 'easyArticle' )
-    #     if 'citation' in context.keys():
-    #         if 'genre' in context['citation'].keys():
-    #             genre = context['citation']['genre']
-    #     log.debug( 'genre, `%s`' % genre )
-    #     if genre == 'book':
-    #         genre_type = 'easyBorrow'
-    #     log.debug( 'genre_type, `%s`' % genre_type )
-    #     return genre_type
 
     def _check_genre( self, context ):
         """ Sets `easyBorrow` or `easyArticle`, and context genre.
