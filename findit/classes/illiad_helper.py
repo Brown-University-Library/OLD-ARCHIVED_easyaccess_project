@@ -66,7 +66,7 @@ class IlliadValidator( object ):
         valid_check = True
         if bib_dct['type'] == 'article':
             ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
-        elif bib['type'] == 'book':
+        elif bib_dct['type'] == 'book':
             ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
@@ -89,8 +89,8 @@ class IlliadValidator( object ):
     def _handle_book( self, bib_dct, valid_check ):
         """ Updates bib_dct with book values.
             Called by add_required_kvs() """
-        if bib.get('title') is None:
-            bib['title'] = 'Not available'
+        if bib_dct.get('title') is None:
+            bib_dct['title'] = 'Not available'
             valid = False
         return ( bib_dct, valid_check )
 

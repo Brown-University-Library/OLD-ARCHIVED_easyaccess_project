@@ -5,8 +5,7 @@ from __future__ import unicode_literals
 import json,logging, pprint, re, urlparse
 from datetime import datetime
 
-import requests
-
+import bibjsontools, requests
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -142,7 +141,7 @@ class FinditResolver( object ):
         log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )
         return is_book
 
-    # def make_resolve_context( self, permalink, qstring, sersol_dct ):
+    # def make_resolve_context( self, request, permalink, qstring, sersol_dct ):
     #     """ Preps the template view.
     #         Called by views.base_resolver() """
     #     context = self._try_resolved_obj_citation( sersol_dct )
@@ -150,17 +149,33 @@ class FinditResolver( object ):
     #     context['permalink'] = permalink
     #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
     #     context['querystring'] = qstring
+    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
     #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
     #     return context
 
-    def make_resolve_context( self, request, permalink, qstring, sersol_dct ):
+    # def make_resolve_context( self, request, permalink, qstring, sersol_dct ):
+    #     """ Preps the template view.
+    #         Called by views.base_resolver() """
+    #     context = self._try_resolved_obj_citation( sersol_dct )
+    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+    #     context['permalink'] = permalink
+    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
+    #     context['querystring'] = qstring
+    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
+    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
+    #     return context
+
+    def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
         """ Preps the template view.
             Called by views.base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
-        context['easyWhat'] = self._check_genre( context )
+        ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+        context['querystring'] = querystring
+        context['enhanced_querystring'] = self._enhance_querystring( querystring, context['citation'], context['genre'] )
         context['permalink'] = permalink
         context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-        context['querystring'] = qstring
         ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
         context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
@@ -224,16 +239,52 @@ class FinditResolver( object ):
         log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
         return context
 
+    # def _check_genre( self, context ):
+    #     """ Sets `easyBorrow` or `easyArticle`.
+    #         Called by make_resolve_context()"""
+    #     ( genre, genre_type ) = ( 'article', 'easyArticle' )
+    #     if 'citation' in context.keys():
+    #         if 'genre' in context['citation'].keys():
+    #             genre = context['citation']['genre']
+    #     log.debug( 'genre, `%s`' % genre )
+    #     if genre == 'book':
+    #         genre_type = 'easyBorrow'
+    #     log.debug( 'genre_type, `%s`' % genre_type )
+    #     return genre_type
+
     def _check_genre( self, context ):
-        """ Sets `easyBorrow` or `easyArticle`.
+        """ Sets `easyBorrow` or `easyArticle`, and context genre.
             Called by make_resolve_context()"""
-        (genre, genre_type) = ('', 'easyArticle')
-        if 'citation' in context.keys() and 'genre' in context['citation'].keys():
-            genre = context['citation']['genre']
-        log.debug( 'genre, `%s`' % genre )
+        ( genre, genre_type ) = ( 'article', 'easyArticle' )
+        if 'citation' in context.keys():
+            if 'genre' in context['citation'].keys():
+                genre = context['citation']['genre']
         if genre == 'book':
             genre_type = 'easyBorrow'
-        log.debug( 'genre_type, `%s`' % genre_type )
-        return genre_type
+        log.debug( 'genre, `%s`; genre_type, `%s`' % (genre, genre_type) )
+        return ( genre, genre_type )
+
+    def _enhance_querystring( self, querystring, citation_dct, genre ):
+        """ Takes original querystring openurl and adds to it from citation info.
+            Called by make_resolve_context() """
+        log.debug( 'initial querystring, ```%s```' % querystring )
+        log.debug( 'initial citation_dct, ```%s```' % pprint.pformat(citation_dct) )
+        ## round-trip citation_dct
+        citation_dct['type'] = genre
+        initial_citation_querystring = bibjsontools.to_openurl( citation_dct )
+        updated_citation_dct = bibjsontools.from_openurl( initial_citation_querystring )
+        log.debug( 'updated_citation_dct, ```%s```' % pprint.pformat(updated_citation_dct) )
+        ## dctify querystring
+        bib_dct = bibjsontools.from_openurl( querystring )
+        log.debug( 'initial bib_dct, ```%s```' % pprint.pformat(bib_dct) )
+        ## update updated_citation_dct
+        for (key, val) in bib_dct.items():
+            if key not in updated_citation_dct.keys():
+                updated_citation_dct[key] = val
+        log.debug( 'updated_citation_dct now, ```%s```' % pprint.pformat(updated_citation_dct) )
+        ## make enhanced_querystring
+        enhanced_querystring = bibjsontools.to_openurl( updated_citation_dct )
+        log.debug( 'enhanced_querystring, ```%s```' % enhanced_querystring )
+        return enhanced_querystring
 
     ## end class FinditResolver
