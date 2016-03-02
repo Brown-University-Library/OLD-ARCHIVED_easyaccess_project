@@ -161,13 +161,8 @@ class FinditResolver( object ):
         context['permalink'] = permalink
         context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
         context['querystring'] = qstring
-
-        # context['problem_url'] = app_settings.PROBLEM_URL % (
-        #     self.get_base_url().rstrip('/') + context['permalink'], self.request.META.get('REMOTE_ADDR', 'unknown'))
-        full_permalink_url = reverse('findit:permalink_url', kwargs={'permalink_str':permalink})
-        log.debug( 'full_permalink_url, ```%s```' % full_permalink_url )
-        ip = 'foo'
-        context['problem_link'] = app_settings.PROBLEM_URL % ( full_permalink_url, ip )  # settings contains string-substitution for permalink & ip
+        ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+        context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
