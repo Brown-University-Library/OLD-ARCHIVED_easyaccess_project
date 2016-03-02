@@ -2,6 +2,11 @@
 
 from __future__ import unicode_literals
 
+import logging
+
+
+log = logging.getLogger('access')
+
 
 #===============================================================================
 # Manages josiah-availability.
@@ -12,6 +17,7 @@ class JosiahAvailabilityManager(object):
     def __init__(self):
         self.available = False  # set by check_josiah_availability(); used by views.ResolveView.get()
         self.search_dict = {}  # set by check_josiah_availability(); used by update_ezb_availability()
+        log.debug( 'availability_checker instantiated' )
 
     def check_josiah_availability( self, bibj ):
         """Checks josiah availability for books."""

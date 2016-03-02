@@ -2,48 +2,55 @@
 
 from __future__ import unicode_literals
 
-import os
+import json, logging, os, pprint, urlparse
+from datetime import datetime
+
+from bibjsontools import from_dict, from_openurl, to_openurl
+from decorators import has_email, has_service
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
+from django.shortcuts import redirect, render
 from django.template import Context
 from django.template import loader
+from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-# from django.utils.log import dictConfig
-
-from datetime import datetime
-import json
-import pprint
-import urlparse
-
-#bibjson helpers
-from bibjsontools import from_openurl, from_dict
-from bibjsontools import to_openurl
-#shibboleth helpers
-from shibboleth.decorators import login_optional
-
-from utils import DeliveryBaseView, JSONResponseMixin,\
-    merge_bibjson, illiad_validate
-from decorators import has_email, has_service
-
-import logging
-# dictConfig(settings.LOGGING)
-alog = logging.getLogger('access')
-
 from py360link2 import get_sersol_data, Resolved
+from shibboleth.decorators import login_optional
+from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
+from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
+
+
+alog = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
+availability_checker = AvailabilityChecker()
 
 
 def availability( request ):
     """ Manages borrow landing page where availability checks happen.
         Should get here after landing at 'find' urls, when item is a book. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
-    return HttpResponse( 'coming' )
+
+    ## get bib_dct
+
+    ## run josiah availability check
+
+    ## if available, update db
+    # if jam.available:
+    #     jam.update_ezb_availability( bibj )
+
+    ## build context
+    context = {}
+
+    ## display landing page
+    # resp = fresolver.make_resolve_response( request, context )
+    resp = render( request, 'delivery/availability.html', context )
+    return resp
+
+    ## end def availability()
 
 
 class ResolveView(DeliveryBaseView):
