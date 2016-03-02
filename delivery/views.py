@@ -39,8 +39,9 @@ from py360link2 import get_sersol_data, Resolved
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 
 
-def base_resolver( request ):
-    """ New link resolution handler. """
+def availability( request ):
+    """ Manages borrow landing page where availability checks happen.
+        Should get here after landing at 'find' urls, when item is a book. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
     return HttpResponse( 'coming' )
 
