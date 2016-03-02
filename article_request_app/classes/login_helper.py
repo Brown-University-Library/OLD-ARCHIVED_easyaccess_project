@@ -22,7 +22,7 @@ class LoginHelper( object ):
             Called by views.login() """
         findit_check = False
         findit_illiad_check_flag = request.session.get( 'findit_illiad_check_flag', '' )
-        findit_illiad_check_openurl = request.session.get( 'findit_illiad_check_openurl', '' )
+        findit_illiad_check_openurl = request.session.get( 'findit_illiad_check_enhanced_querystring', '' )
         if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == request.META.get('QUERY_STRING', ''):
             findit_check = True
         log.debug( 'findit_check, `%s`' % findit_check )
@@ -85,7 +85,7 @@ class LoginHelper( object ):
             Called by views.login() """
         request.session['illiad_login_check_flag'] = 'good'
         request.session['findit_illiad_check_flag'] = ''
-        request.session['findit_illiad_check_openurl'] = ''
+        request.session['findit_illiad_check_enhanced_querystring'] = ''
         # request.session['shib_status'] = ''
         return
 

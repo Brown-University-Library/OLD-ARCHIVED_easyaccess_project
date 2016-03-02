@@ -20,7 +20,7 @@ class IlliadUrlBuilder( object ):
 
     def make_illiad_url( self, initial_querystring ):
         """ Manages steps of constructing illiad url.
-            Called by FinditResolver.x() """
+            Called by FinditResolver.update_session() """
         bib_dct = bibjsontools.from_openurl( initial_querystring )
         ill_bib_dct = self.validator.add_required_kvs( bib_dct )
         extra_dct = self.check_identifiers( ill_bib_dct )

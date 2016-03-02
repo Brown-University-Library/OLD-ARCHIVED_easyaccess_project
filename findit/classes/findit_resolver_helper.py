@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import json,logging, pprint, re, urlparse
+import json,logging, pprint, re, urllib, urlparse
 from datetime import datetime
 
 import bibjsontools, requests
@@ -181,17 +181,30 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    # def update_session( self, request, context ):
+    #     """ Updates session for illiad-request-check if necessary.
+    #         Called by views.base_resolver() """
+    #     if context.get( 'resolved', False ) == False:
+    #         request.session['findit_illiad_check_flag'] = 'good'
+    #         request.session['format'] = context.get( 'format', '' )
+    #         openurl = request.META.get('QUERY_STRING', '')
+    #         request.session['findit_illiad_check_openurl'] = openurl
+    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
+    #         request.session['citation'] = citation_json
+    #         request.session['illiad_url'] = ill_url_builder.make_illiad_url( openurl )
+    #     log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
+    #     return
+
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.base_resolver() """
         if context.get( 'resolved', False ) == False:
             request.session['findit_illiad_check_flag'] = 'good'
             request.session['format'] = context.get( 'format', '' )
-            openurl = request.META.get('QUERY_STRING', '')
-            request.session['findit_illiad_check_openurl'] = openurl
+            request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation'] = citation_json
-            request.session['illiad_url'] = ill_url_builder.make_illiad_url( openurl )
+            request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'] )
         log.debug( 'request.session.__dict__ now, `%s`' % pprint.pformat(request.session.__dict__) )
         return
 
@@ -267,23 +280,14 @@ class FinditResolver( object ):
     def _enhance_querystring( self, querystring, citation_dct, genre ):
         """ Takes original querystring openurl and adds to it from citation info.
             Called by make_resolve_context() """
-        log.debug( 'initial querystring, ```%s```' % querystring )
-        log.debug( 'initial citation_dct, ```%s```' % pprint.pformat(citation_dct) )
-        ## round-trip citation_dct
         citation_dct['type'] = genre
         initial_citation_querystring = bibjsontools.to_openurl( citation_dct )
         updated_citation_dct = bibjsontools.from_openurl( initial_citation_querystring )
-        log.debug( 'updated_citation_dct, ```%s```' % pprint.pformat(updated_citation_dct) )
-        ## dctify querystring
         bib_dct = bibjsontools.from_openurl( querystring )
-        log.debug( 'initial bib_dct, ```%s```' % pprint.pformat(bib_dct) )
-        ## update updated_citation_dct
         for (key, val) in bib_dct.items():
             if key not in updated_citation_dct.keys():
                 updated_citation_dct[key] = val
-        log.debug( 'updated_citation_dct now, ```%s```' % pprint.pformat(updated_citation_dct) )
-        ## make enhanced_querystring
-        enhanced_querystring = bibjsontools.to_openurl( updated_citation_dct )
+        enhanced_querystring = urllib.unquote( bibjsontools.to_openurl(updated_citation_dct) )
         log.debug( 'enhanced_querystring, ```%s```' % enhanced_querystring )
         return enhanced_querystring
 
