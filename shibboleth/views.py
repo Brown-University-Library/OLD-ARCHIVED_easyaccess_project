@@ -32,7 +32,8 @@ def info( request ):
     output_dct = {}
     for ( key, val ) in request.META.items():
         # alog.debug( 'key is `%s`; type(val) is `%s`' % (key, type(val)) )
-        if ( 'HTTP_SHIBBOLETH' in key ) and ( type(val) in [bool, int, str, unicode] ) and ( 'session' not in key.lower() ):
+        # if ( 'HTTP_SHIBBOLETH' in key ) and ( type(val) in [bool, int, str, unicode] ) and ( 'session' not in key.lower() ):
+        if ( 'Shibboleth-' in key ) and ( type(val) in [bool, int, str, unicode] ) and ( 'session' not in key.lower() ):
             output_dct[key] = val
         else:
             alog.debug( 'skipping key, `%s` and val, `%s`' % (key, unicode(repr(val))) )
