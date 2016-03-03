@@ -35,7 +35,7 @@ def info( request ):
         # if ( 'HTTP_SHIBBOLETH' in key ) and ( type(val) in [bool, int, str, unicode] ) and ( 'session' not in key.lower() ):
         if ( 'Shibboleth-' in key ) and ( type(val) in [bool, int, str, unicode] ) and ( 'session' not in key.lower() ):
             output_dct[key] = val
-            if key = 'Shibboleth-isMemberOf':
+            if key == 'Shibboleth-isMemberOf':
                 output_dct['Shibboleth-isMemberOf'] = output_dct['Shibboleth-isMemberOf'].split(';')
         else:
             alog.debug( 'skipping key, `%s` and val, `%s`' % (key, unicode(repr(val))) )
