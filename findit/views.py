@@ -90,7 +90,6 @@ def permalink( request, permalink_str ):
         return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
 
 
-
 def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
@@ -117,11 +116,8 @@ def findit_base_resolver( request ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
     ## if book, redirect to /borrow
-    request.session['test123'] = '123test'
-    alog.debug( 'findit_base_resolver() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
-    request.session.modified = True
-    alog.debug( 'findit_base_resolver() request.session.items() NOW, ```%s```' % pprint.pformat(request.session.items()) )
-    if fresolver.check_book( request.GET, querystring ):
+    # if fresolver.check_book( request.GET, querystring ):
+    if fresolver.check_book( request ):
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## get serials-solution data-dct

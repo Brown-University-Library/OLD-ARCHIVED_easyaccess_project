@@ -32,8 +32,19 @@ availability_checker = AvailabilityChecker()
 def availability( request ):
     """ Manages borrow landing page where availability checks happen.
         Should get here after landing at 'find' urls, when item is a book. """
-    log.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
-    log.debug( 'availability() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
+    log.debug( 'starting; query_string, `{}`'.format(request.META.get('QUERY_STRING')) )
+    log.debug( 'availability() request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+
+    ## check arrival
+    if 'book' not in request.get_full_path():
+        log.warning( 'why here since `book` not in request.full_path, ```{}```?'.format(request.get_full_path()) )
+    if request.session.get( 'last_path', '' ) != '/easyaccess/find/':
+        request.session['last_path'] = request.path
+        redirect_url = '{findit}?{querystring}'.format(
+            findit=reverse('findit:findit_base_resolver_url'), querystring=request.META.get('QUERY_STRING', '') )
+        log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+        return HttpResponseRedirect( redirect_url )
+
     ## get bib_dct
 
     ## run josiah availability check

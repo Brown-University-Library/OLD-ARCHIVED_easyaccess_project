@@ -93,16 +93,30 @@ class FinditResolver( object ):
         log.debug( "sersol_journal, `%s`; sersol_publication_link, `%s`" % (sersol_journal, self.sersol_publication_link) )
         return sersol_journal
 
-    def check_book( self, rqst_qdict, rqst_qstring ):
-        """ Handles book requests; builds /borrow redirect link.
+    # def check_book( self, rqst_qdict, rqst_qstring ):
+    #     """ Handles book requests; builds /borrow redirect link.
+    #         Called by views.base_resolver() """
+    #     is_book = False
+    #     if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
+    #         url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
+    #         # url = reverse( 'delivery:availability_url' ) + '?%s' % rqst_qstring
+    #         log.debug( 'book url, `%s`' % url )
+    #         self.borrow_link = url
+    #         is_book = True
+    #     log.debug( 'is_book, `%s`' % is_book )
+    #     return is_book
+
+    def check_book( self, request ):
+        """ Checks if request is for a book.
+            If so, builds /borrow redirect link and updates session.
             Called by views.base_resolver() """
-        is_book = False
-        if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
-            url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
-            # url = reverse( 'delivery:availability_url' ) + '?%s' % rqst_qstring
-            log.debug( 'book url, `%s`' % url )
-            self.borrow_link = url
+        ( is_book, querydct, querystring ) = ( False, request.GET, request.META.get('QUERY_STRING', '') )
+        if querydct.get('genre', 'null') == 'book' or querydct.get('rft.genre', 'null') == 'book':
             is_book = True
+            self.borrow_link = reverse( 'delivery:resolve' ) + '?%s' % querystring
+            log.debug( 'self.borrow_link, `%s`' % self.borrow_link )
+            request.session['last_path'] = request.path
+            request.session['last_querystring'] = querystring
         log.debug( 'is_book, `%s`' % is_book )
         return is_book
 
