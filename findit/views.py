@@ -84,7 +84,7 @@ def permalink( request, permalink_str ):
     """ Handles expansion and redirection back to '/find/?...' """
     openurl = permalink_helper.get_openurl( permalink_str )
     if openurl:
-        redirect_url = '%s://%s%s/?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
+        redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
         return HttpResponsePermanentRedirect( redirect_url )
     else:
         return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
@@ -105,6 +105,7 @@ def findit_base_resolver( request ):
     querystring = request.META.get('QUERY_STRING', '')
     permalink_url = permalink_helper.make_permalink(
         referrer=request.GET.get('rfr_id',''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url') )['permalink']
+    request.session['permalink_url'] = permalink_url
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):

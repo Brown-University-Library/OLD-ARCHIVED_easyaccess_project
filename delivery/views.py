@@ -36,10 +36,14 @@ def availability( request ):
     log.debug( 'availability() request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## check arrival
+    valid = False
     if 'book' not in request.get_full_path():
         log.warning( 'why here since `book` not in request.full_path, ```{}```?'.format(request.get_full_path()) )
-    if request.session.get( 'last_path', '' ) != '/easyaccess/find/':
-        request.session['last_path'] = request.path
+    if request.session.get( 'last_path', '' ) == '/easyaccess/find/':
+        if request.session.get( 'last_querystring' ) == request.META.get('QUERY_STRING', ''):
+            valid = True
+    request.session['last_path'] = request.path
+    if valid is False:
         redirect_url = '{findit}?{querystring}'.format(
             findit=reverse('findit:findit_base_resolver_url'), querystring=request.META.get('QUERY_STRING', '') )
         log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
@@ -54,11 +58,37 @@ def availability( request ):
     #     jam.update_ezb_availability( bibj )
 
     ## build context
-    context = {}
+    context = {
+        'permalink_url': request.session['permalink_url'],
+        'bib': {'_has_fulltext': False,
+          '_openurl': 'rft.pub=Scholastic+Press&rft_val_fmt=info%3Aofi/fmt%3Akev%3Amtx%3Abook&rfr_id=info%3Asid/info%3Asid/firstsearch.oclc.org%3AWorldCat&rft.au=Muth%2C+Jon&rft.place=New+York&rft_id=http%3A//www.worldcat.org/oclc/53084041&rft.date=2005&rft.btitle=Zen+shorts&rft.isbn=9780439339117&ctx_ver=Z39.88-2004&rft.genre=book',
+          '_query': 'sid=FirstSearch:WorldCat&genre=book&isbn=9780439339117&title=Zen+shorts&date=2005&aulast=Muth&aufirst=Jon&auinitm=J&id=doi:&pid=53084041&url_ver=Z39.88-2004&rfr_id=info:sid/firstsearch.oclc.org:WorldCat&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.genre=book&rfe_dat=%3Caccessionnumber%3E53084041%3C/accessionnumber%3E&rft_id=info:oclcnum/53084041&rft_id=urn:ISBN:9780439339117&rft.aulast=Muth&rft.aufirst=Jon&rft.auinitm=J&rft.btitle=Zen+shorts&rft.date=2005&rft.isbn=9780439339117&rft.place=New+York&rft.pub=Scholastic+Press&rft.edition=1st+ed.',
+          '_rfr': 'info:sid/firstsearch.oclc.org:WorldCat',
+          '_valid': True,
+          'author': [{'_minitial': 'J',
+                       'firstname': 'Jon',
+                       'lastname': 'Muth',
+                       'name': 'Muth, Jon'}],
+          'identifier': [{'id': '9780439339117', 'type': 'isbn'},
+                          {'id': '53084041', 'type': 'oclc'}],
+          'place_of_publication': 'New York',
+          'publisher': 'Scholastic Press',
+          'title': 'Zen shorts',
+          'type': 'book',
+          'year': '2005'},
+        'unavailable_locally': True,
+
+        }
 
     ## display landing page
-    # resp = fresolver.make_resolve_response( request, context )
-    resp = render( request, 'delivery/availability.html', context )
+    # resp = render( request, 'delivery/availability.html', context )
+    if request.GET.get('output', '') == 'json':
+        log.debug( 'will return json' )
+        output = json.dumps( context, sort_keys=True, indent = 2 )
+        resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
+    else:
+        log.debug( 'will not return json' )
+        resp = render( request, 'delivery/availability.html', context )
     return resp
 
     ## end def availability()
@@ -213,6 +243,7 @@ class ResolveView(DeliveryBaseView):
         #confirmation for requests
         tn = kwargs.get('transaction_number', '0')
         context['confirmation'] = tn
+        log.debug( 'in delivery.views.ResolveView.get(); context, ```{}```'.format(pprint.pformat(context)) )
         return context
 
 class Link360View(DeliveryBaseView):
