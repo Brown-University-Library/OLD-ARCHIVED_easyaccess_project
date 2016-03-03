@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import json, logging, os, pprint, urlparse
 from datetime import datetime
 
+import bibjsontools
 from bibjsontools import from_dict, from_openurl, to_openurl
 from decorators import has_email, has_service
 from django.conf import settings
@@ -50,6 +51,8 @@ def availability( request ):
         return HttpResponseRedirect( redirect_url )
 
     ## get bib_dct
+    bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
+    log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
 
     ## run josiah availability check
 
@@ -60,24 +63,8 @@ def availability( request ):
     ## build context
     context = {
         'permalink_url': request.session['permalink_url'],
-        'bib': {'_has_fulltext': False,
-          '_openurl': 'rft.pub=Scholastic+Press&rft_val_fmt=info%3Aofi/fmt%3Akev%3Amtx%3Abook&rfr_id=info%3Asid/info%3Asid/firstsearch.oclc.org%3AWorldCat&rft.au=Muth%2C+Jon&rft.place=New+York&rft_id=http%3A//www.worldcat.org/oclc/53084041&rft.date=2005&rft.btitle=Zen+shorts&rft.isbn=9780439339117&ctx_ver=Z39.88-2004&rft.genre=book',
-          '_query': 'sid=FirstSearch:WorldCat&genre=book&isbn=9780439339117&title=Zen+shorts&date=2005&aulast=Muth&aufirst=Jon&auinitm=J&id=doi:&pid=53084041&url_ver=Z39.88-2004&rfr_id=info:sid/firstsearch.oclc.org:WorldCat&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.genre=book&rfe_dat=%3Caccessionnumber%3E53084041%3C/accessionnumber%3E&rft_id=info:oclcnum/53084041&rft_id=urn:ISBN:9780439339117&rft.aulast=Muth&rft.aufirst=Jon&rft.auinitm=J&rft.btitle=Zen+shorts&rft.date=2005&rft.isbn=9780439339117&rft.place=New+York&rft.pub=Scholastic+Press&rft.edition=1st+ed.',
-          '_rfr': 'info:sid/firstsearch.oclc.org:WorldCat',
-          '_valid': True,
-          'author': [{'_minitial': 'J',
-                       'firstname': 'Jon',
-                       'lastname': 'Muth',
-                       'name': 'Muth, Jon'}],
-          'identifier': [{'id': '9780439339117', 'type': 'isbn'},
-                          {'id': '53084041', 'type': 'oclc'}],
-          'place_of_publication': 'New York',
-          'publisher': 'Scholastic Press',
-          'title': 'Zen shorts',
-          'type': 'book',
-          'year': '2005'},
+        'bib': bib_dct,
         'unavailable_locally': True,
-
         }
 
     ## display landing page
