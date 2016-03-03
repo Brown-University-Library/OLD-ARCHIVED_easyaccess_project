@@ -135,7 +135,7 @@
     {# request box #}
     <span id="transaction-number" class="hidden">{{ confirmation }}</span>
 
-    {% if unavailable_locally %}
+    {% if not available_locally %}
     <div id="request">
         <div id="multi-volume">
                 <input type="checkbox" onclick="$('#hideablearea').toggle();">
@@ -152,6 +152,8 @@
         </form>
         <br/><br/>
     </div>
+    {% else %}
+    <p> IS AVAILABLE </p>
     {% endif %}
 
     {% if attempted_request %}

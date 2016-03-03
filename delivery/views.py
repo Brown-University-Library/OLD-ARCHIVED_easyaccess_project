@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 import json, logging, os, pprint, urlparse
 from datetime import datetime
 
-import bibjsontools
+import bibjsontools, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
 from decorators import has_email, has_service
+from delivery import app_settings
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -54,7 +55,44 @@ def availability( request ):
     bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
     log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
 
+    ## get identifiers
+    ( isbn, oclc_num ) = ( '', '' )
+    for identifier in bib_dct['identifier']:
+        if identifier['type'] == 'isbn':
+            isbn = identifier['id']
+        elif identifier['type'] == 'oclc':
+            oclc_num = identifier['id']
+
     ## run josiah availability check
+    isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
+    r = requests.get( isbn_url )
+    jdct = json.loads( r.content.decode('utf-8') )
+    log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+    bib_num = jdct['id']
+    isbn_holdings = []
+    for item in jdct['items']:
+        if item['is_available'] is True:
+            isbn_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+    oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
+    r = requests.get( oclc_num_url )
+    jdct = json.loads( r.content.decode('utf-8') )
+    log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+    oclc_holdings = []
+    for item in jdct['items']:
+        if item['is_available'] is True:
+            oclc_num_callnumber = item['callnumber']
+            for holding in isbn_holdings:
+                if oclc_num_callnumber != holding['callnumber']:
+                    oclc_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+                    break
+    for holding in oclc_holdings:
+        isbn_holdings.append( holding )
+    available_holdings = isbn_holdings
+
+    ## set available flag
+    available_locally = False
+    if len( available_holdings ) > 0:
+        available_locally = True
 
     ## if available, update db
     # if jam.available:
@@ -64,7 +102,8 @@ def availability( request ):
     context = {
         'permalink_url': request.session['permalink_url'],
         'bib': bib_dct,
-        'unavailable_locally': True,
+        'exact_available_holdings': available_holdings,
+        'available_locally': available_locally,
         }
 
     ## display landing page

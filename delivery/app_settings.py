@@ -34,3 +34,5 @@ SERVICE_CHECK_STRING = getattr(settings, 'DELIVERY_SERVICE_CHECK_STRING', None)
 
 #Timeout for urllib2 requests to third party sources
 #EXTRAS_TIMEOUT = getattr(settings, 'FINDIT_EXTRAS_TIMEOUT', 10)
+
+AVAILABILITY_URL_ROOT = os.environ['EZACS__BORROW_AVAILABILITY_URL_ROOT']
