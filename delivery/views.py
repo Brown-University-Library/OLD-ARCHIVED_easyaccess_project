@@ -63,6 +63,8 @@ def availability( request ):
         elif identifier['type'] == 'oclc':
             oclc_num = identifier['id']
 
+    ## run recent request check
+
     ## run josiah availability check
     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
     r = requests.get( isbn_url )
@@ -118,6 +120,18 @@ def availability( request ):
     return resp
 
     ## end def availability()
+
+
+def login( request ):
+    return HttpResponse( 'login handling coming' )
+
+
+def process_request( request ):
+    return HttpResponse( 'process_request handling coming' )
+
+
+def message( request ):
+    return HttpResponse( 'message handling coming' )
 
 
 class ResolveView(DeliveryBaseView):
