@@ -106,6 +106,7 @@ def availability( request ):
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
         'available_locally': available_locally,
+        'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num )
         }
 
     ## display landing page

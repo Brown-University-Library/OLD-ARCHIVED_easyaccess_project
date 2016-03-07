@@ -101,6 +101,9 @@
     {# include the citations #}
     {% include "delivery/bib_view.html" %}
 
+    <div class="detail-link">
+        <a href="{{ catalog_link }}">View more details.</a>
+    </div>
 
     {% if errors %}
     <div class="alert-box error">
@@ -153,7 +156,55 @@
         <br/><br/>
     </div>
     {% else %}
-    <p> IS AVAILABLE </p>
+
+
+
+
+
+    <h5>At the library</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>Call #</th>
+                <th>Status</th>
+                <th class="hidden">Is Available</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for holding in exact_available_holdings %}
+            <tr class="held-item">
+                <td class="location">
+                <div id="myModal" class="reveal-modal book-locator-wrapper">
+                    <a class="close-reveal-modal">x</a> <iframe class="map" src="//library.brown.edu/services/book_locator/?callnumber=CT275.P648+A33+&amp;location=rock&amp;title=Zen+and+the+art+of+motorcycle+maintenance%3A+an+inquiry+into+values%2C&amp;status=++++++++++++++++++++++++++++++MISSING+++++++++++++++++++++&amp;public=true"></iframe>
+                </div>
+                <a data-reveal-id="myModal" href="//library.brown.edu/services/book_locator/?callnumber=CT275.P648+A33+&amp;location=rock&amp;title=Zen+and+the+art+of+motorcycle+maintenance%3A+an+inquiry+into+values%2C&amp;status=++++++++++++++++++++++++++++++MISSING+++++++++++++++++++++&amp;public=true">{{ callnumber.location }}</a></td>
+                <td class="callnumber"> {{ holding.callnumber }} </td>
+                <td class="status"> {{ holding.status }} </td>
+                <td class="is-available hidden">false</td>
+            </tr>
+            <!--
+            <tr class="held-item">
+                <td class="location">
+                <div id="myModal" class="reveal-modal book-locator-wrapper">
+                    <a class="close-reveal-modal">x</a> <iframe class="map" src="//library.brown.edu/services/book_locator/?callnumber=CT275.P648+A33+&amp;location=rock&amp;title=Zen+and+the+art+of+motorcycle+maintenance%3A+an+inquiry+into+values%2C&amp;status=++++++++++++++++++++++++++++++MISSING+++++++++++++++++++++&amp;public=true"></iframe>
+                </div>
+                <a data-reveal-id="myModal" href="//library.brown.edu/services/book_locator/?callnumber=CT275.P648+A33+&amp;location=rock&amp;title=Zen+and+the+art+of+motorcycle+maintenance%3A+an+inquiry+into+values%2C&amp;status=++++++++++++++++++++++++++++++MISSING+++++++++++++++++++++&amp;public=true">ROCK -- Level 3, Aisle 3A</a></td>
+                <td class="callnumber">CT275.P648 A33 </td>
+                <td class="status"> MISSING </td>
+                <td class="is-available hidden">false</td>
+            </tr>
+            -->
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+
+
+
+
     {% endif %}
 
     {% if attempted_request %}
