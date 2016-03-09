@@ -101,9 +101,11 @@
     {# include the citations #}
     {% include "delivery/bib_view.html" %}
 
+    {% if available_locally %}
     <div class="detail-link">
         <a href="{{ catalog_link }}">View more details.</a>
     </div>
+    {% endif %}
 
     {% if errors %}
     <div class="alert-box error">

@@ -70,31 +70,34 @@ def availability( request ):
     r = requests.get( isbn_url )
     jdct = json.loads( r.content.decode('utf-8') )
     log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
-    bib_num = jdct['id']
-    isbn_holdings = []
-    for item in jdct['items']:
-        if item['is_available'] is True:
-            isbn_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
-    oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
-    r = requests.get( oclc_num_url )
-    jdct = json.loads( r.content.decode('utf-8') )
-    log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
-    oclc_holdings = []
-    for item in jdct['items']:
-        if item['is_available'] is True:
-            oclc_num_callnumber = item['callnumber']
-            # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
-            match_check = False
-            for holding in isbn_holdings:
-                log.debug( 'holding, ```{}```'.format(holding) )
-                if oclc_num_callnumber == holding['callnumber']:
-                    match_check = True
-                    break
-            if match_check is False:
-                oclc_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
-    for holding in oclc_holdings:
-        isbn_holdings.append( holding )
-    available_holdings = isbn_holdings
+    # bib_num = jdct['id']
+    available_holdings = []
+    bib_num = jdct.get( 'id', None )
+    if bib_num:
+        isbn_holdings = []
+        for item in jdct['items']:
+            if item['is_available'] is True:
+                isbn_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+        oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
+        r = requests.get( oclc_num_url )
+        jdct = json.loads( r.content.decode('utf-8') )
+        log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+        oclc_holdings = []
+        for item in jdct['items']:
+            if item['is_available'] is True:
+                oclc_num_callnumber = item['callnumber']
+                # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
+                match_check = False
+                for holding in isbn_holdings:
+                    log.debug( 'holding, ```{}```'.format(holding) )
+                    if oclc_num_callnumber == holding['callnumber']:
+                        match_check = True
+                        break
+                if match_check is False:
+                    oclc_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+        for holding in oclc_holdings:
+            isbn_holdings.append( holding )
+        available_holdings = isbn_holdings
 
     ## set available flag
     available_locally = False
