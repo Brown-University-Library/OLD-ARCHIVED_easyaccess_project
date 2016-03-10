@@ -11,7 +11,7 @@ log = logging.getLogger('access')
 
 
 class IlliadHelper( object ):
-    """ Contains helpers for views.login() """
+    """ Contains helpers for views.login() and views.illiad_handler() """
 
     def login_user( self, request, shib_dct ):
         """ Logs user into illiad;
