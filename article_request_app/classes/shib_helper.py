@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
-
 from article_request_app import settings_app
 
 
@@ -12,9 +11,6 @@ log = logging.getLogger('access')
 
 class ShibChecker( object ):
     """ Contains helpers for checking Shib. """
-
-    # def __init__( self ):
-    #     self.TEST_SHIB_JSON = settings_app.DEVELOPMENT_SHIB_DCT
 
     def grab_shib_info( self, request ):
         """ Grabs shib values from http-header or dev-settings.
@@ -48,48 +44,6 @@ class ShibChecker( object ):
             'title': request.META.get( 'Shibboleth-title', '' ),
             }
         return shib_dct
-
-    # def evaluate_shib_info( self, shib_dct ):
-    #     """ Returns boolean.
-    #         Called by models.ShibViewHelper.check_shib_headers() """
-    #     validity = False
-    #     if self.all_values_present(shib_dct) and self.brown_user_confirmed(shib_dct) and self.authorized(shib_dct['patron_barcode']):
-    #         validity = True
-    #     log.debug( 'validity, `%s`' % validity )
-    #     return validity
-
-    # def all_values_present( self, shib_dct ):
-    #     """ Returns boolean.
-    #         Called by evaluate_shib_info() """
-    #     present_check = False
-    #     if sorted( shib_dct.keys() ) == ['email', 'eppn', 'firstname', 'lastname', 'member_of', 'patron_barcode']:
-    #         value_test = 'init'
-    #         for (key, value) in shib_dct.items():
-    #             if len( value.strip() ) == 0:
-    #                 value_test = 'fail'
-    #         if value_test == 'init':
-    #             present_check = True
-    #     log.debug( 'in models.ShibChecker.all_values_present(); present_check, `%s`' % present_check )
-    #     return present_check
-
-    # def brown_user_confirmed( self, shib_dct ):
-    #     """ Returns boolean.
-    #         Called by evaluate_shib_info() """
-    #     brown_check = False
-    #     if '@brown.edu' in shib_dct['eppn']:
-    #         brown_check = True
-    #     log.debug( 'in models.ShibChecker.brown_user_confirmed(); brown_check, `%s`' % brown_check )
-    #     return brown_check
-
-    # def authorized( self, patron_barcode ):
-    #     """ Returns boolean.
-    #         Called by evaluate_shib_info() """
-    #     authZ_check = False
-    #     papi_helper = PatronApiHelper( patron_barcode )
-    #     if papi_helper.ptype_validity is True:
-    #         authZ_check = True
-    #     log.debug( 'authZ_check, `%s`' % authZ_check )
-    #     return authZ_check
 
     # end class ShibChecker
 
