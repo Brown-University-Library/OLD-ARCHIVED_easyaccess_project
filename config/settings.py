@@ -12,6 +12,8 @@ import dj_database_url
 SECRET_KEY = os.environ['EZACS__SECRET_KEY']
 
 DEBUG = json.loads( os.environ['EZACS__DEBUG_JSON'] )  # will be True or False
+DEBUG2 = json.loads( os.environ['EZACS__DEBUG2_JSON'] )  # will be True or False
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = json.loads( os.environ['EZACS__ADMINS_JSON'] )

@@ -31,6 +31,34 @@ class LoginHelper( object ):
         log.debug( 'findit_check, `%s`' % findit_check )
         return findit_check
 
+
+
+    def assess_shib_redirect_need( self, session, host, meta_dict ):
+        """ Determines whether a shib-redirect login or logout url is needed.
+            Called by views.login()
+            `shib_status` flow:
+            - '' will be changed to 'will_force_logout' and trigger a shib-logout redirect
+            - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
+            - 'will_force_login' is usually ok, and the session will contain shib info, but if not, a logout-login will be triggered
+            TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
+        log.debug( 'session.items(), `{}`'.format(session.items()) )
+        log.debug( 'host, `{}`'.format(host) )
+        log.debug( 'meta_dict, `{}`'.format(meta_dict) )
+
+        needed = False
+        if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+            needed = False
+        else:
+            shib_status = session.get( 'shib_status', '' )
+            if shib_status == '' or shib_status == 'will_force_logout':
+                needed = True
+            elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':
+                    needed = True
+        log.debug( 'needed, `{}`'.format(needed) )
+        return needed
+
+
+
     def assess_status( self, request ):
         """ Assesses localdev status and shib_status.
             Called by views.login() """
