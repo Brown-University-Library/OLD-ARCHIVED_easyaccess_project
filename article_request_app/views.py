@@ -53,6 +53,7 @@ def login( request ):
     # ## force login, by forcing a logout if needed
     # need_shib_redirect = login_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
     # if need_shib_redirect is True:
+    #     request.session['shib_status'] = login_helper.update_shib_status( request.session, request.META )
     #     return HttpResponseRedirect( login_helper.build_shib_redirect_url() )
 
 

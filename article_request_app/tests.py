@@ -83,20 +83,20 @@ class LoginHelper_Test( TestCase ):
         host = 'foo'
         meta_dict = {}
         self.assertTrue(
-            'logout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+            'zlogout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
 
         ## logout was forced; needs login-redirect
         session = { 'shib_status': 'will_force_logout' }
         host = 'foo'
         meta_dict = {}
         self.assertTrue(
-            'login' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+            'zlogin' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
 
         ## 'will_force_login' normally good, but this needs shib-headers regrabbed
         session = { 'shib_status': 'will_force_login' }
         host = 'foo'
         meta_dict = { 'Shibboleth-eppn': '' }
         self.assertTrue(
-            'logout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+            'zlogout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
 
     # end class LoginHelper_Test

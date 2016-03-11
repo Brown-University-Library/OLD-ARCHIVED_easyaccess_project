@@ -41,10 +41,6 @@ class LoginHelper( object ):
             - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
             - 'will_force_login' is usually ok, and the session will contain shib info, but if not, a logout-login will be triggered
             TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
-        log.debug( 'session.items(), `{}`'.format(session.items()) )
-        log.debug( 'host, `{}`'.format(host) )
-        log.debug( 'meta_dict, `{}`'.format(meta_dict) )
-
         needed = False
         if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
             needed = False
@@ -56,6 +52,21 @@ class LoginHelper( object ):
                     needed = True
         log.debug( 'needed, `{}`'.format(needed) )
         return needed
+
+
+
+    def test__build_shib_redirect_url( self, session, host, meta_dict ):
+        """ Builds shib-redirect login or logout url.
+            Called by views.login() """
+        shib_status = session.get( 'shib_status', '' )
+        if shib_status == '':  # clean entry: builds logout url
+            url = self.make_force_logout_redirect_url( request )
+        elif shib_status == 'will_force_logout':  # logout occurred; builds login url
+            url = self.make_force_login_redirect_url( request )
+        elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':  # also builds logout url
+            url =self.make_force_logout_redirect_url( request )
+        log.debug( 'shib-redirect url, ```{}```'.format(url) )
+        return url
 
 
 
