@@ -17,20 +17,18 @@ shib_checker = ShibChecker()
 class LoginHelper( object ):
     """ Contains helpers for views.login() """
 
-    def check_referrer( self, request ):
+    def check_referrer( self, session, meta_dict ):
         """ Ensures request came from findit app.
             Called by views.login() """
         findit_check = False
-        findit_illiad_check_flag = request.session.get( 'findit_illiad_check_flag', '' )
-        findit_illiad_check_openurl = request.session.get( 'findit_illiad_check_enhanced_querystring', '' )
-        if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == request.META.get('QUERY_STRING', ''):
+        findit_illiad_check_flag = session.get( 'findit_illiad_check_flag', '' )
+        findit_illiad_check_openurl = session.get( 'findit_illiad_check_enhanced_querystring', '' )
+        if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == meta_dict.get('QUERY_STRING', ''):
             findit_check = True
-        log.debug( 'findit_check, `%s`' % findit_check )
-        if findit_check is True:
-            request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
         elif findit_check is not True:
             log.warning( 'Bad attempt from source-url, ```%s```; ip, `%s`' % (
-                request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+                meta_dict.get('HTTP_REFERER', ''), meta_dict.get('REMOTE_ADDR', '') ) )
+        log.debug( 'findit_check, `%s`' % findit_check )
         return findit_check
 
     def assess_status( self, request ):
