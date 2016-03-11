@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import datetime, json, logging, os, pprint, random, time
 from .classes.illiad_helper import IlliadHelper
 from .classes.login_helper import LoginHelper
-from .classes.shib_helper import ShibChecker
+# from .classes.shib_helper import ShibChecker
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
@@ -20,7 +20,7 @@ log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 ill_helper = IlliadHelper()
 login_helper = LoginHelper()
-shib_checker = ShibChecker()
+# shib_checker = ShibChecker()
 
 
 def login( request ):
@@ -30,8 +30,11 @@ def login( request ):
         if happy, redirects to `illiad`, otherwise to `oops`. """
 
     ## check that request is from findit
-    if login_helper.check_referrer( request ) is False:
+    referrer_check = login_helper.check_referrer( request.session, request.META )
+    if referrer_check is False:
         return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example easyAccess requests.`' )
+    else:
+        request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
 
     ## force login, by forcing a logout
     ( localdev, shib_status ) = login_helper.assess_status( request )
@@ -67,6 +70,7 @@ def login( request ):
 
 def illiad_request( request ):
     """ Gives users chance to confirm their request via clicking 'Submit'."""
+
     ## check that we're here legitimately
     here_check = False
     illiad_login_check_flag = request.session.get( 'illiad_login_check_flag', '' )
@@ -82,14 +86,16 @@ def illiad_request( request ):
         log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
         return HttpResponseBadRequest( 'Bad request; see "https://library.brown.edu/easyaccess/" for example usage.`' )
+
     ## prep data
     citation_json = request.session.get( 'citation', '{}' )
     format = request.session.get( 'format', '' )
     context = { 'citation': json.loads(citation_json), 'format': format }
+
     ## cleanup
-    # request.session['citation'] = ''
     request.session['format'] = ''
     request.session['illiad_login_check_flag'] = ''
+
     ## respond
     resp = render( request, 'article_request_app/request.html', context )
     return resp
