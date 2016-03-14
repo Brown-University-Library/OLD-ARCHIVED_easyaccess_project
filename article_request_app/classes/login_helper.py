@@ -54,40 +54,31 @@ class LoginHelper( object ):
         log.debug( 'return_dct, `{}`'.format(return_dct) )
         return return_dct
 
-    # def assess_shib_redirect_need( self, session, host, meta_dict ):
-    #     """ Determines whether a shib-redirect login or logout url is needed.
-    #         Called by views.login()
-    #         `shib_status` flow:
-    #         - '' will be changed to 'will_force_logout' and trigger a shib-logout redirect
-    #         - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
-    #         - 'will_force_login' is usually ok, and the session will contain shib info, but if not, a logout-login will be triggered
-    #         TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
-    #     needed = False
-    #     if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
-    #         needed = False
-    #     else:
-    #         shib_status = session.get( 'shib_status', '' )
-    #         if shib_status == '' or shib_status == 'will_force_logout':
-    #             needed = True
-    #         elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':
-    #                 needed = True
-    #     log.debug( 'needed, `{}`'.format(needed) )
-    #     return needed
 
 
-
-    def test__build_shib_redirect_url( self, session, host, meta_dict ):
+    def build_shib_redirect_url( self, shib_status, scheme, host, session_dct, meta_dct ):
         """ Builds shib-redirect login or logout url.
             Called by views.login() """
-        shib_status = session.get( 'shib_status', '' )
         if shib_status == '':  # clean entry: builds logout url
-            url = self.make_force_logout_redirect_url( request )
+            redirect_dct = self._make_force_logout_redirect_url( scheme, host, session_dct )
         elif shib_status == 'will_force_logout':  # logout occurred; builds login url
             url = self.make_force_login_redirect_url( request )
         elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':  # also builds logout url
             url =self.make_force_logout_redirect_url( request )
-        log.debug( 'shib-redirect url, ```{}```'.format(url) )
-        return url
+        log.debug( 'redirect_dct, ```{}```'.format(redirect_dct) )
+        return redirect_dct
+
+    def _make_force_logout_redirect_url( self, scheme, host, session_dct ):
+        """ Builds logout-redirect url
+            Called by build_shib_redirect_url() """
+        new_shib_status = 'will_force_logout'
+        app_login_url = '%s://%s%s?%s' % ( scheme, host, reverse('article_request:login_url'), session_dct['login_openurl'] )  # app_login_url isn't the shib url; it's the url to this login-app
+        log.debug( 'app_login_url, `%s`' % app_login_url )
+        encoded_app_login_url = urlquote( app_login_url )  # django's urlquote()
+        force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_app_login_url )
+        redirect_dct = { 'redirect_url': force_logout_redirect_url, 'new_shib_status': new_shib_status }
+        log.debug( 'redirect_dct, `{}`'.format(redirect_dct) )
+        return redirect_dct
 
 
 

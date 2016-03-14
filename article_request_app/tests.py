@@ -76,52 +76,13 @@ class LoginHelper_Test( TestCase ):
             { 'redirect': True, 'shib_status': 'will_force_logout' },
             self.helper.assess_shib_redirect_need(session, host, meta_dict) )
 
-    # def test__assess_shib_redirect_need( self ):
-    #     """ Tests whether a shib logout or login url needs to be built. """
-    #     ## localdev never needs shib redirect
-    #     session = {}
-    #     host = '127.0.0.1'
-    #     meta_dict = {}
-    #     self.assertEqual(
-    #         False,
-    #         self.helper.assess_shib_redirect_need(session, host, meta_dict) )
-    #     ## clean entry needs logout-redirect
-    #     session = { 'shib_status': '' }
-    #     host = 'foo'
-    #     meta_dict = {}
-    #     self.assertEqual(
-    #         True,
-    #         self.helper.assess_shib_redirect_need(session, host, meta_dict) )
-    #     ## logout was forced; needs login-redirect
-    #     session = { 'shib_status': 'will_force_logout' }
-    #     host = 'foo'
-    #     meta_dict = {}
-    #     self.assertEqual(
-    #         True,
-    #         self.helper.assess_shib_redirect_need(session, host, meta_dict) )
-    #     ## login was forced and shib headers filled; good, no redirect
-    #     session = { 'shib_status': 'will_force_login' }
-    #     host = 'foo'
-    #     meta_dict = { 'Shibboleth-eppn': 'foo' }
-    #     self.assertEqual(
-    #         False,
-    #         self.helper.assess_shib_redirect_need(session, host, meta_dict) )
-    #     ## 'will_force_login' normally good, but this needs shib-headers regrabbed
-    #     session = { 'shib_status': 'will_force_login' }
-    #     host = 'foo'
-    #     meta_dict = { 'Shibboleth-eppn': '' }
-    #     self.assertEqual(
-    #         True,
-    #         self.helper.assess_shib_redirect_need(session, host, meta_dict) )
-
     def test__build_shib_redirect_url( self ):
         """ Tests the redirect-url. """
-        ## clean entry needs logout-redirect
-        session = { 'shib_status': '' }
-        host = 'foo'
-        meta_dict = {}
-        self.assertTrue(
-            'zlogout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+        ## clean entry
+        redirect_dct = self.helper.build_shib_redirect_url(
+            shib_status='', scheme='https', host='foo.edu', session_dct={'login_openurl':'a=b&c=d'}, meta_dct={} )
+        self.assertTrue( 'logout' in redirect_dct['redirect_url'] )
+        self.assertEqual( 'will_force_logout', redirect_dct['new_shib_status'] )
 
         ## logout was forced; needs login-redirect
         session = { 'shib_status': 'will_force_logout' }
@@ -136,5 +97,28 @@ class LoginHelper_Test( TestCase ):
         meta_dict = { 'Shibboleth-eppn': '' }
         self.assertTrue(
             'zlogout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+
+    # def test__build_shib_redirect_url( self ):
+    #     """ Tests the redirect-url. """
+    #     ## clean entry needs logout-redirect
+    #     session = { 'shib_status': '' }
+    #     host = 'foo'
+    #     meta_dict = {}
+    #     self.assertTrue(
+    #         'zlogout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+
+    #     ## logout was forced; needs login-redirect
+    #     session = { 'shib_status': 'will_force_logout' }
+    #     host = 'foo'
+    #     meta_dict = {}
+    #     self.assertTrue(
+    #         'zlogin' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
+
+    #     ## 'will_force_login' normally good, but this needs shib-headers regrabbed
+    #     session = { 'shib_status': 'will_force_login' }
+    #     host = 'foo'
+    #     meta_dict = { 'Shibboleth-eppn': '' }
+    #     self.assertTrue(
+    #         'zlogout' in self.helper.build_shib_redirect_url(session, host, meta_dict) )
 
     # end class LoginHelper_Test
