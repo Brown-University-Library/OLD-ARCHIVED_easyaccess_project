@@ -133,9 +133,11 @@ def availability( request ):
 
 def login( request ):
     """ Forces shib-login, then
-        - gets or creates user-object
+        - gets or creates resource-object
+        - gets or creates user-object and library-profile-data
         - forces shib-logout
         - redirects user to process_request url/view """
+    log.debug( 'request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
     return HttpResponse( 'login handling coming' )
 
 
