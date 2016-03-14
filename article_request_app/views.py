@@ -36,20 +36,6 @@ def login( request ):
     else:
         request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
 
-
-
-    # ## force login, by forcing a logout
-    # ( localdev, shib_status ) = login_helper.assess_status( request )
-    # if localdev is False:
-    #     if shib_status == '':  # clean entry: forces logout, sets shib_status to 'will_force_logout'
-    #         return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
-    #     elif shib_status == 'will_force_logout':  # sets shib_status to 'will_force_login'
-    #         return HttpResponseRedirect( login_helper.make_force_login_redirect_url( request ) )
-    #     elif shib_status == 'will_force_login' and request.META.get('Shibboleth-eppn', '') == '':  # handles occasional issue; normally shib headers are ok
-    #         return HttpResponseRedirect( login_helper.make_force_logout_redirect_url( request ) )
-
-
-
     ## force login, by forcing a logout if needed
     ( localdev_check, redirect_check, shib_status ) = login_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
     if redirect_check is True:
@@ -57,10 +43,7 @@ def login( request ):
         request.session['shib_status'] = updated_shib_status
         return HttpResponseRedirect( redirect_url )
 
-
-
     ## get user info
-    # shib_dct = login_helper.grab_user_info( request, localdev, shib_status )  # updates session with user info
     shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info
 
     ## log user into illiad
