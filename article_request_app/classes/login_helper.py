@@ -62,23 +62,38 @@ class LoginHelper( object ):
         if shib_status == '':  # clean entry: builds logout url
             redirect_dct = self._make_force_logout_redirect_url( scheme, host, session_dct )
         elif shib_status == 'will_force_logout':  # logout occurred; builds login url
-            url = self.make_force_login_redirect_url( request )
-        elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':  # also builds logout url
-            url =self.make_force_logout_redirect_url( request )
+            redirect_dct = self._make_force_login_redirect_url( scheme, host, session_dct )
+        elif shib_status == 'will_force_login' and meta_dct.get('Shibboleth-eppn', '') == '':  # also builds logout url
+            redirect_dct =self._make_force_logout_redirect_url( scheme, host, session_dct )
         log.debug( 'redirect_dct, ```{}```'.format(redirect_dct) )
         return redirect_dct
 
     def _make_force_logout_redirect_url( self, scheme, host, session_dct ):
         """ Builds logout-redirect url
             Called by build_shib_redirect_url() """
-        new_shib_status = 'will_force_logout'
+        updated_shib_status = 'will_force_logout'
         app_login_url = '%s://%s%s?%s' % ( scheme, host, reverse('article_request:login_url'), session_dct['login_openurl'] )  # app_login_url isn't the shib url; it's the url to this login-app
         log.debug( 'app_login_url, `%s`' % app_login_url )
         encoded_app_login_url = urlquote( app_login_url )  # django's urlquote()
         force_logout_redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_app_login_url )
-        redirect_dct = { 'redirect_url': force_logout_redirect_url, 'new_shib_status': new_shib_status }
+        redirect_dct = { 'redirect_url': force_logout_redirect_url, 'updated_shib_status': updated_shib_status }
         log.debug( 'redirect_dct, `{}`'.format(redirect_dct) )
         return redirect_dct
+
+    def _make_force_login_redirect_url( self, scheme, host, session_dct ):
+        """ Builds login-redirect url
+            Called by build_shib_redirect_url()
+            Note, fyi, normally a shib httpd.conf entry triggers login via a config line like `require valid-user`.
+                This SHIB_LOGIN_URL setting, though, is a url like: `https://host/shib.sso/login?target=/this_url_path`
+                ...so it's that shib.sso/login url that triggers the login, not this app login url.
+                This app login url _is_ shib-configured, though to perceive shib headers if they exist. """
+        updated_shib_status = 'will_force_login'
+        encoded_openurl = urlquote( session_dct['login_openurl'] )
+        force_login_redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, encoded_openurl )
+        redirect_dct = { 'redirect_url': force_login_redirect_url, 'updated_shib_status': updated_shib_status }
+        log.debug( 'redirect_dct, `{}`'.format(redirect_dct) )
+        return redirect_dct
+
 
 
 
