@@ -35,23 +35,44 @@ class LoginHelper( object ):
 
     def assess_shib_redirect_need( self, session, host, meta_dict ):
         """ Determines whether a shib-redirect login or logout url is needed.
+            Returns needed-boolean, and extracted/updated shib_status.
             Called by views.login()
             `shib_status` flow:
-            - '' will be changed to 'will_force_logout' and trigger a shib-logout redirect
+            - '', from a new-request, will be changed to 'will_force_logout' and trigger a shib-logout redirect
             - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
-            - 'will_force_login' is usually ok, and the session will contain shib info, but if not, a logout-login will be triggered
+            - 'will_force_login' is usually ok, and the session should contain shib info, but if not, a logout-login will be triggered
             TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
-        needed = False
+        ( needed, shib_status ) = ( False, session.get('shib_status', '') )
         if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
             needed = False
         else:
-            shib_status = session.get( 'shib_status', '' )
             if shib_status == '' or shib_status == 'will_force_logout':
                 needed = True
             elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':
-                    needed = True
-        log.debug( 'needed, `{}`'.format(needed) )
-        return needed
+                ( needed, shib_status ) = ( True, 'will_force_logout' )
+        return_dct = { 'redirect': needed, 'shib_status': shib_status }
+        log.debug( 'return_dct, `{}`'.format(return_dct) )
+        return return_dct
+
+    # def assess_shib_redirect_need( self, session, host, meta_dict ):
+    #     """ Determines whether a shib-redirect login or logout url is needed.
+    #         Called by views.login()
+    #         `shib_status` flow:
+    #         - '' will be changed to 'will_force_logout' and trigger a shib-logout redirect
+    #         - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
+    #         - 'will_force_login' is usually ok, and the session will contain shib info, but if not, a logout-login will be triggered
+    #         TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
+    #     needed = False
+    #     if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+    #         needed = False
+    #     else:
+    #         shib_status = session.get( 'shib_status', '' )
+    #         if shib_status == '' or shib_status == 'will_force_logout':
+    #             needed = True
+    #         elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':
+    #                 needed = True
+    #     log.debug( 'needed, `{}`'.format(needed) )
+    #     return needed
 
 
 
