@@ -63,7 +63,7 @@ def availability( request ):
         elif identifier['type'] == 'oclc':
             oclc_num = identifier['id']
 
-    ## run recent request check
+    ## run recent request check -- TODO
 
     ## run josiah availability check
     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
@@ -132,15 +132,30 @@ def availability( request ):
 
 
 def login( request ):
+    """ Forces shib-login, then
+        - gets or creates user-object
+        - forces shib-logout
+        - redirects user to process_request url/view """
     return HttpResponse( 'login handling coming' )
 
 
 def process_request( request ):
+    """ Saves request to db for easyBorrow.
+        Redirects user to message url/view. """
+    # def create_request(self, bib):
+    #     from models import Request
+    #     request = Request()
+    #     request.user = self.request.user
+    #     request.bib = bib
+    #     request.save(submit=True)
+    #     return request.transaction_number
     return HttpResponse( 'process_request handling coming' )
 
 
 def message( request ):
     return HttpResponse( 'message handling coming' )
+
+
 
 
 class ResolveView(DeliveryBaseView):
