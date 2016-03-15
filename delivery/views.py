@@ -149,7 +149,7 @@ def login( request ):
     ## force login, by forcing a logout if needed
     ( localdev_check, redirect_check, shib_status ) = login_view_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
     if redirect_check is True:
-        ( redirect_url, updated_shib_status ) = login_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
+        ( redirect_url, updated_shib_status ) = login_view_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
         request.session['shib_status'] = updated_shib_status
         return HttpResponseRedirect( redirect_url )
 

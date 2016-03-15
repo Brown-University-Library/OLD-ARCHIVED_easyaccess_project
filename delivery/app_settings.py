@@ -7,6 +7,12 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 
+SHIB_LOGIN_URL = os.environ['EZACS__BORROW_SHIB_LOGIN_URL']
+SHIB_LOGOUT_URL_ROOT = os.environ['EZACS__BORROW_SHIB_LOGOUT_URL_ROOT']
+
+DEVELOPMENT_SHIB_DCT = json.loads( os.environ['EZACS__BORROW_DEVELOPMENT_SHIB_JSON'] )
+
+
 ILLIAD_KEY = getattr(settings, 'FINDIT_ILLIAD_KEY', None)
 
 ILLIAD_REMOTE_AUTH_URL = getattr(settings, 'FINDIT_ILLIAD_REMOTE_AUTH_URL', None)
