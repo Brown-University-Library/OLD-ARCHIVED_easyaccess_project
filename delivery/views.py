@@ -24,11 +24,13 @@ from py360link2 import get_sersol_data, Resolved
 from shibboleth.decorators import login_optional
 from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
+from delivery.classes.login_helper import LoginViewHelper
 
 
 log = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 availability_checker = AvailabilityChecker()
+login_view_helper = LoginViewHelper()
 
 
 def availability( request ):
@@ -133,17 +135,36 @@ def availability( request ):
 
 def login( request ):
     """ Forces shib-login, then
-        - gets or creates resource-object
         - gets or creates user-object and library-profile-data
-        - forces shib-logout
         - redirects user to process_request url/view """
     log.debug( 'request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+    ## check referrer
+    ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
+    if referrer_ok is not True:
+        return HttpResponseRedirect( redirect_url )
+    request.session['last_path'] = request.path
+
+    ## force login, by forcing a logout if needed
+    ( localdev_check, redirect_check, shib_status ) = login_view_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
+    if redirect_check is True:
+        ( redirect_url, updated_shib_status ) = login_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
+        request.session['shib_status'] = updated_shib_status
+        return HttpResponseRedirect( redirect_url )
+
+    ## update user/profile objects
+    login_view_helper.update_user( request.META )
+
+    ## redirect to process_request
+
     return HttpResponse( 'login handling coming' )
 
 
 def process_request( request ):
-    """ Saves request to db for easyBorrow.
-        Redirects user to message url/view. """
+    """ Creates resource object, then
+        - grabs user object
+        - checks for recent request
+        - saves request to db for easyBorrow.
+        - redirects user to message url/view. """
     # def create_request(self, bib):
     #     from models import Request
     #     request = Request()
