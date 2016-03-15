@@ -25,12 +25,14 @@ from shibboleth.decorators import login_optional
 from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
 from delivery.classes.login_helper import LoginViewHelper
+from delivery.classes.process_helper import ProcessViewHelper
 
 
 log = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 availability_checker = AvailabilityChecker()
 login_view_helper = LoginViewHelper()
+process_view_helper = ProcessViewHelper()
 
 
 def availability( request ):
@@ -155,8 +157,7 @@ def login( request ):
     login_view_helper.update_user( request.META )
 
     ## redirect to process_request
-
-    return HttpResponse( 'login handling coming' )
+    return HttpResponseRedirect( reverse('delivery:process_request_url') )
 
 
 def process_request( request ):
@@ -165,14 +166,25 @@ def process_request( request ):
         - checks for recent request
         - saves request to db for easyBorrow.
         - redirects user to message url/view. """
-    # def create_request(self, bib):
-    #     from models import Request
-    #     request = Request()
-    #     request.user = self.request.user
-    #     request.bib = bib
-    #     request.save(submit=True)
-    #     return request.transaction_number
-    return HttpResponse( 'process_request handling coming' )
+
+    ## get/create resource object
+    resource_obj = process_view_helper.grab_resource( request.META.get('QUERY_STRING', '') )
+
+    ## get user object
+    user_obj = process_view_helper.grab_user( request.META.get('Shibboleth-eppn', '') )
+
+    ## check for recent request
+    if process_view_helper.check_recently_requested( user_obj, resource_obj ) is True:
+        request.session['message'] = "You've recently requested this item and should soon receive an update email."
+        return HttpResponseRedirect( reverse('delivery:message_url') )
+
+    ## save new request
+    process_view_helper.save_request( user_obj, resource_obj )
+    process_view_helper.save_to_easyborrow( user_obj, resource_obj )
+
+    ## redirect to confirmation message
+    request.session['message'] = "Your request was successful; you should soon receive an update email."
+    return HttpResponseRedirect( reverse('delivery:message_url') )
 
 
 def message( request ):
