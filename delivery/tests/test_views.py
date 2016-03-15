@@ -86,7 +86,7 @@ class LoginViewTest(TestCase):
         session['last_querystring'] = 'isbn=123'
         session['shib_status'] = 'will_force_logout'
         session.save()
-        response = self.client.post( '/borrow/login/' )
+        response = self.client.post( '/borrow/login/', SERVER_NAME="127.0.0.1" )
         print( 'location, ```{}```'.format(response._headers['location'][1]) )
         self.assertEqual( 302, response.status_code )
         self.assertTrue( 'zshib_logout.jsp' in response._headers['location'][1] )
