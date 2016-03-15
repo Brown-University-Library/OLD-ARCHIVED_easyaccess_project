@@ -67,15 +67,30 @@ class LoginViewTest(TestCase):
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
 
-    def test_login_from_availability(self):
+    def test_login_from_availability_clean(self):
         """ Good hit should return response. """
         session = self.session_hack.session
         session['last_path'] = '/easyaccess/borrow/availability/'
         session['last_querystring'] = 'isbn=123'
+        session['shib_status'] = ''
         session.save()
         response = self.client.post( '/borrow/login/' )
-        self.assertEqual( 2000, response.status_code )
-        self.assertTrue( 'zeasyBorrow' in response.content )
+        self.assertEqual( 302, response.status_code )
+        self.assertTrue( 'shib_logout.jsp' in response._headers['location'][1] )
+        self.assertTrue( '/borrow/login/' in response._headers['location'][1] )
+
+    def test_login_after_shib_logout(self):
+        """ Good hit should return response. """
+        session = self.session_hack.session
+        session['last_path'] = '/easyaccess/borrow/availability/'
+        session['last_querystring'] = 'isbn=123'
+        session['shib_status'] = 'will_force_logout'
+        session.save()
+        response = self.client.post( '/borrow/login/' )
+        print( 'location, ```{}```'.format(response._headers['location'][1]) )
+        self.assertEqual( 302, response.status_code )
+        self.assertTrue( 'zshib_logout.jsp' in response._headers['location'][1] )
+        self.assertTrue( 'z/borrow/login/' in response._headers['location'][1] )
 
 
 # class ConferenceReportResolverTest(TestCase):

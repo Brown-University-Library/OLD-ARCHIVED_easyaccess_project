@@ -3,6 +3,10 @@
 from __future__ import unicode_literals
 
 import logging
+from delivery import app_settings as settings_app
+from django.conf import settings as project_settings
+from django.core.urlresolvers import reverse
+from django.utils.http import urlquote
 
 
 log = logging.getLogger('access')
@@ -49,6 +53,7 @@ class LoginViewHelper(object):
             - 'will_force_login' is usually ok, and the session should contain shib info, but if not, a logout-login will be triggered
             TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
         ( localdev_check, redirect_check, shib_status ) = ( False, False, session.get('shib_status', '') )
+        log.debug( 'host, `{}`'.format(host) )
         if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
             localdev_check = True
         else:
