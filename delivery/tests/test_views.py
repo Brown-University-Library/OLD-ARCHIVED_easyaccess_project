@@ -10,29 +10,25 @@ from django.test.client import Client
 from django.utils.module_loading import import_module
 
 
-# class SessionTestCase(TestCase):
-#     # http://stackoverflow.com/questions/4453764/how-do-i-modify-the-session-in-the-django-test-framework
-#     def setUp(self):
-#         # http://code.djangoproject.com/ticket/10899
-#         settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
-#         engine = import_module(settings.SESSION_ENGINE)
-#         store = engine.SessionStore()
-#         store.save()
-#         self.session = store
-#         self.client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
+class SessionHack(object):
+    ## based on: http://stackoverflow.com/questions/4453764/how-do-i-modify-the-session-in-the-django-test-framework
 
-
-class AvailabilityViewTest( TestCase ):
-    """ Checks views. """
-
-    def setUp(self):
-        self.client = Client()
+    def __init__(self, client):
+        ## workaround for issue: http://code.djangoproject.com/ticket/10899
         settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
         engine = import_module(settings.SESSION_ENGINE)
         store = engine.SessionStore()
         store.save()
         self.session = store
-        self.client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
+        client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
+
+
+class AvailabilityViewTest(TestCase):
+    """ Checks availability views """
+
+    def setUp(self):
+        self.client = Client()
+        self.session_hack = SessionHack( self.client )
 
     def test_availability_direct(self):
         """ Direct hit should redirect to 'find'. """
@@ -43,21 +39,43 @@ class AvailabilityViewTest( TestCase ):
         self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
 
     def test_availability_from_findit(self):
-        """ Non direct-hit should... """
-        session = self.session
+        """ Good hit should return response. """
+        session = self.session_hack.session
         session['last_path'] = '/easyaccess/find/'
         session['last_querystring'] = 'isbn=123'
         session.save()
-        response = self.client.get( '/borrow/availability/?isbn=123' )  # project root part of url is assumed
+        response = self.client.get( '/borrow/availability/?isbn=123' )
+        self.assertEqual( 200, response.status_code )
+        self.assertTrue( 'easyBorrow' in response.content )
+
+    # end AvailabilityViewTest()
+
+
+
+class LoginViewTest(TestCase):
+    """ Checks availability views """
+
+    def setUp(self):
+        self.client = Client()
+        self.session_hack = SessionHack( self.client )
+
+    def test_login_direct(self):
+        """ Direct hit should redirect to 'find'. """
+        response = self.client.get( '/borrow/availability/?foo=bar' )
         # print( 'response.content, ```{}```'.format(response.content) )
         # print( 'response.__dict__, ```{}```'.format(response.__dict__) )
-        self.assertEqual( 200, response.status_code )
+        self.assertEqual( 302, response.status_code )
+        self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
 
-
-
-# class LoginViewTest( TestCase ):
-
-
+    def test_login_from_availability(self):
+        """ Good hit should return response. """
+        session = self.session_hack.session
+        session['last_path'] = '/easyaccess/borrow/availability/'
+        session['last_querystring'] = 'isbn=123'
+        session.save()
+        response = self.client.post( '/borrow/login/' )
+        self.assertEqual( 2000, response.status_code )
+        self.assertTrue( 'zeasyBorrow' in response.content )
 
 
 # class ConferenceReportResolverTest(TestCase):
