@@ -3,14 +3,57 @@
 
 from __future__ import unicode_literals
 
-from django.conf import settings
-# from django.utils import unittest
-from django.test import TestCase
-from django.test.client import RequestFactory
-from django.test.client import Client
-# from django.utils.importlib import import_module
-
 from delivery import views
+from django.conf import settings
+from django.test import TestCase
+from django.test.client import Client
+from django.utils.module_loading import import_module
+
+
+# class SessionTestCase(TestCase):
+#     # http://stackoverflow.com/questions/4453764/how-do-i-modify-the-session-in-the-django-test-framework
+#     def setUp(self):
+#         # http://code.djangoproject.com/ticket/10899
+#         settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+#         engine = import_module(settings.SESSION_ENGINE)
+#         store = engine.SessionStore()
+#         store.save()
+#         self.session = store
+#         self.client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
+
+
+class AvailabilityViewTest( TestCase ):
+    """ Checks views. """
+
+    def setUp(self):
+        self.client = Client()
+        settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+        engine = import_module(settings.SESSION_ENGINE)
+        store = engine.SessionStore()
+        store.save()
+        self.session = store
+        self.client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
+
+    def test_availability_direct(self):
+        """ Direct hit should redirect to 'find'. """
+        response = self.client.get( '/borrow/availability/?foo=bar' )  # project root part of url is assumed
+        # print( 'response.content, ```{}```'.format(response.content) )
+        # print( 'response.__dict__, ```{}```'.format(response.__dict__) )
+        self.assertEqual( 302, response.status_code )
+        self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
+
+    def test_availability_from_findit(self):
+        """ Non direct-hit should... """
+        session = self.session
+        session['last_path'] = '/easyaccess/find/'
+        session.save()
+
+
+        response = self.client.get( '/borrow/availability/?a=b' )  # project root part of url is assumed
+        print( 'response.content, ```{}```'.format(response.content) )
+        print( 'response.__dict__, ```{}```'.format(response.__dict__) )
+        self.assertEqual( 302, response.status_code )
+        self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
 
 
 
