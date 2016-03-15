@@ -46,14 +46,17 @@ class AvailabilityViewTest( TestCase ):
         """ Non direct-hit should... """
         session = self.session
         session['last_path'] = '/easyaccess/find/'
+        session['last_querystring'] = 'isbn=123'
         session.save()
+        response = self.client.get( '/borrow/availability/?isbn=123' )  # project root part of url is assumed
+        # print( 'response.content, ```{}```'.format(response.content) )
+        # print( 'response.__dict__, ```{}```'.format(response.__dict__) )
+        self.assertEqual( 200, response.status_code )
 
 
-        response = self.client.get( '/borrow/availability/?a=b' )  # project root part of url is assumed
-        print( 'response.content, ```{}```'.format(response.content) )
-        print( 'response.__dict__, ```{}```'.format(response.__dict__) )
-        self.assertEqual( 302, response.status_code )
-        self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
+
+# class LoginViewTest( TestCase ):
+
 
 
 

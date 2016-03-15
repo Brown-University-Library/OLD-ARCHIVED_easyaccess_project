@@ -114,7 +114,7 @@ def availability( request ):
 
     ## build context
     context = {
-        'permalink_url': request.session['permalink_url'],
+        'permalink_url': request.session.get( 'permalink_url', '' ),
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
         'available_locally': available_locally,
