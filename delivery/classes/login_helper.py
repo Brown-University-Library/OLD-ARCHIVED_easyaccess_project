@@ -2,7 +2,8 @@
 
 from __future__ import unicode_literals
 
-import logging
+import json, logging, pprint
+from common_classes.shib_helper import ShibChecker
 from delivery import app_settings as settings_app
 from django.conf import settings as project_settings
 from django.core.urlresolvers import reverse
@@ -10,6 +11,7 @@ from django.utils.http import urlquote
 
 
 log = logging.getLogger('access')
+shib_checker = ShibChecker()
 
 
 class LoginViewHelper(object):
@@ -18,7 +20,7 @@ class LoginViewHelper(object):
     def __init__(self):
         pass
 
-    def check_referrer( self, session_dct, meta_dict ):
+    def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
             Called by views.login() """
         ( referrer_check, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
@@ -27,11 +29,11 @@ class LoginViewHelper(object):
         elif shib_status in ['will_force_logout', 'will_force_login']:
             referrer_check = True
         if referrer_check is False:
-            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dict.get('QUERYSTRING', '') )
+            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERYSTRING', '') )
         log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
         return ( referrer_check, redirect_url )
 
-    # def check_referrer( self, session_dct, meta_dict ):
+    # def check_referrer( self, session_dct, meta_dct ):
     #     """ Ensures request came from /availability/.
     #         Called by views.login() """
     #     ( referrer_check, redirect_url ) = ( False, '' )
@@ -39,11 +41,11 @@ class LoginViewHelper(object):
     #     if last_path == '/easyaccess/borrow/availability/':
     #         referrer_check = True
     #     else:
-    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dict.get('QUERYSTRING', '') )
+    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERYSTRING', '') )
     #     log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
     #     return ( referrer_check, redirect_url )
 
-    def assess_shib_redirect_need( self, session, host, meta_dict ):
+    def assess_shib_redirect_need( self, session, host, meta_dct ):
         """ Determines whether a shib-redirect login or logout url is needed.
             Returns needed-boolean, and extracted/updated shib_status.
             Called by views.login()
@@ -59,10 +61,10 @@ class LoginViewHelper(object):
         else:
             if shib_status == '' or shib_status == 'will_force_logout':
                 redirect_check = True
-            elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':
+            elif shib_status == 'will_force_login' and meta_dct.get('Shibboleth-eppn', '') == '':
                 ( redirect_check, shib_status ) = ( True, 'will_force_logout' )
         assessment_tuple = ( localdev_check, redirect_check, shib_status )
-        log.debug( 'assessment_tuple, `{}`'.format(assessment_tuple) )
+        log.debug( 'assessment_tuple (localdev_check, redirect_check, shib_status), `{}`'.format(assessment_tuple) )
         return assessment_tuple
 
     def build_shib_redirect_url( self, shib_status, scheme, host, session_dct, meta_dct ):
@@ -102,5 +104,16 @@ class LoginViewHelper(object):
         redirect_tuple = ( force_login_redirect_url, updated_shib_status )
         log.debug( 'redirect_tuple, `{}`'.format(redirect_tuple) )
         return redirect_tuple
+
+    def update_user( self, localdev, meta_dct ):
+        """ For now just returns shib_dct;
+            eventually with create or update a user object and return that.
+            Called by views.login() """
+        if localdev is False:
+            shib_dct = shib_checker.grab_shib_info( meta_dct )
+        else:  # localdev
+            shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
+        log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
+        return shib_dct
 
     # end class LoginViewHelper()

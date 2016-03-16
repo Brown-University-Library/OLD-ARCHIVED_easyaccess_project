@@ -154,10 +154,12 @@ def login( request ):
         return HttpResponseRedirect( redirect_url )
 
     ## update user/profile objects
-    login_view_helper.update_user( request.META )
+    shib_dct = login_view_helper.update_user( localdev_check, request.META )  # will eventually return user object
+    request.session['user'] = json.dumps( shib_dct )
 
     ## redirect to process_request
-    return HttpResponseRedirect( reverse('delivery:process_request_url') )
+    redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session['last_querystring'] )
+    return HttpResponseRedirect( redirect_url )
 
 
 def process_request( request ):

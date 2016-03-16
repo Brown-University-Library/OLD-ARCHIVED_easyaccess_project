@@ -89,8 +89,7 @@ class LoginViewTest(TestCase):
         response = self.client.post( '/borrow/login/', SERVER_NAME="127.0.0.1" )
         print( 'location, ```{}```'.format(response._headers['location'][1]) )
         self.assertEqual( 302, response.status_code )
-        self.assertTrue( 'zshib_logout.jsp' in response._headers['location'][1] )
-        self.assertTrue( 'z/borrow/login/' in response._headers['location'][1] )
+        self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
 
 
 # class ConferenceReportResolverTest(TestCase):
