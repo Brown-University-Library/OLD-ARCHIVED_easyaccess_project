@@ -17,8 +17,8 @@ from django.db import models
 
 
 class EasyBorrowRequest(models.Model):
-    id = models.IntegerField(primary_key=True, editable=False)
-    title = models.CharField(max_length=765)
+    # id = models.IntegerField(primary_key=True, editable=False)  # if this is enabled, instance will not return id/pk
+    title = models.CharField(max_length=765, default='')
     isbn = models.CharField(max_length=39, default='')
     wc_accession = models.IntegerField(default=0)
     bibno = models.CharField(max_length=24, default='')
@@ -43,4 +43,5 @@ class EasyBorrowRequest(models.Model):
         return str(self.id)
 
     class Meta:
+        # managed = False
         db_table = u'requests'
