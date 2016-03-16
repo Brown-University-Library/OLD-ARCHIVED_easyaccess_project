@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 
+import pprint
 from delivery import views
 from django.conf import settings
 from django.test import TestCase
@@ -51,7 +52,6 @@ class AvailabilityViewTest(TestCase):
     # end AvailabilityViewTest()
 
 
-
 class LoginViewTest(TestCase):
     """ Checks availability views """
 
@@ -90,6 +90,45 @@ class LoginViewTest(TestCase):
         print( 'location, ```{}```'.format(response._headers['location'][1]) )
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
+
+    # end LoginViewTest()
+
+
+class ProcessViewTest(TestCase):
+    """ Checks availability views """
+
+    def setUp(self):
+        self.client = Client()
+        self.session_hack = SessionHack( self.client )
+
+    def test_hit_process_directly_nofollow(self):
+        """ Direct hit should redirect to 'message' with a link to findit/find. """
+        response = self.client.get( '/borrow/process_request/?isbn=123' )
+        self.assertEqual( 302, response.status_code )
+        self.assertEqual( 'foo', response._headers['location'][1] )
+
+    def test_hit_process_directly_follow_redirect(self):
+        """ Direct hit should redirect to 'message' with a link to findit/find. """
+        response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
+        self.assertEqual( '/borrow/process_request/', response.context['last_path'] )
+        self.assertEqual( True, 'there was a problem' in response.context['message'] )
+
+    def test_hit_process_properly(self):
+        """ Direct hit should redirect to 'message' with a link to findit/find. """
+        session = self.session_hack.session
+        session['last_path'] = '/easyaccess/borrow/login/'
+        session['last_querystring'] = 'isbn=123'
+        session.save()
+
+        response = self.client.get( '/borrow/process_request/?isbn=123' )
+        # print( 'response.context, ```{}```'.format(pprint.pformat(response.context)) )
+        self.assertEqual( 302, response.status_code )
+        response2 = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
+        self.assertEqual( '/borrow/process_request/', response2.context['last_path'] )
+        self.assertEqual( True, 'there was a problem' in response2.context['message'] )
+
+
+
 
 
 # class ConferenceReportResolverTest(TestCase):

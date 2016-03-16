@@ -58,6 +58,7 @@ def availability( request ):
     ## get bib_dct
     bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
     log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
+    request.session['bib_dct_json'] = json.dumps(bib_dct)
 
     ## get identifiers
     ( isbn, oclc_num ) = ( '', '' )
@@ -137,12 +138,17 @@ def availability( request ):
 
 def login( request ):
     """ Forces shib-login, then
+        (for now)
+        - stores shib info to session
+        - redirects user to process_request url/view
+        (eventually)
         - gets or creates user-object and library-profile-data
         - redirects user to process_request url/view """
     log.debug( 'request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
     ## check referrer
     ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
     if referrer_ok is not True:
+        request.session['last_path'] = request.path
         return HttpResponseRedirect( redirect_url )
     request.session['last_path'] = request.path
 
@@ -163,26 +169,38 @@ def login( request ):
 
 
 def process_request( request ):
-    """ Creates resource object, then
+    """ (for now)
+        - Saves data to easyBorrow db
+        - redirects user to message url/view
+        (eventually)
+        - Creates resource object, then
         - grabs user object
         - checks for recent request
-        - saves request to db for easyBorrow.
-        - redirects user to message url/view. """
+        - saves data to easyBorrow db
+        - redirects user to message url/view """
+
+    ## check referrer
+    ( referrer_ok, redirect_url ) = process_view_helper.check_referrer( request.session, request.META )
+    if referrer_ok is False:
+        request.session['last_path'] = request.path
+        request.session['message'] = 'Sorry, there was a problem with that url. easyBorrow requests should start _here_; contact us if this problem continues.'
+        return HttpResponseRedirect( redirect_url )
 
     ## get/create resource object
-    resource_obj = process_view_helper.grab_resource( request.META.get('QUERY_STRING', '') )
+    # resource_obj = process_view_helper.grab_resource( request.META.get('QUERY_STRING', '') )
 
     ## get user object
-    user_obj = process_view_helper.grab_user( request.META.get('Shibboleth-eppn', '') )
+    # user_obj = process_view_helper.grab_user( request.META.get('Shibboleth-eppn', '') )
 
     ## check for recent request
-    if process_view_helper.check_recently_requested( user_obj, resource_obj ) is True:
-        request.session['message'] = "You've recently requested this item and should soon receive an update email."
-        return HttpResponseRedirect( reverse('delivery:message_url') )
+    # if process_view_helper.check_recently_requested( user_obj, resource_obj ) is True:
+    #     request.session['message'] = "You've recently requested this item and should soon receive an update email."
+    #     return HttpResponseRedirect( reverse('delivery:message_url') )
 
     ## save new request
-    process_view_helper.save_request( user_obj, resource_obj )
-    process_view_helper.save_to_easyborrow( user_obj, resource_obj )
+    # process_view_helper.save_request( user_obj, resource_obj )
+    # process_view_helper.save_to_easyborrow( user_obj, resource_obj )
+    process_view_helper.save_to_easyborrow( request.session )
 
     ## redirect to confirmation message
     request.session['message'] = "Your request was successful; you should soon receive an update email."
@@ -190,7 +208,15 @@ def process_request( request ):
 
 
 def message( request ):
-    return HttpResponse( 'message handling coming' )
+    """ Handles successful confirmation messages and problem messages. """
+    context = {
+        'last_path': request.session.get( 'last_path', '' ),
+        'message': request.session.get( 'message', '' )
+        }
+    request.session['last_path'] = request.path
+    return render( request, 'delivery/message.html', context )
+
+
 
 
 
