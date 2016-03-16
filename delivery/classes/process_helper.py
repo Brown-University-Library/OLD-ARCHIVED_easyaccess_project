@@ -42,14 +42,14 @@ class ProcessViewHelper(object):
         """ Maps shib info to db info.
             Called by save_to_easyborrow() """
         patron_dct = {
-            patronid: 0,
-            eppn: shib_dct['id_short'],  # NB: not really eppn (no @brown.edu)
-            name: '{first} {last}'.format( first=shib_dct['name_first'], last=shib_dct['name_last'] ),
-            firstname: shib_dct['name_first'],
-            lastname: shib_dct['name_last'],
-            barcode: shib_dct['patron_barcode'],
-            email: shib_dct['email'],
-            group: shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
+            'patronid': 0,
+            'eppn': shib_dct['id_short'],  # NB: not really eppn (no @brown.edu)
+            'name': '{first} {last}'.format( first=shib_dct['name_first'], last=shib_dct['name_last'] ),
+            'firstname': shib_dct['name_first'],
+            'lastname': shib_dct['name_last'],
+            'barcode': shib_dct['patron_barcode'],
+            'email': shib_dct['email'],
+            'group': shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
         log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
         return patron_dct
 
@@ -59,11 +59,11 @@ class ProcessViewHelper(object):
         try: oclc_num = int( bib_dct.get('oclc_num', '') )
         except: oclc_num = 0
         item_dct = {
-            title: bib_dct.get( 'title', ''),
-            isbn: bib_dct.get( 'isbn', ''),
-            wc_accession: oclc_num,
-            sfxurl: querystring`,
-            volumes: bib_dct.get( 'easyborrow_volumes', '' ) }
+            'title': bib_dct.get( 'title', ''),
+            'isbn': bib_dct.get( 'isbn', ''),
+            'wc_accession': oclc_num,
+            'sfxurl': querystring,
+            'volumes': bib_dct.get( 'easyborrow_volumes', '' ) }
         log.debug( 'item_dct, ```{}```'.format(pprint.pformat(item_dct)) )
         return item_dct
 
