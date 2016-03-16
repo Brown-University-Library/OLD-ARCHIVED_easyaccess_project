@@ -31,8 +31,8 @@ class IndexPageLinksTest( TestCase ):
     def test_article_held_electronically(self):
         """ Checks the `Article held electronically.` link, which redirects to a shib-protected proxy link. """
         response = self.client.get( '/find/?sid=google&auinit=T&aulast=SOTA&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+(Coleoptera:+Cicindelidae)+in+East+Asia&id=doi:10.1111/j.1095-8312.2011.01617.x&title=Biological+journal+of+the+Linnean+Society&volume=102&issue=4&date=2011&spage=715&issn=0024-4066' )
-        log.debug( 'response.content, ```%s```' % response.content.decode('utf-8') )
-        log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
+        # log.debug( 'response.content, ```%s```' % response.content.decode('utf-8') )
+        # log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
         self.assertEqual( 302, response.status_code )
         redirect_url = response._headers['location'][1]
         self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
@@ -113,7 +113,7 @@ class PmidResolverTest(TestCase):
         # log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
         # log.debug( 'dir(response), ```%s```' % pprint.pformat(dir(response)) )
         # log.debug( 'response._headers, ```%s```' % pprint.pformat(response._headers) )
-        log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
+        # log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
         redirect_url = response._headers['location'][1]
         self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
 
@@ -189,7 +189,7 @@ class ConferenceReportResolverTest(TestCase):
         c = Client()
         response = c.get( url, SERVER_NAME='127.0.0.1' )
         redirect_url = response._headers['location'][1]
-        log.debug( 'redirect_url, ```%s```' % redirect_url )
+        # log.debug( 'redirect_url, ```%s```' % redirect_url )
         self.assertEqual( '/borrow/?id=10.1109/CCECE.2011.6030651', redirect_url )
 
     # end class ConferenceReportResolverTest

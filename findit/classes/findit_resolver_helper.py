@@ -113,7 +113,8 @@ class FinditResolver( object ):
         ( is_book, querydct, querystring ) = ( False, request.GET, request.META.get('QUERY_STRING', '') )
         if querydct.get('genre', 'null') == 'book' or querydct.get('rft.genre', 'null') == 'book':
             is_book = True
-            self.borrow_link = reverse( 'delivery:resolve' ) + '?%s' % querystring
+            # self.borrow_link = reverse( 'delivery:resolve' ) + '?%s' % querystring  # keep for now
+            self.borrow_link = reverse( 'delivery:availability_url' ) + '?%s' % querystring
             log.debug( 'self.borrow_link, `%s`' % self.borrow_link )
             request.session['last_path'] = request.path
             request.session['last_querystring'] = querystring
