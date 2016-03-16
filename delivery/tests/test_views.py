@@ -3,12 +3,16 @@
 
 from __future__ import unicode_literals
 
-import pprint
+import logging, pprint
 from delivery import views
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.module_loading import import_module
+
+
+log = logging.getLogger('access')
+log.debug( 'testing123' )
 
 
 class SessionHack(object):
@@ -105,7 +109,7 @@ class ProcessViewTest(TestCase):
         """ Direct hit should redirect to 'message' with a link to findit/find. """
         response = self.client.get( '/borrow/process_request/?isbn=123' )
         self.assertEqual( 302, response.status_code )
-        self.assertEqual( 'foo', response._headers['location'][1] )
+        self.assertEqual( '/borrow/message/', response._headers['location'][1] )
 
     def test_hit_process_directly_follow_redirect(self):
         """ Direct hit should redirect to 'message' with a link to findit/find. """
@@ -122,6 +126,9 @@ class ProcessViewTest(TestCase):
         response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
         self.assertEqual( '/borrow/process_request/', response.context['last_path'] )
         self.assertEqual( True, 'Your request was successful' in response.context['message'] )
+
+    # end class ProcessViewTest()
+
 
 
 

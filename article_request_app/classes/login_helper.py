@@ -99,7 +99,7 @@ class LoginHelper( object ):
             shib_dct = shib_checker.grab_shib_info( request )
         else:  # localdev
             shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
-        request.session['user'] = json.dumps( shib_dct )
+        request.session['user_json'] = json.dumps( shib_dct )
         log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
         return shib_dct
 

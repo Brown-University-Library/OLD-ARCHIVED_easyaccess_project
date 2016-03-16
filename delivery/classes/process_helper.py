@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import datetime, logging
+import datetime, logging, time
 from delivery.easyborrow_models import EasyBorrowRequest
 from django.core.urlresolvers import reverse
 
@@ -27,40 +27,81 @@ class ProcessViewHelper(object):
         log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
         return ( referrer_check, redirect_url )
 
-    def save_to_easyborrow( self, session_dct ):
+    def save_to_easyborrow( self, shib_dct, bib_dct, querystring ):
         """ Creates an easyBorrow db entry.
             Called by views.process_request() """
-        log.debug( 'starting' )
+        patron_dct = self._make_patron_dct( shib_dct )
+        item_dct = self._make_item_dct( bib_dct, querystring )
+        ezb_rqst = self._make_record( patron_dct, item_dct )
+        ezb_rqst.save( using='ezborrow' )
+        ezb_db_id = '{}'.format( ezb_rqst.pk )
+        log.debug( 'ezb_db_id, `{}`'.format(ezb_db_id) )
+        return ezb_db_id
 
+    def _make_patron_dct( self, shib_dct ):
+        """ Maps shib info to db info.
+            Called by save_to_easyborrow() """
+        patron_dct = {
+            patronid: 0,
+            eppn: shib_dct['id_short'],  # NB: not really eppn (no @brown.edu)
+            name: '{first} {last}'.format( first=shib_dct['name_first'], last=shib_dct['name_last'] ),
+            firstname: shib_dct['name_first'],
+            lastname: shib_dct['name_last'],
+            barcode: shib_dct['patron_barcode'],
+            email: shib_dct['email'],
+            group: shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
+        log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
+        return patron_dct
+
+    def _make_item_dct( self, bib_dct, querystring ):
+        """ Maps item info to db info.
+            Called by save_to_easyborrow() """
+        try: oclc_num = int( bib_dct.get('oclc_num', '') )
+        except: oclc_num = 0
+        item_dct = {
+            title: bib_dct.get( 'title', ''),
+            isbn: bib_dct.get( 'isbn', ''),
+            wc_accession: oclc_num,
+            sfxurl: querystring`,
+            volumes: bib_dct.get( 'easyborrow_volumes', '' ) }
+        log.debug( 'item_dct, ```{}```'.format(pprint.pformat(item_dct)) )
+        return item_dct
+
+    def _make_record( self, patron_dct, item_dct ):
+        """ Populates ezb-request instance.
+            Called by save_to_easyborrow() """
         ezb_rqst = EasyBorrowRequest()
-
-        ezb_rqst.title = 'foo'
-        ezb_rqst.isbn = 'foo'
-        ezb_rqst.wc_accession = 123
-        ezb_rqst.bibno = 'foo'
-        ezb_rqst.pref = 'foo'
-        ezb_rqst.loc = 'foo'
-        ezb_rqst.alt_edition = 'foo'
-        ezb_rqst.volumes = 'foo'
-        ezb_rqst.sfxurl = 'long foo'
-        ezb_rqst.patronid = 123
-        ezb_rqst.eppn = 'foo'
-        ezb_rqst.name = 'foo'
-        ezb_rqst.firstname = 'foo'
-        ezb_rqst.lastname = 'foo'
+        ## patron
+        ezb_rqst.patronid = patron_dct['patronid']
+        ezb_rqst.eppn = patron_dct['eppn']
+        ezb_rqst.name = patron_dct['name']
+        ezb_rqst.firstname = patron_dct['firstname']
+        ezb_rqst.lastname = patron_dct['lastname']
+        ezb_rqst.barcode = patron_dct['barcode']
+        ezb_rqst.email = patron_dct['email']
+        ezb_rqst.group = patron_dct['group']
+        ## item
+        ezb_rqst.title = item_dct['title']
+        ezb_rqst.isbn = item_dct['isbn']
+        ezb_rqst.wc_accession = item_dct['wc_accession']
+        ezb_rqst.bibno = ''
+        ezb_rqst.sfxurl = item_dct['sfxurl']
+        ## item-special (from landing page)
+        ezb_rqst.volumes = item_dct['volumes']
+        ## request-meta-default
+        ezb_rqst.pref = 'quick'
+        ezb_rqst.loc = 'rock'
+        ezb_rqst.alt_edition = 'y'
+        ezb_rqst.request_status = 'not_yet_processed'
+        ezb_rqst.staffnote = ''
+        ## request-meta-dynamic
         ezb_rqst.created = datetime.datetime.now()
-        ezb_rqst.barcode = 'foo'
-        ezb_rqst.email = 'foo'
-        ezb_rqst.group = 'foo'
-        ezb_rqst.staffnote = 'foo'
-        ezb_rqst.request_status = 'foo'
-
-        ezb_rqst.save()
-        log.debug( 'ezb_rqst.id, `{}`'.format(ezb_rqst.id) )
-
-        return
+        return ezb_rqst
 
     # end class ProcessViewHelper()
+
+
+
 
 
 

@@ -58,7 +58,6 @@ def availability( request ):
     ## get bib_dct
     bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
     log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
-    request.session['bib_dct_json'] = json.dumps(bib_dct)
 
     ## get identifiers
     ( isbn, oclc_num ) = ( '', '' )
@@ -67,6 +66,9 @@ def availability( request ):
             isbn = identifier['id']
         elif identifier['type'] == 'oclc':
             oclc_num = identifier['id']
+    bib_dct['isbn'] = isbn
+    bib_dct['oclc_num'] = oclc_num
+    request.session['bib_dct_json'] = json.dumps(bib_dct)
 
     ## run recent request check -- TODO
 
@@ -152,6 +154,13 @@ def login( request ):
         return HttpResponseRedirect( redirect_url )
     request.session['last_path'] = request.path
 
+    ## update bib_dct_json if needed
+    easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
+    if easyborrow_volumes != '':
+        bib_dct = request.session.get( 'bib_dct_json', {} )
+        bib_dct['easyborrow_volumes'] = easyborrow_volumes
+        request.session['bib_dct_json'] = json.dumps( bib_dct )
+
     ## force login, by forcing a logout if needed
     ( localdev_check, redirect_check, shib_status ) = login_view_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
     if redirect_check is True:
@@ -161,7 +170,7 @@ def login( request ):
 
     ## update user/profile objects
     shib_dct = login_view_helper.update_user( localdev_check, request.META )  # will eventually return user object
-    request.session['user'] = json.dumps( shib_dct )
+    request.session['user_json'] = json.dumps( shib_dct )
 
     ## redirect to process_request
     redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session['last_querystring'] )
@@ -202,10 +211,12 @@ def process_request( request ):
     ## save new request
     # process_view_helper.save_request( user_obj, resource_obj )
     # process_view_helper.save_to_easyborrow( user_obj, resource_obj )
-    process_view_helper.save_to_easyborrow( request.session )
+    shib_dct = json.loads( request.session.get('user', '{}') )
+    bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
+    ezb_db_id = process_view_helper.save_to_easyborrow( shib_dct, bib_dct, request.session.get('last_querystring', '') )
 
     ## redirect to confirmation message
-    request.session['message'] = "Your request was successful; you should soon receive an update email."
+    request.session['message'] = "Your request was successful; your easyBorrow transaction number is {}; you'll soon receive an update email.".format( ezb_db_id )
     return HttpResponseRedirect( reverse('delivery:message_url') )
 
 
