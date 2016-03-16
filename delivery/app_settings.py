@@ -8,9 +8,11 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 SHIB_LOGIN_URL = os.environ['EZACS__BORROW_SHIB_LOGIN_URL']
-SHIB_LOGOUT_URL_ROOT = os.environ['EZACS__BORROW_SHIB_LOGOUT_URL_ROOT']
+SHIB_LOGOUT_URL_ROOT = os.environ['EZACS__COMMON_SHIB_LOGOUT_URL_ROOT']
+DEVELOPMENT_SHIB_DCT = json.loads( os.environ['EZACS__COMMON_DEVELOPMENT_SHIB_JSON'] )
 
-DEVELOPMENT_SHIB_DCT = json.loads( os.environ['EZACS__BORROW_DEVELOPMENT_SHIB_JSON'] )
+AVAILABILITY_URL_ROOT = os.environ['EZACS__BORROW_AVAILABILITY_URL_ROOT']
+
 
 
 ILLIAD_KEY = getattr(settings, 'FINDIT_ILLIAD_KEY', None)
@@ -41,4 +43,3 @@ SERVICE_CHECK_STRING = getattr(settings, 'DELIVERY_SERVICE_CHECK_STRING', None)
 #Timeout for urllib2 requests to third party sources
 #EXTRAS_TIMEOUT = getattr(settings, 'FINDIT_EXTRAS_TIMEOUT', 10)
 
-AVAILABILITY_URL_ROOT = os.environ['EZACS__BORROW_AVAILABILITY_URL_ROOT']
