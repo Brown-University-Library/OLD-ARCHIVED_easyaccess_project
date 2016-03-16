@@ -179,10 +179,12 @@ def process_request( request ):
         - saves data to easyBorrow db
         - redirects user to message url/view """
 
+    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+
     ## check referrer
     ( referrer_ok, redirect_url ) = process_view_helper.check_referrer( request.session, request.META )
+    request.session['last_path'] = request.path
     if referrer_ok is False:
-        request.session['last_path'] = request.path
         request.session['message'] = 'Sorry, there was a problem with that url. easyBorrow requests should start _here_; contact us if this problem continues.'
         return HttpResponseRedirect( redirect_url )
 

@@ -119,13 +119,9 @@ class ProcessViewTest(TestCase):
         session['last_path'] = '/easyaccess/borrow/login/'
         session['last_querystring'] = 'isbn=123'
         session.save()
-
-        response = self.client.get( '/borrow/process_request/?isbn=123' )
-        # print( 'response.context, ```{}```'.format(pprint.pformat(response.context)) )
-        self.assertEqual( 302, response.status_code )
-        response2 = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
-        self.assertEqual( '/borrow/process_request/', response2.context['last_path'] )
-        self.assertEqual( True, 'there was a problem' in response2.context['message'] )
+        response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
+        self.assertEqual( '/borrow/process_request/', response.context['last_path'] )
+        self.assertEqual( True, 'Your request was successful' in response.context['message'] )
 
 
 
