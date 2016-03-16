@@ -211,7 +211,7 @@ def process_request( request ):
     ## save new request
     # process_view_helper.save_request( user_obj, resource_obj )
     # process_view_helper.save_to_easyborrow( user_obj, resource_obj )
-    shib_dct = json.loads( request.session.get('user', '{}') )
+    shib_dct = json.loads( request.session.get('user_json', '{}') )
     bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
     ezb_db_id = process_view_helper.save_to_easyborrow( shib_dct, bib_dct, request.session.get('last_querystring', '') )
 

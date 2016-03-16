@@ -45,3 +45,31 @@ class EasyBorrowRequest(models.Model):
     class Meta:
         # managed = False
         db_table = u'requests'
+
+"""
+For reference, sqlit3 syntax for creating this table:
+
+CREATE TABLE IF NOT EXISTS `requests` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `isbn` varchar(13) NOT NULL DEFAULT '',
+  `wc_accession` int(20) NOT NULL DEFAULT '0',
+  `bibno` varchar(8) NOT NULL DEFAULT '',
+  `pref` varchar(8) NOT NULL DEFAULT 'quick',
+  `loc` varchar(8) NOT NULL DEFAULT 'rock',
+  `alt_edition` varchar(8) NOT NULL DEFAULT 'y',
+  `volumes` varchar(30) NOT NULL DEFAULT '',
+  `sfxurl` text NOT NULL,
+  `patronId` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `firstname` varchar(120) NOT NULL DEFAULT '',
+  `lastname` varchar(120) NOT NULL DEFAULT '',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `barcode` varchar(14) NOT NULL DEFAULT '',
+  `email` varchar(50) NOT NULL DEFAULT '',
+  `group` varchar(20) NOT NULL DEFAULT '',
+  `staffnote` varchar(255) NOT NULL DEFAULT '',
+  `request_status` varchar(30) NOT NULL DEFAULT 'not_yet_processed',
+  `eppn` varchar(20) NOT NULL DEFAULT 'init'
+);
+"""
