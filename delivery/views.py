@@ -167,6 +167,8 @@ def login( request ):
         ( redirect_url, updated_shib_status ) = login_view_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
         request.session['shib_status'] = updated_shib_status
         return HttpResponseRedirect( redirect_url )
+    else:
+        request.session['shib_status'] = ''  # makes assess_shib_redirect_need() trigger forced-login next time
 
     ## update user/profile objects
     # shib_dct = login_view_helper.update_user( localdev_check, request.META )  # will eventually return user object
