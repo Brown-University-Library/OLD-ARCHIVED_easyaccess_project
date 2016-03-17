@@ -74,8 +74,12 @@ def availability( request ):
 
     ## run josiah availability check
     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
-    r = requests.get( isbn_url )
-    jdct = json.loads( r.content.decode('utf-8') )
+    try:
+        r = requests.get( isbn_url )
+        jdct = json.loads( r.content.decode('utf-8') )
+    except Exception as e:
+        log.error( 'Exception checking availability, ```{}```'.format(unicode(repr(e))) )
+        jdct = {}
     log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
     # bib_num = jdct['id']
     available_holdings = []
