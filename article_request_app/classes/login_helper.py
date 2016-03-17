@@ -41,6 +41,8 @@ class LoginHelper( object ):
             - 'will_force_login' is usually ok, and the session should contain shib info, but if not, a logout-login will be triggered
             TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
         ( localdev_check, redirect_check, shib_status ) = ( False, False, session.get('shib_status', '') )
+        log.debug( 'initial shib_status, `{}`'.format(shib_status) )
+        log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
         if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
             localdev_check = True
         else:

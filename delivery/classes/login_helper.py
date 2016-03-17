@@ -23,15 +23,15 @@ class LoginViewHelper(object):
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
             Called by views.login() """
-        ( referrer_check, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
+        ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
         if last_path == '/easyaccess/borrow/availability/':
-            referrer_check = True
+            referrer_ok = True
         elif shib_status in ['will_force_logout', 'will_force_login']:
-            referrer_check = True
-        if referrer_check is False:
+            referrer_ok = True
+        if referrer_ok is False:
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERYSTRING', '') )
-        log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
-        return ( referrer_check, redirect_url )
+        log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
+        return ( referrer_ok, redirect_url )
 
     # def check_referrer( self, session_dct, meta_dct ):
     #     """ Ensures request came from /availability/.
@@ -55,7 +55,8 @@ class LoginViewHelper(object):
             - 'will_force_login' is usually ok, and the session should contain shib info, but if not, a logout-login will be triggered
             TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
         ( localdev_check, redirect_check, shib_status ) = ( False, False, session.get('shib_status', '') )
-        log.debug( 'host, `{}`'.format(host) )
+        log.debug( 'initial shib_status, `{}`'.format(shib_status) )
+        log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
         if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
             localdev_check = True
         else:
