@@ -159,7 +159,7 @@ def login( request ):
     request.session['last_path'] = request.path
 
     ## update bib_dct_json if needed
-    easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
+    easyborrow_volumes = request.GET.get( 'volumes', '' ).strip()
     if easyborrow_volumes != '':
         bib_dct = request.session.get( 'bib_dct_json', {} )
         bib_dct['easyborrow_volumes'] = easyborrow_volumes
