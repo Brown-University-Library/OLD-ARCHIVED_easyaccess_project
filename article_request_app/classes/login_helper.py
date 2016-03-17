@@ -3,7 +3,8 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
-from .shib_helper import ShibChecker
+# from .shib_helper import ShibChecker
+from common_classes.shib_helper import ShibChecker
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.core.urlresolvers import reverse
