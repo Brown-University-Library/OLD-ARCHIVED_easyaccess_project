@@ -169,7 +169,8 @@ def login( request ):
         return HttpResponseRedirect( redirect_url )
 
     ## update user/profile objects
-    shib_dct = login_view_helper.update_user( localdev_check, request.META )  # will eventually return user object
+    # shib_dct = login_view_helper.update_user( localdev_check, request.META )  # will eventually return user object
+    shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
     request.session['user_json'] = json.dumps( shib_dct )
 
     ## redirect to process_request

@@ -92,13 +92,26 @@ class LoginHelper( object ):
         log.debug( 'redirect_tuple, `{}`'.format(redirect_tuple) )
         return redirect_tuple
 
+    # def grab_user_info( self, request, localdev, shib_status ):
+    #     """ Updates session with real-shib or development-shib info.
+    #         Called by views.login() """
+    #     # if localdev is False and shib_status == 'will_force_login':
+    #     if localdev is False:
+    #         request.session['shib_status'] = ''
+    #         shib_dct = shib_checker.grab_shib_info( request )
+    #     else:  # localdev
+    #         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
+    #     request.session['user_json'] = json.dumps( shib_dct )
+    #     log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
+    #     return shib_dct
+
     def grab_user_info( self, request, localdev, shib_status ):
         """ Updates session with real-shib or development-shib info.
             Called by views.login() """
         # if localdev is False and shib_status == 'will_force_login':
         if localdev is False:
             request.session['shib_status'] = ''
-            shib_dct = shib_checker.grab_shib_info( request )
+            shib_dct = shib_checker.grab_shib_info( request.META, request.get_host() )
         else:  # localdev
             shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
         request.session['user_json'] = json.dumps( shib_dct )

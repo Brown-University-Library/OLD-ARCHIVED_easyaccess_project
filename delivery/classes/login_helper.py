@@ -106,12 +106,23 @@ class LoginViewHelper(object):
         log.debug( 'redirect_tuple, `{}`'.format(redirect_tuple) )
         return redirect_tuple
 
-    def update_user( self, localdev, meta_dct ):
+    # def update_user( self, localdev, meta_dct ):
+    #     """ For now just returns shib_dct;
+    #         eventually with create or update a user object and return that.
+    #         Called by views.login() """
+    #     if localdev is False:
+    #         shib_dct = shib_checker.grab_shib_info( meta_dct )
+    #     else:  # localdev
+    #         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
+    #     log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
+    #     return shib_dct
+
+    def update_user( self, localdev, meta_dct, host ):
         """ For now just returns shib_dct;
             eventually with create or update a user object and return that.
             Called by views.login() """
         if localdev is False:
-            shib_dct = shib_checker.grab_shib_info( meta_dct )
+            shib_dct = shib_checker.grab_shib_info( meta_dct, host )
         else:  # localdev
             shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
         log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
