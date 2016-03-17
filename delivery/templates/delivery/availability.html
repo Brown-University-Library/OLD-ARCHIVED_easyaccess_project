@@ -151,7 +151,7 @@
                             </p>
                 </div>
          </div>
-        <form method="post" name="request" action="{% url 'delivery:login_url' %}">{% csrf_token %}
+        <form method="get" name="request" action="{% url 'delivery:login_url' %}">{% csrf_token %}
             <input type="hidden" name="bib"/>
             <input type="submit" class="medium white radius button" value="Request via easyBorrow" />
         </form>
