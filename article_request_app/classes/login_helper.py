@@ -17,21 +17,21 @@ shib_checker = ShibChecker()
 class LoginHelper( object ):
     """ Contains helpers for views.login() """
 
-    def check_referrer( self, session, meta_dict ):
+    def check_referrer( self, session, meta_dct ):
         """ Ensures request came from findit app.
             Called by views.login() """
         findit_check = False
         findit_illiad_check_flag = session.get( 'findit_illiad_check_flag', '' )
         findit_illiad_check_openurl = session.get( 'findit_illiad_check_enhanced_querystring', '' )
-        if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == meta_dict.get('QUERY_STRING', ''):
+        if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == meta_dct.get('QUERY_STRING', ''):
             findit_check = True
         elif findit_check is not True:
             log.warning( 'Bad attempt from source-url, ```%s```; ip, `%s`' % (
-                meta_dict.get('HTTP_REFERER', ''), meta_dict.get('REMOTE_ADDR', '') ) )
+                meta_dct.get('HTTP_REFERER', ''), meta_dct.get('REMOTE_ADDR', '') ) )
         log.debug( 'findit_check, `%s`' % findit_check )
         return findit_check
 
-    def assess_shib_redirect_need( self, session, host, meta_dict ):
+    def assess_shib_redirect_need( self, session, host, meta_dct ):
         """ Determines whether a shib-redirect login or logout url is needed.
             Returns needed-boolean, and extracted/updated shib_status.
             Called by views.login()
@@ -48,7 +48,7 @@ class LoginHelper( object ):
         else:
             if shib_status == '' or shib_status == 'will_force_logout':
                 redirect_check = True
-            elif shib_status == 'will_force_login' and meta_dict.get('Shibboleth-eppn', '') == '':
+            elif shib_status == 'will_force_login' and meta_dct.get('Shibboleth-eppn', '') == '':
                 ( redirect_check, shib_status ) = ( True, 'will_force_logout' )
         assessment_tuple = ( localdev_check, redirect_check, shib_status )
         log.debug( 'assessment_tuple, `{}`'.format(assessment_tuple) )
