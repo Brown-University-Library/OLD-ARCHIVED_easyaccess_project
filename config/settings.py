@@ -71,7 +71,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # 'south',
     'shorturls',
-    'shibboleth',
+    # 'shibboleth',
     'article_request_app'
     )
 
@@ -168,7 +168,7 @@ LOGGING = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'shibboleth.backends.ShibbolethRemoteUserBackend',
+    # 'shibboleth.backends.ShibbolethRemoteUserBackend',
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
