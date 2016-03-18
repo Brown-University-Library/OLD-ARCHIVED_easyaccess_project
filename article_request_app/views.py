@@ -101,13 +101,14 @@ def illiad_request( request ):
 def illiad_handler( request ):
     """ Processes the confirmation 'Submit' button behind-the-scenes,
         then redirects the user to the confirmation-info page. """
+
     ## here check
     here_check = 'init'
     openurl = request.session.get( 'illiad_request_openurl', '' )
     if len( openurl ) == 0:
         here_check = 'problem'
     if here_check == 'init':
-        shib_dct = json.loads( request.session.get('user', '{}') )
+        shib_dct = json.loads( request.session.get('user_json', '{}') )
     if 'eppn' not in shib_dct.keys():
         here_check = 'problem'
     if here_check == 'problem':
