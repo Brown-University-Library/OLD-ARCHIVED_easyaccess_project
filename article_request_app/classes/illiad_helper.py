@@ -120,7 +120,7 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
     ###############################
     def make_illiad_unregistered_message( self, firstname, lastname, citation ):
         """ Preps illiad blocked message.
-            Called by build_message() """
+            Called by _handle_new_user() """
         message = '''
 Greetings %s %s,
 
@@ -141,7 +141,7 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
     ##########################
     def make_illiad_success_message( self, firstname, lastname, citation_jsn, illiad_transaction_number, email ):
         """ Preps illiad success message.
-            Called by _handle_new_user() """
+            Called by views.illiad_handler() """
         citation_dct = json.loads( citation_jsn )
         if citation_dct.get( 'title', '' ) != '':
             title = citation_dct['title']
@@ -157,12 +157,12 @@ Some useful information for your records:
 - Title: '{title}'
 - Ordered from service: 'ILLiad'
 - Your Illiad reference number: '{illiad_num}'
-- Notification of arrival will be sent to email address: '{email}'
+- Notification of arrival will be sent to email address: <{email}>
 
 You can check your Illiad account at the link:
 <https://illiad.brown.edu/illiad/>
 
-If you have any questions, contact the Library's Interlibrary Loan office at interlibrary_loan@brown.edu or call 401-863-2169.
+If you have any questions, contact the Library's Interlibrary Loan office at <interlibrary_loan@brown.edu> or call 401-863-2169.
 
   '''.format(
         firstname=firstname,

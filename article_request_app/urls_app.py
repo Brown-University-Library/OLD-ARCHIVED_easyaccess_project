@@ -8,7 +8,6 @@ from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
 
-
     url( r'^login/$',  'article_request_app.views.login', name='login_url' ),
     # ensures user comes from correct 'findit' url; then forces login; then checks illiad for new-user or blocked; if happy, redirects to `illiad`, otherwise to `oops`.
 
@@ -16,15 +15,12 @@ urlpatterns = patterns('',
     # displays confirmation 'Submit' button and citation; submission hits 'illiad_handler'
 
     url( r'^illiad_handler/$',  'article_request_app.views.illiad_handler', name='illiad_handler_url' ),
-    # behind-the-scenes, submits request to illiad, then redirects to 'confirmation'
+    # behind-the-scenes, submits request to illiad, then redirects to message_url
 
-    url( r'^confirmation/$',  'article_request_app.views.confirmation', name='confirmation_url' ),
-    # shows confirmation message
-
-    url( r'^logout/$',  'article_request_app.views.logout', name='logout_url' ),
+    # url( r'^logout/$',  'article_request_app.views.logout', name='logout_url' ),
     # for optional manual logout
 
-    url( r'^$',  'article_request_app.views.oops', name='oops_url' ),
-    # displays brief message; redirects user to easyAccess landing page
+    url( r'^message/$',  'article_request_app.views.message', name='message_url' ),
+    # shows confirmation or problem message
 
     )

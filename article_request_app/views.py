@@ -161,28 +161,25 @@ def illiad_handler( request ):
     send_mail(
         subject, body, ffrom, [addr], fail_silently=True )
 
-    ## redirect
-    confirmation_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:confirmation_url'), openurl )
-    log.debug( 'confirmation_redirect_url, `%s`' % confirmation_redirect_url )
+    ## prep redirect
+    request.session['message'] = body
+    message_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:message_url'), openurl )
+    log.debug( 'message_redirect_url, `%s`' % message_redirect_url )
 
     ## cleanup
     request.session['citation'] = ''
 
     ## redirect
-    return HttpResponseRedirect( confirmation_redirect_url )
+    return HttpResponseRedirect( message_redirect_url )
 
     # end def illiad_handler()
 
 
-def confirmation( request ):
-    return HttpResponse( 'confirmation-coming' )
-
-
-def logout( request ):
-    return HttpResponse( 'logout-coming' )
-
-
-def oops( request ):
-    message = request.session.get( 'problem_message', 'sorry; a problem occurred' )
-    request.session['problem_message'] = ''
-    return HttpResponse( message )
+def message( request ):
+    """ Handles successful confirmation messages and problem messages. """
+    context = {
+        'last_path': request.session.get( 'last_path', '' ),
+        'message': request.session.get( 'message', '' )
+        }
+    request.session['last_path'] = request.path
+    return render( request, 'article_request_app/message.html', context )
