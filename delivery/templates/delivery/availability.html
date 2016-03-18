@@ -111,7 +111,7 @@
     <div class="alert-box error">
         We need a more information before we can process this request.
     </div>
-    <form action="./" method="get">{% csrf_token %}
+    <form action="./" method="post">{% csrf_token %}
         {{ form.as_table }}
         <p class="hidden"><input type="text" name="updated-request" value="updated-request" /></p>
         <p><input type="submit" value="Submit request" /></p>
@@ -151,7 +151,7 @@
                             </p>
                 </div>
          </div>
-        <form method="get" name="request" action="{% url 'delivery:login_url' %}">{% csrf_token %}
+        <form method="post" name="request" action="{% url 'delivery:login_url' %}">{% csrf_token %}
             <input type="hidden" name="bib"/>
             <input type="submit" class="medium white radius button" value="Request via easyBorrow" />
         </form>
