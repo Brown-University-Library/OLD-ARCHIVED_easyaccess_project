@@ -6,12 +6,25 @@ import json, logging, pprint
 from django.conf import settings
 from django.test import Client, TestCase
 from django.test.client import RequestFactory
+from django.utils.module_loading import import_module
 from findit import utils, views
 
-settings.BUL_LINK_CACHE_TIMEOUT = 0
 
+settings.BUL_LINK_CACHE_TIMEOUT = 0
 log = logging.getLogger(__name__)
 
+
+# class SessionHack(object):
+#     ## based on: http://stackoverflow.com/questions/4453764/how-do-i-modify-the-session-in-the-django-test-framework
+
+#     def __init__(self, client):
+#         ## workaround for issue: http://code.djangoproject.com/ticket/10899
+#         settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+#         engine = import_module(settings.SESSION_ENGINE)
+#         store = engine.SessionStore()
+#         store.save()
+#         self.session = store
+#         client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
 
 
 class IndexPageLinksTest( TestCase ):
@@ -146,20 +159,9 @@ class EasyBorrowResolverTest(TestCase):
         url = '/find/?sid=FirstSearch%3AWorldCat&genre=book&isbn=9780394565279&title=The+risk+pool&date=1988&aulast=Russo&aufirst=Richard&id=doi%3A&pid=%3Caccession+number%3E17803510%3C%2Faccession+number%3E%3Cfssessid%3E0%3C%2Ffssessid%3E%3Cedition%3E1st+ed.%3C%2Fedition%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E17803510%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F17803510&rft_id=urn%3AISBN%3A9780394565279&rft.aulast=Russo&rft.aufirst=Richard&rft.btitle=The+risk+pool&rft.date=1988&rft.isbn=9780394565279&rft.place=New+York&rft.pub=Random+House&rft.edition=1st+ed.&rft.genre=book&checksum=d6c1576188e0f87ac13f4c4582382b4f&title=Brown University&linktype=openurl&detail=RBN'
         c = Client()
         response = c.get( url, SERVER_NAME='127.0.0.1' )
-        self.assertEqual(response.status_code, 302)
-        response2 = c.get( url, SERVER_NAME='127.0.0.1', follow=True )
-        content = response2.content.decode( 'utf-8' )
-        # log.debug( 'type(content), `%s`' % type(content) )
-        self.assertTrue( content.rfind('easyBorrow') > -1 )
-        self.assertTrue( content.rfind('17803510') > -1 )  # accession number
-        ## testing context's bibjson...
-        # log.debug( 'context.keys(), `%s`' % pprint.pformat( sorted(response2.context.keys()) ) )
-        bibjson_dct = json.loads( response2.context['bibjson'] )
-        self.assertEqual( 'Russo, Richard', bibjson_dct['author'][0]['name'] )
-        self.assertEqual( '9780394565279', bibjson_dct['identifier'][0]['id'] )
-        self.assertEqual( 'isbn', bibjson_dct['identifier'][0]['type'] )
-        self.assertEqual( '17803510', bibjson_dct['identifier'][1]['id'] )
-        self.assertEqual( 'oclc', bibjson_dct['identifier'][1]['type'] )
+        self.assertEqual( 302, response.status_code )
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( '/borrow/availability/?sid=FirstSearch%3AWorldCat&genre=book', redirect_url[0:59] )
 
     ## end class EasyBorrowResolverTest
 
@@ -175,7 +177,7 @@ class EbookResolverTest(TestCase):
         # log.debug( 'response._headers, ```%s```' % pprint.pformat(response._headers) )
         # log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
         redirect_url = response._headers['location'][1]
-        self.assertEqual( '/borrow/?rft.pub=Yale+University+Press&rft.aulast=Dyson', redirect_url[0:55] )
+        self.assertEqual( '/borrow/availability/?rft.pub=Yale+University+Press&rft.aulast=Dyson', redirect_url[0:68] )
 
     # end class EbookResolverTest
 

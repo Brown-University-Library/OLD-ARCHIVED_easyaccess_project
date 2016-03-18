@@ -119,6 +119,7 @@ def findit_base_resolver( request ):
     ## if book, redirect to /borrow
     # if fresolver.check_book( request.GET, querystring ):
     if fresolver.check_book( request ):
+        alog.debug( 'fresolver.borrow_link, `{}`'.format(fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## get serials-solution data-dct
@@ -127,6 +128,7 @@ def findit_base_resolver( request ):
 
     ## if sersol-data shows it's a book, redirect to /borrow
     if fresolver.check_book_after_sersol( sersol_dct, querystring ):
+        alog.debug( 'fresolver.borrow_link, `{}`'.format(fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## build response context
