@@ -16,14 +16,26 @@ class ProcessViewHelper(object):
     def __init__(self):
         pass
 
+    # def check_referrer( self, session_dct, meta_dct ):
+    #     """ Ensures request came from /availability/.
+    #         Called by views.login() """
+    #     ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
+    #     if last_path == '/easyaccess/borrow/login/':
+    #         referrer_check = True
+    #     if referrer_check is False:
+    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('delivery:message_url'), querystring=meta_dct.get('QUERY_STRING', '') )
+    #     log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
+    #     return ( referrer_check, redirect_url )
+
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
             Called by views.login() """
+        log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
         ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
         if last_path == '/easyaccess/borrow/login/':
             referrer_check = True
         if referrer_check is False:
-            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('delivery:message_url'), querystring=meta_dct.get('QUERYSTRING', '') )
+            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
         log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
         return ( referrer_check, redirect_url )
 

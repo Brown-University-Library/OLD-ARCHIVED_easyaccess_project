@@ -199,7 +199,7 @@ def process_request( request ):
     ( referrer_ok, redirect_url ) = process_view_helper.check_referrer( request.session, request.META )
     request.session['last_path'] = request.path
     if referrer_ok is False:
-        request.session['message'] = 'Sorry, there was a problem with that url. easyBorrow requests should start _here_; contact us if this problem continues.'
+        # request.session['message'] = 'Sorry, there was a problem with that url. easyBorrow requests should start _here_; contact us if this problem continues.'
         return HttpResponseRedirect( redirect_url )
 
     ## get/create resource object

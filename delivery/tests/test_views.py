@@ -99,33 +99,34 @@ class LoginViewTest(TestCase):
 
 
 class ProcessViewTest(TestCase):
-    """ Checks availability views """
+    """ Checks views.process_request()
+        Note: am not testing a 'good' hit of process_request() to avoid any chance of executing an ezb request. """
 
     def setUp(self):
         self.client = Client()
-        self.session_hack = SessionHack( self.client )
+        # self.session_hack = SessionHack( self.client )
 
     def test_hit_process_directly_nofollow(self):
-        """ Direct hit should redirect to 'message' with a link to findit/find. """
+        """ Direct hit should redirect to /find/?a=b. """
         response = self.client.get( '/borrow/process_request/?isbn=123' )
         self.assertEqual( 302, response.status_code )
-        self.assertEqual( '/borrow/message/', response._headers['location'][1] )
+        self.assertEqual( '/find/?isbn=123', response._headers['location'][1] )
 
     def test_hit_process_directly_follow_redirect(self):
-        """ Direct hit should redirect to 'message' with a link to findit/find. """
+        """ Direct hit should redirect to /find/?a=b. """
         response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
-        self.assertEqual( '/borrow/process_request/', response.context['last_path'] )
-        self.assertEqual( True, 'there was a problem' in response.context['message'] )
+        # log.debug( 'response.context, ```{}```'.format(pprint.pformat(response.context)) )
+        self.assertEqual( True, "This article couldn't be located" in response.content )
 
-    def test_hit_process_properly(self):
-        """ Direct hit should redirect to 'message' with a link to findit/find. """
-        session = self.session_hack.session
-        session['last_path'] = '/easyaccess/borrow/login/'
-        session['last_querystring'] = 'isbn=123'
-        session.save()
-        response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
-        self.assertEqual( '/borrow/process_request/', response.context['last_path'] )
-        self.assertEqual( True, 'Your request was successful' in response.context['message'] )
+    # def test_hit_process_properly(self):
+    #     """ Direct hit should redirect to 'message' with a link to findit/find. """
+    #     session = self.session_hack.session
+    #     session['last_path'] = '/easyaccess/borrow/login/'
+    #     session['last_querystring'] = 'isbn=123'
+    #     session.save()
+    #     response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
+    #     self.assertEqual( '/borrow/process_request/', response.context['last_path'] )
+    #     self.assertEqual( True, 'Your request was successful' in response.context['message'] )
 
     # end class ProcessViewTest()
 

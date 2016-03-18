@@ -29,7 +29,7 @@ class LoginViewHelper(object):
         elif shib_status in ['will_force_logout', 'will_force_login']:
             referrer_ok = True
         if referrer_ok is False:
-            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERYSTRING', '') )
+            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERY_STRING', '') )
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
 
@@ -41,7 +41,7 @@ class LoginViewHelper(object):
     #     if last_path == '/easyaccess/borrow/availability/':
     #         referrer_check = True
     #     else:
-    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERYSTRING', '') )
+    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERY_STRING', '') )
     #     log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
     #     return ( referrer_check, redirect_url )
 
