@@ -45,23 +45,30 @@ class ProcessViewHelper(object):
         patron_dct = self._make_patron_dct( shib_dct )
         item_dct = self._make_item_dct( bib_dct, querystring )
         ezb_rqst = self._make_record( patron_dct, item_dct )
-        ezb_rqst.save( using='ezborrow' )
-        ezb_db_id = '{}'.format( ezb_rqst.pk )
-        log.debug( 'ezb_db_id, `{}`'.format(ezb_db_id) )
-        return ezb_db_id
+        if ezb_rqst:
+            ezb_rqst.save( using='ezborrow' )
+            ezb_db_id = '{}'.format( ezb_rqst.pk )
+            log.debug( 'ezb_db_id, `{}`'.format(ezb_db_id) )
+            return ezb_db_id
+        else:
+            return None
 
     def _make_patron_dct( self, shib_dct ):
         """ Maps shib info to db info.
             Called by save_to_easyborrow() """
-        patron_dct = {
-            'patronid': 0,
-            'eppn': shib_dct['id_short'],  # NB: not really eppn (no @brown.edu)
-            'name': '{first} {last}'.format( first=shib_dct['name_first'], last=shib_dct['name_last'] ),
-            'firstname': shib_dct['name_first'],
-            'lastname': shib_dct['name_last'],
-            'barcode': shib_dct['patron_barcode'],
-            'email': shib_dct['email'],
-            'group': shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
+        patron_dct = {}
+        try:
+            patron_dct = {
+                'patronid': 0,
+                'eppn': shib_dct['id_short'],  # NB: not really eppn (no @brown.edu)
+                'name': '{first} {last}'.format( first=shib_dct['name_first'], last=shib_dct['name_last'] ),
+                'firstname': shib_dct['name_first'],
+                'lastname': shib_dct['name_last'],
+                'barcode': shib_dct['patron_barcode'],
+                'email': shib_dct['email'],
+                'group': shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
+        except Exception as e:
+            log.error( 'exception creating patron_dct, ```{}```'.format(unicode(repr(e))) )
         log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
         return patron_dct
 
@@ -82,33 +89,37 @@ class ProcessViewHelper(object):
     def _make_record( self, patron_dct, item_dct ):
         """ Populates ezb-request instance.
             Called by save_to_easyborrow() """
-        ezb_rqst = EasyBorrowRequest()
-        ## patron
-        ezb_rqst.patronid = patron_dct['patronid']
-        ezb_rqst.eppn = patron_dct['eppn']
-        ezb_rqst.name = patron_dct['name']
-        ezb_rqst.firstname = patron_dct['firstname']
-        ezb_rqst.lastname = patron_dct['lastname']
-        ezb_rqst.barcode = patron_dct['barcode']
-        ezb_rqst.email = patron_dct['email']
-        ezb_rqst.group = patron_dct['group']
-        ## item
-        ezb_rqst.title = item_dct['title']
-        ezb_rqst.isbn = item_dct['isbn']
-        ezb_rqst.wc_accession = item_dct['wc_accession']
-        ezb_rqst.bibno = ''
-        ezb_rqst.sfxurl = item_dct['sfxurl']
-        ## item-special (from landing page)
-        ezb_rqst.volumes = item_dct['volumes']
-        ## request-meta-default
-        ezb_rqst.pref = 'quick'
-        ezb_rqst.loc = 'rock'
-        ezb_rqst.alt_edition = 'y'
-        ezb_rqst.request_status = 'not_yet_processed'
-        ezb_rqst.staffnote = ''
-        ## request-meta-dynamic
-        ezb_rqst.created = datetime.datetime.now()
-        return ezb_rqst
+        try:
+            ezb_rqst = EasyBorrowRequest()
+            ## patron
+            ezb_rqst.patronid = patron_dct['patronid']
+            ezb_rqst.eppn = patron_dct['eppn']
+            ezb_rqst.name = patron_dct['name']
+            ezb_rqst.firstname = patron_dct['firstname']
+            ezb_rqst.lastname = patron_dct['lastname']
+            ezb_rqst.barcode = patron_dct['barcode']
+            ezb_rqst.email = patron_dct['email']
+            ezb_rqst.group = patron_dct['group']
+            ## item
+            ezb_rqst.title = item_dct['title']
+            ezb_rqst.isbn = item_dct['isbn']
+            ezb_rqst.wc_accession = item_dct['wc_accession']
+            ezb_rqst.bibno = ''
+            ezb_rqst.sfxurl = item_dct['sfxurl']
+            ## item-special (from landing page)
+            ezb_rqst.volumes = item_dct['volumes']
+            ## request-meta-default
+            ezb_rqst.pref = 'quick'
+            ezb_rqst.loc = 'rock'
+            ezb_rqst.alt_edition = 'y'
+            ezb_rqst.request_status = 'not_yet_processed'
+            ezb_rqst.staffnote = ''
+            ## request-meta-dynamic
+            ezb_rqst.created = datetime.datetime.now()
+            return ezb_rqst
+        except Exception as e:
+            log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )
+            return None
 
     # end class ProcessViewHelper()
 

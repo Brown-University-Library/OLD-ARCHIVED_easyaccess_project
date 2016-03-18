@@ -75,7 +75,7 @@ def availability( request ):
     ## run josiah availability check
     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
     try:
-        r = requests.get( isbn_url )
+        r = requests.get( isbn_url, timeout=7 )
         jdct = json.loads( r.content.decode('utf-8') )
     except Exception as e:
         log.error( 'Exception checking availability, ```{}```'.format(unicode(repr(e))) )
@@ -220,8 +220,14 @@ def process_request( request ):
     bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
     ezb_db_id = process_view_helper.save_to_easyborrow( shib_dct, bib_dct, request.session.get('last_querystring', '') )
 
-    ## redirect to confirmation message
-    request.session['message'] = "Your request was successful; your easyBorrow transaction number is {}; you'll soon receive an update email.".format( ezb_db_id )
+    ## evaluate result
+    if ezb_db_id:
+        message = "Your request was successful; your easyBorrow transaction number is {}; you'll soon receive an update email.".format( ezb_db_id )
+    else:
+        message = "There was a problem with your request, please try it again in a few minutes, and if the problem persists, let us know via the feedback link."
+
+    ## redirect to message url
+    request.session['message'] = message
     return HttpResponseRedirect( reverse('delivery:message_url') )
 
 
