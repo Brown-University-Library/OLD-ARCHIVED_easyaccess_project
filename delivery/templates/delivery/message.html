@@ -1,3 +1,14 @@
-<html>
-    <p>{{ message }}</p>
-</html>
+{% extends "delivery/bul.html" %}
+
+
+{% block content %}
+
+<div id="request" class="findit-core">
+
+    <div id="message">
+        <p>{{ message | safe }}</p>
+    </div>
+
+</div>
+
+{% endblock %}

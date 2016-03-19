@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import json, logging, os, pprint, urlparse
 from datetime import datetime
 
-import bibjsontools, requests
+import bibjsontools, markdown, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
 from decorators import has_email, has_service
 from delivery import app_settings
@@ -235,7 +235,7 @@ def message( request ):
     """ Handles successful confirmation messages and problem messages. """
     context = {
         'last_path': request.session.get( 'last_path', '' ),
-        'message': request.session.get( 'message', '' )
+        'message': markdown.markdown( request.session.get('message', '') )
         }
     request.session['last_path'] = request.path
     return render( request, 'delivery/message.html', context )
