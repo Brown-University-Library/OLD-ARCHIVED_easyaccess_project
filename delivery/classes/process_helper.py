@@ -121,6 +121,35 @@ class ProcessViewHelper(object):
             log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )
             return None
 
+    def build_submitted_message( self, firstname, lastname, bib_dct, ezb_db_id, email ):
+        """ Prepares submitted message
+            Called by views.process_request() """
+        if bib_dct.get( 'title', '' ) != '':
+            title = bib_dct['title']
+        else:
+            title = bib_dct['source']
+        message = '''
+Greetings {firstname} {lastname},
+
+We're getting the title '{title}' for you. You'll soon receive more information in an email.
+
+Some information for your records:
+
+- Title: '{title}'
+- Your easyBorrow reference number: '{ezb_reference_num}'
+- Notification of arrival will be sent to email address: <{email}>
+
+If you have any questions, contact the Library's Interlibrary Loan office at <interlibrary_loan@brown.edu> or call 401-863-2169.
+
+  '''.format(
+        firstname=firstname,
+        lastname=lastname,
+        title=title,
+        ezb_reference_num=ezb_db_id,
+        email=email )
+        log.debug( 'ezb submitted message built' )
+        return message
+
     # end class ProcessViewHelper()
 
 

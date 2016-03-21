@@ -222,9 +222,10 @@ def process_request( request ):
 
     ## evaluate result
     if ezb_db_id:
-        message = "Your request was successful; your easyBorrow transaction number is {}; you'll soon receive an update email.".format( ezb_db_id )
+        # message = "Your request was successful; your easyBorrow transaction number is {}; you'll soon receive an update email.".format( ezb_db_id )
+        message = process_view_helper.build_submitted_message( shib_dct['name_first'], shib_dct['name_last'], bib_dct, ezb_db_id, shib_dct['email'] )
     else:
-        message = "There was a problem with your request, please try it again in a few minutes, and if the problem persists, let us know via the feedback link."
+        message = "There was a problem submitting your request, please try again in a few minutes, and if the problem persists, let us know via the feedback link."
 
     ## redirect to message url
     request.session['message'] = message
