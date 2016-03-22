@@ -138,7 +138,7 @@ class FinditResolver( object ):
     def get_sersol_dct( self, scheme, host, querystring ):
         """ Builds initial data-dict.
             Called by views.base_resolver() """
-        sersol_dct = get_sersol_data( querystring, key='rl3tp7zf5x' )  # get_sersol_data() is a function of pylink3602
+        sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of pylink3602
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 

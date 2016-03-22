@@ -22,6 +22,8 @@ SERVICE_OFFLINE = getattr(settings, 'FINDIT_SERVICE_OFFLINE', False)
 # End service status settings.
 #===============================================================================
 
+SERSOL_KEY = os.environ['EZACS__BUL_LINK_SERSOL_KEY']
+
 #For admin
 STAFF_USERS = getattr(settings, 'FINDIT_STAFF_USERS', [])
 
@@ -76,6 +78,3 @@ DB_SORT_BY = getattr(settings, 'FINDIT_DB_SORT_BY', [])
 DB_PUSH_TOP = getattr(settings, 'FINDIT_DB_PUSH_TOP', [])
 #Providers in this list will be forced to the bottom.
 DB_PUSH_BOTTOM = getattr(settings, 'FINDIT_DB_PUSH_BOTTOM', [])
-
-
-
