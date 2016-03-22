@@ -30,12 +30,21 @@ log = logging.getLogger(__name__)
 class RootTest( TestCase ):
     """ Checks slash redirect. """
 
-    def test_root_url(self):
+    def test_root_url_no_slash(self):
         """ Checks '/easyaccess'. """
-        response = self.client.get( '' )  # project root part of url is assumed on _request_
-        self.assertEqual( 301, response.status_code )  # permanent redirect
+        response = self.client.get( '' )  # project root part of url is assumed
+        self.assertEqual( 302, response.status_code )  # permanent redirect
         redirect_url = response._headers['location'][1]
-        self.assertEqual(  'easyaccess/find/', redirect_url )
+        self.assertEqual(  '/find/', redirect_url )
+
+    def test_root_url_no_slash(self):
+        """ Checks '/easyaccess/'. """
+        response = self.client.get( '' )  # project root part of url is assumed
+        self.assertEqual( 302, response.status_code )  # permanent redirect
+        redirect_url = response._headers['location'][1]
+        self.assertEqual(  '/find/', redirect_url )
+
+    # end class RootTest()
 
 
 class IndexPageLinksTest( TestCase ):
