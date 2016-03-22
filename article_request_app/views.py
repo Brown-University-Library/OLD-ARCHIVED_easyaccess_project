@@ -93,22 +93,6 @@ def illiad_request( request ):
     request.session['last_path'] = request.path
     request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
 
-    # ## check that we're here legitimately
-    # here_check = False
-    # illiad_login_check_flag = request.session.get( 'illiad_login_check_flag', '' )
-    # login_openurl = request.session.get( 'login_openurl', '' )
-    # request.session['login_openurl'] = ''
-    # log.debug( 'illiad_login_check_flag, `%s`' % illiad_login_check_flag )
-    # if illiad_login_check_flag == 'good' and login_openurl == request.META.get('QUERY_STRING', ''):
-    #     here_check = True
-    # log.debug( 'here_check, `%s`' % here_check )
-    # if here_check is True:
-    #     request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
-    # else:
-    #     log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
-    #         request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-    #     return HttpResponseBadRequest( 'Bad request; see "https://library.brown.edu/easyaccess/" for example usage.`' )
-
     ## prep data
     citation_json = request.session.get( 'citation', '{}' )
     format = request.session.get( 'format', '' )
@@ -128,6 +112,20 @@ def illiad_handler( request ):
     """ Processes the confirmation 'Submit' button behind-the-scenes,
         then redirects the user to the confirmation-info page. """
 
+    # ## here check
+    # here_check = 'init'
+    # openurl = request.session.get( 'illiad_request_openurl', '' )
+    # if len( openurl ) == 0:
+    #     here_check = 'problem'
+    # if here_check == 'init':
+    #     shib_dct = json.loads( request.session.get('user_json', '{}') )
+    # if 'eppn' not in shib_dct.keys():
+    #     here_check = 'problem'
+    # if here_check == 'problem':
+    #     log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
+    #         request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+    #     return HttpResponseBadRequest( 'Bad request' )
+
     ## here check
     here_check = 'init'
     openurl = request.session.get( 'illiad_request_openurl', '' )
@@ -140,7 +138,22 @@ def illiad_handler( request ):
     if here_check == 'problem':
         log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-        return HttpResponseBadRequest( 'Bad request' )
+        request.session['message'] = ill_helper.problem_message
+        request.session['last_path'] = request.path
+        return HttpResponseRedirect( reverse('article_request:message_url') )
+
+    # ## get illiad_instance
+    # ill_username = shib_dct['eppn'].split('@')[0]
+    # log.debug( 'ill_username, `%s`' % ill_username )
+    # illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
+    # log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
+    # try:
+    #     illiad_session = illiad_instance.login()
+    # except Exception as e:
+    #     log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
+    #     message = 'oops; a problem occurred'
+    #     request.session['problem_message'] = message
+    #     return HttpResponseRedirect( reverse('article_request:oops_url') )
 
     ## get illiad_instance
     ill_username = shib_dct['eppn'].split('@')[0]
@@ -151,9 +164,23 @@ def illiad_handler( request ):
         illiad_session = illiad_instance.login()
     except Exception as e:
         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-        message = 'oops; a problem occurred'
-        request.session['problem_message'] = message
-        return HttpResponseRedirect( reverse('article_request:oops_url') )
+        request.session['message'] = ill_helper.problem_message
+        request.session['last_path'] = request.path
+        return HttpResponseRedirect( reverse('article_request:message_url') )
+
+    # ## submit to illiad
+    # illiad_url = request.session['illiad_url']
+    # illiad_post_key = illiad_instance.get_request_key( illiad_url )
+    # log.debug( 'illiad_post_key, ```%s```' % pprint.pformat(illiad_post_key) )
+    # errors = illiad_post_key.get( 'errors', None )
+    # if errors:
+    #     log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
+    #     request.session['problem_message'] = 'There was a problem submitting your request; please try again later.'
+    #     return HttpResponseRedirect( reverse('article_request:oops_url') )
+    # else:
+    #     submit_status = illiad_instance.make_request( illiad_post_key )
+    #     log.debug( 'submit_status, ```%s```' % pprint.pformat(submit_status) )
+    #     illiad_transaction_number = submit_status['transaction_number']
 
     ## submit to illiad
     illiad_url = request.session['illiad_url']
@@ -162,8 +189,9 @@ def illiad_handler( request ):
     errors = illiad_post_key.get( 'errors', None )
     if errors:
         log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
-        request.session['problem_message'] = 'There was a problem submitting your request; please try again later.'
-        return HttpResponseRedirect( reverse('article_request:oops_url') )
+        request.session['message'] = ill_helper.problem_message
+        request.session['last_path'] = request.path
+        return HttpResponseRedirect( reverse('article_request:message_url') )
     else:
         submit_status = illiad_instance.make_request( illiad_post_key )
         log.debug( 'submit_status, ```%s```' % pprint.pformat(submit_status) )

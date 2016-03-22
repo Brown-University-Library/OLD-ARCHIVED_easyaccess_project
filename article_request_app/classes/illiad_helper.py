@@ -14,6 +14,19 @@ log = logging.getLogger('access')
 class IlliadHelper( object ):
     """ Contains helpers for views.illiad_request(), views.login() and views.illiad_handler() """
 
+    def __init__(self):
+        self.problem_message = """
+Your request was not able to be submitted to ILLiad, our Interlibrary Loan system.
+
+Please try again later, and if the problem persists:
+
+- let us know at the easyArticle feedback/problem link.
+
+- Contact Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
+
+Apologies for the inconvenience.
+"""
+
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /find/.
             Called by views.illiad_request() """
