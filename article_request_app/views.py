@@ -30,12 +30,28 @@ def login( request ):
         then checks illiad for new-user or blocked;
         if happy, redirects to `illiad`, otherwise to `oops`. """
 
-    ## check that request is from findit
-    referrer_check = login_helper.check_referrer( request.session, request.META )
-    if referrer_check is False:
-        return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example easyAccess requests.`' )
-    else:
-        request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+    # ## check that request is from findit
+    # referrer_check = login_helper.check_referrer( request.session, request.META )
+    # if referrer_check is False:
+    #     return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example easyAccess requests.`' )
+    # else:
+    #     request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+
+    ## check referrer
+    ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
+    if referrer_ok is not True:
+        request.session['last_path'] = request.path
+        return HttpResponseRedirect( redirect_url )
+    request.session['last_path'] = request.path
+    request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+
+    # ## check referrer
+    # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
+    # if referrer_ok is not True:
+    #     request.session['last_path'] = request.path
+    #     return HttpResponseRedirect( redirect_url )
+    # request.session['last_path'] = request.path
+
 
     ## force login, by forcing a logout if needed
     ( localdev_check, redirect_check, shib_status ) = login_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )

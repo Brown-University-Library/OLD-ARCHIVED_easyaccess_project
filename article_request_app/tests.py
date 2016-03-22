@@ -5,12 +5,27 @@ from __future__ import unicode_literals
 import logging, os, pprint
 from .classes.login_helper import LoginHelper
 from django.http import HttpRequest
-from django.test import TestCase
-from django.test.client import Client
+from django.test import Client, TestCase
 
 
 log = logging.getLogger( 'access' )
 TestCase.maxDiff = None
+
+
+class ViewsTest( TestCase ):
+    """ Tests views via Client. """
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_direct_login(self):
+        """ Should redirect to index page. """
+        response = self.client.get( '/article_request/login/' )  # project root part of url is assumed
+        self.assertEqual( 302, response.status_code )
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( 2, '/find/' )
+
+    # end class ViewsTest()
 
 
 class LoginHelper_Test( TestCase ):
