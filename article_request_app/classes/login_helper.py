@@ -33,12 +33,11 @@ class LoginHelper( object ):
     #     return findit_check
 
     def check_referrer( self, session_dct, meta_dct ):
-        """ Ensures request came from /find/.
+        """ Ensures request came from '/find/' or a login redirect.
             Called by views.login() """
         ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
-        if last_path == '/easyaccess/find/':
-            referrer_ok = True
-        elif shib_status in ['will_force_logout', 'will_force_login']:
+        log.debug( 'last_path, `{}`'.format(last_path) )
+        if last_path == '/easyaccess/find/' or last_path == '/easyaccess/article_request/login/':
             referrer_ok = True
         if referrer_ok is False:
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )

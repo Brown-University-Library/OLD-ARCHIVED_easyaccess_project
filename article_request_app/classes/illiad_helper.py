@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
 from article_request_app import settings_app
+from django.core.urlresolvers import reverse
 from illiad.account import IlliadSession
 
 
@@ -11,7 +12,19 @@ log = logging.getLogger('access')
 
 
 class IlliadHelper( object ):
-    """ Contains helpers for views.login() and views.illiad_handler() """
+    """ Contains helpers for views.illiad_request(), views.login() and views.illiad_handler() """
+
+    def check_referrer( self, session_dct, meta_dct ):
+        """ Ensures request came from /find/.
+            Called by views.illiad_request() """
+        ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
+        log.debug( 'last_path, `{}`'.format(last_path) )
+        if last_path == '/easyaccess/article_request/login/':
+            referrer_ok = True
+        if referrer_ok is False:
+            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
+        log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
+        return ( referrer_ok, redirect_url )
 
     def login_user( self, request, shib_dct ):
         """ Logs user into illiad;

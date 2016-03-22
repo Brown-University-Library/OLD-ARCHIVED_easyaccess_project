@@ -4,12 +4,27 @@ from __future__ import unicode_literals
 
 import logging, os, pprint
 from .classes.login_helper import LoginHelper
+from django.conf import settings
 from django.http import HttpRequest
 from django.test import Client, TestCase
+from django.utils.module_loading import import_module
 
 
 log = logging.getLogger( 'access' )
 TestCase.maxDiff = None
+
+
+class SessionHack(object):
+    ## based on: http://stackoverflow.com/questions/4453764/how-do-i-modify-the-session-in-the-django-test-framework
+
+    def __init__(self, client):
+        ## workaround for issue: http://code.djangoproject.com/ticket/10899
+        settings.SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+        engine = import_module(settings.SESSION_ENGINE)
+        store = engine.SessionStore()
+        store.save()
+        self.session = store
+        client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
 
 
 class ViewsTest( TestCase ):
@@ -17,13 +32,43 @@ class ViewsTest( TestCase ):
 
     def setUp(self):
         self.client = Client()
+        self.session_hack = SessionHack( self.client )
 
-    def test_direct_login(self):
-        """ Should redirect to index page. """
-        response = self.client.get( '/article_request/login/' )  # project root part of url is assumed
+    def test_direct_login_no_session(self):
+        """ If not from '/easyaccess/find/', should redirect to index page. """
+        response = self.client.get( '/article_request/login/?a=b' )  # project root part of url is assumed
         self.assertEqual( 302, response.status_code )
         redirect_url = response._headers['location'][1]
-        self.assertEqual( 2, '/find/' )
+        self.assertEqual( '/find/?a=b', redirect_url )
+
+    def test_direct_login_good_session(self):
+        """ If from '/easyaccess/find/', should redirect self. """
+        session = self.session_hack.session
+        session['last_path'] = '/easyaccess/find/'
+        session['last_querystring'] = 'isbn=123'
+        session.save()
+        response = self.client.get( '/article_request/login/?a=b' )  # project root part of url is assumed
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( 'sso.brown.edu', redirect_url[8:21] )
+
+    def test_direct_article_request_no_session(self):
+        """ If not from '/easyaccess/article_request/login/', should redirect to index page. """
+        ## without session
+        response = self.client.get( '/article_request/illiad/?a=b' )  # project root part of url is assumed
+        self.assertEqual( 302, response.status_code )
+        redirect_url = response._headers['location'][1]
+        self.assertEqual( '/find/?a=b', redirect_url )
+
+    def test_direct_article_request_good_session(self):
+        """ If from '/easyaccess/article_request/login/', should display page. """
+        ## with session
+        session = self.session_hack.session
+        session['last_path'] = '/easyaccess/article_request/login/'
+        # session['last_querystring'] = 'isbn=123'
+        session.save()
+        response = self.client.get( '/article_request/illiad/?a=b' )  # project root part of url is assumed
+        self.assertEqual( 200, response.status_code )
+        self.assertTrue( 'Please click submit to confirm.' in response.content )
 
     # end class ViewsTest()
 
@@ -41,16 +86,18 @@ class LoginHelper_Test( TestCase ):
         session = client.session
         meta_dict = {}
         self.assertEqual(
-            False,
+            ( False, '/find/?' ),  # ( referrer_ok, redirect_url )
             self.helper.check_referrer(session, meta_dict) )
         ## good request should return True
         client = Client()
         session = client.session
-        session['findit_illiad_check_flag'] = 'good'
-        session['findit_illiad_check_enhanced_querystring'] = 'querystring_a'
-        meta_dict = { 'QUERY_STRING': 'querystring_a' }
+        # session['findit_illiad_check_flag'] = 'good'
+        # session['findit_illiad_check_enhanced_querystring'] = 'querystring_a'
+        # meta_dict = { 'QUERY_STRING': 'querystring_a' }
+        session['last_path'] = '/easyaccess/find/'
+        session['last_querystring'] = 'isbn=123'
         self.assertEqual(
-            True,
+            ( True, '' ),  # ( referrer_ok, redirect_url )
             self.helper.check_referrer(session, meta_dict) )
 
     def test__assess_shib_redirect_need( self ):

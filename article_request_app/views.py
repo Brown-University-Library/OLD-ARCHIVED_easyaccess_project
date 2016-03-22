@@ -86,25 +86,34 @@ def illiad_request( request ):
     """ Gives users chance to confirm their request via clicking 'Submit'."""
 
     ## check that we're here legitimately
-    here_check = False
-    illiad_login_check_flag = request.session.get( 'illiad_login_check_flag', '' )
-    login_openurl = request.session.get( 'login_openurl', '' )
-    request.session['login_openurl'] = ''
-    log.debug( 'illiad_login_check_flag, `%s`' % illiad_login_check_flag )
-    if illiad_login_check_flag == 'good' and login_openurl == request.META.get('QUERY_STRING', ''):
-        here_check = True
-    log.debug( 'here_check, `%s`' % here_check )
-    if here_check is True:
-        request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
-    else:
-        log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
-            request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-        return HttpResponseBadRequest( 'Bad request; see "https://library.brown.edu/easyaccess/" for example usage.`' )
+    ( referrer_ok, redirect_url ) = ill_helper.check_referrer( request.session, request.META )
+    if referrer_ok is not True:
+        request.session['last_path'] = request.path
+        return HttpResponseRedirect( redirect_url )
+    request.session['last_path'] = request.path
+    request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
+
+    # ## check that we're here legitimately
+    # here_check = False
+    # illiad_login_check_flag = request.session.get( 'illiad_login_check_flag', '' )
+    # login_openurl = request.session.get( 'login_openurl', '' )
+    # request.session['login_openurl'] = ''
+    # log.debug( 'illiad_login_check_flag, `%s`' % illiad_login_check_flag )
+    # if illiad_login_check_flag == 'good' and login_openurl == request.META.get('QUERY_STRING', ''):
+    #     here_check = True
+    # log.debug( 'here_check, `%s`' % here_check )
+    # if here_check is True:
+    #     request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
+    # else:
+    #     log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
+    #         request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+    #     return HttpResponseBadRequest( 'Bad request; see "https://library.brown.edu/easyaccess/" for example usage.`' )
 
     ## prep data
     citation_json = request.session.get( 'citation', '{}' )
     format = request.session.get( 'format', '' )
     context = { 'citation': json.loads(citation_json), 'format': format }
+    log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
 
     ## cleanup
     request.session['format'] = ''
