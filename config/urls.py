@@ -24,7 +24,7 @@ urlpatterns = [
 
     url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),  # will likely retire
 
-    url( r'^$',  RedirectView.as_view(url='find/', permanent=True) ),  # will likely retire
+    url( r'^$',  RedirectView.as_view(url='easyaccess/find/', permanent=True) ),  # will likely retire
     ]
 
 ## for 500 errors

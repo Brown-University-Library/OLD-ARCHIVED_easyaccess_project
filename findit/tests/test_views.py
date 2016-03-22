@@ -27,6 +27,17 @@ log = logging.getLogger(__name__)
 #         client.cookies[settings.SESSION_COOKIE_NAME] = store.session_key
 
 
+class RootTest( TestCase ):
+    """ Checks slash redirect. """
+
+    def test_root_url(self):
+        """ Checks '/easyaccess'. """
+        response = self.client.get( '' )  # project root part of url is assumed on _request_
+        self.assertEqual( 301, response.status_code )  # permanent redirect
+        redirect_url = response._headers['location'][1]
+        self.assertEqual(  'easyaccess/find/', redirect_url )
+
+
 class IndexPageLinksTest( TestCase ):
     """ Checks example links on index page. """
 
