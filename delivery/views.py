@@ -170,6 +170,7 @@ def login( request ):
     if redirect_check is True:
         ( redirect_url, updated_shib_status ) = login_view_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
         request.session['shib_status'] = updated_shib_status
+        log.debug( 'after assessing shib-redirect-need, redirecting to url, ```{}```'.format(redirect_url) )
         return HttpResponseRedirect( redirect_url )
     else:
         request.session['shib_status'] = ''  # makes assess_shib_redirect_need() trigger forced-login next time
