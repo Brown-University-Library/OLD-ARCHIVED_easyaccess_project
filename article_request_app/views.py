@@ -164,7 +164,8 @@ def illiad_handler( request ):
         illiad_session = illiad_instance.login()
     except Exception as e:
         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-        request.session['message'] = ill_helper.problem_message
+        if request.session.get( 'message', '' ) == '':
+            request.session['message'] = ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
@@ -189,7 +190,8 @@ def illiad_handler( request ):
     errors = illiad_post_key.get( 'errors', None )
     if errors:
         log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
-        request.session['message'] = ill_helper.problem_message
+        if request.session.get( 'message', '' ) == '':
+            request.session['message'] = ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
     else:
@@ -237,5 +239,6 @@ def message( request ):
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
         }
+    request.session['message'] = ''
     request.session['last_path'] = request.path
     return render( request, 'article_request_app/message.html', context )

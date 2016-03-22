@@ -238,6 +238,7 @@ def message( request ):
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
         }
+    request.session['message'] = ''
     request.session['last_path'] = request.path
     return render( request, 'delivery/message.html', context )
 
