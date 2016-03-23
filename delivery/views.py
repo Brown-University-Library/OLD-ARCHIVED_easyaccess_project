@@ -24,6 +24,7 @@ from py360link2 import get_sersol_data, Resolved
 from shibboleth.decorators import login_optional
 from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
+from delivery.classes.availability_helper import AvailabilityViewHelper
 from delivery.classes.login_helper import LoginViewHelper
 from delivery.classes.process_helper import ProcessViewHelper
 
@@ -31,6 +32,7 @@ from delivery.classes.process_helper import ProcessViewHelper
 log = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 availability_checker = AvailabilityChecker()
+availability_view_helper = AvailabilityViewHelper()
 login_view_helper = LoginViewHelper()
 process_view_helper = ProcessViewHelper()
 
@@ -56,8 +58,9 @@ def availability( request ):
         return HttpResponseRedirect( redirect_url )
 
     ## get bib_dct
-    bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
-    log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
+    bib_dct = availability_view_helper.build_bib_dct( request.META.get('QUERY_STRING', '') )
+    # bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
+    # log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
 
     ## get identifiers
     ( isbn, oclc_num ) = ( '', '' )

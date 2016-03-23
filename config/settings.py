@@ -102,7 +102,8 @@ Note: to see the imported modules' loggers, add somewhere:
 """
 
 ## disabling module loggers
-logging.getLogger('bibjsontools').setLevel( logging.WARNING )
+# logging.getLogger('bibjsontools').setLevel( logging.WARNING )
+logging.getLogger('bibjsontools').setLevel( logging.DEBUG )
 logging.getLogger('requests').setLevel( logging.WARNING )
 
 LOGGING = {

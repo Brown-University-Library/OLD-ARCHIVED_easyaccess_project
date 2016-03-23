@@ -2,10 +2,30 @@
 
 from __future__ import unicode_literals
 
-import logging
+import logging, pprint
+import bibjsontools
 
 
 log = logging.getLogger('access')
+
+
+class AvailabilityViewHelper(object):
+    """ Holds helpers for views.availability() """
+
+    def build_bib_dct( self, querystring ):
+        """ Calls bibjsontools.
+            Called by views.availability() """
+        log.debug( 'querystring, ```{}```'.format(querystring) )
+        log.debug( 'type(querystring), `{}`'.format(type(querystring)) )
+        # try:
+        #     bib_dct = bibjsontools.from_openurl( querystring )
+        # except Exception as e:
+        #     log.error( 'Exception calling bibjson, ```{}```'.format(unicode(repr(e))) )
+        bib_dct = bibjsontools.from_openurl( querystring )
+        log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
+        return bib_dct
+
+    # end class AvailabilityViewHelper()
 
 
 #===============================================================================
