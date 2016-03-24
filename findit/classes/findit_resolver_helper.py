@@ -93,18 +93,27 @@ class FinditResolver( object ):
         log.debug( "sersol_journal, `%s`; sersol_publication_link, `%s`" % (sersol_journal, self.sersol_publication_link) )
         return sersol_journal
 
-    # def check_book( self, rqst_qdict, rqst_qstring ):
-    #     """ Handles book requests; builds /borrow redirect link.
-    #         Called by views.base_resolver() """
-    #     is_book = False
-    #     if rqst_qdict.get('genre', 'null') == 'book' or rqst_qdict.get('rft.genre', 'null') == 'book':
-    #         url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
-    #         # url = reverse( 'delivery:availability_url' ) + '?%s' % rqst_qstring
-    #         log.debug( 'book url, `%s`' % url )
-    #         self.borrow_link = url
-    #         is_book = True
-    #     log.debug( 'is_book, `%s`' % is_book )
-    #     return is_book
+
+
+    def check_ebook( self, sersol_dct ):
+        """ Checks if item has an ebook, and if so, returns the label and url.
+            Called by views.base_resolver() """
+        return_tuple = ( False, '', '' )  # ( ebook_exists, label, url )
+        results = sersol_dct.get( 'results', [] )
+        if results:
+            for result in results:
+                link_groups = result.get( 'linkGroups', [] )
+                if link_groups:
+                    for link_group in link_groups:
+                        ( holding_data_dct, lg_type, url_dct ) = ( link_group.get('holdingData', {}), link_group.get('type', ''), link_group.get('url', {}) )
+                        if holding_data_dct and lg_type=='holding' and url_dct:
+                            ( database_name, journal_url ) = ( holding_data_dct.get('databaseName', ''), url_dct.get('journal', '') )
+                            if database_name and journal_url:
+                                return_tuple = ( True, database_name, journal_url )
+        log.debug( 'return_tuple, ```{}```'.format(pprint.pformat(return_tuple)) )
+        return return_tuple
+
+
 
     def check_book( self, request ):
         """ Checks if request is for a book.

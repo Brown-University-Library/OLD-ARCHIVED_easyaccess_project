@@ -69,4 +69,4 @@ class PermalinkHelperTest( TestCase ):
         self.assertEqual(
             12345678, baseconv.base62.to_decimal('pnfq') )
 
-    # end class FinditResolverHelperTest
+    # end class PermalinkHelperTest

@@ -116,15 +116,25 @@ def findit_base_resolver( request ):
     if fresolver.check_sersol_publication( request.GET, querystring ):
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
+    ## get serials-solution data-dct
+    querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
+    sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
+
+    ## if there's an ebook, put it in the session
+    ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
+    if ebook_exists is True:
+        ebook_dct = { 'ebook_label': ebook_label, 'ebook_url':ebook_url }
+        request.session['ebook_json'] = json.dumps( ebook_dct )
+
     ## if book, redirect to /borrow
     # if fresolver.check_book( request.GET, querystring ):
     if fresolver.check_book( request ):
         alog.debug( 'fresolver.borrow_link, `{}`'.format(fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
 
-    ## get serials-solution data-dct
-    querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
-    sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
+    # ## get serials-solution data-dct
+    # querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
+    # sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
     ## if sersol-data shows it's a book, redirect to /borrow
     if fresolver.check_book_after_sersol( sersol_dct, querystring ):
