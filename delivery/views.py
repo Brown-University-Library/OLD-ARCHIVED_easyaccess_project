@@ -40,7 +40,8 @@ process_view_helper = ProcessViewHelper()
 def availability( request ):
     """ Manages borrow landing page where availability checks happen.
         Should get here after landing at 'find' urls, when item is a book. """
-    log.debug( 'starting; query_string, `{}`'.format(request.META.get('QUERY_STRING')) )
+    querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+    log.debug( 'starting; querystring, `{}`'.format(querystring) )
     log.debug( 'availability() request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## check arrival
@@ -48,19 +49,17 @@ def availability( request ):
     if 'book' not in request.get_full_path():
         log.warning( 'why here since `book` not in request.full_path, ```{}```?'.format(request.get_full_path()) )
     if request.session.get( 'last_path', '' ) == '/easyaccess/find/':
-        if request.session.get( 'last_querystring' ) == request.META.get('QUERY_STRING', ''):
+        if request.session.get( 'last_querystring' ) == querystring:
             valid = True
     request.session['last_path'] = request.path
     if valid is False:
         redirect_url = '{findit}?{querystring}'.format(
-            findit=reverse('findit:findit_base_resolver_url'), querystring=request.META.get('QUERY_STRING', '') )
+            findit=reverse('findit:findit_base_resolver_url'), querystring=querystring )
         log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
         return HttpResponseRedirect( redirect_url )
 
     ## get bib_dct
-    bib_dct = availability_view_helper.build_bib_dct( request.META.get('QUERY_STRING', '') )
-    # bib_dct = bibjsontools.from_openurl( request.META.get('QUERY_STRING') )
-    # log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
+    bib_dct = availability_view_helper.build_bib_dct( querystring )
 
     ## get identifiers
     ( isbn, oclc_num ) = ( '', '' )
@@ -207,7 +206,7 @@ def process_request( request ):
         return HttpResponseRedirect( redirect_url )
 
     ## get/create resource object
-    # resource_obj = process_view_helper.grab_resource( request.META.get('QUERY_STRING', '') )
+    # resource_obj = process_view_helper.grab_resource( querystring )
 
     ## get user object
     # user_obj = process_view_helper.grab_user( request.META.get('Shibboleth-eppn', '') )

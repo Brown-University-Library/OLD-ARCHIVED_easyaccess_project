@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import logging, pprint
 import bibjsontools
+from django.utils.encoding import uri_to_iri
 
 
 log = logging.getLogger('access')
@@ -17,11 +18,9 @@ class AvailabilityViewHelper(object):
             Called by views.availability() """
         log.debug( 'querystring, ```{}```'.format(querystring) )
         log.debug( 'type(querystring), `{}`'.format(type(querystring)) )
-        # try:
-        #     bib_dct = bibjsontools.from_openurl( querystring )
-        # except Exception as e:
-        #     log.error( 'Exception calling bibjson, ```{}```'.format(unicode(repr(e))) )
-        bib_dct = bibjsontools.from_openurl( querystring )
+        assert type(querystring) == unicode
+        iri_querystring = uri_to_iri( querystring )
+        bib_dct = bibjsontools.from_openurl( iri_querystring )
         log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
         return bib_dct
 
