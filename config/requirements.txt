@@ -16,7 +16,7 @@ git+https://github.com/birkin/py360link_v2.git
 
 ## BibJson
 #git+https://github.com/birkin/bibjsontools.git
-git+https://github.com/birkin/bibjsontools.git@v0.4c
+git+https://github.com/birkin/bibjsontools_bul.git@v0.4e
 
 ## Common views - roll these into the app.  No need for separate app.
 ## disabling for now so I can install it locally for updates and debugging
