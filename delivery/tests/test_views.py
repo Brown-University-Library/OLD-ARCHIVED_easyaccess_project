@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint
+import json, logging, pprint
 from delivery import views
 from django.conf import settings
 from django.test import TestCase
@@ -52,6 +52,18 @@ class AvailabilityViewTest(TestCase):
         response = self.client.get( '/borrow/availability/?isbn=123' )
         self.assertEqual( 200, response.status_code )
         self.assertTrue( 'easyBorrow' in response.content )
+
+    def test_availability_w_ebook(self):
+        """ Good hit should return response. """
+        session = self.session_hack.session
+        session['last_path'] = '/easyaccess/find/'
+        session['last_querystring'] = 'isbn=123'
+        session['ebook_json'] = json.dumps( {'ebook_label': 'label_foo', 'ebook_url': 'http://test_url'} )
+        session.save()
+        response = self.client.get( '/borrow/availability/?isbn=123' )
+        self.assertEqual( 200, response.status_code )
+        self.assertTrue( '<a href="http://test_url" class="ebook_url">label_foo</a>' in response.content.decode('utf-8') )
+
 
     # end AvailabilityViewTest()
 

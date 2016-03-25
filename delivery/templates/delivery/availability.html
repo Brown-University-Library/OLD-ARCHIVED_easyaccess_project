@@ -140,6 +140,7 @@
     {# request box #}
     <span id="transaction-number" class="hidden">{{ confirmation }}</span>
 
+
     {% if not available_locally %}
     <div id="request">
         <div id="multi-volume">
@@ -157,11 +158,8 @@
         </form>
         <br/><br/>
     </div>
+
     {% else %}
-
-
-
-
 
     <h5>At the library</h5>
     <table>
@@ -187,11 +185,18 @@
         </tbody>
     </table>
 
+    {% endif %}  {# end of `if not available_locally` #}
 
 
-
-
+    {% if ebook_dct %}
+       <div id="full-text">
+        <h5>Available online</h5>
+            <ul>
+                <li> <a href="{{ ebook_dct.ebook_url }}" class="ebook_url">{{ ebook_dct.ebook_label }}</a></li>
+            </ul>
+       </div>
     {% endif %}
+
 
     {% if attempted_request %}
         <div class="alert-box alert">

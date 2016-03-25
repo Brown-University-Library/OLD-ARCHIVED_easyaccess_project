@@ -76,6 +76,7 @@ def availability( request ):
 
     ## run josiah availability check
     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
+    log.debug( 'isbn_url, ```{}```'.format(isbn_url) )
     try:
         r = requests.get( isbn_url, timeout=7 )
         jdct = json.loads( r.content.decode('utf-8') )
@@ -122,12 +123,18 @@ def availability( request ):
     #     jam.update_ezb_availability( bibj )
 
     ## build context
+    ebook_dct = None
+    ebook_json = request.session.get( 'ebook_json', None )
+    log.debug( 'ebook_json, ```{}```'.format(ebook_json) )
+    if ebook_json:
+        ebook_dct = json.loads( ebook_json )
     context = {
         'permalink_url': request.session.get( 'permalink_url', '' ),
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
         'available_locally': available_locally,
-        'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num )
+        'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
+        'ebook_dct': ebook_dct
         }
 
     ## display landing page
