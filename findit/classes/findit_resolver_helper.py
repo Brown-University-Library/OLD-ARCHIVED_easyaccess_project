@@ -164,7 +164,7 @@ class FinditResolver( object ):
             if len( results ) > 0:
                 if type( results[0] ) == dict:
                     if results[0].get( 'format', '' ) == 'book':
-                        url = reverse( 'delivery:resolve' ) + '?%s' % rqst_qstring
+                        url = reverse( 'delivery:availability_url' ) + '?%s' % rqst_qstring
                         self.borrow_link = url
                         is_book = True
         log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )

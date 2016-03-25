@@ -94,6 +94,12 @@ def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
 
+    ## start fresh
+    alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
+    for key in request.session.keys():
+        del request.session[key]
+    alog.debug( 'session.items() after refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
+
     ## if index-page call
     if fresolver.check_index_page( request.GET ):
         # return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )

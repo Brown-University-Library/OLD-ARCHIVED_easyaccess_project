@@ -257,157 +257,157 @@ def message( request ):
 
 
 
-class ResolveView(DeliveryBaseView):
-    template_name = 'delivery/resolve.html'
+# class ResolveView(DeliveryBaseView):
+#     template_name = 'delivery/resolve.html'
 
-    @method_decorator(login_optional)
-    def dispatch(self, *args, **kwargs):
-        return super(ResolveView, self).dispatch(*args, **kwargs)
+#     @method_decorator(login_optional)
+#     def dispatch(self, *args, **kwargs):
+#         return super(ResolveView, self).dispatch(*args, **kwargs)
 
-    @property
-    def query(self):
-        #For handling unicode values in OpenURL
-        q = self.request.META.get('QUERY_STRING', None)
-        if not q:
-            try:
-                q = self.openurl
-            except AttributeError:
-                q = ''
-        return q
+#     @property
+#     def query(self):
+#         #For handling unicode values in OpenURL
+#         q = self.request.META.get('QUERY_STRING', None)
+#         if not q:
+#             try:
+#                 q = self.openurl
+#             except AttributeError:
+#                 q = ''
+#         return q
 
-    def get_gbs_identifier(self):
-        bib = self.bibj
-        if bib['type'] == 'book':
-            #try oclc
-            for id in bib.get('identifier', []):
-                if id['type'] == 'oclc':
-                    return 'OCLC:%s' % id['id']
-                elif id['type'] == 'isbn':
-                    return 'ISBN:%s' % id['id']
-        return
+#     def get_gbs_identifier(self):
+#         bib = self.bibj
+#         if bib['type'] == 'book':
+#             #try oclc
+#             for id in bib.get('identifier', []):
+#                 if id['type'] == 'oclc':
+#                     return 'OCLC:%s' % id['id']
+#                 elif id['type'] == 'isbn':
+#                     return 'ISBN:%s' % id['id']
+#         return
 
-    def pull_pmid(self, bib):
-        pmid = [k['id'].lstrip('info:pmid/') for k in bib.get('identifier', []) if k['type'] == 'pmid']
-        try:
-            return pmid[0]
-        except IndexError:
-            return
+#     def pull_pmid(self, bib):
+#         pmid = [k['id'].lstrip('info:pmid/') for k in bib.get('identifier', []) if k['type'] == 'pmid']
+#         try:
+#             return pmid[0]
+#         except IndexError:
+#             return
 
-    def pull_doi(self, bib):
-        doi = [k['id'].lstrip('doi:') for k in bib.get('identifier', []) if k['type'] == 'doi']
-        try:
-            return doi[0]
-        except IndexError:
-            return
+#     def pull_doi(self, bib):
+#         doi = [k['id'].lstrip('doi:') for k in bib.get('identifier', []) if k['type'] == 'doi']
+#         try:
+#             return doi[0]
+#         except IndexError:
+#             return
 
-    def get(self, request, **kwargs):
-        # log.debug( 'bjd/in ResolveView.get()' )
-        log.debug( 'ResolveView.get() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
-        import pubmed
-        from models import JosiahAvailabilityManager
+#     def get(self, request, **kwargs):
+#         # log.debug( 'bjd/in ResolveView.get()' )
+#         log.debug( 'ResolveView.get() request.session.items(), ```%s```' % pprint.pformat(request.session.items()) )
+#         import pubmed
+#         from models import JosiahAvailabilityManager
 
-        #Check IP address and display message if user is using terminal.
-        if (self.request.META.get('REMOTE_ADDR') in settings.CLASSIC_IPS) and \
-            self.request.user.is_authenticated():
-            self.request.session['terminal'] = True
-        else:
-            self.request.session['terminal'] = False
+#         #Check IP address and display message if user is using terminal.
+#         if (self.request.META.get('REMOTE_ADDR') in settings.CLASSIC_IPS) and \
+#             self.request.user.is_authenticated():
+#             self.request.session['terminal'] = True
+#         else:
+#             self.request.session['terminal'] = False
 
-        #Return empty queries - this is the index page.
-        if (self.query == ''):
-            pass
-        else:
-            if self.request_dict:
-                #check for pmid
-                #pmid = self.pull_pmid()
-                #if pmid:
-                #    bibj = pubmed.to_bibjson(pmid)
-                #else:
-                bibj = from_dict(self.request_dict)
-            elif self.resource:
-                bibj = from_openurl(self.resource.query)
-            else:
-                raise Exception('Cant build a bibjson object.  Check ResolveView.get')
-            log.debug( 'in delivery.views.ResolveView.get(); bibj: %s' % pprint.pformat(bibj) )
+#         #Return empty queries - this is the index page.
+#         if (self.query == ''):
+#             pass
+#         else:
+#             if self.request_dict:
+#                 #check for pmid
+#                 #pmid = self.pull_pmid()
+#                 #if pmid:
+#                 #    bibj = pubmed.to_bibjson(pmid)
+#                 #else:
+#                 bibj = from_dict(self.request_dict)
+#             elif self.resource:
+#                 bibj = from_openurl(self.resource.query)
+#             else:
+#                 raise Exception('Cant build a bibjson object.  Check ResolveView.get')
+#             log.debug( 'in delivery.views.ResolveView.get(); bibj: %s' % pprint.pformat(bibj) )
 
-            #update ezb table if book & available
-            try:
-                jam = JosiahAvailabilityManager()
-                jam.check_josiah_availability( bibj )
-                if jam.available:
-                    jam.update_ezb_availability( bibj )
-            except Exception as e:
-                log.error( 'in delivery.views.ResolveView.get(); exception: %s' % unicode(repr(e)) )
-                pass
+#             #update ezb table if book & available
+#             try:
+#                 jam = JosiahAvailabilityManager()
+#                 jam.check_josiah_availability( bibj )
+#                 if jam.available:
+#                     jam.update_ezb_availability( bibj )
+#             except Exception as e:
+#                 log.error( 'in delivery.views.ResolveView.get(); exception: %s' % unicode(repr(e)) )
+#                 pass
 
-            #if there is a pubmed ID in the incoming request,
-            #send to the pubmed api for meta.
-            pmid = self.pull_pmid(bibj)
-            if pmid:
-                bibj = pubmed.to_bibjson(pmid)
+#             #if there is a pubmed ID in the incoming request,
+#             #send to the pubmed api for meta.
+#             pmid = self.pull_pmid(bibj)
+#             if pmid:
+#                 bibj = pubmed.to_bibjson(pmid)
 
-            log.debug(bibj)
-            doi = self.pull_doi(bibj)
-            #Fill in metadta by pulling in data from 360link.
-            #We will skip any books coming from worldcat.
-            if (doi is not None) or (bibj.get('type') == 'inbook') or ('worldcat' not in bibj.get('_rfr', '').lower()):
-                #This is a temporary work around to handle book chapters
-                #with DOIs.
-                try:
-                    pass
-                    #Get the openurl from the current bibjson object
-                    # ourl = to_openurl(bibj)
-                    # #Send this openurl to 360link for more metadata
-                    # data = new360link.link360.get(ourl, key=SERSOL_KEY, timeout=10)
-                    # sersol_bibj = data.json().get('records')[0]
-                    # log.debug('Sersol bibjson:')
-                    # log.debug(sersol_bibj)
-                    # bibj = merge_bibjson(bibj, sersol_bibj)
-                except Exception, e:
-                    log.exception('Error querying 360Link for %s.' % doi)
-                #log.debug('Adding values to validate ILLiad URL.')
-                #bibj = illiad_validate(bibj)
+#             log.debug(bibj)
+#             doi = self.pull_doi(bibj)
+#             #Fill in metadta by pulling in data from 360link.
+#             #We will skip any books coming from worldcat.
+#             if (doi is not None) or (bibj.get('type') == 'inbook') or ('worldcat' not in bibj.get('_rfr', '').lower()):
+#                 #This is a temporary work around to handle book chapters
+#                 #with DOIs.
+#                 try:
+#                     pass
+#                     #Get the openurl from the current bibjson object
+#                     # ourl = to_openurl(bibj)
+#                     # #Send this openurl to 360link for more metadata
+#                     # data = new360link.link360.get(ourl, key=SERSOL_KEY, timeout=10)
+#                     # sersol_bibj = data.json().get('records')[0]
+#                     # log.debug('Sersol bibjson:')
+#                     # log.debug(sersol_bibj)
+#                     # bibj = merge_bibjson(bibj, sersol_bibj)
+#                 except Exception, e:
+#                     log.exception('Error querying 360Link for %s.' % doi)
+#                 #log.debug('Adding values to validate ILLiad URL.')
+#                 #bibj = illiad_validate(bibj)
 
-            bibj['_query'] = self.query
-            bibj['_has_fulltext'] = False
-            if bibj.get('link', None):
-                bibj['_has_fulltext'] = True
+#             bibj['_query'] = self.query
+#             bibj['_has_fulltext'] = False
+#             if bibj.get('link', None):
+#                 bibj['_has_fulltext'] = True
 
-            self.bibj = bibj
-            self.cite = urlparse.parse_qs(self.query)
+#             self.bibj = bibj
+#             self.cite = urlparse.parse_qs(self.query)
 
-        self.request.session['last_visited_resource'] = self.query
-        log.debug( 'in delivery.views.ResolveView.get(); about to return response' )
-        return super(ResolveView, self).get(request)
+#         self.request.session['last_visited_resource'] = self.query
+#         log.debug( 'in delivery.views.ResolveView.get(); about to return response' )
+#         return super(ResolveView, self).get(request)
 
-    def get_context_data(self, **kwargs):
-        """
-        Prep the template view.
-        """
-        context = super(ResolveView, self).get_context_data(**kwargs)
-        context['terminal'] = self.request.session.get('terminal')
-        #handle index views.
-        if self.query == '':
-            self.template_name = 'delivery/index.html'
-            return context
-        context['openurl'] = self.bibj['_openurl']
-        context['bib'] = self.bibj
-        context['has_fulltext'] = self.bibj['_has_fulltext']
-        context['coin'] = self.bibj['_openurl']
-        context['cite_type'] = self.bibj['type']
-        context['cite'] = self.cite
-        context['query'] = self.query
-        context['bibjson'] = json.dumps(self.bibj)
-        if settings.DEBUG:
-            from utils import make_illiad_url
-            context['illiad'] = make_illiad_url(self.bibj)
-        #book covers
-        context['gbs'] = self.get_gbs_identifier()
-        #confirmation for requests
-        tn = kwargs.get('transaction_number', '0')
-        context['confirmation'] = tn
-        log.debug( 'in delivery.views.ResolveView.get(); context, ```{}```'.format(pprint.pformat(context)) )
-        return context
+#     def get_context_data(self, **kwargs):
+#         """
+#         Prep the template view.
+#         """
+#         context = super(ResolveView, self).get_context_data(**kwargs)
+#         context['terminal'] = self.request.session.get('terminal')
+#         #handle index views.
+#         if self.query == '':
+#             self.template_name = 'delivery/index.html'
+#             return context
+#         context['openurl'] = self.bibj['_openurl']
+#         context['bib'] = self.bibj
+#         context['has_fulltext'] = self.bibj['_has_fulltext']
+#         context['coin'] = self.bibj['_openurl']
+#         context['cite_type'] = self.bibj['type']
+#         context['cite'] = self.cite
+#         context['query'] = self.query
+#         context['bibjson'] = json.dumps(self.bibj)
+#         if settings.DEBUG:
+#             from utils import make_illiad_url
+#             context['illiad'] = make_illiad_url(self.bibj)
+#         #book covers
+#         context['gbs'] = self.get_gbs_identifier()
+#         #confirmation for requests
+#         tn = kwargs.get('transaction_number', '0')
+#         context['confirmation'] = tn
+#         log.debug( 'in delivery.views.ResolveView.get(); context, ```{}```'.format(pprint.pformat(context)) )
+#         return context
 
 class Link360View(DeliveryBaseView):
     default_json = True
@@ -601,287 +601,287 @@ class Link360View(DeliveryBaseView):
         return d
 
 
-class RequestView(ResolveView):
-    template_name = 'delivery/resolve.html'
-    default_json = False
+# class RequestView(ResolveView):
+#     template_name = 'delivery/resolve.html'
+#     default_json = False
 
-    @method_decorator(has_email)
-    @method_decorator(has_service)
-    def dispatch(self, *args, **kwargs):
-        return super(RequestView, self).dispatch(*args, **kwargs)
+#     @method_decorator(has_email)
+#     @method_decorator(has_service)
+#     def dispatch(self, *args, **kwargs):
+#         return super(RequestView, self).dispatch(*args, **kwargs)
 
-    def create_request(self, bib):
-        from models import Request
-        request = Request()
-        request.user = self.request.user
-        request.bib = bib
-        request.save(submit=True)
-        return request.transaction_number
+#     def create_request(self, bib):
+#         from models import Request
+#         request = Request()
+#         request.user = self.request.user
+#         request.bib = bib
+#         request.save(submit=True)
+#         return request.transaction_number
 
-    def get_resource(self, bib):
-        from models import Resource
-        #Get or create a resource for the given query.  Catch cases where
-        #there are duplicate queries in the resource db.  Shouldn't happen
-        #but is during testing.
-        try:
-            resource, created = Resource.objects.get_or_create(query=bib['_query'])
-        except MultipleObjectsReturned:
-            resource = Resource.objects.filter(query=bib['_query'])[0]
-            created = False
-        if created:
-            resource.referrer = bib.get('_rfr', 'unknown')
-            resource.save()
-        return (resource, created)
-
-
-    def post(self, *args, **kwargs):
-        from django.shortcuts import redirect
-        posted = self.request.POST
-        resource = None
-        #Create a bibjson object from what we know.
-        #See if we have a posted bib
-        if 'bib' in posted:
-            bib_str = posted.get('bib')
-            bib = json.loads(bib_str)
-            resource, created = self.get_resource(bib)
-        else:
-            #If no posted bib, we are going to pull it from the session
-            resource = self.request.session.get('requested_item', None)
-            if resource:
-                bib  = from_openurl(resource.query)
-            else:
-                raise Exception('Expecting request in session')
-            bib  = from_openurl(resource.query)
-            bib['_query'] = resource.query
-
-        #If user is not yet authenticated, pass them to the login url.
-        if not self.request.user.is_authenticated():
-            #route_to_login
-            return redirect(self.login_url(resource))
-        #see if user is allowed to request materials
-        elif (self.request.user.is_authenticated()) and\
-            (self.request.session.get('not_authorized')):
-            #render the denied template
-            t = loader.get_template('delivery/denied.html')
-            c = Context({})
-            return HttpResponse(t.render(c))
-        else:
-            #Handle the request now.
-            transaction_number = self.create_request(bib)
-            self.request.session['transaction_number'] = transaction_number
-            self.request.session['requested_item'] = resource
-            return redirect(resource.get_absolute_url())
-
-    def get(self, request, **kwargs):
-        """
-        Users can get to the RequestView from a GET request in some cases.
-            - direct links/hits to a borrow/request url.
-            - redirects from Shibboleth
-
-        If the user is logged in, we will check the session for a request and
-        process it.
-
-        If the user is not logged in, we will set a warning message to the
-        session and then redirect them to login.  They can then procced.
-        """
-        #Get the resource by looking up the permalink from the kwargs
-        resource = self.request.session.get('requested_item', None)
-        #Try to get the resource from the URL.
-        if resource is None:
-            plink = kwargs.get('tiny', None)
-            if not plink:
-                #There is something odd here.
-                #This is GET request to the request view
-                #and no request-able item is in the session.
-                #We will try to return the user to the last visited resource.
-                #If we can't, we will display an error message where they
-                #can leave us feedback about what happened.
-                log.warning("User %s accessed request page via GET and no request in session." % self.request.user)
-                last_query = self.request.session.get('last_visited_resource', None)
-                if (last_query is not None) and (last_query != ''):
-                    return HttpResponseRedirect('./?%s' % last_query)
-                else:
-                    log.warning("No resource or last visited resource found.  User accessed request view without a plink in kwargs or request in session.")
-                    t = loader.get_template('delivery/denied.html')
-                    c = Context({})
-                    return HttpResponse(t.render(c))
-            resource = self.get_resource_from_plink(plink)
-
-        #If the user is authenticated, try to process the request.
-        if self.request.user.is_authenticated():
-            #Check to see if this request was passed from from Shibboleth
-            #Is this a redirect after login with a request in the session?
-            #Is this user being redirected from Shib?
-            http_origin = self.request.META.get('HTTP_ORIGIN', 'unknown')
-            from_shib = http_origin.rfind('sso.brown.edu') > -1
-            #If the user has HTTP origin from Shib or the last login is with two
-            #seconds, process the request.
-            last_login_delta = (datetime.now() - self.request.user.last_login).seconds
-            if (from_shib) or (last_login_delta) < 10:
-                query = resource.query
-                bib  = from_openurl(query)
-                bib['_query'] = query
-                #Delete the resource from the session to prevent duplicate requests.
-                try:
-                    del self.request.session['requested_item']
-                except KeyError:
-                    pass
-                #Make the request
-                transaction_number = self.create_request(bib)
-                self.request.session['transaction_number'] = transaction_number
-
-            else:
-                log.warning("User %s accessed requst page via GET and no request in session." % self.request.user)
-                self.request.session['attempted_request_message'] = \
-                                     "Were you trying to request this item?  Something went wrong.\
-                                     Please click \"Request this item\" again."
-        return redirect(resource.get_absolute_url())
-
-class PermalinkView(ResolveView):
-
-    def get(self, request, **kwargs):
-        """Process the request."""
-        from models import Resource
-        from shorturls.baseconv import base62
-        from bibjsontools import ris
-        plink = kwargs.get('tiny', None)
-        resource = self.get_resource_from_plink(plink)
-        #Set this for the query helper utility
-        self.openurl = resource.query
-        self.resource = resource
-        #Check for export param
-        export = self.request.GET.get('export', 'none')
-        if export == 'ris':
-            import string
-            #For stripping punctuation for the download filename.
-            exclude = set(string.punctuation)
-            #export to RIS if requested
-            bib = from_openurl(resource.query)
-            title = bib.get('title', 'bul')
-            slug = ''.join(ch for ch in title if ch not in exclude)
-            filename = slug.replace(' ', '-').lower()
-            rtext = ris.convert(bib)
-            response = HttpResponse(rtext,
-                                    content_type='application/x-research-info-systems')
-            response['Content-Disposition'] = 'attachment; filename=%s.ris' % filename
-            return response
-        return super(PermalinkView, self).get(request)
-
-    def post(self, *args, **kwargs):
-        from models import Resource
-        out = {}
-        posted = self.request.POST
-        bib = json.loads(posted['bib'])
-        #import pdb; pdb.set_trace()
-        #Get or create a resource for the given query.
-        try:
-            resource, created = Resource.objects.get_or_create(query=bib['_openurl'])
-        except MultipleObjectsReturned:
-            resource = Resource.objects.filter(query=bib['_openurl'])[0]
-            created = False
-        resource.referrer = bib.get('_rfr', 'unknown')
-        resource.save()
-        out['permalink'] = resource.get_absolute_url()
-        out['ip'] = self.request.META.get('REMOTE_ADDR')
-        #If the user is logged in, return their email address to for adding to the
-        #problem report form.
-        if self.request.user.is_authenticated():
-            out['email'] = self.request.user.email
-
-        return HttpResponse(json.dumps(out),
-                            mimetype='application/json')
+#     def get_resource(self, bib):
+#         from models import Resource
+#         #Get or create a resource for the given query.  Catch cases where
+#         #there are duplicate queries in the resource db.  Shouldn't happen
+#         #but is during testing.
+#         try:
+#             resource, created = Resource.objects.get_or_create(query=bib['_query'])
+#         except MultipleObjectsReturned:
+#             resource = Resource.objects.filter(query=bib['_query'])[0]
+#             created = False
+#         if created:
+#             resource.referrer = bib.get('_rfr', 'unknown')
+#             resource.save()
+#         return (resource, created)
 
 
-    def get_context_data(self, **kwargs):
-        context = super(PermalinkView, self).get_context_data(**kwargs)
-        #Make lower case true because this will be interpreted as javascript
-        context['permalink'] = 'true'
-        #A user might some how link to a request permalink.  In these cases\
-        #render the attempted request message from the session.
-        attempted_request = self.request.session.get('attempted_request_message', None)
-        if attempted_request is not None:
-            context['attempted_request'] = attempted_request
-            self.request.session['attempted_request_message'] = None
+#     def post(self, *args, **kwargs):
+#         from django.shortcuts import redirect
+#         posted = self.request.POST
+#         resource = None
+#         #Create a bibjson object from what we know.
+#         #See if we have a posted bib
+#         if 'bib' in posted:
+#             bib_str = posted.get('bib')
+#             bib = json.loads(bib_str)
+#             resource, created = self.get_resource(bib)
+#         else:
+#             #If no posted bib, we are going to pull it from the session
+#             resource = self.request.session.get('requested_item', None)
+#             if resource:
+#                 bib  = from_openurl(resource.query)
+#             else:
+#                 raise Exception('Expecting request in session')
+#             bib  = from_openurl(resource.query)
+#             bib['_query'] = resource.query
 
-        #See if this is a requested item. If it is, render the transaction number
-        #and delete it from the session.
-        tn = self.request.session.get('transaction_number', None)
-        if tn:
-            context['transaction_number'] = tn
-            del self.request.session['transaction_number']
-            #Delete the request from the session to prevent duplicate requests.
-            try:
-                del self.request.session['requested_item']
-            except KeyError:
-                pass
-        return context
+#         #If user is not yet authenticated, pass them to the login url.
+#         if not self.request.user.is_authenticated():
+#             #route_to_login
+#             return redirect(self.login_url(resource))
+#         #see if user is allowed to request materials
+#         elif (self.request.user.is_authenticated()) and\
+#             (self.request.session.get('not_authorized')):
+#             #render the denied template
+#             t = loader.get_template('delivery/denied.html')
+#             c = Context({})
+#             return HttpResponse(t.render(c))
+#         else:
+#             #Handle the request now.
+#             transaction_number = self.create_request(bib)
+#             self.request.session['transaction_number'] = transaction_number
+#             self.request.session['requested_item'] = resource
+#             return redirect(resource.get_absolute_url())
 
-class UserInfoView(ResolveView):
-    default_json = True
+#     def get(self, request, **kwargs):
+#         """
+#         Users can get to the RequestView from a GET request in some cases.
+#             - direct links/hits to a borrow/request url.
+#             - redirects from Shibboleth
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(UserInfoView, self).dispatch(*args, **kwargs)
+#         If the user is logged in, we will check the session for a request and
+#         process it.
 
-    def get_context_data(self, **kwargs):
-        from models import Request
-        from datetime import datetime, timedelta
-        context = {}
-        context['query'] = self.query
-        context['requested'] = False
-        try:
-            profile = self.request.user.libraryprofile
-        except ObjectDoesNotExist:
-            #In odd cases a user won't have a profile.
-            return context
-        context['primary_affiliation'] = profile.primary_affiliation()
-        context['can_request_print'] = profile.can_request_print()
-        if self.query != '':
-            #There really should only be one - but we will code it as a list
-            #in case we want to leave open the possiblity of several request.
-            #See if the user has requested this item within the last month.
-            check_date = datetime.today() - timedelta(minutes=15)
-            user_requests = Request.objects.filter(user=self.request.user,
-                                                   date_created__gte=check_date,
-                                                   item__query=self.query).order_by('-date_created')
-            context['requests'] = [{'transaction_number': e.transaction_number,
-                                    'date': e.date_created.strftime('%m-%d-%Y'),
-                                    'time': e.date_created.strftime('%H:%M %p'),
-                                    'seconds_ago': (datetime.now() - e.date_created).seconds,
-                                    }\
-                                   for e in user_requests]
-            if len(context['requests']) > 0:
-                context['requested'] = True
-        return context
+#         If the user is not logged in, we will set a warning message to the
+#         session and then redirect them to login.  They can then procced.
+#         """
+#         #Get the resource by looking up the permalink from the kwargs
+#         resource = self.request.session.get('requested_item', None)
+#         #Try to get the resource from the URL.
+#         if resource is None:
+#             plink = kwargs.get('tiny', None)
+#             if not plink:
+#                 #There is something odd here.
+#                 #This is GET request to the request view
+#                 #and no request-able item is in the session.
+#                 #We will try to return the user to the last visited resource.
+#                 #If we can't, we will display an error message where they
+#                 #can leave us feedback about what happened.
+#                 log.warning("User %s accessed request page via GET and no request in session." % self.request.user)
+#                 last_query = self.request.session.get('last_visited_resource', None)
+#                 if (last_query is not None) and (last_query != ''):
+#                     return HttpResponseRedirect('./?%s' % last_query)
+#                 else:
+#                     log.warning("No resource or last visited resource found.  User accessed request view without a plink in kwargs or request in session.")
+#                     t = loader.get_template('delivery/denied.html')
+#                     c = Context({})
+#                     return HttpResponse(t.render(c))
+#             resource = self.get_resource_from_plink(plink)
+
+#         #If the user is authenticated, try to process the request.
+#         if self.request.user.is_authenticated():
+#             #Check to see if this request was passed from from Shibboleth
+#             #Is this a redirect after login with a request in the session?
+#             #Is this user being redirected from Shib?
+#             http_origin = self.request.META.get('HTTP_ORIGIN', 'unknown')
+#             from_shib = http_origin.rfind('sso.brown.edu') > -1
+#             #If the user has HTTP origin from Shib or the last login is with two
+#             #seconds, process the request.
+#             last_login_delta = (datetime.now() - self.request.user.last_login).seconds
+#             if (from_shib) or (last_login_delta) < 10:
+#                 query = resource.query
+#                 bib  = from_openurl(query)
+#                 bib['_query'] = query
+#                 #Delete the resource from the session to prevent duplicate requests.
+#                 try:
+#                     del self.request.session['requested_item']
+#                 except KeyError:
+#                     pass
+#                 #Make the request
+#                 transaction_number = self.create_request(bib)
+#                 self.request.session['transaction_number'] = transaction_number
+
+#             else:
+#                 log.warning("User %s accessed requst page via GET and no request in session." % self.request.user)
+#                 self.request.session['attempted_request_message'] = \
+#                                      "Were you trying to request this item?  Something went wrong.\
+#                                      Please click \"Request this item\" again."
+#         return redirect(resource.get_absolute_url())
+
+# class PermalinkView(ResolveView):
+
+#     def get(self, request, **kwargs):
+#         """Process the request."""
+#         from models import Resource
+#         from shorturls.baseconv import base62
+#         from bibjsontools import ris
+#         plink = kwargs.get('tiny', None)
+#         resource = self.get_resource_from_plink(plink)
+#         #Set this for the query helper utility
+#         self.openurl = resource.query
+#         self.resource = resource
+#         #Check for export param
+#         export = self.request.GET.get('export', 'none')
+#         if export == 'ris':
+#             import string
+#             #For stripping punctuation for the download filename.
+#             exclude = set(string.punctuation)
+#             #export to RIS if requested
+#             bib = from_openurl(resource.query)
+#             title = bib.get('title', 'bul')
+#             slug = ''.join(ch for ch in title if ch not in exclude)
+#             filename = slug.replace(' ', '-').lower()
+#             rtext = ris.convert(bib)
+#             response = HttpResponse(rtext,
+#                                     content_type='application/x-research-info-systems')
+#             response['Content-Disposition'] = 'attachment; filename=%s.ris' % filename
+#             return response
+#         return super(PermalinkView, self).get(request)
+
+#     def post(self, *args, **kwargs):
+#         from models import Resource
+#         out = {}
+#         posted = self.request.POST
+#         bib = json.loads(posted['bib'])
+#         #import pdb; pdb.set_trace()
+#         #Get or create a resource for the given query.
+#         try:
+#             resource, created = Resource.objects.get_or_create(query=bib['_openurl'])
+#         except MultipleObjectsReturned:
+#             resource = Resource.objects.filter(query=bib['_openurl'])[0]
+#             created = False
+#         resource.referrer = bib.get('_rfr', 'unknown')
+#         resource.save()
+#         out['permalink'] = resource.get_absolute_url()
+#         out['ip'] = self.request.META.get('REMOTE_ADDR')
+#         #If the user is logged in, return their email address to for adding to the
+#         #problem report form.
+#         if self.request.user.is_authenticated():
+#             out['email'] = self.request.user.email
+
+#         return HttpResponse(json.dumps(out),
+#                             mimetype='application/json')
 
 
-class ProcessBibView(ResolveView):
-    """
-    Take bibjson objects from a POST and process by returning an openurl or some
-    other resource fetching.
-    """
-    default_json = True
-    def post(self, *args, **kwargs):
-        from utils import make_illiad_url
-        out = {}
-        posted = self.request.POST
-        #import pdb; pdb.set_trace()
-        bib = json.loads(posted['bib'])
-        out['bib'] = bib
-        openurl = to_openurl(bib)
-        out['bib']['_openurl'] = openurl
-        out['illiad_url'] = make_illiad_url(bib)
-        out['coin'] = openurl
-        return HttpResponse(json.dumps(out),
-                            mimetype='application/json')
+#     def get_context_data(self, **kwargs):
+#         context = super(PermalinkView, self).get_context_data(**kwargs)
+#         #Make lower case true because this will be interpreted as javascript
+#         context['permalink'] = 'true'
+#         #A user might some how link to a request permalink.  In these cases\
+#         #render the attempted request message from the session.
+#         attempted_request = self.request.session.get('attempted_request_message', None)
+#         if attempted_request is not None:
+#             context['attempted_request'] = attempted_request
+#             self.request.session['attempted_request_message'] = None
+
+#         #See if this is a requested item. If it is, render the transaction number
+#         #and delete it from the session.
+#         tn = self.request.session.get('transaction_number', None)
+#         if tn:
+#             context['transaction_number'] = tn
+#             del self.request.session['transaction_number']
+#             #Delete the request from the session to prevent duplicate requests.
+#             try:
+#                 del self.request.session['requested_item']
+#             except KeyError:
+#                 pass
+#         return context
+
+# class UserInfoView(ResolveView):
+#     default_json = True
+
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super(UserInfoView, self).dispatch(*args, **kwargs)
+
+#     def get_context_data(self, **kwargs):
+#         from models import Request
+#         from datetime import datetime, timedelta
+#         context = {}
+#         context['query'] = self.query
+#         context['requested'] = False
+#         try:
+#             profile = self.request.user.libraryprofile
+#         except ObjectDoesNotExist:
+#             #In odd cases a user won't have a profile.
+#             return context
+#         context['primary_affiliation'] = profile.primary_affiliation()
+#         context['can_request_print'] = profile.can_request_print()
+#         if self.query != '':
+#             #There really should only be one - but we will code it as a list
+#             #in case we want to leave open the possiblity of several request.
+#             #See if the user has requested this item within the last month.
+#             check_date = datetime.today() - timedelta(minutes=15)
+#             user_requests = Request.objects.filter(user=self.request.user,
+#                                                    date_created__gte=check_date,
+#                                                    item__query=self.query).order_by('-date_created')
+#             context['requests'] = [{'transaction_number': e.transaction_number,
+#                                     'date': e.date_created.strftime('%m-%d-%Y'),
+#                                     'time': e.date_created.strftime('%H:%M %p'),
+#                                     'seconds_ago': (datetime.now() - e.date_created).seconds,
+#                                     }\
+#                                    for e in user_requests]
+#             if len(context['requests']) > 0:
+#                 context['requested'] = True
+#         return context
 
 
-    def get_context_data(self, **kwargs):
-        context = super(ProcessBibView, self).get_context_data(**kwargs)
-        #Make lower case true because this will be interpreted as javascript
-        #context['openurl'] = to_openurl(context['bib'])
-        #context['illiad'] = self.make_illiad_url(context['bib'])
-        return context
+# class ProcessBibView(ResolveView):
+#     """
+#     Take bibjson objects from a POST and process by returning an openurl or some
+#     other resource fetching.
+#     """
+#     default_json = True
+#     def post(self, *args, **kwargs):
+#         from utils import make_illiad_url
+#         out = {}
+#         posted = self.request.POST
+#         #import pdb; pdb.set_trace()
+#         bib = json.loads(posted['bib'])
+#         out['bib'] = bib
+#         openurl = to_openurl(bib)
+#         out['bib']['_openurl'] = openurl
+#         out['illiad_url'] = make_illiad_url(bib)
+#         out['coin'] = openurl
+#         return HttpResponse(json.dumps(out),
+#                             mimetype='application/json')
+
+
+#     def get_context_data(self, **kwargs):
+#         context = super(ProcessBibView, self).get_context_data(**kwargs)
+#         #Make lower case true because this will be interpreted as javascript
+#         #context['openurl'] = to_openurl(context['bib'])
+#         #context['illiad'] = self.make_illiad_url(context['bib'])
+#         return context
 
 class StaffView(DeliveryBaseView):
     template_name = 'delivery/staff.html'

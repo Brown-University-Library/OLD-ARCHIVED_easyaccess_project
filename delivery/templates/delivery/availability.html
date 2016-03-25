@@ -356,7 +356,7 @@
                               'USE IN LIBRARY',
                               'IN TRANSIT',
                               'ASK AT CIRC'];
-        var base_url = "{% url 'delivery:resolve' %}";
+        {% comment %} var base_url = "{% url 'delivery:resolve' %}"; {% endcomment %}
         $(document).ready(function() {
             window.bib = {{bibjson|safe}};
             //console.debug(base_url);

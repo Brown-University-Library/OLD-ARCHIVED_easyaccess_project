@@ -8,8 +8,8 @@ from django.conf.urls import include, patterns, url
 from django.contrib import admin
 
 
-from views import ResolveView, Link360View, PermalinkView, UserInfoView,\
-                  ProcessBibView, RequestView, StaffView
+# from views import ResolveView, Link360View, PermalinkView, UserInfoView,\
+#                   ProcessBibView, RequestView, StaffView
 
 
 urlpatterns = patterns('',
@@ -20,8 +20,8 @@ urlpatterns = patterns('',
     url( r'^process_request/$',  'delivery.views.process_request', name=u'process_request_url' ),  # after processing, redirects to 'message'
     url( r'^message/$',  'delivery.views.message', name=u'message_url' ),  # endpoint
 
-    url(r'request$', RequestView.as_view(), name='request'),
-    url(r'^$', ResolveView.as_view(), name='resolve'),
+    # url(r'request$', RequestView.as_view(), name='request'),
+    # url(r'^$', ResolveView.as_view(), name='resolve'),
 
     )
 
