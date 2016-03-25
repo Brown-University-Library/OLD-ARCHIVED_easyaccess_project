@@ -67,7 +67,6 @@ ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
 
 
-
 def citation_form( request ):
     """ Displays citation form on GET; redirects built url to /find/?... on POST. """
     alog.debug( 'request.GET, ```%s```' % pprint.pformat(request.GET) )
@@ -144,6 +143,8 @@ def findit_base_resolver( request ):
 
     ## if sersol-data shows it's a book, redirect to /borrow
     if fresolver.check_book_after_sersol( sersol_dct, querystring ):
+        request.session['last_path'] = request.path
+        request.session['last_querystring'] = querystring
         alog.debug( 'fresolver.borrow_link, `{}`'.format(fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
 
@@ -160,7 +161,6 @@ def findit_base_resolver( request ):
     ## end def base_resolver()
 
 
-
 def server_error(request, template_name='500.html'):
     """
     500 error handler.
@@ -174,7 +174,6 @@ def server_error(request, template_name='500.html'):
     return render_to_response(template_name,
         context_instance = RequestContext(request)
     )
-
 
 
 # def tiny_resolver( request, tiny ):
