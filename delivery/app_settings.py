@@ -13,6 +13,8 @@ DEVELOPMENT_SHIB_DCT = json.loads( os.environ['EZACS__COMMON_DEVELOPMENT_SHIB_JS
 
 AVAILABILITY_URL_ROOT = os.environ['EZACS__BORROW_AVAILABILITY_URL_ROOT']
 
+PROBLEM_FORM_URL_ROOT = os.environ['EZACS__BORROW_PROBLEM_FORM_URL_ROOT']
+PROBLEM_FORM_KEY = os.environ['EZACS__BORROW_PROBLEM_FORM_KEY']
 
 
 ILLIAD_KEY = getattr(settings, 'FINDIT_ILLIAD_KEY', None)
@@ -28,9 +30,6 @@ if ILLIAD_REMOTE_AUTH_HEADER is None:
 EMAIL_FROM = getattr(settings, 'FINDIT_EMAIL_FROM', None)
 if EMAIL_FROM is None:
      raise ImproperlyConfigured('From email is required: FINDIT_EMAIL_FROM.')
-
-#For reporting problems
-PROBLEM_URL = os.environ['EZACS__PROBLEM_REPORT_URL']
 
 ILLIAD_URL = getattr(settings, 'FINDIT_ILLIAD_URL', None)
 if ILLIAD_URL is None:

@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import logging, pprint
 import bibjsontools
 from django.utils.encoding import uri_to_iri
+from delivery import app_settings
 
 
 log = logging.getLogger('access')
@@ -12,6 +13,17 @@ log = logging.getLogger('access')
 
 class AvailabilityViewHelper(object):
     """ Holds helpers for views.availability() """
+
+    def build_problem_report_url( self, permalink, ip ):
+        """ Builds problem/feedback url.
+            Called by views.availability() """
+        problem_url = '{problem_form_url_root}?formkey={problem_form_key}&entry_2={permalink}&entry_3={ip}'.format(
+            problem_form_url_root=app_settings.PROBLEM_FORM_URL_ROOT,
+            problem_form_key=app_settings.PROBLEM_FORM_KEY,
+            permalink=permalink,
+            ip=ip )
+        log.debug( 'problem_url, ```{}```'.format(problem_url) )
+        return problem_url
 
     def build_bib_dct( self, querystring ):
         """ Calls bibjsontools.

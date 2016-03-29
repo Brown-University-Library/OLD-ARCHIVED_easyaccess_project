@@ -128,12 +128,14 @@ def availability( request ):
     log.debug( 'ebook_json, ```{}```'.format(ebook_json) )
     if ebook_json:
         ebook_dct = json.loads( ebook_json )
+    permalink = request.session.get( 'permalink_url', '' )
     context = {
-        'permalink_url': request.session.get( 'permalink_url', '' ),
+        'permalink_url': permalink,
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
         'available_locally': available_locally,
         'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
+        'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
         'ebook_dct': ebook_dct
         }
 
