@@ -23,8 +23,6 @@ class FinditResolverTest( TestCase ):
         self.resolver = FinditResolver()
         self.qdct = QueryDict( '', mutable=True )
 
-
-
     def test_check_direct_link__none( self ):
         """ No direct link should return False. """
         sersol_dct = {
@@ -46,8 +44,6 @@ class FinditResolverTest( TestCase ):
         self.assertEqual(
             False,  self.resolver.direct_link
             )
-
-
 
     def test_check_direct_link__two_available( self ):
         """ Multiple direct links should return True, and set the the direct_link attribute the first article url. """
@@ -101,11 +97,6 @@ class FinditResolverTest( TestCase ):
             'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
             self.resolver.direct_link
             )
-
-
-
-
-
 
     def test_check_ebook_no(self):
         """ Checks for proper response when _no_ ebook is found. """
