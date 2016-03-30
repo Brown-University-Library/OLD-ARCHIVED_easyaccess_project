@@ -155,6 +155,14 @@ def findit_base_resolver( request ):
     querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
+
+
+    # ## if there's a direct-link, go right to it
+    # if fresolver.check_direct_link( sersol_dct ):
+    #     return HttpResponseRedirect( fresolver.direct_link )
+
+
+
     ## if there's an ebook, put it in the session
     ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
     if ebook_exists is True:

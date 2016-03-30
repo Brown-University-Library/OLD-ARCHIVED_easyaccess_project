@@ -28,6 +28,7 @@ class FinditResolver( object ):
         self.enhanced_link = False
         self.sersol_publication_link = False
         self.borrow_link = False
+        self.direct_link = False
         self.referrer = ''
 
     def check_index_page( self, querydict ):
@@ -154,6 +155,16 @@ class FinditResolver( object ):
             sersol_dct = {}
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
+
+
+
+    def check_direct_link( self, sersol_dct ):
+        """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
+            Called by views.base_resolver() """
+        return False
+
+
+
 
     def check_book_after_sersol( self, sersol_dct, rqst_qstring ):
         """ Handles book requests after sersol lookup; builds /borrow redirect link.
