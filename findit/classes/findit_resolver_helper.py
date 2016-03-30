@@ -156,51 +156,31 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 
-
-
-    # def check_direct_link( self, sersol_dct ):
-    #     """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
-    #         Called by views.base_resolver() """
-    #     return_val = False
-    #     if sersol_dct.get( 'results', None ):
-    #         if sersol_dct['results'].get( 'linkGroups', None ):
-    #             for group in sersol_dct['results']['linkGroups']:
-    #                 if group.get( 'type', '' ) == 'holding':
-    #                     if group.get( 'url', None ):
-    #                         if group['url'].get( 'article', None ):
-    #                             self.direct_link = group['url']['article']
-    #                             return_val = True
-    #                             break
-    #     log.debug( 'return_val, `{}`'.format(return_val) )
-    #     return False
-
     def check_direct_link( self, sersol_dct ):
         """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
             Called by views.base_resolver() """
         return_val = False
         if sersol_dct.get( 'results', None ):
-            # log.debug( 'results found' )
             for result in sersol_dct['results']:
-                log.debug( 'processing result' )
                 if result.get( 'linkGroups', None ):
-                    log.debug( 'found linkGroups' )
                     for group in result['linkGroups']:
-                        log.debug( 'processing group' )
-                        if group.get( 'type', '' ) == 'holding':
-                            log.debug( 'found holding' )
-                            if group.get( 'url', None ):
-                                log.debug( 'found url' )
-                                if group['url'].get( 'article', None ):
-                                    self.direct_link = group['url']['article']
-                                    return_val = True
-                                    break
-                if return_val:
-                    break
+                        return_val = self._check_group_for_direct_link( group )
+                        if return_val: break
+                if return_val: break
         log.debug( 'return_val, `{}`'.format(return_val) )
         return return_val
 
-
-
+    def _check_group_for_direct_link( self, group ):
+        """ Checks a linkGroup's data for an article url; if found, updates self.direct_link
+            Called by check_direct_link() """
+        return_val = False
+        if group.get( 'type', '' ) == 'holding':
+            if group.get( 'url', None ):
+                if group['url'].get( 'article', None ):
+                    self.direct_link = group['url']['article']
+                    return_val = True
+        log.debug( 'return_val, `{}`'.format(return_val) )
+        return return_val
 
     def check_book_after_sersol( self, sersol_dct, rqst_qstring ):
         """ Handles book requests after sersol lookup; builds /borrow redirect link.
