@@ -41,10 +41,10 @@ class FinditResolverTest( TestCase ):
             u'version': u'1.0'
             }
         self.assertEqual(
-            False,  self.resolver.check_direct_link( sersol_dct )  # should be False
+            False,  self.resolver.check_direct_link( sersol_dct )
             )
         self.assertEqual(
-            False,  self.resolver.direct_link  # should be False
+            False,  self.resolver.direct_link
             )
 
 
@@ -95,10 +95,11 @@ class FinditResolverTest( TestCase ):
             u'version': u'1.0'
             }
         self.assertEqual(
-            2,  self.resolver.check_direct_link( sersol_dct )  # should be True
+            True,  self.resolver.check_direct_link( sersol_dct )
             )
         self.assertEqual(
-            2,  self.resolver.direct_link  # should be the Wiley article url 'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x'
+            'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
+            self.resolver.direct_link
             )
 
 

@@ -68,7 +68,10 @@ class IndexPageLinksTest( TestCase ):
         # log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
         self.assertEqual( 302, response.status_code )
         redirect_url = response._headers['location'][1]
-        self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
+        # self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
+        self.assertEqual(
+            'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
+            redirect_url )
 
     def test_article_chapter_held_at_annex(self):
         """ Checks the `Article/Chapter held at Annex.` link """

@@ -157,9 +157,9 @@ def findit_base_resolver( request ):
 
 
 
-    # ## if there's a direct-link, go right to it
-    # if fresolver.check_direct_link( sersol_dct ):
-    #     return HttpResponseRedirect( fresolver.direct_link )
+    ## if there's a direct-link, go right to it
+    if fresolver.check_direct_link( sersol_dct ):
+        return HttpResponseRedirect( fresolver.direct_link )
 
 
 
