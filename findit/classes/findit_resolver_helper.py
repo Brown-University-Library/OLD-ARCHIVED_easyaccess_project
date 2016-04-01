@@ -21,6 +21,23 @@ log = logging.getLogger('access')
 ill_url_builder = IlliadUrlBuilder()
 
 
+class EndnoteHelper( object ):
+    """ Builds endnote file like:
+        TY  - BOOK
+        PY  - 2005
+        PB  - Scholastic Press
+        AU  - Muth, Jon
+        SN  - 9780439339117
+        TI  - Zen shorts """
+
+    def build_endnote_dct( self ):
+        """ Builds data dct.
+            Called by x """
+        return 'foo'
+
+    # end class EndnoteHelper
+
+
 class FinditResolver( object ):
     """ Handles views.findit_base_resolver() calls. """
 
