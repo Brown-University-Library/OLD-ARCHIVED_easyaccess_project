@@ -16,6 +16,8 @@ urlpatterns = patterns('',
 
     url( r'^permalink/(?P<permalink_str>.*)/$',  'findit.views.permalink', name='permalink_url' ),
 
+    url( r'^ris_citation/$',  'findit.views.ris_citation', name='ris_url' ),
+
     # url( r'^request/(?P<resource>[0-9]+)/$',  RequestView.as_view(), name='request-view' ),  # might be needed for illiad requests, but I'd think they would go to /borrow
 
     # url( r'^mas/$',  MicrosoftView.as_view(), name='microsoft-view' ),

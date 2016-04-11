@@ -79,6 +79,15 @@ def citation_form( request ):
     return response
 
 
+def ris_citation( request ):
+    """ Downloads a ris citation for endnote.
+        [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) ) """
+    ris_string = 'coming'
+    response = HttpResponse( ris_string, content_type='application/x-research-info-systems' )
+    response['Content-Disposition'] = 'attachment; filename=endnote_citation.ris'
+    return response
+
+
 def permalink( request, permalink_str ):
     """ Handles expansion and redirection back to '/find/?...' """
     openurl = permalink_helper.get_openurl( permalink_str )
