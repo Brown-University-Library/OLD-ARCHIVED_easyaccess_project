@@ -106,36 +106,6 @@ def permalink( request, permalink_str ):
     else:
         return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
 
-#         export = self.request.GET.get('export', 'none')
-#         if export == 'ris':
-#             import string
-#             #For stripping punctuation for the download filename.
-#             exclude = set(string.punctuation)
-#             #export to RIS if requested
-#             bib = from_openurl(resource.query)
-#             title = bib.get('title', 'bul')
-#             slug = ''.join(ch for ch in title if ch not in exclude)
-#             filename = slug.replace(' ', '-').lower()
-#             rtext = ris.convert(bib)
-#             response = HttpResponse(rtext,
-#                                     content_type='application/x-research-info-systems')
-#             response['Content-Disposition'] = 'attachment; filename=%s.ris' % filename
-#             return response
-
-#     def make_ris(self):
-#         """
-#         Export citation as RIS.
-#         """
-#         from export import ris
-#         format = self.resolved.format
-#         citation = self.resolved.citation
-#         ris = ris(citation, format)
-#         response = HttpResponse(ris,
-#                                 content_type='application/x-research-info-systems')
-#         response['Content-Disposition'] = 'attachment; filename=easyArticle-%s.ris' % self.resource.id
-#         return response
-
-
 
 def findit_base_resolver( request ):
     """ Handles link resolution. """
