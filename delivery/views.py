@@ -136,7 +136,8 @@ def availability( request ):
         'available_locally': available_locally,
         'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
         'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
-        'ebook_dct': ebook_dct
+        'ebook_dct': ebook_dct,
+        'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
         }
 
     ## display landing page
