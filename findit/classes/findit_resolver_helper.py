@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import json,logging, pprint, re, urllib, urlparse
+import json, logging, pprint, re, urllib, urlparse
 from datetime import datetime
 
 import bibjsontools, requests
@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.text import slugify
 from findit import app_settings, forms, summon
 from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
@@ -21,21 +22,25 @@ log = logging.getLogger('access')
 ill_url_builder = IlliadUrlBuilder()
 
 
-class EndnoteHelper( object ):
-    """ Builds endnote file like:
+class RisHelper( object ):
+    """ Manages download of RIS file like:
         TY  - BOOK
         PY  - 2005
         PB  - Scholastic Press
         AU  - Muth, Jon
         SN  - 9780439339117
-        TI  - Zen shorts """
+        TI  - Zen shorts
+        [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) ) """
 
-    def build_endnote_dct( self ):
-        """ Builds data dct.
-            Called by x """
-        return 'foo'
+    def make_title( self, bib_dct ):
+        """ Grabs title from bib_dct else uses datestamp.
+            Called by views.ris_citation() """
+        title = bib_dct.get( 'title', unicode(datetime.now()).replace(' ', '_') )
+        slugified_title = slugify( title )
+        log.debug( 'slugified_title, `{}`'.format(slugified_title) )
+        return slugified_title
 
-    # end class EndnoteHelper
+    # end class RisHelper
 
 
 class FinditResolver( object ):

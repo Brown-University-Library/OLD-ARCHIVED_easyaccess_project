@@ -15,7 +15,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, get_script_prefix
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.decorators import method_decorator
 # from django.utils.log import dictConfig
@@ -25,6 +25,8 @@ from django.utils.decorators import method_decorator
 # from bul_link.views import BulLinkBase, ResolveView
 # from bul_link.models import Resource
 # from py360link2 import Link360Exception
+import bibjsontools
+from bibjsontools import ris as bibjsontools_ris
 from py360link2 import get_sersol_data, Link360Exception, Resolved
 
 #local
@@ -34,6 +36,7 @@ from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_A
 from .classes.baseconv import base62
 from .classes.citation_form_helper import CitationFormHelper
 from .classes.findit_resolver_helper import FinditResolver
+from .classes.findit_resolver_helper import RisHelper
 from .classes.permalink_helper import Permalink
 from .models import Request, UserMessage
 # from .utils import BulSerSol, FinditResolver, Ourl
@@ -59,6 +62,7 @@ PMID_QUERY = re.compile('^pmid\:(\d+)')
 fresolver = FinditResolver()
 form_helper = CitationFormHelper()
 permalink_helper = Permalink()
+ris_helper = RisHelper()
 
 #logging
 # import logging
@@ -82,9 +86,14 @@ def citation_form( request ):
 def ris_citation( request ):
     """ Downloads a ris citation for endnote.
         [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) ) """
-    ris_string = 'coming'
+    querystring = request.META.get('QUERY_STRING', None)
+    if not querystring:
+        return HttpResponseBadRequest( 'Sorry, no data found to parse for EndNote.' )
+    bib_dct = bibjsontools.from_openurl( querystring )
+    slugified_title = ris_helper.make_title( bib_dct )
+    ris_string = bibjsontools_ris.convert( bib_dct )
     response = HttpResponse( ris_string, content_type='application/x-research-info-systems' )
-    response['Content-Disposition'] = 'attachment; filename=endnote_citation.ris'
+    response['Content-Disposition'] = 'attachment; filename={}.ris'.format( slugified_title )
     return response
 
 
@@ -182,7 +191,7 @@ def findit_base_resolver( request ):
 
     # ## get serials-solution data-dct
     # querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
-    # sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
+    # sersol_dct = fres`olver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
     ## if sersol-data shows it's a book, redirect to /borrow
     if fresolver.check_book_after_sersol( sersol_dct, querystring ):
