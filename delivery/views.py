@@ -113,6 +113,9 @@ def availability( request ):
             isbn_holdings.append( holding )
         available_holdings = isbn_holdings
 
+    # ## run josiah availability check
+    # available_holdings = availability_view_helper.check_josiah_availability( isbn, oclc_num )
+
     ## set available flag
     available_locally = False
     if len( available_holdings ) > 0:
