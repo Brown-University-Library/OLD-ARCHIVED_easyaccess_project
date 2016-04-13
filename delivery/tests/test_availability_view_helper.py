@@ -20,6 +20,17 @@ class AvailabilityViewHelperTest(TestCase):
     def setUp(self):
         self.helper = AvailabilityViewHelper()
 
+
+    def test_check_josiah_availability__holdings_returned(self):
+        """ Should return holdings for both isbn check and oclc check. """
+        isbn = '9780688002305'
+        oclc_num = '673595'
+        self.assertEqual(
+            [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'} ],
+            self.helper.check_josiah_availability( isbn, oclc_num )
+            )
+
+
     def test_build_simple_bib_dct(self):
         """ Should return minimal info. """
         querystring = 'isbn=foo'

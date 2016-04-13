@@ -2,8 +2,8 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint
-import bibjsontools
+import json, logging, pprint
+import bibjsontools, requests
 from django.utils.encoding import uri_to_iri
 from delivery import app_settings
 
@@ -13,6 +13,49 @@ log = logging.getLogger('access')
 
 class AvailabilityViewHelper(object):
     """ Holds helpers for views.availability() """
+
+
+    def check_josiah_availability( self, isbn, oclc_num ):
+        """ Checks josiah availability, returns holdings data.
+            Called by views.availability() """
+        isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
+        log.debug( 'isbn_url, ```{}```'.format(isbn_url) )
+        try:
+            r = requests.get( isbn_url, timeout=7 )
+            jdct = json.loads( r.content.decode('utf-8') )
+        except Exception as e:
+            log.error( 'acceptable_exception checking availability, ```{}```'.format(unicode(repr(e))) )
+            jdct = {}
+        log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+        available_holdings = []
+        bib_num = jdct.get( 'id', None )
+        if bib_num:
+            isbn_holdings = []
+            for item in jdct['items']:
+                if item['is_available'] is True:
+                    isbn_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+            oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
+            r = requests.get( oclc_num_url )
+            jdct = json.loads( r.content.decode('utf-8') )
+            log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+            oclc_holdings = []
+            for item in jdct['items']:
+                if item['is_available'] is True:
+                    oclc_num_callnumber = item['callnumber']
+                    # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
+                    match_check = False
+                    for holding in isbn_holdings:
+                        log.debug( 'holding, ```{}```'.format(holding) )
+                        if oclc_num_callnumber == holding['callnumber']:
+                            match_check = True
+                            break
+                    if match_check is False:
+                        oclc_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+            for holding in oclc_holdings:
+                isbn_holdings.append( holding )
+            available_holdings = isbn_holdings
+        return available_holdings
+
 
     def build_problem_report_url( self, permalink, ip ):
         """ Builds problem/feedback url.
@@ -42,6 +85,7 @@ class AvailabilityViewHelper(object):
 #===============================================================================
 # Manages josiah-availability.
 # Checks availability & updates ezb db if necessary.
+# 2016-04-12 -- not currently used -- TODO, delete or refactor new check_josiah_availability() function above
 #===============================================================================
 class JosiahAvailabilityManager(object):
 
