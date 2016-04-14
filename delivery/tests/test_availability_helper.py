@@ -6,30 +6,18 @@ from __future__ import unicode_literals
 import logging, pprint
 from django.test import TestCase
 from django.utils.encoding import iri_to_uri
-from delivery.classes.availability_helper import AvailabilityViewHelper
+from delivery.classes.availability_helper import AvailabilityViewHelper, JosiahAvailabilityChecker
 
 
 log = logging.getLogger('access')
 
 
-
 class AvailabilityViewHelperTest(TestCase):
-    """ Checks ProcessViewHelper()
+    """ Checks AvailabilityViewHelper()
         Not going to test save_to_easyborrow() with good data to avoid executing real request. """
 
     def setUp(self):
         self.helper = AvailabilityViewHelper()
-
-
-    def test_check_josiah_availability__holdings_returned(self):
-        """ Should return holdings for both isbn check and oclc check. """
-        isbn = '9780688002305'
-        oclc_num = '673595'
-        self.assertEqual(
-            [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'} ],
-            self.helper.check_josiah_availability( isbn, oclc_num )
-            )
-
 
     def test_build_simple_bib_dct(self):
         """ Should return minimal info. """
@@ -53,5 +41,22 @@ class AvailabilityViewHelperTest(TestCase):
     # end AvailabilityViewHelperTest()
 
 
+class AvailabilityCheckerTest(TestCase):
+    """ Checks JosiahAvailabilityChecker() """
 
-    # querystring = 'sid=FirstSearch%3AWorldCat&genre=book&title=Zen&date=1978&aulast=Yoshioka&aufirst=T%C5%8Dichi&id=doi%3A&pid=6104671%3Cfssessid%3E0%3C%2Ffssessid%3E%3Cedition%3E1st+ed.%3C%2Fedition%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E6104671%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F6104671&rft.aulast=Yoshioka&rft.aufirst=T%C5%8Dichi&rft.btitle=Zen&rft.date=1978&rft.place=Osaka++Japan&rft.pub=Hoikusha&rft.edition=1st+ed.&rft.genre=book'
+    def setUp(self):
+        self.checker = JosiahAvailabilityChecker()
+
+    def test_check_josiah_availability__holdings_returned(self):
+        """ Should return holdings for both isbn check and oclc check. """
+        isbn = '9780688002305'
+        oclc_num = '673595'
+        # self.assertEqual( 1, 2 )
+        self.assertEqual(
+            [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'} ],
+            self.checker.check_josiah_availability( isbn, oclc_num )
+            )
+
+    # end AvailabilityCheckerTest()
+
+# querystring = 'sid=FirstSearch%3AWorldCat&genre=book&title=Zen&date=1978&aulast=Yoshioka&aufirst=T%C5%8Dichi&id=doi%3A&pid=6104671%3Cfssessid%3E0%3C%2Ffssessid%3E%3Cedition%3E1st+ed.%3C%2Fedition%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E6104671%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F6104671&rft.aulast=Yoshioka&rft.aufirst=T%C5%8Dichi&rft.btitle=Zen&rft.date=1978&rft.place=Osaka++Japan&rft.pub=Hoikusha&rft.edition=1st+ed.&rft.genre=book'

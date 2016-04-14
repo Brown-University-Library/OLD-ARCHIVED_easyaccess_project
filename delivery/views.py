@@ -25,13 +25,13 @@ from shibboleth.decorators import login_optional
 from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 # from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
 from delivery.classes.availability_helper import AvailabilityViewHelper
+from delivery.classes.availability_helper import JosiahAvailabilityChecker
 from delivery.classes.login_helper import LoginViewHelper
 from delivery.classes.process_helper import ProcessViewHelper
 
 
 log = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
-# availability_checker = AvailabilityChecker()
 availability_view_helper = AvailabilityViewHelper()
 login_view_helper = LoginViewHelper()
 process_view_helper = ProcessViewHelper()
@@ -114,7 +114,9 @@ def availability( request ):
         available_holdings = isbn_holdings
 
     # ## run josiah availability check
-    # available_holdings = availability_view_helper.check_josiah_availability( isbn, oclc_num )
+    # availability_checker = JosiahAvailabilityChecker()
+    # available_holdings = availability_checker.check_josiah_availability( isbn, oclc_num )
+    # bib_num = availability_checker.bib_num
 
     ## set available flag
     available_locally = False

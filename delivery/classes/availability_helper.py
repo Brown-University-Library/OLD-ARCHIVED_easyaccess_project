@@ -14,6 +14,36 @@ log = logging.getLogger('access')
 class AvailabilityViewHelper(object):
     """ Holds helpers for views.availability() """
 
+    def build_problem_report_url( self, permalink, ip ):
+        """ Builds problem/feedback url.
+            Called by views.availability() """
+        problem_url = '{problem_form_url_root}?formkey={problem_form_key}&entry_2={permalink}&entry_3={ip}'.format(
+            problem_form_url_root=app_settings.PROBLEM_FORM_URL_ROOT,
+            problem_form_key=app_settings.PROBLEM_FORM_KEY,
+            permalink=permalink,
+            ip=ip )
+        log.debug( 'problem_url, ```{}```'.format(problem_url) )
+        return problem_url
+
+    def build_bib_dct( self, querystring ):
+        """ Calls bibjsontools.
+            Called by views.availability() """
+        log.debug( 'querystring, ```{}```'.format(querystring) )
+        log.debug( 'type(querystring), `{}`'.format(type(querystring)) )
+        assert type(querystring) == unicode
+        iri_querystring = uri_to_iri( querystring )
+        bib_dct = bibjsontools.from_openurl( iri_querystring )
+        log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
+        return bib_dct
+
+    # end class AvailabilityViewHelper()
+
+
+class JosiahAvailabilityChecker(object):
+    """ Manages check for item-availability. """
+
+    def __init__( self ):
+        self.bib_num = ''
 
     def check_josiah_availability( self, isbn, oclc_num ):
         """ Checks josiah availability, returns holdings data.
@@ -30,6 +60,7 @@ class AvailabilityViewHelper(object):
         available_holdings = []
         bib_num = jdct.get( 'id', None )
         if bib_num:
+            self.bib_num = bib_num
             isbn_holdings = []
             for item in jdct['items']:
                 if item['is_available'] is True:
@@ -56,30 +87,51 @@ class AvailabilityViewHelper(object):
             available_holdings = isbn_holdings
         return available_holdings
 
+    # end class JosiahAvailabilityChecker()
 
-    def build_problem_report_url( self, permalink, ip ):
-        """ Builds problem/feedback url.
-            Called by views.availability() """
-        problem_url = '{problem_form_url_root}?formkey={problem_form_key}&entry_2={permalink}&entry_3={ip}'.format(
-            problem_form_url_root=app_settings.PROBLEM_FORM_URL_ROOT,
-            problem_form_key=app_settings.PROBLEM_FORM_KEY,
-            permalink=permalink,
-            ip=ip )
-        log.debug( 'problem_url, ```{}```'.format(problem_url) )
-        return problem_url
 
-    def build_bib_dct( self, querystring ):
-        """ Calls bibjsontools.
-            Called by views.availability() """
-        log.debug( 'querystring, ```{}```'.format(querystring) )
-        log.debug( 'type(querystring), `{}`'.format(type(querystring)) )
-        assert type(querystring) == unicode
-        iri_querystring = uri_to_iri( querystring )
-        bib_dct = bibjsontools.from_openurl( iri_querystring )
-        log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
-        return bib_dct
 
-    # end class AvailabilityViewHelper()
+    # def check_josiah_availability( self, isbn, oclc_num ):
+    #     """ Checks josiah availability, returns holdings data.
+    #         Called by views.availability() """
+    #     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
+    #     log.debug( 'isbn_url, ```{}```'.format(isbn_url) )
+    #     try:
+    #         r = requests.get( isbn_url, timeout=7 )
+    #         jdct = json.loads( r.content.decode('utf-8') )
+    #     except Exception as e:
+    #         log.error( 'acceptable_exception checking availability, ```{}```'.format(unicode(repr(e))) )
+    #         jdct = {}
+    #     log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+    #     available_holdings = []
+    #     bib_num = jdct.get( 'id', None )
+    #     if bib_num:
+    #         isbn_holdings = []
+    #         for item in jdct['items']:
+    #             if item['is_available'] is True:
+    #                 isbn_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+    #         oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
+    #         r = requests.get( oclc_num_url )
+    #         jdct = json.loads( r.content.decode('utf-8') )
+    #         log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+    #         oclc_holdings = []
+    #         for item in jdct['items']:
+    #             if item['is_available'] is True:
+    #                 oclc_num_callnumber = item['callnumber']
+    #                 # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
+    #                 match_check = False
+    #                 for holding in isbn_holdings:
+    #                     log.debug( 'holding, ```{}```'.format(holding) )
+    #                     if oclc_num_callnumber == holding['callnumber']:
+    #                         match_check = True
+    #                         break
+    #                 if match_check is False:
+    #                     oclc_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
+    #         for holding in oclc_holdings:
+    #             isbn_holdings.append( holding )
+    #         available_holdings = isbn_holdings
+    #     return available_holdings
+
 
 
 # #===============================================================================
