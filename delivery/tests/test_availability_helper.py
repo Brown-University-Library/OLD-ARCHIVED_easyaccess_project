@@ -47,6 +47,15 @@ class AvailabilityCheckerTest(TestCase):
     def setUp(self):
         self.checker = JosiahAvailabilityChecker()
 
+    def test_check_josiah_availability__no_isbn(self):
+        """ Should return holdings for both isbn check and oclc check. """
+        isbn = ''
+        oclc_num = '673595'
+        self.assertEqual(
+            2,
+            self.checker.check_josiah_availability( isbn, oclc_num )
+            )
+
     def test_check_josiah_availability__no_oclcnum(self):
         """ Should return holdings for both isbn check and oclc check. """
         isbn = '9788934900894'

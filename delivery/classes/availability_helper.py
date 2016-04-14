@@ -49,6 +49,7 @@ class JosiahAvailabilityChecker(object):
         """ Checks josiah availability, returns holdings data.
             Called by views.availability() """
         available_holdings = []
+        jdct = {}
         if isbn:
             isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
             log.debug( 'isbn_url, ```{}```'.format(isbn_url) )
