@@ -59,81 +59,89 @@ class JosiahAvailabilityChecker(object):
                 log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
             except Exception as e:
                 log.warning( 'isbn-availability-check may have timed out, error, ```{}```'.format(unicode(repr(e))) )
-        bib_num = jdct.get( 'id', None )
-        if bib_num:
-            self.bib_num = bib_num
-            for item in jdct['items']:
-                if item['is_available'] is True:
-                    isbn_item = {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']}
-                    log.debug( 'isbn_item being added, {}'.format(isbn_item) )
-                    available_holdings.append( isbn_item )
-            if oclc_num:
-                oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
-                log.debug( 'oclc_num_url, `{}`'.format(oclc_num_url) )
-                try:
-                    r = requests.get( oclc_num_url, timeout=10 )
-                    jdct = json.loads( r.content.decode('utf-8') )
-                    log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
-                    for item in jdct['items']:
-                        if item['is_available'] is True:
-                            oclc_num_callnumber = item['callnumber']
-                            # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
-                            match_check = False
-                            for holding in available_holdings:
-                                log.debug( 'holding being checked, ```{}```'.format(holding) )
-                                if oclc_num_callnumber == holding['callnumber']:
-                                    match_check = True
-                                    break
-                            if match_check is False:
-                                additional_oclc_item = {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']}
-                                log.debug( 'additional_oclc_item being added, {}'.format(additional_oclc_item) )
-                                available_holdings.append( additional_oclc_info )
-                except Exception as e:
-                    log.warning( 'oclc-availability-check may have timed out, error, ```{}```'.format(unicode(repr(e))) )
+            bib_num = jdct.get( 'id', None )
+            if bib_num:
+                self.bib_num = bib_num
+                for item in jdct['items']:
+                    if item['is_available'] is True:
+                        isbn_item = {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']}
+                        log.debug( 'isbn_item being added, {}'.format(isbn_item) )
+                        available_holdings.append( isbn_item )
+        if oclc_num and available_holdings == []:
+            oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
+            log.debug( 'oclc_num_url, `{}`'.format(oclc_num_url) )
+            try:
+                r = requests.get( oclc_num_url, timeout=10 )
+                oclc_jdct = json.loads( r.content.decode('utf-8') )
+                log.debug( 'oclc_jdct, ```{}```'.format(pprint.pformat(oclc_jdct)) )
+            except Exception as e:
+                log.warning( 'oclc-availability-check may have timed out, error, ```{}```'.format(unicode(repr(e))) )
+            bib_num = oclc_jdct.get( 'id', None )
+            if bib_num:
+                self.bib_num = bib_num
+                for item in oclc_jdct['items']:
+                    if item['is_available'] is True:
+                        # oclc_num_callnumber = item['callnumber']
+                        # match_check = False
+                        # for holding in available_holdings:
+                        #     log.debug( 'holding being checked, ```{}```'.format(holding) )
+                        #     if oclc_num_callnumber == holding['callnumber']:
+                        #         match_check = True
+                        #         break
+                        # if match_check is False:
+                        #     additional_oclc_item = {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']}
+                        #     log.debug( 'additional_oclc_item being added, {}'.format(additional_oclc_item) )
+                        #     available_holdings.append( additional_oclc_item )
+                        oclc_item = { 'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability'] }
+                        log.debug( 'oclc_item being added, {}'.format(oclc_item) )
+                        available_holdings.append( oclc_item )
         return available_holdings
 
     # def check_josiah_availability( self, isbn, oclc_num ):
     #     """ Checks josiah availability, returns holdings data.
     #         Called by views.availability() """
-    #     isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
-    #     log.debug( 'isbn_url, ```{}```'.format(isbn_url) )
-    #     try:
-    #         r = requests.get( isbn_url, timeout=7 )
-    #         jdct = json.loads( r.content.decode('utf-8') )
-    #     except Exception as e:
-    #         log.error( 'acceptable_exception checking availability, ```{}```'.format(unicode(repr(e))) )
-    #         jdct = {}
-    #     log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
     #     available_holdings = []
+    #     jdct = {}
+    #     if isbn:
+    #         isbn_url = '{ROOT}isbn/{ISBN}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, ISBN=isbn )
+    #         log.debug( 'isbn_url, ```{}```'.format(isbn_url) )
+    #         try:
+    #             r = requests.get( isbn_url, timeout=10 )
+    #             jdct = json.loads( r.content.decode('utf-8') )
+    #             log.debug( 'isbn-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+    #         except Exception as e:
+    #             log.warning( 'isbn-availability-check may have timed out, error, ```{}```'.format(unicode(repr(e))) )
     #     bib_num = jdct.get( 'id', None )
     #     if bib_num:
     #         self.bib_num = bib_num
-    #         isbn_holdings = []
     #         for item in jdct['items']:
     #             if item['is_available'] is True:
-    #                 isbn_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
-    #         oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
-    #         log.debug( 'oclc_num_url, `{}`'.format(oclc_num_url) )
-    #         r = requests.get( oclc_num_url )
-    #         log.debug( 'response, ```{}```'.format(r.content.decode('utf-8')) )
-    #         jdct = json.loads( r.content.decode('utf-8') )
-    #         log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
-    #         oclc_holdings = []
-    #         for item in jdct['items']:
-    #             if item['is_available'] is True:
-    #                 oclc_num_callnumber = item['callnumber']
-    #                 # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
-    #                 match_check = False
-    #                 for holding in isbn_holdings:
-    #                     log.debug( 'holding, ```{}```'.format(holding) )
-    #                     if oclc_num_callnumber == holding['callnumber']:
-    #                         match_check = True
-    #                         break
-    #                 if match_check is False:
-    #                     oclc_holdings.append( {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']} )
-    #         for holding in oclc_holdings:
-    #             isbn_holdings.append( holding )
-    #         available_holdings = isbn_holdings
+    #                 isbn_item = {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']}
+    #                 log.debug( 'isbn_item being added, {}'.format(isbn_item) )
+    #                 available_holdings.append( isbn_item )
+    #         if oclc_num:
+    #             oclc_num_url = '{ROOT}oclc/{OCLC_NUM}/'.format( ROOT=app_settings.AVAILABILITY_URL_ROOT, OCLC_NUM=oclc_num )
+    #             log.debug( 'oclc_num_url, `{}`'.format(oclc_num_url) )
+    #             try:
+    #                 r = requests.get( oclc_num_url, timeout=10 )
+    #                 jdct = json.loads( r.content.decode('utf-8') )
+    #                 log.debug( 'oclc_num-jdct, ```{}```'.format(pprint.pformat(jdct)) )
+    #                 for item in jdct['items']:
+    #                     if item['is_available'] is True:
+    #                         oclc_num_callnumber = item['callnumber']
+    #                         # log.debug( 'oclc_num_callnumber, ```{}```'.format(oclc_num_callnumber) )
+    #                         match_check = False
+    #                         for holding in available_holdings:
+    #                             log.debug( 'holding being checked, ```{}```'.format(holding) )
+    #                             if oclc_num_callnumber == holding['callnumber']:
+    #                                 match_check = True
+    #                                 break
+    #                         if match_check is False:
+    #                             additional_oclc_item = {'callnumber': item['callnumber'], 'location': item['location'], 'status': item['availability']}
+    #                             log.debug( 'additional_oclc_item being added, {}'.format(additional_oclc_item) )
+    #                             available_holdings.append( additional_oclc_info )
+    #             except Exception as e:
+    #                 log.warning( 'oclc-availability-check may have timed out, error, ```{}```'.format(unicode(repr(e))) )
     #     return available_holdings
 
     # end class JosiahAvailabilityChecker()

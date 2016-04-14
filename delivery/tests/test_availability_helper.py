@@ -52,7 +52,7 @@ class AvailabilityCheckerTest(TestCase):
         isbn = ''
         oclc_num = '673595'
         self.assertEqual(
-            2,
+            [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'} ],
             self.checker.check_josiah_availability( isbn, oclc_num )
             )
 
