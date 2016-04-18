@@ -113,7 +113,7 @@ class CitationFormHelper( object ):
                 if bibjson_dct.get( 'identifier', '' ) is not '':
                     for entry in bibjson_dct['identifier']:
                         if entry.get( 'type', '' ) == 'issn':
-                            citation_form_dct['issn'] = bibjson_dct['identifier']['id']
+                            citation_form_dct['issn'] = entry['id']
                             break
             if citation_form_dct.get('pmid', '').strip() == '':
                 pass  # TODO: implement
