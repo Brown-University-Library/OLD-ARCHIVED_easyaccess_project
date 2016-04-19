@@ -98,12 +98,15 @@ class CitationFormHelper( object ):
             citation_form_dct[k] = v
         log.debug( 'initial_citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
 
+
         genre = self._check_genre( querydct )
         if genre == 'book':
             log.debug( 'in book handler')
             # fields unique to book-form: btitle, isbn, pub, place, spage, epage
             if citation_form_dct.get('btitle', None) == None:
                 citation_form_dct['btitle'] = citation_form_dct.get('title', None)
+            if citation_form_dct.get('pub', None) == None:
+                citation_form_dct['pub'] = citation_form_dct.get('rft.pub', None)
 
 
         else:  # article
