@@ -102,8 +102,10 @@ class CitationFormHelper( object ):
         if genre == 'book':
             log.debug( 'in book handler')
             # fields unique to book-form: btitle, isbn, pub, place, spage, epage
-            if citation_form_dct.get('btitle', '') == '':
-                pass
+            if citation_form_dct.get('btitle', None) == None:
+                citation_form_dct['btitle'] = citation_form_dct.get('title', None)
+            # if citation_form_dct.get('btitle', '') == '':
+            #     pass
         else:  # article
             # fields unique to article-form: atitle, jtitle, issn, pmid, volume, issue
             if citation_form_dct.get('atitle', '').strip() == '':
