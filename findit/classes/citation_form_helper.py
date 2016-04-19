@@ -98,7 +98,6 @@ class CitationFormHelper( object ):
             citation_form_dct[k] = v
         log.debug( 'initial_citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
 
-
         genre = self._check_genre( querydct )
         if genre == 'book':
             log.debug( 'in book handler')
@@ -109,7 +108,6 @@ class CitationFormHelper( object ):
                 citation_form_dct['pub'] = citation_form_dct.get('rft.pub', None)
             if citation_form_dct.get('place', None) == None:
                 citation_form_dct['place'] = citation_form_dct.get('rft.place', None)
-
 
         else:  # article
             # fields unique to article-form: atitle, jtitle, issn, pmid, volume, issue
@@ -131,6 +129,7 @@ class CitationFormHelper( object ):
                 citation_form_dct['volume'] = bibjson_dct.get( 'volume', '' )
             if citation_form_dct.get('issue', '').strip() == '':
                 citation_form_dct['issue'] = bibjson_dct.get( 'issue', '' )
+
         # fields in both forma: 'au', 'date', 'id', 'pages', 'rfe_dat'
         if citation_form_dct.get('au', '').strip() == '':
             if bibjson_dct.get( 'author', '' ) is not '':
