@@ -77,15 +77,6 @@ class CitationFormHelper( object ):
         log.debug( 'form_type, `%s`' % form_type )
         return form_type
 
-    # def make_form_type( self, dct ):
-    #     """ Tries to get the default form right.
-    #         Called by build_context_from_url() """
-    #     form_type = 'article'
-    #     if dct.get('isbn', '') is not '' and dct.get('issn', '') is '':
-    #         form_type = 'book'
-    #     log.debug( 'form_type, `%s`' % form_type )
-    #     return form_type
-
     ## form prep for openurl ##
 
     def make_form_dct( self, querydct ):
@@ -109,6 +100,7 @@ class CitationFormHelper( object ):
 
         genre = self._check_genre( querydct )
         if genre == 'book':
+            log.debug( 'in book handler')
             # fields unique to book-form: btitle, isbn, pub, place, spage, epage
             if citation_form_dct.get('btitle', '') == '':
                 pass

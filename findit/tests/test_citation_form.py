@@ -88,6 +88,7 @@ class CitationFormHelperTest( TestCase ):
             {'au': 'Yoshioka, T\u014dichi',
              'aufirst': 'T\u014dichi',
              'aulast': 'Yoshioka',
+             'btitle': 'Zen',
              'date': '1978',
              'genre': 'book',
              'id': '',
@@ -109,6 +110,60 @@ class CitationFormHelperTest( TestCase ):
              'title': 'Zen',
              'url_ver': 'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
             )
+
+    # def test_make_form_dct__book_openurl(self):
+    #     """ Checks large openurl. """
+    #     dct = {
+    #         'aufirst': 'T\u014dichi',
+    #         'aulast': 'Yoshioka',
+    #         'date': '1978',
+    #         'genre': 'book',
+    #         'id': '',
+    #         'pid': '6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+    #         'req_dat': '<sessionid>0</sessionid>',
+    #         'rfe_dat': '6104671',
+    #         'rfr_id': 'info:sid/firstsearch.oclc.org:WorldCat',
+    #         'rft.aufirst': 'T\u014dichi',
+    #         'rft.aulast': 'Yoshioka',
+    #         'rft.btitle': 'Zen',
+    #         'rft.date': '1978',
+    #         'rft.edition': '1st ed.',
+    #         'rft.genre': 'book',
+    #         'rft.place': 'Osaka  Japan',
+    #         'rft.pub': 'Hoikusha',
+    #         'rft_id': 'info:oclcnum/6104671',
+    #         'rft_val_fmt': 'info:ofi/fmt:kev:mtx:book',
+    #         'sid': 'FirstSearch:WorldCat',
+    #         'title': 'Zen',
+    #         'url_ver': 'Z39.88-2004'}
+    #     self.qdct.update(dct)
+    #     self.assertEqual(
+    #         {'au': 'Yoshioka, T\u014dichi',
+    #          'aufirst': 'T\u014dichi',
+    #          'aulast': 'Yoshioka',
+    #          'date': '1978',
+    #          'genre': 'book',
+    #          'id': '',
+    #          'pid': '6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+    #          'req_dat': '<sessionid>0</sessionid>',
+    #          'rfe_dat': '6104671',
+    #          'rfr_id': 'info:sid/firstsearch.oclc.org:WorldCat',
+    #          'rft.aufirst': 'T\u014dichi',
+    #          'rft.aulast': 'Yoshioka',
+    #          'rft.btitle': 'Zen',
+    #          'rft.date': '1978',
+    #          'rft.edition': '1st ed.',
+    #          'rft.genre': 'book',
+    #          'rft.place': 'Osaka  Japan',
+    #          'rft.pub': 'Hoikusha',
+    #          'rft_id': 'info:oclcnum/6104671',
+    #          'rft_val_fmt': 'info:ofi/fmt:kev:mtx:book',
+    #          'sid': 'FirstSearch:WorldCat',
+    #          'title': 'Zen',
+    #          'url_ver': 'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
+    #         )
+
+    ## make_form_type() checks ##
 
     def test_make_form_type_isbn(self):
         """ Checks form_type determination. """
