@@ -93,6 +93,7 @@ class CitationFormHelperTest( TestCase ):
              'genre': 'book',
              'id': '',
              'pid': '6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+             'pub': 'Hoikusha',
              'req_dat': '<sessionid>0</sessionid>',
              'rfe_dat': '6104671',
              'rfr_id': 'info:sid/firstsearch.oclc.org:WorldCat',
