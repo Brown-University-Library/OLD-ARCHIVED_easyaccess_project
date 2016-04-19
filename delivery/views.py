@@ -72,15 +72,6 @@ def availability( request ):
     bib_dct['isbn'] = isbn
     bib_dct['oclc_num'] = oclc_num
     request.session['bib_dct_json'] = json.dumps(bib_dct)
-    # ( isbn, oclc_num ) = ( '', '' )
-    # for identifier in bib_dct['identifier']:
-    #     if identifier['type'] == 'isbn':
-    #         isbn = identifier['id']
-    #     elif identifier['type'] == 'oclc':
-    #         oclc_num = identifier['id']
-    # bib_dct['isbn'] = isbn
-    # bib_dct['oclc_num'] = oclc_num
-    # request.session['bib_dct_json'] = json.dumps(bib_dct)
 
     ## run recent-request check -- TODO
 
