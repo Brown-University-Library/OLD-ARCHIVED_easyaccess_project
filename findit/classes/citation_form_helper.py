@@ -72,8 +72,19 @@ class CitationFormHelper( object ):
         form_type = 'article'
         if dct.get('isbn', '') is not '' and dct.get('issn', '') is '':
             form_type = 'book'
+        elif dct.get('genre', '') == 'book':
+            form_type = 'book'
         log.debug( 'form_type, `%s`' % form_type )
         return form_type
+
+    # def make_form_type( self, dct ):
+    #     """ Tries to get the default form right.
+    #         Called by build_context_from_url() """
+    #     form_type = 'article'
+    #     if dct.get('isbn', '') is not '' and dct.get('issn', '') is '':
+    #         form_type = 'book'
+    #     log.debug( 'form_type, `%s`' % form_type )
+    #     return form_type
 
     ## form prep for openurl ##
 

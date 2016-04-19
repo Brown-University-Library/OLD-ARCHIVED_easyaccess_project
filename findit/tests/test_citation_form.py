@@ -28,7 +28,7 @@ class CitationFormHelperTest( TestCase ):
         self.qdct.update(dct)
         self.assertEqual(
             # { 'some_oclc_key': '1234' },
-            {u'volume': u'', u'some_oclc_key': u'1234', u'issue': u'', u'atitle': u'Unknown' },
+            {'volume': '', 'some_oclc_key': '1234', 'issue': '', 'atitle': 'Unknown' },
             self.helper.make_form_dct( self.qdct )
             )
 
@@ -37,7 +37,7 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'id': 'doi:1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'volume': u'', u'issue': u'', u'id': u'1234', u'atitle': u'Unknown'},
+            {'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown'},
             self.helper.make_form_dct( self.qdct )
             )
 
@@ -46,7 +46,7 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'doi': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'atitle': u'Unknown', u'id': u'1234', u'issue': u'', u'volume': u''},
+            {'atitle': 'Unknown', 'id': '1234', 'issue': '', 'volume': ''},
             self.helper.make_form_dct( self.qdct )
             )
 
@@ -85,29 +85,66 @@ class CitationFormHelperTest( TestCase ):
             'url_ver': 'Z39.88-2004'}
         self.qdct.update(dct)
         self.assertEqual(
-            {u'au': u'Yoshioka, T\u014dichi',
-             u'aufirst': u'T\u014dichi',
-             u'aulast': u'Yoshioka',
-             u'date': u'1978',
-             u'genre': u'book',
-             u'id': u'',
-             u'pid': u'6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
-             u'req_dat': u'<sessionid>0</sessionid>',
-             u'rfe_dat': u'6104671',
-             u'rfr_id': u'info:sid/firstsearch.oclc.org:WorldCat',
-             u'rft.aufirst': u'T\u014dichi',
-             u'rft.aulast': u'Yoshioka',
-             u'rft.btitle': u'Zen',
-             u'rft.date': u'1978',
-             u'rft.edition': u'1st ed.',
-             u'rft.genre': u'book',
-             u'rft.place': u'Osaka  Japan',
-             u'rft.pub': u'Hoikusha',
-             u'rft_id': u'info:oclcnum/6104671',
-             u'rft_val_fmt': u'info:ofi/fmt:kev:mtx:book',
-             u'sid': u'FirstSearch:WorldCat',
-             u'title': u'Zen',
-             u'url_ver': u'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
+            {'au': 'Yoshioka, T\u014dichi',
+             'aufirst': 'T\u014dichi',
+             'aulast': 'Yoshioka',
+             'date': '1978',
+             'genre': 'book',
+             'id': '',
+             'pid': '6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+             'req_dat': '<sessionid>0</sessionid>',
+             'rfe_dat': '6104671',
+             'rfr_id': 'info:sid/firstsearch.oclc.org:WorldCat',
+             'rft.aufirst': 'T\u014dichi',
+             'rft.aulast': 'Yoshioka',
+             'rft.btitle': 'Zen',
+             'rft.date': '1978',
+             'rft.edition': '1st ed.',
+             'rft.genre': 'book',
+             'rft.place': 'Osaka  Japan',
+             'rft.pub': 'Hoikusha',
+             'rft_id': 'info:oclcnum/6104671',
+             'rft_val_fmt': 'info:ofi/fmt:kev:mtx:book',
+             'sid': 'FirstSearch:WorldCat',
+             'title': 'Zen',
+             'url_ver': 'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
+            )
+
+    def test_make_form_type_isbn(self):
+        """ Checks form_type determination. """
+        citation_dct = { 'isbn': '1234' }
+        self.assertEqual(
+            'book', self.helper.make_form_type( citation_dct )
+            )
+
+    def test_make_form_type_no_isbn(self):
+        """ Checks form_type determination. """
+        citation_dct = {
+            'au': 'Yoshioka, T\u014dichi',
+            'aufirst': 'T\u014dichi',
+            'aulast': 'Yoshioka',
+            'date': '1978',
+            'genre': 'book',
+            'id': '',
+            'pid': '6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+            'req_dat': '<sessionid>0</sessionid>',
+            'rfe_dat': '6104671',
+            'rfr_id': 'info:sid/firstsearch.oclc.org:WorldCat',
+            'rft.aufirst': 'T\u014dichi',
+            'rft.aulast': 'Yoshioka',
+            'rft.btitle': 'Zen',
+            'rft.date': '1978',
+            'rft.edition': '1st ed.',
+            'rft.genre': 'book',
+            'rft.place': 'Osaka  Japan',
+            'rft.pub': 'Hoikusha',
+            'rft_id': 'info:oclcnum/6104671',
+            'rft_val_fmt': 'info:ofi/fmt:kev:mtx:book',
+            'sid': 'FirstSearch:WorldCat',
+            'title': 'Zen',
+            'url_ver': 'Z39.88-2004' }
+        self.assertEqual(
+            'book', self.helper.make_form_type( citation_dct )
             )
 
     # end class CitationFormHelperTest
