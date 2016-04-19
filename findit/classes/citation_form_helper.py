@@ -107,6 +107,8 @@ class CitationFormHelper( object ):
                 citation_form_dct['btitle'] = citation_form_dct.get('title', None)
             if citation_form_dct.get('pub', None) == None:
                 citation_form_dct['pub'] = citation_form_dct.get('rft.pub', None)
+            if citation_form_dct.get('place', None) == None:
+                citation_form_dct['place'] = citation_form_dct.get('rft.place', None)
 
 
         else:  # article

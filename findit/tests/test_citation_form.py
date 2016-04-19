@@ -55,7 +55,8 @@ class CitationFormHelperTest( TestCase ):
         dct = { 'isbn': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'btitle': None, u'isbn': u'1234', u'pub': None}, self.helper.make_form_dct( self.qdct )
+            {u'btitle': None, u'isbn': u'1234', u'place': None, u'pub': None},
+            self.helper.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__book_openurl(self):
