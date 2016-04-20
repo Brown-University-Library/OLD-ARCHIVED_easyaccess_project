@@ -31,57 +31,41 @@ log = logging.getLogger('access')
 class CitationFormDctMaker( object ):
     """ Converts django querystring-object to form-dct. """
 
+    def update_article_fields( self, bibjson_dct, citation_form_dct ):
+        """ Updates article-specific fields: atitle, jtitle, issn, pmid, volume, issue
+            Called by: make_form_dct() """
+        if citation_form_dct.get('atitle', '').strip() == '':
+            citation_form_dct['atitle'] = bibjson_dct.get( 'title', '' )
+        if citation_form_dct.get('jtitle', '').strip() == '':
+            if bibjson_dct.get( 'journal', '' ) is not '':
+                if bibjson_dct['journal'].get( 'name', '' ) is not '':
+                    citation_form_dct['jtitle'] = bibjson_dct['journal']['name']
+        if citation_form_dct.get('issn', '').strip() == '':
+            if bibjson_dct.get( 'identifier', '' ) is not '':
+                for entry in bibjson_dct['identifier']:
+                    if entry.get( 'type', '' ) == 'issn':
+                        citation_form_dct['issn'] = entry['id']
+                        break
+        if citation_form_dct.get('pmid', '').strip() == '':
+            pass  # TODO: implement
+        if citation_form_dct.get('volume', '').strip() == '':
+            citation_form_dct['volume'] = bibjson_dct.get( 'volume', '' )
+        if citation_form_dct.get('issue', '').strip() == '':
+            citation_form_dct['issue'] = bibjson_dct.get( 'issue', '' )
+        return citation_form_dct
+
     def make_form_dct( self, querydct ):
         """ Transfers metadata from openurl to dct for citation-linker form.
             Called by build_context_from_url(). """
         log.debug( 'querydct, ```%s```' % pprint.pformat(querydct) )
-        qstring = ''
-        for k,v in querydct.items():
-            qstring = qstring + '%s=%s&' % (k,v)
-        qstring = qstring[0:-1]
-        log.debug( 'qstring, `%s`' % qstring )
-        log.debug( 'type(qstring), `%s`' % type(qstring) )
-        bibjson_dct = bibjsontools.from_openurl( qstring )
-        log.debug( 'bibjson_dct, ```%s```' % pprint.pformat(bibjson_dct) )
-        citation_form_dct = {}
-        for k,v in querydct.items():
-            # log.debug( 'querydict (k,v), `(%s,%s)`' % (k,v) )
-            v = self._handle_v_list( v )
-            ( k,v ) = self._handle_k( k,v )
-            citation_form_dct[k] = v
-        log.debug( 'initial_citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
-
-        genre = self._check_genre( querydct )
+        bibjson_dct = self.make_bibjson_dct( querydct )
+        citation_form_dct = self.make_initial_citation_form_dct( querydct )
+        genre = self.check_genre( querydct )
         if genre == 'book':
-            log.debug( 'in book handler')
-            # fields unique to book-form: btitle, isbn, pub, place, spage, epage
-            if citation_form_dct.get('btitle', None) == None:
-                citation_form_dct['btitle'] = citation_form_dct.get('title', None)
-            if citation_form_dct.get('pub', None) == None:
-                citation_form_dct['pub'] = citation_form_dct.get('rft.pub', None)
-            if citation_form_dct.get('place', None) == None:
-                citation_form_dct['place'] = citation_form_dct.get('rft.place', None)
-
+            citation_form_dct = self.update_book_fields( citation_form_dct )
         else:  # article
-            # fields unique to article-form: atitle, jtitle, issn, pmid, volume, issue
-            if citation_form_dct.get('atitle', '').strip() == '':
-                citation_form_dct['atitle'] = bibjson_dct.get( 'title', '' )
-            if citation_form_dct.get('jtitle', '').strip() == '':
-                if bibjson_dct.get( 'journal', '' ) is not '':
-                    if bibjson_dct['journal'].get( 'name', '' ) is not '':
-                        citation_form_dct['jtitle'] = bibjson_dct['journal']['name']
-            if citation_form_dct.get('issn', '').strip() == '':
-                if bibjson_dct.get( 'identifier', '' ) is not '':
-                    for entry in bibjson_dct['identifier']:
-                        if entry.get( 'type', '' ) == 'issn':
-                            citation_form_dct['issn'] = entry['id']
-                            break
-            if citation_form_dct.get('pmid', '').strip() == '':
-                pass  # TODO: implement
-            if citation_form_dct.get('volume', '').strip() == '':
-                citation_form_dct['volume'] = bibjson_dct.get( 'volume', '' )
-            if citation_form_dct.get('issue', '').strip() == '':
-                citation_form_dct['issue'] = bibjson_dct.get( 'issue', '' )
+            citation_form_dct = self.update_article_fields( bibjson_dct, citation_form_dct )
+
 
         # fields in both forma: 'au', 'date', 'id', 'pages', 'rfe_dat'
         if citation_form_dct.get('au', '').strip() == '':
@@ -110,7 +94,32 @@ class CitationFormDctMaker( object ):
         log.debug( 'final citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
 
-    def _check_genre( self, querydct ):
+    def make_bibjson_dct( self, querydct ):
+        """ Transforms querystring into bibjson dictionary.
+            Called by make_form_dct() """
+        qstring = ''
+        for k,v in querydct.items():
+            qstring = qstring + '%s=%s&' % (k,v)
+        qstring = qstring[0:-1]
+        log.debug( 'qstring, `%s`' % qstring )
+        log.debug( 'type(qstring), `%s`' % type(qstring) )
+        bibjson_dct = bibjsontools.from_openurl( qstring )
+        log.debug( 'bibjson_dct, ```%s```' % pprint.pformat(bibjson_dct) )
+        return bibjson_dct
+
+    def make_initial_citation_form_dct( self, querydct ):
+        """ Makes initial citation_form_dct from key-value pairs.
+            Called by make_form_dct() """
+        citation_form_dct = {}
+        for k,v in querydct.items():
+            # log.debug( 'querydict (k,v), `(%s,%s)`' % (k,v) )
+            v = self._handle_v_list( v )
+            ( k,v ) = self._handle_k( k,v )
+            citation_form_dct[k] = v
+        log.debug( 'initial_citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
+        return citation_form_dct
+
+    def check_genre( self, querydct ):
         """ Tries to determine genre. """
         genre = 'article'
         if querydct.get('genre') == 'book' or querydct.get('rft.genre') == 'book':
@@ -119,6 +128,18 @@ class CitationFormDctMaker( object ):
             genre = 'book'
         log.debug( 'genre, `%s`' % genre )
         return genre
+
+    def update_book_fields( citation_form_dct ):
+        """ Populates book-specific fields: btitle, isbn, pub, place, spage, epage.
+            Called by make_form_dct() """
+        log.debug( 'in book handler')
+        if citation_form_dct.get('btitle', None) == None:
+            citation_form_dct['btitle'] = citation_form_dct.get('title', None)
+        if citation_form_dct.get('pub', None) == None:
+            citation_form_dct['pub'] = citation_form_dct.get('rft.pub', None)
+        if citation_form_dct.get('place', None) == None:
+            citation_form_dct['place'] = citation_form_dct.get('rft.place', None)
+        return citation_form_dct
 
     def _handle_v_list(self, v):
         """ Handles querydict list values, and checks for a replace.
@@ -267,7 +288,7 @@ class CitationFormHelper( object ):
 #             citation_form_dct[k] = v
 #         log.debug( 'initial_citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
 
-#         genre = self._check_genre( querydct )
+#         genre = self.check_genre( querydct )
 #         if genre == 'book':
 #             log.debug( 'in book handler')
 #             # fields unique to book-form: btitle, isbn, pub, place, spage, epage
@@ -324,7 +345,7 @@ class CitationFormHelper( object ):
 #         log.debug( 'final citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
 #         return citation_form_dct
 
-#     def _check_genre( self, querydct ):
+#     def check_genre( self, querydct ):
 #         """ Tries to determine genre. """
 #         genre = 'article'
 #         if querydct.get('genre') == 'book' or querydct.get('rft.genre') == 'book':
