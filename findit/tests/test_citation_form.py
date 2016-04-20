@@ -28,6 +28,7 @@ class CitationFormDctMakerTest( TestCase ):
         self.qdct.update(dct)
         self.assertEqual( {
             u'atitle': u'Unknown',
+            u'au': u'',
             u'issue': u'',
             u'issn': u'',
             u'jtitle': u'',
@@ -41,7 +42,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'id': 'doi:1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown', u'jtitle': u'', u'issn': u''},
+            {u'au': u'', 'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown', u'jtitle': u'', u'issn': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -50,7 +51,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'doi': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {'atitle': 'Unknown', 'id': '1234', 'issue': '', 'volume': '', u'jtitle': u'', u'issn': u''},
+            {'atitle': 'Unknown', u'au': u'', 'id': '1234', 'issue': '', 'volume': '', u'jtitle': u'', u'issn': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -59,7 +60,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'isbn': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'btitle': None, u'isbn': u'1234', u'place': None, u'pub': None},
+            {u'au': u'', u'btitle': None, u'isbn': u'1234', u'place': None, u'pub': None},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 

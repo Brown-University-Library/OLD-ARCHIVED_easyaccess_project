@@ -31,76 +31,13 @@ log = logging.getLogger('access')
 class CitationFormDctMaker( object ):
     """ Converts django querystring-object to form-dct. """
 
-    def update_article_fields( self, bibjson_dct, citation_form_dct ):
-        """ Updates article-specific fields: atitle, jtitle, issn, pmid, volume, issue
-            Called by: make_form_dct() """
-        citation_form_dct['atitle'] = self._make_article_atitle( bibjson_dct, citation_form_dct )
-        citation_form_dct['jtitle'] = self._make_article_jtitle( bibjson_dct, citation_form_dct )
-
-        citation_form_dct['issn'] = self._make_article_issn( bibjson_dct, citation_form_dct )
-
-        if citation_form_dct.get('pmid', '').strip() == '':
-            pass  # TODO: implement
-        if citation_form_dct.get('volume', '').strip() == '':
-            citation_form_dct['volume'] = bibjson_dct.get( 'volume', '' )
-        if citation_form_dct.get('issue', '').strip() == '':
-            citation_form_dct['issue'] = bibjson_dct.get( 'issue', '' )
-        return citation_form_dct
-
-    def _make_article_atitle( self, bibjson_dct, citation_form_dct ):
-        """ Makes article atitle.
-            Called by update_article_fields() """
-        atitle = citation_form_dct.get('atitle', '').strip()
-        if atitle == '':
-            atitle = bibjson_dct.get( 'title', '' )
-        return atitle
-
-    def _make_article_jtitle( self, bibjson_dct, citation_form_dct ):
-        """ Makes article jtitle.
-            Called by update_article_fields() """
-        jtitle = citation_form_dct.get('jtitle', '').strip()
-        if jtitle == '':
-            if bibjson_dct.get( 'journal', '' ) is not '':
-                if bibjson_dct['journal'].get( 'name', '' ) is not '':
-                    jtitle = bibjson_dct['journal']['name']
-        return jtitle
-
-    def _make_article_issn( self, bibjson_dct, citation_form_dct ):
-        """ Makes article issn.
-            Called by update_article_fields() """
-        issn = citation_form_dct.get('issn', '').strip()
-        if issn == '':
-            if bibjson_dct.get( 'identifier', '' ) is not '':
-                for entry in bibjson_dct['identifier']:
-                    if entry.get( 'type', '' ) == 'issn':
-                        issn = entry['id']
-                        break
-        return issn
 
 
+    def update_common_fields( self, bibjson_dct, citation_form_dct ):
+        """ Populates common fields: 'au', 'date', 'id', 'pages', 'rfe_dat'.
+            Called by make_form_dct() """
+        citation_form_dct['au'] = self._make_common_au( bibjson_dct, citation_form_dct )
 
-    def make_form_dct( self, querydct ):
-        """ Transfers metadata from openurl to dct for citation-linker form.
-            Called by build_context_from_url(). """
-        log.debug( 'querydct, ```%s```' % pprint.pformat(querydct) )
-        bibjson_dct = self.make_bibjson_dct( querydct )
-        citation_form_dct = self.make_initial_citation_form_dct( querydct )
-        genre = self.check_genre( querydct )
-        if genre == 'book':
-            citation_form_dct = self.update_book_fields( citation_form_dct )
-        else:  # article
-            citation_form_dct = self.update_article_fields( bibjson_dct, citation_form_dct )
-
-
-        # fields in both forma: 'au', 'date', 'id', 'pages', 'rfe_dat'
-        if citation_form_dct.get('au', '').strip() == '':
-            if bibjson_dct.get( 'author', '' ) is not '':
-                authors = []
-                for entry in bibjson_dct['author']:
-                    if entry.get( 'name', '' ) is not '':
-                        authors.append( entry['name'] )
-                        citation_form_dct['au'] = ', '.join( authors )
-                        break
         if citation_form_dct.get( 'date', '' ).strip() is '':
             if bibjson_dct.get( 'year', '' ) is not '':
                 citation_form_dct['date'] = bibjson_dct['year']
@@ -116,8 +53,42 @@ class CitationFormDctMaker( object ):
         else:
             citation_form_dct['pages'] = citation_form_dct['pages'].replace( ' ', '' )
         # TODO: try rfe_dat (oclcnum)
+        return citation_form_dct
+
+    def _make_common_au( self, bibjson_dct, citation_form_dct ):
+        """ Makes common au data (author).
+            Called by update_common_fields() """
+        au = citation_form_dct.get('au', '').strip()
+        if au == '':
+            if bibjson_dct.get( 'author', '' ) is not '':
+                authors = []
+                for entry in bibjson_dct['author']:
+                    if entry.get( 'name', '' ) is not '':
+                        authors.append( entry['name'] )
+                        au = ', '.join( authors )
+                        break
+        return au
+
+
+
+    def make_form_dct( self, querydct ):
+        """ Transfers metadata from openurl to dct for citation-linker form.
+            Called by build_context_from_url(). """
+        log.debug( 'querydct, ```%s```' % pprint.pformat(querydct) )
+        bibjson_dct = self.make_bibjson_dct( querydct )
+        citation_form_dct = self.make_initial_citation_form_dct( querydct )
+        genre = self.check_genre( querydct )
+        if genre == 'book':
+            citation_form_dct = self.update_book_fields( citation_form_dct )
+        else:  # article
+            citation_form_dct = self.update_article_fields( bibjson_dct, citation_form_dct )
+
+        citation_form_dct = self.update_common_fields( bibjson_dct, citation_form_dct )
+
         log.debug( 'final citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
+
+
 
     def make_bibjson_dct( self, querydct ):
         """ Transforms querystring into bibjson dictionary.
@@ -165,6 +136,50 @@ class CitationFormDctMaker( object ):
         if citation_form_dct.get('place', None) == None:
             citation_form_dct['place'] = citation_form_dct.get('rft.place', None)
         return citation_form_dct
+
+    def update_article_fields( self, bibjson_dct, citation_form_dct ):
+        """ Updates article-specific fields: atitle, jtitle, issn, pmid, volume, issue
+            Called by: make_form_dct() """
+        citation_form_dct['atitle'] = self._make_article_atitle( bibjson_dct, citation_form_dct )
+        citation_form_dct['jtitle'] = self._make_article_jtitle( bibjson_dct, citation_form_dct )
+        citation_form_dct['issn'] = self._make_article_issn( bibjson_dct, citation_form_dct )
+        if citation_form_dct.get('pmid', '').strip() == '':
+            pass  # TODO: implement
+        if citation_form_dct.get('volume', '').strip() == '':
+            citation_form_dct['volume'] = bibjson_dct.get( 'volume', '' )
+        if citation_form_dct.get('issue', '').strip() == '':
+            citation_form_dct['issue'] = bibjson_dct.get( 'issue', '' )
+        return citation_form_dct
+
+    def _make_article_atitle( self, bibjson_dct, citation_form_dct ):
+        """ Makes article atitle.
+            Called by update_article_fields() """
+        atitle = citation_form_dct.get('atitle', '').strip()
+        if atitle == '':
+            atitle = bibjson_dct.get( 'title', '' )
+        return atitle
+
+    def _make_article_jtitle( self, bibjson_dct, citation_form_dct ):
+        """ Makes article jtitle.
+            Called by update_article_fields() """
+        jtitle = citation_form_dct.get('jtitle', '').strip()
+        if jtitle == '':
+            if bibjson_dct.get( 'journal', '' ) is not '':
+                if bibjson_dct['journal'].get( 'name', '' ) is not '':
+                    jtitle = bibjson_dct['journal']['name']
+        return jtitle
+
+    def _make_article_issn( self, bibjson_dct, citation_form_dct ):
+        """ Makes article issn.
+            Called by update_article_fields() """
+        issn = citation_form_dct.get('issn', '').strip()
+        if issn == '':
+            if bibjson_dct.get( 'identifier', '' ) is not '':
+                for entry in bibjson_dct['identifier']:
+                    if entry.get( 'type', '' ) == 'issn':
+                        issn = entry['id']
+                        break
+        return issn
 
     def _handle_v_list(self, v):
         """ Handles querydict list values, and checks for a replace.
