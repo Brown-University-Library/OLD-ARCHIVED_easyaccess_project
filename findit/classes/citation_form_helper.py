@@ -34,8 +34,9 @@ class CitationFormDctMaker( object ):
     def update_article_fields( self, bibjson_dct, citation_form_dct ):
         """ Updates article-specific fields: atitle, jtitle, issn, pmid, volume, issue
             Called by: make_form_dct() """
-        if citation_form_dct.get('atitle', '').strip() == '':
-            citation_form_dct['atitle'] = bibjson_dct.get( 'title', '' )
+        citation_form_dct['atitle'] = self._make_article_atitle( bibjson_dct, citation_form_dct )
+
+
         if citation_form_dct.get('jtitle', '').strip() == '':
             if bibjson_dct.get( 'journal', '' ) is not '':
                 if bibjson_dct['journal'].get( 'name', '' ) is not '':
@@ -53,6 +54,14 @@ class CitationFormDctMaker( object ):
         if citation_form_dct.get('issue', '').strip() == '':
             citation_form_dct['issue'] = bibjson_dct.get( 'issue', '' )
         return citation_form_dct
+
+    def _make_article_atitle( self, bibjson_dct, citation_form_dct ):
+        """ Makes atitle.
+            Called by update_article_fields() """
+        atitle = citation_form_dct.get('atitle', '').strip()
+        if atitle == '':
+            atitle = bibjson_dct.get( 'title', '' )
+        return atitle
 
     def make_form_dct( self, querydct ):
         """ Transfers metadata from openurl to dct for citation-linker form.
@@ -129,7 +138,7 @@ class CitationFormDctMaker( object ):
         log.debug( 'genre, `%s`' % genre )
         return genre
 
-    def update_book_fields( citation_form_dct ):
+    def update_book_fields( self, citation_form_dct ):
         """ Populates book-specific fields: btitle, isbn, pub, place, spage, epage.
             Called by make_form_dct() """
         log.debug( 'in book handler')
