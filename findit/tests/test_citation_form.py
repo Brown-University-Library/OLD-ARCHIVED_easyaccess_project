@@ -59,8 +59,35 @@ class CitationFormHelperTest( TestCase ):
             self.helper.make_form_dct( self.qdct )
             )
 
+
+
+    def test_make_form_dct__article_openurl(self):
+        """ Checks large openurl with issn and doi. """
+        bibjson_dct = {
+            u'_openurl': u'rft_val_fmt=info%3Aofi/fmt%3Akev%3Amtx%3Ajournal&rfr_id=info%3Asid/info%3Asid/info%3Asid/&rft.issue=3&rft.au=Schwenke%2C+K.+D.&rft.eissn=1611-6070&rft.pages=303+-+EOA&rft_id=info%3Adoi/10.1002/food.19720160319&rft.date=1972&rft.volume=16&rft.atitle=Structure%2C+Function+and+Evolution+in+Proteins.+Brookhaven+Symposia+in+Biology+No.+21%2C+Report+of+Symposium+held+June+3%3F5%2C+1968%2C+BNL+50116+%28C%3F53%29+Volume+I+and+II+of+II%2C+428+Seiten+mit+zahlreichen+Abb.+und+Tab.%2C+Biology+Department%2C+Brookhaven+National+Laboratory%2C+Upton%2C+New+York+1969.+Preis+%28printed+copy%29%3A+3.00+%24&ctx_ver=Z39.88-2004&rft.jtitle=Die+Nahrung&rft.issn=0027-769X&rft.genre=article&rft.spage=303',
+            u'_rfr': u'info:sid/info:sid/',
+            u'author': [{u'name': u'Schwenke, K. D.'}],
+            u'identifier': [
+                {u'id': u'doi:10.1002/food.19720160319', u'type': u'doi'},
+                {u'id': u'0027-769X', u'type': u'issn'},
+                {u'id': u'1611-6070', u'type': u'eissn'}],
+            u'issue': u'3',
+            u'journal': {u'name': u'Die Nahrung'},
+            u'pages': u'303 - EOA',
+            u'start_page': u'303',
+            u'title': u'Structure, Function and Evolution in Proteins. Brookhaven Symposia in Biology No. 21, Report of Symposium held June 3?5, 1968, BNL 50116 (C?53) Volume I and II of II, 428 Seiten mit zahlreichen Abb. und Tab., Biology Department, Brookhaven National Laboratory, Upton, New York 1969. Preis (printed copy): 3.00 $',
+            u'type': u'article',
+            u'volume': u'16',
+            u'year': u'1972'}
+        self.qdct.update( bibjson_dct )
+        self.assertEqual(
+            2, self.helper.make_form_dct(self.qdct)
+            )
+
+
+
     def test_make_form_dct__book_openurl(self):
-        """ Checks large openurl. """
+        """ Checks large openurl with no isbn. """
         dct = {
             'aufirst': 'T\u014dichi',
             'aulast': 'Yoshioka',
