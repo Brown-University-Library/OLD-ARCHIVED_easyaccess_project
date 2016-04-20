@@ -35,18 +35,10 @@ class CitationFormDctMaker( object ):
         """ Updates article-specific fields: atitle, jtitle, issn, pmid, volume, issue
             Called by: make_form_dct() """
         citation_form_dct['atitle'] = self._make_article_atitle( bibjson_dct, citation_form_dct )
+        citation_form_dct['jtitle'] = self._make_article_jtitle( bibjson_dct, citation_form_dct )
 
+        citation_form_dct['issn'] = self._make_article_issn( bibjson_dct, citation_form_dct )
 
-        if citation_form_dct.get('jtitle', '').strip() == '':
-            if bibjson_dct.get( 'journal', '' ) is not '':
-                if bibjson_dct['journal'].get( 'name', '' ) is not '':
-                    citation_form_dct['jtitle'] = bibjson_dct['journal']['name']
-        if citation_form_dct.get('issn', '').strip() == '':
-            if bibjson_dct.get( 'identifier', '' ) is not '':
-                for entry in bibjson_dct['identifier']:
-                    if entry.get( 'type', '' ) == 'issn':
-                        citation_form_dct['issn'] = entry['id']
-                        break
         if citation_form_dct.get('pmid', '').strip() == '':
             pass  # TODO: implement
         if citation_form_dct.get('volume', '').strip() == '':
@@ -56,12 +48,36 @@ class CitationFormDctMaker( object ):
         return citation_form_dct
 
     def _make_article_atitle( self, bibjson_dct, citation_form_dct ):
-        """ Makes atitle.
+        """ Makes article atitle.
             Called by update_article_fields() """
         atitle = citation_form_dct.get('atitle', '').strip()
         if atitle == '':
             atitle = bibjson_dct.get( 'title', '' )
         return atitle
+
+    def _make_article_jtitle( self, bibjson_dct, citation_form_dct ):
+        """ Makes article jtitle.
+            Called by update_article_fields() """
+        jtitle = citation_form_dct.get('jtitle', '').strip()
+        if jtitle == '':
+            if bibjson_dct.get( 'journal', '' ) is not '':
+                if bibjson_dct['journal'].get( 'name', '' ) is not '':
+                    jtitle = bibjson_dct['journal']['name']
+        return jtitle
+
+    def _make_article_issn( self, bibjson_dct, citation_form_dct ):
+        """ Makes article issn.
+            Called by update_article_fields() """
+        issn = citation_form_dct.get('issn', '').strip()
+        if issn == '':
+            if bibjson_dct.get( 'identifier', '' ) is not '':
+                for entry in bibjson_dct['identifier']:
+                    if entry.get( 'type', '' ) == 'issn':
+                        issn = entry['id']
+                        break
+        return issn
+
+
 
     def make_form_dct( self, querydct ):
         """ Transfers metadata from openurl to dct for citation-linker form.

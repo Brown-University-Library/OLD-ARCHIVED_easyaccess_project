@@ -26,9 +26,13 @@ class CitationFormDctMakerTest( TestCase ):
         """ Checks removal of accessionnumber tags. """
         dct = { 'some_oclc_key': '<accessionnumber>1234</accessionnumber>' }
         self.qdct.update(dct)
-        self.assertEqual(
-            # { 'some_oclc_key': '1234' },
-            {'volume': '', 'some_oclc_key': '1234', 'issue': '', 'atitle': 'Unknown' },
+        self.assertEqual( {
+            u'atitle': u'Unknown',
+            u'issue': u'',
+            u'issn': u'',
+            u'jtitle': u'',
+            u'some_oclc_key': u'1234',
+            u'volume': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -37,7 +41,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'id': 'doi:1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown'},
+            {'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown', u'jtitle': u'', u'issn': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -46,7 +50,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'doi': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {'atitle': 'Unknown', 'id': '1234', 'issue': '', 'volume': ''},
+            {'atitle': 'Unknown', 'id': '1234', 'issue': '', 'volume': '', u'jtitle': u'', u'issn': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
