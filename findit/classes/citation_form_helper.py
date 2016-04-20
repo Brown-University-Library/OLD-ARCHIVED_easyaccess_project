@@ -103,7 +103,9 @@ class CitationFormDctMaker( object ):
                             break
         if citation_form_dct.get( 'pages', '' ).strip() is '':
             if bibjson_dct.get( 'pages', '' ) is not '':
-                citation_form_dct['pages'] = bibjson_dct['pages']
+                citation_form_dct['pages'] = bibjson_dct['pages'].replace( ' ', '' )
+        else:
+            citation_form_dct['pages'] = citation_form_dct['pages'].replace( ' ', '' )
         # TODO: try rfe_dat (oclcnum)
         log.debug( 'final citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
