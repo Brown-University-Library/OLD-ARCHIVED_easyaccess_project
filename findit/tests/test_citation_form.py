@@ -81,9 +81,9 @@ class CitationFormHelperTest( TestCase ):
             u'year': u'1972'}
         self.qdct.update( bibjson_dct )
         form_dct = self.helper.make_form_dct( self.qdct )
+        self.assertEqual( '303-EOA', form_dct['pages'] )
         self.assertEqual( '10.1002/food.19720160319', form_dct['id'] )
         self.assertEqual( '0027-769X', form_dct['issn'] )
-        self.assertEqual( '303-EOA', form_dct['pages'] )
         self.assertEqual( {
             u'atitle': u'Structure, Function and Evolution in Proteins. Brookhaven Symposia in Biology No. 21, Report of Symposium held June 3?5, 1968, BNL 50116 (C?53) Volume I and II of II, 428 Seiten mit zahlreichen Abb. und Tab., Biology Department, Brookhaven National Laboratory, Upton, New York 1969. Preis (printed copy): 3.00 $',
             # u'issn': u'doi:10.1002/food.19720160319',
