@@ -30,6 +30,7 @@ class CitationFormDctMakerTest( TestCase ):
             u'atitle': u'Unknown',
             u'au': u'',
             u'date': u'',
+            u'id': u'',
             u'issue': u'',
             u'issn': u'',
             u'jtitle': u'',
@@ -62,7 +63,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'isbn': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'au': u'', u'btitle': None, u'date': u'', u'isbn': u'1234',u'pages': u'', u'place': None, u'pub': None},
+            {u'au': u'', u'btitle': None, u'date': u'', u'id': u'', u'isbn': u'1234',u'pages': u'', u'place': None, u'pub': None},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 

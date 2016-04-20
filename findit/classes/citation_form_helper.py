@@ -31,35 +31,44 @@ log = logging.getLogger('access')
 class CitationFormDctMaker( object ):
     """ Converts django querystring-object to form-dct. """
 
-
-    def _make_common_pages( self, bibjson_dct, citation_form_dct ):
-        """ Makes common pages field.
+    def _make_common_id( self, bibjson_dct, citation_form_dct ):
+        """ Makes common id field.
             Called by update_common_fields() """
-        pages = citation_form_dct.get( 'pages', '' ).strip()
-        if pages is '':
-            if bibjson_dct.get( 'pages', '' ) is not '':
-                pages = bibjson_dct['pages'].replace( ' ', '' )
-        else:
-            pages = citation_form_dct['pages'].replace( ' ', '' )
-        return pages
-
+        id_field = citation_form_dct.get( 'id', '' ).strip()
+        if id_field is '':
+                if bibjson_dct.get( 'identifier', '' ) is not '':
+                    for entry in bibjson_dct['identifier']:
+                        if entry.get( 'type', '' ) == 'doi':
+                            id_field = entry['id'].replace( 'doi:', '' )
+                            break
+        return id_field
 
     def update_common_fields( self, bibjson_dct, citation_form_dct ):
         """ Populates common fields: 'au', 'date', 'id', 'pages', 'rfe_dat'.
             Called by make_form_dct() """
         citation_form_dct['au'] = self._make_common_au( bibjson_dct, citation_form_dct )
         citation_form_dct['date'] = self._make_common_date( bibjson_dct, citation_form_dct )
-        if citation_form_dct.get( 'id', '' ).strip() is '':
-                if bibjson_dct.get( 'identifier', '' ) is not '':
-                    for entry in bibjson_dct['identifier']:
-                        if entry.get( 'type', '' ) == 'doi':
-                            citation_form_dct['issn'] = entry['id']
-                            break
+
+        citation_form_dct['id'] = self._make_common_id( bibjson_dct, citation_form_dct )
 
         citation_form_dct['pages'] = self._make_common_pages( bibjson_dct, citation_form_dct )
-
         # TODO: try rfe_dat (oclcnum)
         return citation_form_dct
+
+    # def update_common_fields( self, bibjson_dct, citation_form_dct ):
+    #     """ Populates common fields: 'au', 'date', 'id', 'pages', 'rfe_dat'.
+    #         Called by make_form_dct() """
+    #     citation_form_dct['au'] = self._make_common_au( bibjson_dct, citation_form_dct )
+    #     citation_form_dct['date'] = self._make_common_date( bibjson_dct, citation_form_dct )
+    #     if citation_form_dct.get( 'id', '' ).strip() is '':
+    #             if bibjson_dct.get( 'identifier', '' ) is not '':
+    #                 for entry in bibjson_dct['identifier']:
+    #                     if entry.get( 'type', '' ) == 'doi':
+    #                         citation_form_dct['issn'] = entry['id']
+    #                         break
+    #     citation_form_dct['pages'] = self._make_common_pages( bibjson_dct, citation_form_dct )
+    #     # TODO: try rfe_dat (oclcnum)
+    #     return citation_form_dct
 
     def _make_common_au( self, bibjson_dct, citation_form_dct ):
         """ Makes common au data (author).
@@ -83,6 +92,17 @@ class CitationFormDctMaker( object ):
             if bibjson_dct.get( 'year', '' ) is not '':
                 date = bibjson_dct['year']
         return date
+
+    def _make_common_pages( self, bibjson_dct, citation_form_dct ):
+        """ Makes common pages field.
+            Called by update_common_fields() """
+        pages = citation_form_dct.get( 'pages', '' ).strip()
+        if pages is '':
+            if bibjson_dct.get( 'pages', '' ) is not '':
+                pages = bibjson_dct['pages'].replace( ' ', '' )
+        else:
+            pages = citation_form_dct['pages'].replace( ' ', '' )
+        return pages
 
 
 
