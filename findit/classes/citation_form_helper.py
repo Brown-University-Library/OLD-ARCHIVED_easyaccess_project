@@ -32,34 +32,32 @@ class CitationFormDctMaker( object ):
     """ Converts django querystring-object to form-dct. """
 
 
-    def _make_common_date( self, bibjson_dct, citation_form_dct ):
-        """ Makes common date.
+    def _make_common_pages( self, bibjson_dct, citation_form_dct ):
+        """ Makes common pages field.
             Called by update_common_fields() """
-        date = citation_form_dct.get( 'date', '' ).strip()
-        if date is '':
-            if bibjson_dct.get( 'year', '' ) is not '':
-                date = bibjson_dct['year']
-        return date
+        pages = citation_form_dct.get( 'pages', '' ).strip()
+        if pages is '':
+            if bibjson_dct.get( 'pages', '' ) is not '':
+                pages = bibjson_dct['pages'].replace( ' ', '' )
+        else:
+            pages = citation_form_dct['pages'].replace( ' ', '' )
+        return pages
 
 
     def update_common_fields( self, bibjson_dct, citation_form_dct ):
         """ Populates common fields: 'au', 'date', 'id', 'pages', 'rfe_dat'.
             Called by make_form_dct() """
         citation_form_dct['au'] = self._make_common_au( bibjson_dct, citation_form_dct )
-
         citation_form_dct['date'] = self._make_common_date( bibjson_dct, citation_form_dct )
-
         if citation_form_dct.get( 'id', '' ).strip() is '':
                 if bibjson_dct.get( 'identifier', '' ) is not '':
                     for entry in bibjson_dct['identifier']:
                         if entry.get( 'type', '' ) == 'doi':
                             citation_form_dct['issn'] = entry['id']
                             break
-        if citation_form_dct.get( 'pages', '' ).strip() is '':
-            if bibjson_dct.get( 'pages', '' ) is not '':
-                citation_form_dct['pages'] = bibjson_dct['pages'].replace( ' ', '' )
-        else:
-            citation_form_dct['pages'] = citation_form_dct['pages'].replace( ' ', '' )
+
+        citation_form_dct['pages'] = self._make_common_pages( bibjson_dct, citation_form_dct )
+
         # TODO: try rfe_dat (oclcnum)
         return citation_form_dct
 
@@ -76,6 +74,15 @@ class CitationFormDctMaker( object ):
                         au = ', '.join( authors )
                         break
         return au
+
+    def _make_common_date( self, bibjson_dct, citation_form_dct ):
+        """ Makes common date.
+            Called by update_common_fields() """
+        date = citation_form_dct.get( 'date', '' ).strip()
+        if date is '':
+            if bibjson_dct.get( 'year', '' ) is not '':
+                date = bibjson_dct['year']
+        return date
 
 
 

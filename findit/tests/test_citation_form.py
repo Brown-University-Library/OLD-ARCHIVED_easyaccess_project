@@ -33,6 +33,7 @@ class CitationFormDctMakerTest( TestCase ):
             u'issue': u'',
             u'issn': u'',
             u'jtitle': u'',
+            u'pages': u'',
             u'some_oclc_key': u'1234',
             u'volume': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
@@ -43,7 +44,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'id': 'doi:1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'au': u'', u'date': u'', 'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown', u'jtitle': u'', u'issn': u''},
+            {u'au': u'', u'date': u'', u'pages': u'', 'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown', u'jtitle': u'', u'issn': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -52,7 +53,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'doi': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {'atitle': 'Unknown', u'au': u'', u'date': u'', 'id': '1234', 'issue': '', 'volume': '', u'jtitle': u'', u'issn': u''},
+            {'atitle': 'Unknown', u'au': u'', u'date': u'', 'id': '1234', 'issue': '', u'pages': u'', 'volume': '', u'jtitle': u'', u'issn': u''},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -61,7 +62,7 @@ class CitationFormDctMakerTest( TestCase ):
         dct = { 'isbn': '1234' }
         self.qdct.update(dct)
         self.assertEqual(
-            {u'au': u'', u'btitle': None, u'date': u'', u'isbn': u'1234', u'place': None, u'pub': None},
+            {u'au': u'', u'btitle': None, u'date': u'', u'isbn': u'1234',u'pages': u'', u'place': None, u'pub': None},
             self.form_dct_maker.make_form_dct( self.qdct )
             )
 
@@ -150,6 +151,7 @@ class CitationFormDctMakerTest( TestCase ):
              'genre': 'book',
              'id': '',
              'pid': '6104671<fssessid>0</fssessid><edition>1st ed.</edition>',
+             u'pages': u'',
              'place': 'Osaka  Japan',
              'pub': 'Hoikusha',
              'req_dat': '<sessionid>0</sessionid>',
