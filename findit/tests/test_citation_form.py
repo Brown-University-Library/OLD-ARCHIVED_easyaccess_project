@@ -80,8 +80,31 @@ class CitationFormHelperTest( TestCase ):
             u'volume': u'16',
             u'year': u'1972'}
         self.qdct.update( bibjson_dct )
-        self.assertEqual(
-            2, self.helper.make_form_dct(self.qdct)
+        form_dct = self.helper.make_form_dct( self.qdct )
+        self.assertEqual( '10.1002/food.19720160319', form_dct['id'] )
+        self.assertEqual( '0027-769X', form_dct['issn'] )
+        self.assertEqual( '303-EOA', form_dct['pages'] )
+        self.assertEqual( {
+            u'atitle': u'Structure, Function and Evolution in Proteins. Brookhaven Symposia in Biology No. 21, Report of Symposium held June 3?5, 1968, BNL 50116 (C?53) Volume I and II of II, 428 Seiten mit zahlreichen Abb. und Tab., Biology Department, Brookhaven National Laboratory, Upton, New York 1969. Preis (printed copy): 3.00 $',
+            # u'issn': u'doi:10.1002/food.19720160319',
+            'id': '10.1002/food.19720160319',
+            'issn': '0027-769X',
+            u'start_page': u'303',
+            u'title': u'Structure, Function and Evolution in Proteins. Brookhaven Symposia in Biology No. 21, Report of Symposium held June 3?5, 1968, BNL 50116 (C?53) Volume I and II of II, 428 Seiten mit zahlreichen Abb. und Tab., Biology Department, Brookhaven National Laboratory, Upton, New York 1969. Preis (printed copy): 3.00 $',
+            u'issue': u'3',
+            u'journal': {u'name': u'Die Nahrung'},
+            u'author': {u'name': u'Schwenke, K. D.'},
+            u'year': u'1972',
+            u'_openurl': u'rft_val_fmt=info%3Aofi/fmt%3Akev%3Amtx%3Ajournal&rfr_id=info%3Asid/info%3Asid/info%3Asid/&rft.issue=3&rft.au=Schwenke%2C+K.+D.&rft.eissn=1611-6070&rft.pages=303+-+EOA&rft_id=info%3Adoi/10.1002/food.19720160319&rft.date=1972&rft.volume=16&rft.atitle=Structure%2C+Function+and+Evolution+in+Proteins.+Brookhaven+Symposia+in+Biology+No.+21%2C+Report+of+Symposium+held+June+3%3F5%2C+1968%2C+BNL+50116+%28C%3F53%29+Volume+I+and+II+of+II%2C+428+Seiten+mit+zahlreichen+Abb.+und+Tab.%2C+Biology+Department%2C+Brookhaven+National+Laboratory%2C+Upton%2C+New+York+1969.+Preis+%28printed+copy%29%3A+3.00+%24&ctx_ver=Z39.88-2004&rft.jtitle=Die+Nahrung&rft.issn=0027-769X&rft.genre=article&rft.spage=303',
+            u'volume': u'16',
+            u'au': u'Schwenke, K. D.',
+            u'_rfr': u'info:sid/info:sid/',
+            u'date': u'1972',
+            u'identifier': {u'type': u'doi', u'id': u'doi:10.1002/food.19720160319'},
+            u'type': u'article',
+            u'pages': u'303-EOA',
+            u'jtitle': u'Die Nahrung'},
+            self.helper.make_form_dct(self.qdct)
             )
 
 

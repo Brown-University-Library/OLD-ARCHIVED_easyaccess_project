@@ -93,6 +93,7 @@ class CitationFormHelper( object ):
         log.debug( 'bibjson_dct, ```%s```' % pprint.pformat(bibjson_dct) )
         citation_form_dct = {}
         for k,v in querydct.items():
+            # log.debug( 'querydict (k,v), `(%s,%s)`' % (k,v) )
             v = self._handle_v_list( v )
             ( k,v ) = self._handle_k( k,v )
             citation_form_dct[k] = v
@@ -146,7 +147,7 @@ class CitationFormHelper( object ):
                 if bibjson_dct.get( 'identifier', '' ) is not '':
                     for entry in bibjson_dct['identifier']:
                         if entry.get( 'type', '' ) == 'doi':
-                            citation_form_dct['issn'] = bibjson_dct['identifier']['id']
+                            citation_form_dct['issn'] = entry['id']
                             break
         if citation_form_dct.get( 'pages', '' ).strip() is '':
             if bibjson_dct.get( 'pages', '' ) is not '':
@@ -168,11 +169,23 @@ class CitationFormHelper( object ):
     def _handle_v_list(self, v):
         """ Handles querydict list values, and checks for a replace.
             Called by make_form_dct(). """
+        # log.debug( 'initial v, `%s`' % v )
         if (v) and (v != '') and (type(v)==list):
             v = v[0]
-        v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
-        log.debug( 'v, `%s`' % v )
+        if type(v) == unicode and 'accessionnumber' in v:
+            v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
+        log.debug( 'returned v, `%s`' % v )
         return v
+
+    # def _handle_v_list(self, v):
+    #     """ Handles querydict list values, and checks for a replace.
+    #         Called by make_form_dct(). """
+    #     log.debug( 'initial v, `%s`' % v )
+    #     if (v) and (v != '') and (type(v)==list):
+    #         v = v[0]
+    #     v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
+    #     log.debug( 'returned v, `%s`' % v )
+    #     return v
 
     def _handle_k( self, k, v ):
         """ Handles two key situations.
