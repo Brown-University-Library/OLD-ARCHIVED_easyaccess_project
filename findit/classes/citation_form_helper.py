@@ -32,15 +32,23 @@ class CitationFormDctMaker( object ):
     """ Converts django querystring-object to form-dct. """
 
 
+    def _make_common_date( self, bibjson_dct, citation_form_dct ):
+        """ Makes common date.
+            Called by update_common_fields() """
+        date = citation_form_dct.get( 'date', '' ).strip()
+        if date is '':
+            if bibjson_dct.get( 'year', '' ) is not '':
+                date = bibjson_dct['year']
+        return date
+
 
     def update_common_fields( self, bibjson_dct, citation_form_dct ):
         """ Populates common fields: 'au', 'date', 'id', 'pages', 'rfe_dat'.
             Called by make_form_dct() """
         citation_form_dct['au'] = self._make_common_au( bibjson_dct, citation_form_dct )
 
-        if citation_form_dct.get( 'date', '' ).strip() is '':
-            if bibjson_dct.get( 'year', '' ) is not '':
-                citation_form_dct['date'] = bibjson_dct['year']
+        citation_form_dct['date'] = self._make_common_date( bibjson_dct, citation_form_dct )
+
         if citation_form_dct.get( 'id', '' ).strip() is '':
                 if bibjson_dct.get( 'identifier', '' ) is not '':
                     for entry in bibjson_dct['identifier']:
