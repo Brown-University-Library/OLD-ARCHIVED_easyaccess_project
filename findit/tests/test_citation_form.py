@@ -6,18 +6,18 @@ import json, logging, pprint
 from django.conf import settings
 from django.http import QueryDict
 from django.test import Client, TestCase
-from findit.classes.citation_form_helper import CitationFormHelper
+from findit.classes.citation_form_helper import CitationFormDctMaker, CitationFormHelper
 
 
 log = logging.getLogger('access')
 TestCase.maxDiff = None
 
 
-class CitationFormHelperTest( TestCase ):
-    """ Checks helper functions. """
+class CitationFormDctMakerTest( TestCase ):
+    """ Checks CitationFormDctMaker() functions. """
 
     def setUp(self):
-        self.helper = CitationFormHelper()
+        self.form_dct_maker = CitationFormDctMaker()
         self.qdct = QueryDict( '', mutable=True )
 
     ## make_form_dct() checks ##
@@ -29,7 +29,7 @@ class CitationFormHelperTest( TestCase ):
         self.assertEqual(
             # { 'some_oclc_key': '1234' },
             {'volume': '', 'some_oclc_key': '1234', 'issue': '', 'atitle': 'Unknown' },
-            self.helper.make_form_dct( self.qdct )
+            self.form_dct_maker.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__id_and_doi(self):
@@ -38,7 +38,7 @@ class CitationFormHelperTest( TestCase ):
         self.qdct.update(dct)
         self.assertEqual(
             {'volume': '', 'issue': '', 'id': '1234', 'atitle': 'Unknown'},
-            self.helper.make_form_dct( self.qdct )
+            self.form_dct_maker.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__doi_key(self):
@@ -47,7 +47,7 @@ class CitationFormHelperTest( TestCase ):
         self.qdct.update(dct)
         self.assertEqual(
             {'atitle': 'Unknown', 'id': '1234', 'issue': '', 'volume': ''},
-            self.helper.make_form_dct( self.qdct )
+            self.form_dct_maker.make_form_dct( self.qdct )
             )
 
     def test_make_form_dct__simple_isbn(self):
@@ -56,7 +56,7 @@ class CitationFormHelperTest( TestCase ):
         self.qdct.update(dct)
         self.assertEqual(
             {u'btitle': None, u'isbn': u'1234', u'place': None, u'pub': None},
-            self.helper.make_form_dct( self.qdct )
+            self.form_dct_maker.make_form_dct( self.qdct )
             )
 
 
@@ -80,7 +80,7 @@ class CitationFormHelperTest( TestCase ):
             u'volume': u'16',
             u'year': u'1972'}
         self.qdct.update( bibjson_dct )
-        form_dct = self.helper.make_form_dct( self.qdct )
+        form_dct = self.form_dct_maker.make_form_dct( self.qdct )
         self.assertEqual( '303-EOA', form_dct['pages'] )
         self.assertEqual( '10.1002/food.19720160319', form_dct['id'] )
         self.assertEqual( '0027-769X', form_dct['issn'] )
@@ -104,7 +104,7 @@ class CitationFormHelperTest( TestCase ):
             u'type': u'article',
             u'pages': u'303-EOA',
             u'jtitle': u'Die Nahrung'},
-            self.helper.make_form_dct(self.qdct)
+            self.form_dct_maker.make_form_dct(self.qdct)
             )
 
 
@@ -161,7 +161,7 @@ class CitationFormHelperTest( TestCase ):
              'rft_val_fmt': 'info:ofi/fmt:kev:mtx:book',
              'sid': 'FirstSearch:WorldCat',
              'title': 'Zen',
-             'url_ver': 'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
+             'url_ver': 'Z39.88-2004'}, self.form_dct_maker.make_form_dct( self.qdct )
             )
 
     # def test_make_form_dct__book_openurl(self):
@@ -216,7 +216,14 @@ class CitationFormHelperTest( TestCase ):
     #          'url_ver': 'Z39.88-2004'}, self.helper.make_form_dct( self.qdct )
     #         )
 
-    ## make_form_type() checks ##
+    # end class CitationFormDictMakerTest
+
+
+class CitationFormHelperTest( TestCase ):
+    """ Checks view.citation_form() helper functions. """
+
+    def setUp(self):
+        self.helper = CitationFormHelper()
 
     def test_make_form_type_isbn(self):
         """ Checks form_type determination. """

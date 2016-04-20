@@ -28,7 +28,7 @@ from findit import forms
 log = logging.getLogger('access')
 
 
-class CitationFormDictMaker( object ):
+class CitationFormDctMaker( object ):
     """ Converts django querystring-object to form-dct. """
 
     def make_form_dct( self, querydct ):
@@ -162,8 +162,8 @@ class CitationFormHelper( object ):
         """ Populates form from url.
             Called by views.citation_form() """
         log.debug( 'request.__dict__, ```%s```' % pprint.pformat(request.__dict__) )
-        form_dct_maker = CitationFormDictMaker()
-        citation_form_dct = CitationFormDictMaker.make_form_dct( request.GET )
+        form_dct_maker = CitationFormDctMaker()
+        citation_form_dct = form_dct_maker.make_form_dct( request.GET )
         context = {
             u'article_form': forms.ArticleForm(citation_form_dct),
             u'book_form': forms.BookForm(citation_form_dct),
@@ -179,8 +179,6 @@ class CitationFormHelper( object ):
         resp = render( request, 'findit/citation_linker_2.html', context )
         log.debug( 'returning response' )
         return resp
-
-    ## helpers
 
     def make_form_type( self, dct ):
         """ Tries to get the default form right.
