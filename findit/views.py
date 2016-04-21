@@ -59,7 +59,6 @@ EXTRAS_CACHE_TIMEOUT = 604800 #60*60*24*7
 PMID_QUERY = re.compile('^pmid\:(\d+)')
 
 # view helpers
-fresolver = FinditResolver()
 form_helper = CitationFormHelper()
 permalink_helper = Permalink()
 ris_helper = RisHelper()
@@ -116,6 +115,7 @@ def findit_base_resolver( request ):
     for key in request.session.keys():
         del request.session[key]
     alog.debug( 'session.items() after refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
+    fresolver = FinditResolver()
 
     ## if index-page call
     if fresolver.check_index_page( request.GET ):
@@ -123,6 +123,11 @@ def findit_base_resolver( request ):
         context = fresolver.make_index_context( request.GET )
         resp = fresolver.make_index_response( request, context )
         return resp
+
+    ## temp fix for testing from in-production redirects
+    if fresolver.check_double_encoded_querystring( request.META.get('QUERY_STRING', '') ):
+        alog.debug( 'double-encoded querystring found, gonna redirect to, ```{}```'.format(fresolver.redirect_url) )
+        return HttpResponseRedirect( fresolver.redirect_url )
 
     ## make permalink if one doesn't exist
     querystring = request.META.get('QUERY_STRING', '')

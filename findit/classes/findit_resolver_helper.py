@@ -52,6 +52,7 @@ class FinditResolver( object ):
         self.borrow_link = False
         self.direct_link = False
         self.referrer = ''
+        self.redirect_url = ''
 
     def check_index_page( self, querydict ):
         """ Checks to see if it's the demo landing page.
@@ -79,6 +80,17 @@ class FinditResolver( object ):
             resp = render( request, 'findit/index.html', context )
         log.debug( 'returning response' )
         return resp
+
+    def check_double_encoded_querystring( self, querystring ):
+        """ Checks for apache redirect-bug.
+            Called by views.base_resolver() """
+        return_val = False
+        if '%25' in querystring:
+            good_querystring = urllib.unquote( querystring )
+            self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
+            return_val = True
+        log.debug( 'bad url found, {}'.format(return_val) )
+        return return_val
 
     def check_summon( self, querydict ):
         """ Determines whether a summon check is needed.
