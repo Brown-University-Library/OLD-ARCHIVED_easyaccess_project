@@ -148,6 +148,9 @@ def findit_base_resolver( request ):
     querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
+    ## if not enough data, redirect to citation-form
+    ## TODO
+
     ## if there's a direct-link, go right to it
     if fresolver.check_direct_link( sersol_dct ):
         return HttpResponseRedirect( fresolver.direct_link )
@@ -163,10 +166,6 @@ def findit_base_resolver( request ):
     if fresolver.check_book( request ):
         alog.debug( 'fresolver.borrow_link, `{}`'.format(fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
-
-    # ## get serials-solution data-dct
-    # querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
-    # sersol_dct = fres`olver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
     ## if sersol-data shows it's a book, redirect to /borrow
     if fresolver.check_book_after_sersol( sersol_dct, querystring ):
