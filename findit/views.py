@@ -149,7 +149,14 @@ def findit_base_resolver( request ):
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
     ## if not enough data, redirect to citation-form
-    ## TODO
+    try:
+        if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
+            alog.info( 'failed enough-metadata-check' )
+            redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
+            alog.info( 'failed enough-metadata-check; redirecting to citation-form at, ```{}```'.format(redirect_url) )
+            return HttpResponseRedirect( redirect_url )
+    except Exception as e:
+        alog.info( 'passed enough-metadata-check; try-except result was, ```{}```'.format(unicode(repr(e))) )
 
     ## if there's a direct-link, go right to it
     if fresolver.check_direct_link( sersol_dct ):
