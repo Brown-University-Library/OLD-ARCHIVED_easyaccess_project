@@ -44,12 +44,12 @@ from .utils import BulSerSol, Ourl
 from .utils import get_cache_key, make_illiad_url
 from bul_link.views import BulLinkBase
 
-try:
-    from easy_article.delivery.decorators import has_email, has_service
-    from easy_article.delivery.utils import PublicTerminalMixin
-except ImportError:
-    from delivery.decorators import has_email, has_service
-    from delivery.utils import PublicTerminalMixin
+# try:
+#     from easy_article.delivery.decorators import has_email, has_service
+#     from easy_article.delivery.utils import PublicTerminalMixin
+# except ImportError:
+#     from delivery.decorators import has_email, has_service
+#     from delivery.utils import PublicTerminalMixin
 
 
 #One week.

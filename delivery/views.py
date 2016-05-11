@@ -7,7 +7,7 @@ from datetime import datetime
 
 import bibjsontools, markdown, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
-from decorators import has_email, has_service
+# from decorators import has_email, has_service
 from delivery import app_settings
 from django.conf import settings
 from django.contrib.auth import login
@@ -21,7 +21,7 @@ from django.template import loader
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from py360link2 import get_sersol_data, Resolved
-from shibboleth.decorators import login_optional
+# from shibboleth.decorators import login_optional
 from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 # from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
 from delivery.classes.availability_helper import AvailabilityViewHelper

@@ -14,7 +14,7 @@ urlpatterns = [
 
     url( r'^admin/', include(admin.site.urls) ),
 
-    url( r'^user/', include('shibboleth.urls', namespace='shibboleth') ),  # will likely retire
+    # url( r'^user/', include('shibboleth.urls', namespace='shibboleth') ),  # will likely retire
 
     url( r'^borrow/', include('delivery.urls', namespace='delivery') ),  # submits to easyBorrow
 

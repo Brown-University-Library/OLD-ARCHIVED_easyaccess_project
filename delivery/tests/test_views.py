@@ -124,11 +124,17 @@ class ProcessViewTest(TestCase):
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/find/?isbn=123', response._headers['location'][1] )
 
+    # def test_hit_process_directly_follow_redirect(self):
+    #     """ Direct hit should redirect to /find/?a=b. """
+    #     response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
+    #     # log.debug( 'response.context, ```{}```'.format(pprint.pformat(response.context)) )
+    #     self.assertEqual( True, "This article couldn't be located" in response.content )
+
     def test_hit_process_directly_follow_redirect(self):
         """ Direct hit should redirect to /find/?a=b. """
         response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
         # log.debug( 'response.context, ```{}```'.format(pprint.pformat(response.context)) )
-        self.assertEqual( True, "This article couldn't be located" in response.content )
+        self.assertEqual( True, 'div id="citation-linker"' in response.content )  # first redirects back to '/find/?isbn=123', then to 'find/citation_form/?isbn=123'
 
     # def test_hit_process_properly(self):
     #     """ Direct hit should redirect to 'message' with a link to findit/find. """

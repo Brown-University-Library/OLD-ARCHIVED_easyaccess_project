@@ -142,11 +142,11 @@ class JSONResponseMixin(object):
 #Login optional mixin
 from django.utils.decorators import method_decorator
 #shibboleth helpers
-from shibboleth.decorators import login_optional
+# from shibboleth.decorators import login_optional
 class LoginOptionalMixin(object):
     u"""Will log the user in if Shib attributes found."""
 
-    @method_decorator(login_optional)
+    # @method_decorator(login_optional)
     def dispatch(self, *args, **kwargs):
         return super(LoginOptionalMixin, self).dispatch(*args, **kwargs)
 
