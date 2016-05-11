@@ -6,7 +6,6 @@ import datetime, json, logging, os, pprint, random, time
 import markdown
 from .classes.illiad_helper import IlliadHelper
 from .classes.login_helper import LoginHelper
-# from .classes.shib_helper import ShibChecker
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
