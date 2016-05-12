@@ -90,12 +90,13 @@ class LoginViewTest(TestCase):
         session['last_querystring'] = 'isbn=123'
         session['shib_status'] = ''
         session.save()
-        response = self.client.post( '/borrow/login/', SERVER_NAME="127.0.0.1" )
+        response = self.client.post( '/borrow/shib_login/', SERVER_NAME="127.0.0.1" )
+        log.debug( 'response.status_code, {}'.format(response.status_code) )
         self.assertEqual( 302, response.status_code )
         # log.debug( 'response.headers, {}'.format(response._headers) )
         # self.assertTrue( 'shib_logout.jsp' in response._headers['location'][1] )
         # self.assertTrue( '/borrow/login/' in response._headers['location'][1] )
-        self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
+        self.assertEqual( '/borrow/login_handler/', response._headers['location'][1] )
 
     def test_login_after_shib_logout(self):
         """ Good hit should return response. """
@@ -104,7 +105,7 @@ class LoginViewTest(TestCase):
         session['last_querystring'] = 'isbn=123'
         session['shib_status'] = 'will_force_logout'
         session.save()
-        response = self.client.post( '/borrow/login/', SERVER_NAME="127.0.0.1" )
+        response = self.client.get( '/borrow/login_handler/', SERVER_NAME="127.0.0.1" )
         print( 'location, ```{}```'.format(response._headers['location'][1]) )
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
