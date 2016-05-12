@@ -143,13 +143,15 @@ If you have any questions, contact the Library's Interlibrary Loan office at <in
         return message
 
     def build_shiblogout_redirect_url( self, request ):
-        """ If localhost, just builds the message_url,
-            otherwise builds the shib-logout url with the message_url included.
+        """ If localhost, just returns the message_url,
+            otherwise builds the shib-logout url with a _full_ message_url included.
             Called by views.process_request() """
-        redirect_url = reverse('delivery:message_url')
+        redirect_url = reverse( 'delivery:message_url' )
         if not ( request.get_host() == '127.0.0.1' and settings.DEBUG2 == True ):  # eases local development
+            redirect_url = 'https://{host}/{message_url}/'.format( host=request.get_host(), message_url=reverse('delivery:message_url') )
             encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
             redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
+        log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
         return redirect_url
 
     # end class ProcessViewHelper()

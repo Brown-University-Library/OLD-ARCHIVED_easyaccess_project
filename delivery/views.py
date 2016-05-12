@@ -229,7 +229,7 @@ def shib_logout( request ):
     #     encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
     #     redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
 
-    log.debug( 'redirect_url, `%s`' % redirect_url )
+    log.debug( 'redirect_url, `{}`'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
 
