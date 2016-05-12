@@ -77,7 +77,7 @@ class LoginViewTest(TestCase):
 
     def test_login_direct(self):
         """ Direct hit should redirect to 'find'. """
-        response = self.client.get( '/borrow/availability/?foo=bar' )
+        response = self.client.get( '/borrow/availability/?foo=bar', SERVER_NAME="127.0.0.1" )
         # print( 'response.content, ```{}```'.format(response.content) )
         # print( 'response.__dict__, ```{}```'.format(response.__dict__) )
         self.assertEqual( 302, response.status_code )
@@ -90,10 +90,12 @@ class LoginViewTest(TestCase):
         session['last_querystring'] = 'isbn=123'
         session['shib_status'] = ''
         session.save()
-        response = self.client.post( '/borrow/login/' )
+        response = self.client.post( '/borrow/login/', SERVER_NAME="127.0.0.1" )
         self.assertEqual( 302, response.status_code )
-        self.assertTrue( 'shib_logout.jsp' in response._headers['location'][1] )
-        self.assertTrue( '/borrow/login/' in response._headers['location'][1] )
+        # log.debug( 'response.headers, {}'.format(response._headers) )
+        # self.assertTrue( 'shib_logout.jsp' in response._headers['location'][1] )
+        # self.assertTrue( '/borrow/login/' in response._headers['location'][1] )
+        self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
 
     def test_login_after_shib_logout(self):
         """ Good hit should return response. """

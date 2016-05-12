@@ -150,6 +150,12 @@ def login( request ):
     # else:
     #     request.session['shib_status'] = ''  # makes assess_shib_redirect_need() trigger forced-login next time
 
+    localdev_check = False
+    if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+        localdev_check = True
+    log.debug( 'request.get_host(), `{host}`; settings.DEBUG2, `{debug}`'.format(host=request.get_host(), debug=settings.DEBUG2) )
+    log.debug( 'localdev_check, `{}`'.format(localdev_check) )
+
     ## update user/profile objects
     shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
     request.session['user_json'] = json.dumps( shib_dct )
