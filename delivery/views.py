@@ -241,6 +241,7 @@ def message( request ):
         }
     request.session['message'] = ''
     request.session['last_path'] = request.path
+    logout( request )  # from django.contrib.auth import logout
     return render( request, 'delivery/message.html', context )
 
 
