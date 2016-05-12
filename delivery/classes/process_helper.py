@@ -24,7 +24,7 @@ class ProcessViewHelper(object):
             Called by views.login() """
         log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
         ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
-        if last_path == '/easyaccess/borrow/login/':
+        if last_path == '/easyaccess/borrow/login_handler/':
             referrer_check = True
         if referrer_check is False:
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
