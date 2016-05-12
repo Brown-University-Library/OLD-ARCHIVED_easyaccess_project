@@ -3,7 +3,9 @@
 from __future__ import unicode_literals
 
 import datetime, logging, pprint, time
+from delivery import app_settings
 from delivery.easyborrow_models import EasyBorrowRequest
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 
@@ -15,17 +17,6 @@ class ProcessViewHelper(object):
 
     def __init__(self):
         pass
-
-    # def check_referrer( self, session_dct, meta_dct ):
-    #     """ Ensures request came from /availability/.
-    #         Called by views.login() """
-    #     ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
-    #     if last_path == '/easyaccess/borrow/login/':
-    #         referrer_check = True
-    #     if referrer_check is False:
-    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('delivery:message_url'), querystring=meta_dct.get('QUERY_STRING', '') )
-    #     log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
-    #     return ( referrer_check, redirect_url )
 
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
@@ -149,6 +140,17 @@ If you have any questions, contact the Library's Interlibrary Loan office at <in
         email=email )
         log.debug( 'ezb submitted message built' )
         return message
+
+    def build_shiblogout_redirect_url( self, request ):
+        """ If localhost, just builds the message_url,
+            otherwise builds the shib-logout url with the message_url included.
+            Called by views.process_request() """
+        if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+            redirect_url = reverse('delivery:message_url')
+        else:
+            encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
+            redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
+        return redirect_url
 
     # end class ProcessViewHelper()
 

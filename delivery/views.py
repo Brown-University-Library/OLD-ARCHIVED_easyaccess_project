@@ -7,10 +7,13 @@ from datetime import datetime
 
 import bibjsontools, markdown, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
-# from decorators import has_email, has_service
 from delivery import app_settings
+from delivery.classes.availability_helper import AvailabilityViewHelper
+from delivery.classes.availability_helper import JosiahAvailabilityChecker
+from delivery.classes.login_helper import LoginViewHelper
+from delivery.classes.process_helper import ProcessViewHelper
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -19,15 +22,10 @@ from django.shortcuts import redirect, render
 from django.template import Context
 from django.template import loader
 from django.utils.decorators import method_decorator
+from django.utils.http import urlquote
 from django.views.generic import TemplateView
 from py360link2 import get_sersol_data, Resolved
-# from shibboleth.decorators import login_optional
 from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
-# from delivery.classes.availability_helper import JosiahAvailabilityManager as AvailabilityChecker  # temp; want to leave existing references to `JosiahAvailabilityManager` in place for now
-from delivery.classes.availability_helper import AvailabilityViewHelper
-from delivery.classes.availability_helper import JosiahAvailabilityChecker
-from delivery.classes.login_helper import LoginViewHelper
-from delivery.classes.process_helper import ProcessViewHelper
 
 
 log = logging.getLogger('access')
@@ -196,21 +194,43 @@ def process_request( request ):
 
     ## save new request
     # process_view_helper.save_request( user_obj, resource_obj )
-    # process_view_helper.save_to_easyborrow( user_obj, resource_obj )
     shib_dct = json.loads( request.session.get('user_json', '{}') )
     bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
     ezb_db_id = process_view_helper.save_to_easyborrow( shib_dct, bib_dct, request.session.get('last_querystring', '') )
 
     ## evaluate result
     if ezb_db_id:
-        # message = "Your request was successful; your easyBorrow transaction number is {}; you'll soon receive an update email.".format( ezb_db_id )
         message = process_view_helper.build_submitted_message( shib_dct['name_first'], shib_dct['name_last'], bib_dct, ezb_db_id, shib_dct['email'] )
     else:
         message = "There was a problem submitting your request, please try again in a few minutes, and if the problem persists, let us know via the feedback link."
 
-    ## redirect to message url
+    # ## redirect to message url
+    # request.session['message'] = message
+    # return HttpResponseRedirect( reverse('delivery:message_url') )
+
+    ## redirect to shib-logout url (which will redirect to message-url)
     request.session['message'] = message
-    return HttpResponseRedirect( reverse('delivery:message_url') )
+    redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('delivery:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
+    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+    return HttpResponseRedirect( redirect_url )
+
+
+def shib_logout( request ):
+    """ Clears session, hits shib logout.
+        Redirects user to message() view. """
+    message = request.session['message']
+    logout( request )  # from django.contrib.auth import logout
+    request.session['message'] = message
+    redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
+
+    # if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+    #     pass
+    # else:
+    #     encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
+    #     redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
+
+    log.debug( 'redirect_url, `%s`' % redirect_url )
+    return HttpResponseRedirect( redirect_url )
 
 
 def message( request ):
