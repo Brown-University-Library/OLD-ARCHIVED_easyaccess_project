@@ -115,6 +115,18 @@ def availability( request ):
     ## end def availability()
 
 
+def shib_login( request ):
+    """ Tries an sp login, then redirects to login_url.
+        Called when views.availability() returns a Request button that's clicked. """
+    querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+    login_handler_url = 'https://{host}{login_handler_url}?{querystring}'.format(
+        host=request.get_host(), login_handler_url=reverse('delivery:login_url'), querystring=querystring )
+    encoded_login_handler_url = urlquote( login_handler_url )
+    redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format( shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+    return HttpResponseRedirect( redirect_url )
+
+
 def login( request ):
     """ Forces shib-login, then
         (for now)

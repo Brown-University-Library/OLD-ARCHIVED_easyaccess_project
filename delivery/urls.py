@@ -16,9 +16,10 @@ urlpatterns = patterns('',
 
     url( r'^availability/$',  'delivery.views.availability', name=u'availability_url' ),  # if 'Request this' is clicked, goes to 'login'
 
+    url( r'^shib_login/$',  'delivery.views.shib_login', name=u'shib_login_url' ),  # after shib, redirects to behind-the-scenes 'login'
+
     url( r'^login/$',  'delivery.views.login', name=u'login_url' ),  # after login, redirects to behind-the-scenes 'process_request'
-    # url( r'^process_request/$',  'delivery.views.process_request', name=u'process_request_url' ),  # after processing, redirects to 'message'
-    url( r'^process_request/$',  'delivery.views.process_request', name=u'process_request_url' ),  # after processing, redirects to 'shib_logout'
+    url( r'^process_request/$',  'delivery.views.process_request', name=u'process_request_url' ),  # after processing, redirects to behind-the-scenes 'shib_logout'
     url( r'^shib_logout/$',  'delivery.views.shib_logout', name=u'shib_logout_url' ),  # after processing, redirects to 'message'
     url( r'^message/$',  'delivery.views.message', name=u'message_url' ),  # endpoint
 
