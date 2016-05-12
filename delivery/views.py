@@ -118,18 +118,21 @@ def availability( request ):
 def shib_login( request ):
     """ Tries an sp login, then redirects to login_url.
         Called when views.availability() returns a Request button that's clicked. """
-    querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
-    login_handler_url = 'https://{host}{login_handler_url}?{querystring}'.format(
-        host=request.get_host(), login_handler_url=reverse('delivery:login_url'), querystring=querystring )
+    localdev_check = False
+    if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+        localdev_check = True
+    if localdev_check is True:
+        return HttpResponseRedirect( reverse('delivery:login_handler_url') )
+    login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url') )
     encoded_login_handler_url = urlquote( login_handler_url )
-    redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format( shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+    redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+        shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
 
-def login( request ):
-    """ Forces shib-login, then
-        (for now)
+def login_handler( request ):
+    """ (for now)
         - stores shib info to session
         - redirects user to process_request url/view
         (eventually)
@@ -150,23 +153,11 @@ def login( request ):
         bib_dct['easyborrow_volumes'] = easyborrow_volumes
         request.session['bib_dct_json'] = json.dumps( bib_dct )
 
-    # ## force login, by forcing a logout if needed
-    # ( localdev_check, redirect_check, shib_status ) = login_view_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
-    # if redirect_check is True:
-    #     ( redirect_url, updated_shib_status ) = login_view_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
-    #     request.session['shib_status'] = updated_shib_status
-    #     log.debug( 'after assessing shib-redirect-need, redirecting to url, ```{}```'.format(redirect_url) )
-    #     return HttpResponseRedirect( redirect_url )
-    # else:
-    #     request.session['shib_status'] = ''  # makes assess_shib_redirect_need() trigger forced-login next time
-
+    ## update user/profile objects
     localdev_check = False
     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
         localdev_check = True
-    log.debug( 'request.get_host(), `{host}`; settings.DEBUG2, `{debug}`'.format(host=request.get_host(), debug=settings.DEBUG2) )
     log.debug( 'localdev_check, `{}`'.format(localdev_check) )
-
-    ## update user/profile objects
     shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
     request.session['user_json'] = json.dumps( shib_dct )
 
@@ -216,13 +207,10 @@ def process_request( request ):
     else:
         message = "There was a problem submitting your request, please try again in a few minutes, and if the problem persists, let us know via the feedback link."
 
-    # ## redirect to message url
-    # request.session['message'] = message
-    # return HttpResponseRedirect( reverse('delivery:message_url') )
-
     ## redirect to shib-logout url (which will redirect to message-url)
     request.session['message'] = message
-    redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('delivery:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
+    redirect_url = '{main_url}?{querystring}'.format(
+        main_url=reverse('delivery:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
@@ -234,13 +222,6 @@ def shib_logout( request ):
     logout( request )  # from django.contrib.auth import logout
     request.session['message'] = message
     redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
-
-    # if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
-    #     pass
-    # else:
-    #     encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
-    #     redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
-
     log.debug( 'redirect_url, `{}`'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
@@ -253,10 +234,8 @@ def message( request ):
         }
     request.session['message'] = ''
     request.session['last_path'] = request.path
-    logout( request )  # from django.contrib.auth import logout
+    # logout( request )  # from django.contrib.auth import logout
     return render( request, 'delivery/message.html', context )
-
-
 
 
 
