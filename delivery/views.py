@@ -140,18 +140,17 @@ def login( request ):
         bib_dct['easyborrow_volumes'] = easyborrow_volumes
         request.session['bib_dct_json'] = json.dumps( bib_dct )
 
-    ## force login, by forcing a logout if needed
-    ( localdev_check, redirect_check, shib_status ) = login_view_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
-    if redirect_check is True:
-        ( redirect_url, updated_shib_status ) = login_view_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
-        request.session['shib_status'] = updated_shib_status
-        log.debug( 'after assessing shib-redirect-need, redirecting to url, ```{}```'.format(redirect_url) )
-        return HttpResponseRedirect( redirect_url )
-    else:
-        request.session['shib_status'] = ''  # makes assess_shib_redirect_need() trigger forced-login next time
+    # ## force login, by forcing a logout if needed
+    # ( localdev_check, redirect_check, shib_status ) = login_view_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
+    # if redirect_check is True:
+    #     ( redirect_url, updated_shib_status ) = login_view_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
+    #     request.session['shib_status'] = updated_shib_status
+    #     log.debug( 'after assessing shib-redirect-need, redirecting to url, ```{}```'.format(redirect_url) )
+    #     return HttpResponseRedirect( redirect_url )
+    # else:
+    #     request.session['shib_status'] = ''  # makes assess_shib_redirect_need() trigger forced-login next time
 
     ## update user/profile objects
-    # shib_dct = login_view_helper.update_user( localdev_check, request.META )  # will eventually return user object
     shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
     request.session['user_json'] = json.dumps( shib_dct )
 
