@@ -7,6 +7,7 @@ from delivery import app_settings
 from delivery.easyborrow_models import EasyBorrowRequest
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.http import urlquote
 
 
 log = logging.getLogger('access')
