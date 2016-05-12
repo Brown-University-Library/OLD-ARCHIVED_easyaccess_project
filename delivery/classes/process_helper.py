@@ -146,9 +146,8 @@ If you have any questions, contact the Library's Interlibrary Loan office at <in
         """ If localhost, just builds the message_url,
             otherwise builds the shib-logout url with the message_url included.
             Called by views.process_request() """
-        if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
-            redirect_url = reverse('delivery:message_url')
-        else:
+        redirect_url = reverse('delivery:message_url')
+        if not ( request.get_host() == '127.0.0.1' and settings.DEBUG2 == True ):  # eases local development
             encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
             redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
         return redirect_url
