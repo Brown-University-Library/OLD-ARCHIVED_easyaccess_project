@@ -64,9 +64,7 @@ def login_handler( request ):
     localdev_check = False
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
         localdev_check = True
-    1/0
     shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
-    1/0
 
     ## log user into illiad
     ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
@@ -107,6 +105,7 @@ def illiad_request( request ):
     ## cleanup
     request.session['format'] = ''
     request.session['illiad_login_check_flag'] = ''
+    log.debug( 'request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## respond
     resp = render( request, 'article_request_app/request.html', context )
@@ -133,8 +132,9 @@ def illiad_handler( request ):
 
     ## here check
     here_check = 'init'
-    openurl = request.session.get( 'illiad_request_openurl', '' )
-    if len( openurl ) == 0:
+    illiad_url = request.session.get( 'illiad_url', '' )
+    log.debug( 'illiad_url, ``{}```'.format(illiad_url) )
+    if len( illiad_url ) == 0:
         here_check = 'problem'
     if here_check == 'init':
         shib_dct = json.loads( request.session.get('user_json', '{}') )
@@ -146,19 +146,6 @@ def illiad_handler( request ):
         request.session['message'] = ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
-
-    # ## get illiad_instance
-    # ill_username = shib_dct['eppn'].split('@')[0]
-    # log.debug( 'ill_username, `%s`' % ill_username )
-    # illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
-    # log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
-    # try:
-    #     illiad_session = illiad_instance.login()
-    # except Exception as e:
-    #     log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-    #     message = 'oops; a problem occurred'
-    #     request.session['problem_message'] = message
-    #     return HttpResponseRedirect( reverse('article_request:oops_url') )
 
     ## get illiad_instance
     ill_username = shib_dct['eppn'].split('@')[0]
@@ -173,20 +160,6 @@ def illiad_handler( request ):
             request.session['message'] = ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
-
-    # ## submit to illiad
-    # illiad_url = request.session['illiad_url']
-    # illiad_post_key = illiad_instance.get_request_key( illiad_url )
-    # log.debug( 'illiad_post_key, ```%s```' % pprint.pformat(illiad_post_key) )
-    # errors = illiad_post_key.get( 'errors', None )
-    # if errors:
-    #     log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
-    #     request.session['problem_message'] = 'There was a problem submitting your request; please try again later.'
-    #     return HttpResponseRedirect( reverse('article_request:oops_url') )
-    # else:
-    #     submit_status = illiad_instance.make_request( illiad_post_key )
-    #     log.debug( 'submit_status, ```%s```' % pprint.pformat(submit_status) )
-    #     illiad_transaction_number = submit_status['transaction_number']
 
     ## submit to illiad
     illiad_url = request.session['illiad_url']

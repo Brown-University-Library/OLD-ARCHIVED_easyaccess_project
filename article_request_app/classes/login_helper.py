@@ -30,28 +30,28 @@ class LoginHelper( object ):
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
 
-    def assess_shib_redirect_need( self, session, host, meta_dct ):
-        """ Determines whether a shib-redirect login or logout url is needed.
-            Returns needed-boolean, and extracted/updated shib_status.
-            Called by views.login()
-            `shib_status` flow:
-            - '', from a new-request, will be changed to 'will_force_logout' and trigger a shib-logout redirect
-            - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
-            - 'will_force_login' is usually ok, and the session should contain shib info, but if not, a logout-login will be triggered
-            TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
-        ( localdev_check, redirect_check, shib_status ) = ( False, False, session.get('shib_status', '') )
-        log.debug( 'initial shib_status, `{}`'.format(shib_status) )
-        log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
-        if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
-            localdev_check = True
-        else:
-            if shib_status == '' or shib_status == 'will_force_logout':
-                redirect_check = True
-            elif shib_status == 'will_force_login' and meta_dct.get('Shibboleth-eppn', '') == '':
-                ( redirect_check, shib_status ) = ( True, 'will_force_logout' )
-        assessment_tuple = ( localdev_check, redirect_check, shib_status )
-        log.debug( 'assessment_tuple, `{}`'.format(assessment_tuple) )
-        return assessment_tuple
+    # def assess_shib_redirect_need( self, session, host, meta_dct ):
+    #     """ Determines whether a shib-redirect login or logout url is needed.
+    #         Returns needed-boolean, and extracted/updated shib_status.
+    #         Called by views.login()
+    #         `shib_status` flow:
+    #         - '', from a new-request, will be changed to 'will_force_logout' and trigger a shib-logout redirect
+    #         - 'will_force_logout' will be changed to 'will_force_login' and trigger a shib-login redirect
+    #         - 'will_force_login' is usually ok, and the session should contain shib info, but if not, a logout-login will be triggered
+    #         TODO: figure out why settings.DEBUG is getting changed unexpectedly and fix it. """
+    #     ( localdev_check, redirect_check, shib_status ) = ( False, False, session.get('shib_status', '') )
+    #     log.debug( 'initial shib_status, `{}`'.format(shib_status) )
+    #     log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
+    #     if host == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+    #         localdev_check = True
+    #     else:
+    #         if shib_status == '' or shib_status == 'will_force_logout':
+    #             redirect_check = True
+    #         elif shib_status == 'will_force_login' and meta_dct.get('Shibboleth-eppn', '') == '':
+    #             ( redirect_check, shib_status ) = ( True, 'will_force_logout' )
+    #     assessment_tuple = ( localdev_check, redirect_check, shib_status )
+    #     log.debug( 'assessment_tuple, `{}`'.format(assessment_tuple) )
+    #     return assessment_tuple
 
     def build_shib_redirect_url( self, shib_status, scheme, host, session_dct, meta_dct ):
         """ Builds shib-redirect login or logout url.
@@ -91,31 +91,30 @@ class LoginHelper( object ):
         log.debug( 'redirect_tuple, `{}`'.format(redirect_tuple) )
         return redirect_tuple
 
-    # def grab_user_info( self, request, localdev, shib_status ):
-    #     """ Updates session with real-shib or development-shib info.
-    #         Called by views.login() """
-    #     # if localdev is False and shib_status == 'will_force_login':
-    #     if localdev is False:
-    #         request.session['shib_status'] = ''
-    #         shib_dct = shib_checker.grab_shib_info( request )
-    #     else:  # localdev
-    #         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
-    #     request.session['user_json'] = json.dumps( shib_dct )
-    #     log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
-    #     return shib_dct
-
-    def grab_user_info( self, request, localdev, shib_status ):
+    def grab_user_info( self, request, localdev ):
         """ Updates session with real-shib or development-shib info.
             Called by views.login() """
         # if localdev is False and shib_status == 'will_force_login':
         if localdev is False:
-            request.session['shib_status'] = ''
             shib_dct = shib_checker.grab_shib_info( request.META, request.get_host() )
         else:  # localdev
             shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
         request.session['user_json'] = json.dumps( shib_dct )
         log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
         return shib_dct
+
+    # def grab_user_info( self, request, localdev, shib_status ):
+    #     """ Updates session with real-shib or development-shib info.
+    #         Called by views.login() """
+    #     # if localdev is False and shib_status == 'will_force_login':
+    #     if localdev is False:
+    #         request.session['shib_status'] = ''
+    #         shib_dct = shib_checker.grab_shib_info( request.META, request.get_host() )
+    #     else:  # localdev
+    #         shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
+    #     request.session['user_json'] = json.dumps( shib_dct )
+    #     log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
+    #     return shib_dct
 
     def update_session( self, request ):
         """ Updates necessary session attributes.
