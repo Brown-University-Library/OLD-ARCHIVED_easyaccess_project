@@ -20,21 +20,29 @@ log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 ill_helper = IlliadHelper()
 login_helper = LoginHelper()
-# shib_checker = ShibChecker()
 
 
-def login( request ):
+def shib_login( request ):
+    """ Tries an sp login, then redirects to login_url.
+        Called when views.availability() returns a Request button that's clicked. """
+    localdev_check = False
+    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+        localdev_check = True
+    if localdev_check is True:
+        return HttpResponseRedirect( reverse('article_request:login_handler_url') )
+    login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url') )
+    encoded_login_handler_url = urlquote( login_handler_url )
+    redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+        shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+    return HttpResponseRedirect( redirect_url )
+
+
+def login_handler( request ):
     """ Ensures user comes from correct 'findit' url;
-        then forces login;
+        then grabs shib info;
         then checks illiad for new-user or blocked;
-        if happy, redirects to `illiad`, otherwise to `oops`. """
-
-    # ## check that request is from findit
-    # referrer_check = login_helper.check_referrer( request.session, request.META )
-    # if referrer_check is False:
-    #     return HttpResponseBadRequest( 'See "https://library.brown.edu/easyaccess/" for example easyAccess requests.`' )
-    # else:
-    #     request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+        if happy, redirects to `illiad`, otherwise to `message` with error info. """
 
     ## check referrer
     ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
@@ -44,23 +52,21 @@ def login( request ):
     request.session['last_path'] = request.path
     request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
 
-    # ## check referrer
-    # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
-    # if referrer_ok is not True:
-    #     request.session['last_path'] = request.path
+    # ## force login, by forcing a logout if needed
+    # ( localdev_check, redirect_check, shib_status ) = login_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
+    # if redirect_check is True:
+    #     ( redirect_url, updated_shib_status ) = login_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
+    #     request.session['shib_status'] = updated_shib_status
     #     return HttpResponseRedirect( redirect_url )
-    # request.session['last_path'] = request.path
-
-
-    ## force login, by forcing a logout if needed
-    ( localdev_check, redirect_check, shib_status ) = login_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
-    if redirect_check is True:
-        ( redirect_url, updated_shib_status ) = login_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
-        request.session['shib_status'] = updated_shib_status
-        return HttpResponseRedirect( redirect_url )
 
     ## get user info
-    shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info
+    # shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info
+    localdev_check = False
+    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+        localdev_check = True
+    1/0
+    shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
+    1/0
 
     ## log user into illiad
     ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
