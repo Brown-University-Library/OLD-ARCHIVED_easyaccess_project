@@ -75,16 +75,16 @@ class LoginViewTest(TestCase):
         self.client = Client()
         self.session_hack = SessionHack( self.client )
 
-    def test_login_direct(self):
-        """ Direct hit should redirect to 'find'. """
+    def test_hit_availability_with_no_session(self):
+        """ Direct hit with no session info should redirect to 'find'. """
         response = self.client.get( '/borrow/availability/?foo=bar', SERVER_NAME="127.0.0.1" )
         # print( 'response.content, ```{}```'.format(response.content) )
         # print( 'response.__dict__, ```{}```'.format(response.__dict__) )
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/find/?foo=bar', response._headers['location'][1] )
 
-    def test_login_from_availability_clean(self):
-        """ Good hit should return response. """
+    def test_hit_shib_login_from_availability_clean(self):
+        """ Hitting shib_login with good session info should redirect to login_handler. """
         session = self.session_hack.session
         session['last_path'] = '/easyaccess/borrow/availability/'
         session['last_querystring'] = 'isbn=123'
@@ -98,8 +98,8 @@ class LoginViewTest(TestCase):
         # self.assertTrue( '/borrow/login/' in response._headers['location'][1] )
         self.assertEqual( '/borrow/login_handler/', response._headers['location'][1] )
 
-    def test_login_after_shib_logout(self):
-        """ Good hit should return response. """
+    def test_hit_login_handler_with_availability_last_path(self):
+        """ Hitting login_handler with good session info should redirect to process_request. """
         session = self.session_hack.session
         session['last_path'] = '/easyaccess/borrow/availability/'
         session['last_querystring'] = 'isbn=123'
