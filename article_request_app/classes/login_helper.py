@@ -20,10 +20,10 @@ class LoginHelper( object ):
 
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from '/find/' or a login redirect.
-            Called by views.login() """
+            Called by views.login_handler() """
         ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
         log.debug( 'last_path, `{}`'.format(last_path) )
-        if last_path == '/easyaccess/find/' or last_path == '/easyaccess/article_request/login/':
+        if last_path == '/easyaccess/find/' or last_path == '/easyaccess/article_request/login_helper/':
             referrer_ok = True
         if referrer_ok is False:
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
@@ -95,6 +95,7 @@ class LoginHelper( object ):
         """ Updates session with real-shib or development-shib info.
             Called by views.login() """
         # if localdev is False and shib_status == 'will_force_login':
+        log.debug( 'localdev, `{}`'.format(localdev) )
         if localdev is False:
             shib_dct = shib_checker.grab_shib_info( request.META, request.get_host() )
         else:  # localdev
