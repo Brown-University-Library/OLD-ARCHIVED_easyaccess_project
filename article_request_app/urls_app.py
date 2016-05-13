@@ -8,8 +8,11 @@ from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
 
-    url( r'^login/$',  'article_request_app.views.login', name='login_url' ),
-    # ensures user comes from correct 'findit' url; then forces login; then checks illiad for new-user or blocked; if happy, redirects to `illiad`, otherwise to `oops`.
+    url( r'^shib_login/$',  'article_request_app.views.shib_login', name='shib_login_url' ),
+    # ensures user comes from correct 'findit' url; after shib-login; redirects to `login_handler`.
+
+    url( r'^login_handler/$',  'article_request_app.views.login', name='login_handler_url' ),
+    # checks illiad for new-user or blocked; if happy, redirects to `illiad`, otherwise to `message` with error.
 
     url( r'^illiad/$',  'article_request_app.views.illiad_request', name='illiad_request_url' ),
     # displays confirmation 'Submit' button and citation; submission hits 'illiad_handler'

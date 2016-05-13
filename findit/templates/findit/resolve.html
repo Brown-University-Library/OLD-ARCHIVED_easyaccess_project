@@ -30,7 +30,7 @@
 	            <div id="request-message" class="notice">
 	                <h3>This article couldn't be located in the library's collections.</h3>
 	                <ul>
-                    {% url 'article_request:login_url' as login_url %}
+                    {% url 'article_request:shib_login_url' as login_url %}
                     <li class="request-link"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request from another library</a></li>
                     {% if gscholar %}
                     <li><a href="{{ gscholar }}">Search Google Scholar</a></li>

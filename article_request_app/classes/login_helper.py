@@ -18,20 +18,6 @@ shib_checker = ShibChecker()
 class LoginHelper( object ):
     """ Contains helpers for views.login() """
 
-    # def check_referrer( self, session, meta_dct ):
-    #     """ Ensures request came from findit app.
-    #         Called by views.login() """
-    #     findit_check = False
-    #     findit_illiad_check_flag = session.get( 'findit_illiad_check_flag', '' )
-    #     findit_illiad_check_openurl = session.get( 'findit_illiad_check_enhanced_querystring', '' )
-    #     if findit_illiad_check_flag == 'good' and findit_illiad_check_openurl == meta_dct.get('QUERY_STRING', ''):
-    #         findit_check = True
-    #     elif findit_check is not True:
-    #         log.warning( 'Bad attempt from source-url, ```%s```; ip, `%s`' % (
-    #             meta_dct.get('HTTP_REFERER', ''), meta_dct.get('REMOTE_ADDR', '') ) )
-    #     log.debug( 'findit_check, `%s`' % findit_check )
-    #     return findit_check
-
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from '/find/' or a login redirect.
             Called by views.login() """
@@ -43,20 +29,6 @@ class LoginHelper( object ):
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
-
-    # def check_referrer( self, session_dct, meta_dct ):
-    #     """ Ensures request came from /availability/.
-    #         Called by views.login() """
-    #     ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
-    #     if last_path == '/easyaccess/borrow/availability/':
-    #         referrer_ok = True
-    #     elif shib_status in ['will_force_logout', 'will_force_login']:
-    #         referrer_ok = True
-    #     if referrer_ok is False:
-    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:find_url'), querystring=meta_dct.get('QUERY_STRING', '') )
-    #     log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
-    #     return ( referrer_ok, redirect_url )
-
 
     def assess_shib_redirect_need( self, session, host, meta_dct ):
         """ Determines whether a shib-redirect login or logout url is needed.
