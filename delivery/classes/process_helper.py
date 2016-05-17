@@ -107,7 +107,9 @@ class ProcessViewHelper(object):
             ezb_rqst.request_status = 'not_yet_processed'
             ezb_rqst.staffnote = ''
             ## request-meta-dynamic
-            ezb_rqst.created = datetime.datetime.now()
+            # ezb_rqst.created = datetime.datetime.now()
+            from django.utils import timezone
+            ezb_rqst.created = timezone.now()
             return ezb_rqst
         except Exception as e:
             log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )
