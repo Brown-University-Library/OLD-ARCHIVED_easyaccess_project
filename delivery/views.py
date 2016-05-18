@@ -100,7 +100,7 @@ def availability( request ):
         'ebook_dct': ebook_dct,
         'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
         }
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(session.items())) )
+    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## display landing page
     # resp = render( request, 'delivery/availability.html', context )
@@ -119,7 +119,7 @@ def availability( request ):
 def shib_login( request ):
     """ Tries an sp login, then redirects to login_url.
         Called when views.availability() returns a Request button that's clicked. """
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(session.items())) )
+    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
     localdev_check = False
     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
         localdev_check = True
@@ -131,7 +131,7 @@ def shib_login( request ):
     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
         shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(session.items())) )
+    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
     return HttpResponseRedirect( redirect_url )
 
 
@@ -144,7 +144,7 @@ def login_handler( request ):
         - redirects user to process_request url/view """
 
     ## check referrer
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(session.items())) )
+    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
     ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
     if referrer_ok is not True:
         request.session['last_path'] = request.path
