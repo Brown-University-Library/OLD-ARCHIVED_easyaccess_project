@@ -30,6 +30,8 @@ If we can't get you immediately to the full-text of the article, our easyArticle
 
 Below are examples of book and article links to this easyAccess service.
 
+In addition to the examples below, the service also includes a simple [citation form](https://library.brown.edu/easyaccess/find/citation_form/) you can try out, which automatically appears if the item's openurl doesn't contain enough information.
+
 If you have any questions, feel free to email us at z@z.edu -- and should you run into a problem, all of our pages have a link to report the issue.
 
 
@@ -69,5 +71,6 @@ If you have any questions, feel free to email us at z@z.edu -- and should you ru
 - [Not requestable -- local copy available](https://library.brown.edu/easyaccess/find/?sid=FirstSearch%3AWorldCat&genre=book&isbn=9780688002305&title=Zen+and+the+art+of+motorcycle+maintenance%3A+an+inquiry+into+values%2C&date=1974&aulast=Pirsig&aufirst=Robert&auinitm=M&id=doi%3A&pid=673595%3Cfssessid%3E0%3C%2Ffssessid%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E673595%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F673595&rft_id=urn%3AISBN%3A9780688002305&rft.aulast=Pirsig&rft.aufirst=Robert&rft.auinitm=M&rft.btitle=Zen+and+the+art+of+motorcycle+maintenance%3A+an+inquiry+into+values%2C&rft.date=1974&rft.isbn=9780688002305&rft.place=New+York&rft.pub=Morrow&rft.genre=book) (should redirect to easyBorrow landing page; should _not_ show 'Request' button, should show minimal info about available copies, and show the new-josiah bib-link)
 
 - [Not requestable -- local copy available; and Hay and ebook and 'other editions' available](https://library.brown.edu/easyaccess/find/?sid=FirstSearch%3AWorldCat&isbn=9781587299803&title=Supplement+to+%22Walt+Whitman%2C+a+descriptive+bibliography%22&date=2011&aulast=Myerson&aufirst=Joel&id=doi%3A&pid=727367664%3Cfssessid%3E0%3C%2Ffssessid%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=unknown&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E727367664%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F727367664&rft_id=urn%3AISBN%3A9781587299803&rft.aulast=Myerson&rft.aufirst=Joel&rft.title=Supplement+to+%22Walt+Whitman%2C+a+descriptive+bibliography%22&rft.date=2011&rft.isbn=9781587299803&rft.place=Iowa+City+%3A&rft.pub=University+of+Iowa+Press%2C&rft.genre=unknown) (should redirect to easyBorrow landing page; _not_ show 'Request' button, and show minimal info about available print, ebook, and Hay copies, and minimal info about other-editions available, and show the new-josiah bib-link)
+
 
 ---

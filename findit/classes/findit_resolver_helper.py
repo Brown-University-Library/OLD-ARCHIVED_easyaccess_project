@@ -2,10 +2,10 @@
 
 from __future__ import unicode_literals
 
-import json, logging, pprint, re, urllib, urlparse
+import json, logging, os, pprint, re, urllib, urlparse
 from datetime import datetime
 
-import bibjsontools, requests
+import bibjsontools, markdown, requests
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -53,6 +53,7 @@ class FinditResolver( object ):
         self.direct_link = False
         self.referrer = ''
         self.redirect_url = ''
+        # self.ABOUT_PATH = unicode( os.environ['EZACS__FINDIT_ABOUT_PATH'] )
 
     def check_index_page( self, querydict ):
         """ Checks to see if it's the demo landing page.
@@ -69,6 +70,19 @@ class FinditResolver( object ):
             Called by views.base_resolver() """
         context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
         return context
+
+    # def make_index_context( self, querydict ):
+    #     """ Builds context for index page.
+    #         Called by views.base_resolver() """
+    #     with open( self.ABOUT_PATH ) as f:
+    #         about_utf8 = f.read()
+    #     about = about_utf8.decode( 'utf-8' )
+    #     context = {
+    #         'SS_KEY': settings.BUL_LINK_SERSOL_KEY,
+    #         'easyWhat': 'easyAccess',
+    #         'about': markdown.markdown( about )
+    #         }
+    #     return context
 
     def make_index_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.

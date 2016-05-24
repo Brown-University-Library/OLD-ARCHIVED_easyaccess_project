@@ -14,38 +14,8 @@
 
 {% block content %}
 
+
 <div style="margin:2em;">
-    <h5 class="intro">easyArticle service</h5>
-    <ul>
-    <li><a href="{{ BASE_URL }}citation_form/">Citation form</a></li>
-    </ul>
-    <h5 class="intro">Bookmarks</h5>
-    <p>These bookmarklets can help staff test the system.  Drag the links below
-        to your bookmarks bar in your web browser.  Clicking on the bookmark
-        will take you from easyArticle to 360Link or vice versa.</p>
-    <ul>
-        <li>
-            <a href="javascript:(function(){window.location='http://library.brown.edu/easyarticle/'+window.location.search;})();">360Link to easyArticle</a>
-        </li>
-        <li>
-            <a href="javascript:(function(){window.location='http://{{ SS_KEY }}.search.serialssolutions.com/'+window.location.search;})();">easyArticle to 360Link</a>
-        </li>
-    </ul>
-    <h5 class="intro">Test form</h5>
-    <div style="margin-bottom:2em;">
-        <form name="ourl" action="./" method="GET">
-            <fieldset>
-            <select name="qtype">
-            <option value="query">OpenURL</option>
-             <option value="pmid">PubmedID</option>
-            <option value="doi">DOI</option>
-            </select>
-            <input type="text" size="75"/>
-            <input type="submit" value="Go"/>
-            <p>Paste an OpenURL, Pubmed ID, or DOI into the box and click Go.</p>
-            </fieldset>
-        </form>
-    </div>
 
     <h5 class="intro">Article Examples</h5>
     <ul>
