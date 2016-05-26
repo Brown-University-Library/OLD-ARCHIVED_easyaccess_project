@@ -130,7 +130,7 @@ Apologies for the inconvenience.
             illiad_instance = self._register_new_user( illiad_instance, shib_dct )
             if not illiad_instance.registered:
                 handled = False
-                log.info( 'auto-registration for `%s` was not successful; will build web-page message' % ill_username )
+                log.info( 'auto-registration for `%s` was not successful; will build web-page message' % illiad_instance.username )
                 message = self.make_illiad_unregistered_message(
                     shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
                 request.session['message'] = message
@@ -145,9 +145,9 @@ Apologies for the inconvenience.
                 'first_name': shib_dct['name_first'], 'last_name': shib_dct['name_last'],
                 'email': shib_dct['email'], 'status': shib_dct['brown_type'],
                 'phone': shib_dct['phone'], 'department': shib_dct[''], }
-            log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (ill_username, pprint.pformat(illiad_profile)) )
+            log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (illiad_instance.username, pprint.pformat(illiad_profile)) )
             reg_response = illiad_instance.register_user( illiad_profile )
-            log.info( 'illiad registration response for `%s` is `%s`' % (ill_username, reg_response) )
+            log.info( 'illiad registration response for `%s` is `%s`' % (illiad_instance.username, reg_response) )
         except Exception as e:
             log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
         return illiad_instance
