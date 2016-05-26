@@ -109,6 +109,7 @@ def permalink( request, permalink_str ):
 def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
+    alog.debug( 'starting; request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
