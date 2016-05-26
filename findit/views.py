@@ -125,19 +125,19 @@ def findit_base_resolver( request ):
         resp = fresolver.make_index_response( request, context )
         return resp
 
-    # ## temp fix for testing from in-production redirects
-    # if fresolver.check_double_encoded_querystring( request.META.get('QUERY_STRING', '') ):
-    #     alog.debug( 'double-encoded querystring found, gonna redirect to, ```{}```'.format(fresolver.redirect_url) )
-    #     return HttpResponseRedirect( fresolver.redirect_url )
-
     ## temp fix for testing from in-production redirects
-    if fresolver.check_double_encoded_querystring(
-        scheme=request.scheme,
-        host=request.get_host(),
-        path=reverse('findit:findit_base_resolver_url'),
-        querystring=request.META.get('QUERY_STRING', '') ):
+    if fresolver.check_double_encoded_querystring( request.META.get('QUERY_STRING', '') ):
         alog.debug( 'double-encoded querystring found, gonna redirect to, ```{}```'.format(fresolver.redirect_url) )
         return HttpResponseRedirect( fresolver.redirect_url )
+
+    # ## temp fix for testing from in-production redirects
+    # if fresolver.check_double_encoded_querystring(
+    #     scheme=request.scheme,
+    #     host=request.get_host(),
+    #     path=reverse('findit:findit_base_resolver_url'),
+    #     querystring=request.META.get('QUERY_STRING', '') ):
+    #     alog.debug( 'double-encoded querystring found, gonna redirect to, ```{}```'.format(fresolver.redirect_url) )
+    #     return HttpResponseRedirect( fresolver.redirect_url )
 
     ## make permalink if one doesn't exist
     querystring = request.META.get('QUERY_STRING', '')

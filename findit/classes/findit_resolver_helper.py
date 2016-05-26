@@ -82,30 +82,30 @@ class FinditResolver( object ):
         log.debug( 'returning response' )
         return resp
 
-    # def check_double_encoded_querystring( self, querystring ):
-    #     """ Checks for apache redirect-bug.
-    #         Called by views.base_resolver() """
-    #     return_val = False
-    #     if '%25' in querystring:
-    #         good_querystring = urllib.unquote( querystring )
-    #         self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
-    #         return_val = True
-    #     log.debug( 'bad url found, {}'.format(return_val) )
-    #     return return_val
-
-    def check_double_encoded_querystring( self, scheme, host, path, querystring ):
+    def check_double_encoded_querystring( self, querystring ):
         """ Checks for apache redirect-bug.
-            Builds url explicitly to avoid revproxy url.
             Called by views.base_resolver() """
         return_val = False
         if '%25' in querystring:
             good_querystring = urllib.unquote( querystring )
-            # self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
-            self.redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
-                scheme=scheme, host=host, path=path, querystring=querystring)
+            self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
             return_val = True
         log.debug( 'bad url found, {}'.format(return_val) )
         return return_val
+
+    # def check_double_encoded_querystring( self, scheme, host, path, querystring ):
+    #     """ Checks for apache redirect-bug.
+    #         Builds url explicitly to avoid revproxy url.
+    #         Called by views.base_resolver() """
+    #     return_val = False
+    #     if '%25' in querystring:
+    #         good_querystring = urllib.unquote( querystring )
+    #         # self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
+    #         self.redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
+    #             scheme=scheme, host=host, path=path, querystring=querystring)
+    #         return_val = True
+    #     log.debug( 'bad url found, {}'.format(return_val) )
+    #     return return_val
 
     def check_summon( self, querydict ):
         """ Determines whether a summon check is needed.
