@@ -145,10 +145,10 @@ def login_handler( request ):
 
     ## check referrer
     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
-    ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
-    if referrer_ok is not True:
-        request.session['last_path'] = request.path
-        return HttpResponseRedirect( redirect_url )
+    # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
+    # if referrer_ok is not True:
+    #     request.session['last_path'] = request.path
+    #     return HttpResponseRedirect( redirect_url )
     request.session['last_path'] = request.path
 
     ## update bib_dct_json if needed
