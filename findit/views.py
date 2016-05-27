@@ -112,19 +112,19 @@ def findit_base_resolver( request ):
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
     alog.debug( 'starting; request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
 
-    ## check for proxy
-    alog.debug( 'referrer, `{rfr}`; cookie, ```{ck}```'.format(
-        rfr=request.META.get('HTTP_REFERER', ''), ck=request.META.get('HTTP_COOKIE', '')) )
-    if 'revproxy.brown.edu' in request.META.get( 'HTTP_REFERER', '' ) or 'revproxy.brown.edu' in request.META.get( 'HTTP_COOKIE', '' ):
-        redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
-            scheme=request.scheme,
-            host=request.get_host(),
-            path=reverse('findit:findit_base_resolver_url'),
-            querystring=request.META.get('QUERY_STRING', '')
-            )
-        alog.debug( 'revproxy found, redirecting to: ```{}```'.format(redirect_url) )
-        logout( request )  # necessary or clean-redirect will be handled by proxy and result in loop
-        return HttpResponseRedirect( redirect_url )
+    # ## check for proxy
+    # alog.debug( 'referrer, `{rfr}`; cookie, ```{ck}```'.format(
+    #     rfr=request.META.get('HTTP_REFERER', ''), ck=request.META.get('HTTP_COOKIE', '')) )
+    # if 'revproxy.brown.edu' in request.META.get( 'HTTP_REFERER', '' ) or 'revproxy.brown.edu' in request.META.get( 'HTTP_COOKIE', '' ):
+    #     redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
+    #         scheme=request.scheme,
+    #         host=request.get_host(),
+    #         path=reverse('findit:findit_base_resolver_url'),
+    #         querystring=request.META.get('QUERY_STRING', '')
+    #         )
+    #     alog.debug( 'revproxy found, redirecting to: ```{}```'.format(redirect_url) )
+    #     logout( request )  # necessary or clean-redirect will be handled by proxy and result in loop
+    #     return HttpResponseRedirect( redirect_url )
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
