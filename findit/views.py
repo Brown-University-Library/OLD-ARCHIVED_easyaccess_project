@@ -113,7 +113,9 @@ def findit_base_resolver( request ):
     alog.debug( 'starting; request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
 
     ## check for proxy
-    if 'revproxy.brown.edu' in request.META.get( 'HTTP_REFERER', '' ):
+    log.debug( 'referrer, `{rfr}`; cookie, ```{ck}```'.format(
+        rfr=request.META.get('HTTP_REFERER', ''), ck=request.META.get('HTTP_COOKIE', '')) )
+    if 'revproxy.brown.edu' in request.META.get( 'HTTP_REFERER', '' ) or 'revproxy.brown.edu' in request.META.get( 'HTTP_COOKIE', '' ):
         redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
             scheme=request.scheme,
             host=request.get_host(),
