@@ -113,7 +113,7 @@ def findit_base_resolver( request ):
     alog.debug( 'starting; request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
 
     ## check for proxy
-    log.debug( 'referrer, `{rfr}`; cookie, ```{ck}```'.format(
+    alog.debug( 'referrer, `{rfr}`; cookie, ```{ck}```'.format(
         rfr=request.META.get('HTTP_REFERER', ''), ck=request.META.get('HTTP_COOKIE', '')) )
     if 'revproxy.brown.edu' in request.META.get( 'HTTP_REFERER', '' ) or 'revproxy.brown.edu' in request.META.get( 'HTTP_COOKIE', '' ):
         redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
@@ -122,7 +122,7 @@ def findit_base_resolver( request ):
             path=reverse('findit:findit_base_resolver_url'),
             querystring=request.META.get('QUERY_STRING', '')
             )
-        log.debug( 'revproxy found, redirecting to: ```{}```'.format(redirect_url) )
+        alog.debug( 'revproxy found, redirecting to: ```{}```'.format(redirect_url) )
         logout( request )  # necessary or clean-redirect will be handled by proxy and result in loop
         return HttpResponseRedirect( redirect_url )
 
