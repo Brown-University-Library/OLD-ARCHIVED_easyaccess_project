@@ -43,6 +43,7 @@ from .models import Request, UserMessage
 from .utils import BulSerSol, Ourl
 from .utils import get_cache_key, make_illiad_url
 from bul_link.views import BulLinkBase
+from django.contrib.auth import logout
 
 # try:
 #     from easy_article.delivery.decorators import has_email, has_service
@@ -110,6 +111,18 @@ def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.debug( 'starting; query_string, `%s`' % request.META.get('QUERY_STRING') )
     alog.debug( 'starting; request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
+
+    ## check for proxy
+    if 'revproxy.brown.edu' in request.META.get( 'HTTP_REFERER', '' ):
+        redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
+            scheme=request.scheme,
+            host=request.get_host(),
+            path=reverse('findit:findit_base_resolver_url'),
+            querystring=request.META.get('QUERY_STRING', '')
+            )
+        log.debug( 'revproxy found, redirecting to: ```{}```'.format(redirect_url) )
+        logout( request )  # necessary or clean-redirect will be handled by proxy and result in loop
+        return HttpResponseRedirect( redirect_url )
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
