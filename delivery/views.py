@@ -116,6 +116,27 @@ def availability( request ):
     ## end def availability()
 
 
+# def shib_login( request ):
+#     """ Tries an sp login, then redirects to login_url.
+#         Called when views.availability() returns a Request button that's clicked. """
+#     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+#     localdev_check = False
+#     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+#         localdev_check = True
+#     if localdev_check is True:
+#         log.debug( 'localdev_check is True, redirecting right to login_handler_url' )
+#         return HttpResponseRedirect( reverse('delivery:login_handler_url') )
+#     # login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url') )
+#     login_handler_url = 'https://{host}{login_handler_url}?{querystring}'.format(
+#         host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring='foo=aaa&bar=bbb' )
+#     encoded_login_handler_url = urlquote( login_handler_url )
+#     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+#         shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+#     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+#     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+#     return HttpResponseRedirect( redirect_url )
+
+
 def shib_login( request ):
     """ Tries an sp login, then redirects to login_url.
         Called when views.availability() returns a Request button that's clicked. """
@@ -126,9 +147,14 @@ def shib_login( request ):
     if localdev_check is True:
         log.debug( 'localdev_check is True, redirecting right to login_handler_url' )
         return HttpResponseRedirect( reverse('delivery:login_handler_url') )
+
+    login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}'.format( bdj=request.session['bib_dct_json'], lq=request.session['last_querystring'] )
+
     # login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url') )
     login_handler_url = 'https://{host}{login_handler_url}?{querystring}'.format(
-        host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring='foo=aaa&bar=bbb' )
+        host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
+    log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
+
     encoded_login_handler_url = urlquote( login_handler_url )
     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
         shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
@@ -154,12 +180,17 @@ def login_handler( request ):
     #     return HttpResponseRedirect( redirect_url )
     request.session['last_path'] = request.path
 
-    ## update bib_dct_json if needed
-    easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
-    if easyborrow_volumes != '':
-        bib_dct = request.session.get( 'bib_dct_json', {} )
-        bib_dct['easyborrow_volumes'] = easyborrow_volumes
-        request.session['bib_dct_json'] = json.dumps( bib_dct )
+    ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+    request.session['bib_dct_json'] = request.GET['bib_dct_json']
+    request.session['last_querystring'] = request.GET['last_querystring']
+    log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
+
+    ## update bib_dct_json if needed -- TODO: redo, since availability posts to shib_login(), not login_hander()
+    # easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
+    # if easyborrow_volumes != '':
+    #     bib_dct = request.session.get( 'bib_dct_json', {} )
+    #     bib_dct['easyborrow_volumes'] = easyborrow_volumes
+    #     request.session['bib_dct_json'] = json.dumps( bib_dct )
 
     ## update user/profile objects
     localdev_check = False

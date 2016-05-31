@@ -8,6 +8,7 @@ from delivery import views
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
+from django.utils.http import urlquote
 from django.utils.module_loading import import_module
 
 
@@ -98,14 +99,23 @@ class LoginViewTest(TestCase):
         # self.assertTrue( '/borrow/login/' in response._headers['location'][1] )
         self.assertEqual( '/borrow/login_handler/', response._headers['location'][1] )
 
-    def test_hit_login_handler_with_availability_last_path(self):
-        """ Hitting login_handler with good session info should redirect to process_request. """
-        session = self.session_hack.session
-        session['last_path'] = '/easyaccess/borrow/availability/'
-        session['last_querystring'] = 'isbn=123'
-        session['shib_status'] = 'will_force_logout'
-        session.save()
-        response = self.client.get( '/borrow/login_handler/', SERVER_NAME="127.0.0.1" )
+    # def test_hit_login_handler_with_availability_last_path(self):
+    #     """ Hitting login_handler with good session info should redirect to process_request. """
+    #     session = self.session_hack.session
+    #     session['last_path'] = '/easyaccess/borrow/availability/'
+    #     session['last_querystring'] = 'isbn=123'
+    #     session['shib_status'] = 'will_force_logout'
+    #     session.save()
+    #     response = self.client.get( '/borrow/login_handler/', SERVER_NAME="127.0.0.1" )
+    #     print( 'location, ```{}```'.format(response._headers['location'][1]) )
+    #     self.assertEqual( 302, response.status_code )
+    #     self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
+
+    def test_hit_login_handler_complete_querystring(self):
+        """ Hitting login_handler with good parameter info should redirect to process_request.
+            TODO -- add test for incomplete querystring. """
+        encoded_querystring = urlquote( 'isbn=123' )
+        response = self.client.get( "/borrow/login_handler/?bib_dct_json='{}'&last_querystring=%s" % encoded_querystring, SERVER_NAME='127.0.0.1' )
         print( 'location, ```{}```'.format(response._headers['location'][1]) )
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
