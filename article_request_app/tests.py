@@ -47,7 +47,7 @@ class ViewsTest( TestCase ):
         # session['last_path'] = '/easyaccess/find/'
         # session['last_querystring'] = 'foo'
         # session.save()
-        response = self.client.get( '/article_request/login_handler/?citation=aa&format=bb&illiad_url=cc&querystring=the_querystring', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed
+        response = self.client.get( '/article_request/login_handler/?citation_json=aa&format=bb&illiad_url=cc&querystring=the_querystring', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed
         redirect_url = response._headers['location'][1]
         self.assertEqual( 'http://127.0.0.1/article_request/illiad/?the_querystring', redirect_url )
 

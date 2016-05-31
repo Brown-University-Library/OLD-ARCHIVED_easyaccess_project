@@ -18,17 +18,17 @@ shib_checker = ShibChecker()
 class LoginHelper( object ):
     """ Contains helpers for views.login() """
 
-    def check_referrer( self, session_dct, meta_dct ):
-        """ Ensures request came from '/find/' or a login redirect.
-            Called by views.login_handler() """
-        ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
-        log.debug( 'last_path, `{}`'.format(last_path) )
-        if last_path == '/easyaccess/find/' or last_path == '/easyaccess/article_request/login_helper/':
-            referrer_ok = True
-        if referrer_ok is False:
-            redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
-        log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
-        return ( referrer_ok, redirect_url )
+    # def check_referrer( self, session_dct, meta_dct ):
+    #     """ Ensures request came from '/find/' or a login redirect.
+    #         Called by views.login_handler() """
+    #     ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
+    #     log.debug( 'last_path, `{}`'.format(last_path) )
+    #     if last_path == '/easyaccess/find/' or last_path == '/easyaccess/article_request/login_helper/':
+    #         referrer_ok = True
+    #     if referrer_ok is False:
+    #         redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
+    #     log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
+    #     return ( referrer_ok, redirect_url )
 
     # def build_shib_redirect_url( self, shib_status, scheme, host, session_dct, meta_dct ):
     #     """ Builds shib-redirect login or logout url.

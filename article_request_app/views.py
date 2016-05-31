@@ -90,7 +90,7 @@ def login_handler( request ):
     #     request.session['last_path'] = request.path
     #     return HttpResponseRedirect( redirect_url )
     log.debug( 'request.GET.keys(), ```{}```'.format(pprint.pformat(request.GET.keys())) )
-    for key in [ 'citation', 'format', 'illiad_url', 'querystring' ]:
+    for key in [ 'citation_json', 'format', 'illiad_url', 'querystring' ]:
 
         if key not in request.GET.keys():
             redirect_url = '{main}?{qs}'.format( main=reverse('findit:findit_base_resolver_url'), qs=request.META.get('QUERY_STRING', '') )
@@ -100,7 +100,7 @@ def login_handler( request ):
     # request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
 
     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
-    request.session['citation_json'] = request.GET['citation']
+    request.session['citation_json'] = request.GET['citation_json']
     request.session['format'] = request.GET['format']
     request.session['illiad_url'] = request.GET['illiad_url']
     request.session['login_openurl'] = request.GET['querystring']
@@ -236,7 +236,7 @@ def illiad_handler( request ):
     ## send email
     subject = 'easyAccess request confirmation'
     body = ill_helper.make_illiad_success_message(
-        shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation'), illiad_transaction_number, shib_dct['email'] )
+        shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation_json'), illiad_transaction_number, shib_dct['email'] )
     ffrom = settings_app.EMAIL_FROM
     addr = shib_dct['email']
     send_mail(
