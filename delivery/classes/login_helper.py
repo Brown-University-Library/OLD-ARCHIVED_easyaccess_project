@@ -14,8 +14,15 @@ log = logging.getLogger('access')
 shib_checker = ShibChecker()
 
 
+# class ShibLoginHelper(object):
+#     """ Contains helpers for views.shib_login() specific to delivery/borrow. """
+
+#     def __init__(self):
+#         pass
+
+
 class LoginViewHelper(object):
-    """ Contains helpers for views.login() """
+    """ Contains helpers for views.login_handler() """
 
     def __init__(self):
         pass
