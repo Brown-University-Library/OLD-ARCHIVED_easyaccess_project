@@ -126,7 +126,9 @@ def shib_login( request ):
     if localdev_check is True:
         log.debug( 'localdev_check is True, redirecting right to login_handler_url' )
         return HttpResponseRedirect( reverse('delivery:login_handler_url') )
-    login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url') )
+    # login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url') )
+    login_handler_url = 'https://{host}{login_handler_url}?{querystring}'.format(
+        host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring='foo=aaa&bar=bbb' )
     encoded_login_handler_url = urlquote( login_handler_url )
     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
         shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
@@ -144,6 +146,7 @@ def login_handler( request ):
         - redirects user to process_request url/view """
 
     ## check referrer
+    log.debug( 'request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
     # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
     # if referrer_ok is not True:
@@ -167,7 +170,7 @@ def login_handler( request ):
     request.session['user_json'] = json.dumps( shib_dct )
 
     ## redirect to process_request
-    redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session['last_querystring'] )
+    redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session.get('last_querystring', '') )
     return HttpResponseRedirect( redirect_url )
 
 
