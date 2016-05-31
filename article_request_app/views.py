@@ -23,20 +23,59 @@ ill_helper = IlliadHelper()
 login_helper = LoginHelper()
 
 
+# def shib_login( request ):
+#     """ Redirects to an SP login, which then lands back at the login_handler() url.
+#         Called when views.availability() returns a Request button that's clicked. """
+#     localdev_check = False
+#     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+#         localdev_check = True
+#     if localdev_check is True:
+#         return HttpResponseRedirect( reverse('article_request:login_handler_url') )
+#     login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url') )
+#     encoded_login_handler_url = urlquote( login_handler_url )
+#     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+#         shib_login=settings_app.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+#     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+#     return HttpResponseRedirect( redirect_url )
+
+
 def shib_login( request ):
-    """ Tries an sp login, then redirects to login_url.
-        Called when views.availability() returns a Request button that's clicked. """
+    """ Builds the SP login and target-return url; redirects to the SP login, which then lands back at the login_handler() url.
+        Called when views.availability() returns a Request button that's clicked.
+        Session cleared and info put in url due to revproxy resetting session. """
+    log.debug( 'article_request shib_login() starting session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+
+    ## store vars we're gonna need
+    citation_json = request.session.get( 'citation', '{}' )
+    format = request.session.get( 'format', '' )
+    illiad_url = request.session.get( 'illiad_url', '' )
+    querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+
+    ## clear session so non-rev and rev work same way
+    for key in request.session.keys():
+        del request.session[key]
+
+    ## build login-handler url, whether it's direct (localdev), or indircect-via-shib
+    login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}'.format(
+        ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring)
+        )
+    login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
+        scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url'), querystring=login_handler_querystring )
+    log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
+
+    ## return response
     localdev_check = False
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
         localdev_check = True
     if localdev_check is True:
-        return HttpResponseRedirect( reverse('article_request:login_handler_url') )
-    login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url') )
-    encoded_login_handler_url = urlquote( login_handler_url )
-    redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-        shib_login=settings_app.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
-    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
-    return HttpResponseRedirect( redirect_url )
+        log.debug( 'localdev_check is True, redirecting right to pre-encoded login_handler' )
+        return HttpResponseRedirect( login_handler_url )
+    else:
+        encoded_login_handler_url = urlquote( login_handler_url )
+        redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+            shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+        log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
+        return HttpResponseRedirect( redirect_url )
 
 
 def login_handler( request ):
@@ -46,19 +85,26 @@ def login_handler( request ):
         if happy, redirects to `illiad`, otherwise to `message` with error info. """
 
     ## check referrer
-    ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
-    if referrer_ok is not True:
-        request.session['last_path'] = request.path
-        return HttpResponseRedirect( redirect_url )
-    request.session['last_path'] = request.path
-    request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
-
-    # ## force login, by forcing a logout if needed
-    # ( localdev_check, redirect_check, shib_status ) = login_helper.assess_shib_redirect_need( request.session, request.get_host(), request.META )
-    # if redirect_check is True:
-    #     ( redirect_url, updated_shib_status ) = login_helper.build_shib_redirect_url( shib_status=shib_status, scheme='https', host=request.get_host(), session_dct=request.session, meta_dct=request.META )
-    #     request.session['shib_status'] = updated_shib_status
+    # ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
+    # if referrer_ok is not True:
+    #     request.session['last_path'] = request.path
     #     return HttpResponseRedirect( redirect_url )
+    log.debug( 'request.GET.keys(), ```{}```'.format(pprint.pformat(request.GET.keys())) )
+    for key in [ 'citation', 'format', 'illiad_url', 'querystring' ]:
+
+        if key not in request.GET.keys():
+            redirect_url = '{main}?{qs}'.format( main=reverse('findit:findit_base_resolver_url'), qs=request.META.get('QUERY_STRING', '') )
+            log.debug( 'referrer-check failed, redirecting to, ```{}```'.format(redirect_url) )
+            return HttpResponseRedirect( redirect_url )
+    request.session['last_path'] = request.path
+    # request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+
+    ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+    request.session['citation_json'] = request.GET['citation']
+    request.session['format'] = request.GET['format']
+    request.session['illiad_url'] = request.GET['illiad_url']
+    request.session['login_openurl'] = request.GET['querystring']
+    log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## get user info
     # shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info

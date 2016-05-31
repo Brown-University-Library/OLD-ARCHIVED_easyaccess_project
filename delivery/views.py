@@ -153,7 +153,7 @@ def availability( request ):
 
 
 def shib_login( request ):
-    """ Tries an sp login, then redirects to login_url.
+    """ Tries an sp login, which returns to the login_handler() url.
         Called when views.availability() returns a Request button that's clicked.
         Session cleared and info put in url due to revproxy resetting session. """
     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )

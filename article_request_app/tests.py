@@ -42,14 +42,14 @@ class ViewsTest( TestCase ):
         self.assertEqual( '/find/?a=b', redirect_url )
 
     def test_direct_login_good_session(self):
-        """ If from '/easyaccess/find/', should redirect to display submission page. """
-        session = self.session_hack.session
-        session['last_path'] = '/easyaccess/find/'
-        session['last_querystring'] = 'foo'
-        session.save()
-        response = self.client.get( '/article_request/login_handler/?a=b', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed
+        """ If a good request, should redirect to display submission page. """
+        # session = self.session_hack.session
+        # session['last_path'] = '/easyaccess/find/'
+        # session['last_querystring'] = 'foo'
+        # session.save()
+        response = self.client.get( '/article_request/login_handler/?citation=aa&format=bb&illiad_url=cc&querystring=the_querystring', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed
         redirect_url = response._headers['location'][1]
-        self.assertEqual( 'http://127.0.0.1/article_request/illiad/?a=b', redirect_url )
+        self.assertEqual( 'http://127.0.0.1/article_request/illiad/?the_querystring', redirect_url )
 
     def test_direct_article_request_no_session(self):
         """ If not from '/easyaccess/article_request/login_handler/', should redirect to index page. """
