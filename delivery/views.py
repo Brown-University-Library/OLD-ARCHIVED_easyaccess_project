@@ -97,6 +97,7 @@ def availability( request ):
         'available_locally': available_locally,
         'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
         'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
+        'openurl': querystring,  # for export to refworks
         'ebook_dct': ebook_dct,
         'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
         }
@@ -118,23 +119,37 @@ def availability( request ):
 
 # def shib_login( request ):
 #     """ Tries an sp login, then redirects to login_url.
-#         Called when views.availability() returns a Request button that's clicked. """
+#         Called when views.availability() returns a Request button that's clicked.
+#         Session cleared and info put in url due to revproxy resetting session. """
 #     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+
+#     bib_dct_json = request.session['bib_dct_json']
+#     last_querystring = request.session['last_querystring']
+
+#     ## clear session so we know that regular-processing happens same was as revproxy-processing
+#     for key in request.session.keys():
+#         del request.session[key]
+
+#     ## build login_handler url
+#     login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}'.format(
+#         bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring) )
+#     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
+#         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
+#     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
+
 #     localdev_check = False
 #     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
 #         localdev_check = True
+
 #     if localdev_check is True:
-#         log.debug( 'localdev_check is True, redirecting right to login_handler_url' )
-#         return HttpResponseRedirect( reverse('delivery:login_handler_url') )
-#     # login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url') )
-#     login_handler_url = 'https://{host}{login_handler_url}?{querystring}'.format(
-#         host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring='foo=aaa&bar=bbb' )
-#     encoded_login_handler_url = urlquote( login_handler_url )
-#     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-#         shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
-#     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
-#     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
-#     return HttpResponseRedirect( redirect_url )
+#         log.debug( 'localdev_check is True, redirecting right to pre-encoded login_handler' )
+#         return HttpResponseRedirect( login_handler_url )
+#     else:
+#         encoded_login_handler_url = urlquote( login_handler_url )
+#         redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+#             shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+#         log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
+#         return HttpResponseRedirect( redirect_url )
 
 
 def shib_login( request ):
@@ -145,14 +160,15 @@ def shib_login( request ):
 
     bib_dct_json = request.session['bib_dct_json']
     last_querystring = request.session['last_querystring']
+    permalink_url = request.session['permalink_url']
 
     ## clear session so we know that regular-processing happens same was as revproxy-processing
     for key in request.session.keys():
         del request.session[key]
 
     ## build login_handler url
-    login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}'.format(
-        bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring) )
+    login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}'.format(
+        bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url) )
     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
@@ -192,6 +208,7 @@ def login_handler( request ):
     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
     request.session['bib_dct_json'] = request.GET['bib_dct_json']
     request.session['last_querystring'] = request.GET['last_querystring']
+    request.session['permalink_url'] = request.GET.get( 'permalink_url', '' )
     log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## update bib_dct_json if needed -- TODO: redo, since availability posts to shib_login(), not login_hander()
@@ -264,11 +281,14 @@ def process_request( request ):
 
 
 def shib_logout( request ):
-    """ Clears session, hits shib logout.
-        Redirects user to message() view. """
+    """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
     message = request.session['message']
+    permalink_url = request.session.get( 'permalink_url', '' )
+    last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
     request.session['message'] = message
+    request.session['permalink_url'] = permalink_url
+    request.session['last_querystring'] = last_querystring
     redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
     log.debug( 'redirect_url, `{}`'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )
@@ -276,10 +296,17 @@ def shib_logout( request ):
 
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
+    permalink_url = request.session.get( 'permalink_url', '' )
+    querystring = request.session.get( 'last_querystring', '' )
     context = {
         'last_path': request.session.get( 'last_path', '' ),
-        'message': markdown.markdown( request.session.get('message', '') )
+        'message': markdown.markdown( request.session.get('message', '') ),
+        'permalink_url': permalink_url,
+        'report_problem_url': availability_view_helper.build_problem_report_url( permalink_url, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
+        'openurl': querystring,  # for export to refworks
+        'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring ),
         }
+    log.debug( 'message context, ```{}```'.format(pprint.pformat(context)) )
     request.session['message'] = ''
     request.session['last_path'] = request.path
     # logout( request )  # from django.contrib.auth import logout

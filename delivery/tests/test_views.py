@@ -90,6 +90,7 @@ class LoginViewTest(TestCase):
         session['last_path'] = '/easyaccess/borrow/availability/'
         session['last_querystring'] = 'isbn=123'
         session['bib_dct_json'] = '{"color": "r\\u00e9d"}'
+        session['permalink_url']= 'foo'
         session.save()
         response = self.client.post( '/borrow/shib_login/', SERVER_NAME="127.0.0.1" )
         log.debug( 'response.status_code, {}'.format(response.status_code) )
@@ -97,9 +98,12 @@ class LoginViewTest(TestCase):
         redirect_url = response._headers['location'][1]
         parse_result = urlparse.urlparse( redirect_url )
         self.assertEqual( '/borrow/login_handler/', parse_result.path )
-        self.assertEqual( 'bib_dct_json=%7B%22color%22%3A%20%22r%5Cu00e9d%22%7D&last_querystring=isbn%3D123', parse_result.query )
         self.assertEqual(
-            {'bib_dct_json': ['{"color": "r\\u00e9d"}'], 'last_querystring': ['isbn=123']},
+            'bib_dct_json=%7B%22color%22%3A%20%22r%5Cu00e9d%22%7D&last_querystring=isbn%3D123&permalink_url=foo',
+            parse_result.query
+            )
+        self.assertEqual(
+            { 'bib_dct_json': ['{"color": "r\\u00e9d"}'], 'last_querystring': ['isbn=123'], 'permalink_url': ['foo'] },
             urlparse.parse_qs(parse_result.query)
             )
 

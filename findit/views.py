@@ -157,7 +157,8 @@ def findit_base_resolver( request ):
     ## make permalink if one doesn't exist
     querystring = request.META.get('QUERY_STRING', '')
     permalink_url = permalink_helper.make_permalink(
-        referrer=request.GET.get('rfr_id',''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url') )['permalink']
+        referrer=request.GET.get('rfr_id',''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url')
+        )['permalink']
     request.session['permalink_url'] = permalink_url
 
     ## if summon returns an enhanced link, go to it
