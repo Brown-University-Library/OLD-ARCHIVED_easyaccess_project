@@ -215,6 +215,14 @@ def findit_base_resolver( request ):
     ## build response context
     context = fresolver.make_resolve_context( request, permalink_url, querystring, sersol_dct )
 
+    ## check for problem
+    """ Saw this when findit_resolver_helper._try_resolved_obj_citation() had the excption:
+          `Link360Exception(u'Invalid syntax Invalid check sum',)` -- eventually handle elsewhere, but here for now. """
+    if context['citation'].keys() == [ 'type' ]:
+        redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
+        request.session['citation_form_message'] = 'Please confirm or enhance your request and click "Submit". A Journal, ISSN, DOI, or PMID is required.'
+        return HttpResponseRedirect( redirect_url )
+
     ## update session if necessary
     fresolver.update_session( request, context )
 
