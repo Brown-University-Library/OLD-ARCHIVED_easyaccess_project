@@ -276,10 +276,10 @@ def shib_logout( request ):
     # redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
 
     redirect_url = reverse( 'article_request:message_url' )
-    if not ( request.get_host() == '127.0.0.1' and settings.DEBUG2 == True ):  # eases local development
+    if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True ):  # eases local development
         redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
-        redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
+        redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
 
     log.debug( 'redirect_url, `{}`'.format(redirect_url) )
