@@ -186,8 +186,8 @@ def illiad_handler( request ):
         here_check = 'problem'
     if here_check == 'init':
         shib_dct = json.loads( request.session.get('user_json', '{}') )
-    if 'eppn' not in shib_dct.keys():
-        here_check = 'problem'
+        if 'eppn' not in shib_dct.keys():
+            here_check = 'problem'
     if here_check == 'problem':
         log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
