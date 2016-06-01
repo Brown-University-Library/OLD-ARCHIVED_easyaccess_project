@@ -144,7 +144,7 @@ def illiad_request( request ):
     request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
 
     ## prep data
-    citation_json = request.session.get( 'citation', '{}' )
+    citation_json = request.session.get( 'citation_json', '{}' )
     format = request.session.get( 'format', '' )
     context = { 'citation': json.loads(citation_json), 'format': format }
     log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
