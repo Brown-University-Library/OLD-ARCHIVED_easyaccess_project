@@ -73,7 +73,7 @@ def shib_login( request ):
     else:
         encoded_login_handler_url = urlquote( login_handler_url )
         redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-            shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+            shib_login=settings_app.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
         log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
         return HttpResponseRedirect( redirect_url )
 
