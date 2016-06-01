@@ -42,3 +42,4 @@ SERVICE_CHECK_STRING = getattr(settings, 'DELIVERY_SERVICE_CHECK_STRING', None)
 #Timeout for urllib2 requests to third party sources
 #EXTRAS_TIMEOUT = getattr(settings, 'FINDIT_EXTRAS_TIMEOUT', 10)
 
+SERSOL_KEY = os.environ['EZACS__BUL_LINK_SERSOL_KEY']
