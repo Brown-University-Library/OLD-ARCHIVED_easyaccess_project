@@ -160,8 +160,9 @@ def illiad_request( request ):
 
 
 def illiad_handler( request ):
-    """ Processes the confirmation 'Submit' button behind-the-scenes,
-        then redirects the user to the confirmation-info page. """
+    """ Processes the confirmation 'Submit' button behind-the-scenes by submitting the request to illiad and reading the result.
+        Then redirects user (behind-the-scenes) to views.shib_logout() for the SP shib-logout ( which will then direct user to views.message() )
+        """
 
     # ## here check
     # here_check = 'init'
@@ -242,20 +243,47 @@ def illiad_handler( request ):
     send_mail(
         subject, body, ffrom, [addr], fail_silently=True )
 
-    ## prep redirect
-    # request.session['message'] = body
+    ## store message
     request.session['message'] = '{}\n---'.format( body )
-    # message_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:message_url'), openurl )
+
+    ## prep redirect
     message_redirect_url = reverse('article_request:message_url')
     log.debug( 'message_redirect_url, `%s`' % message_redirect_url )
 
     ## cleanup
-    request.session['citation'] = ''
+    request.session['citation_json'] = ''
+
+    ## build shib_logout() redirect url
+    redirect_url = '{main_url}?{querystring}'.format(
+        main_url=reverse('article_request:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
+    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
 
     ## redirect
-    return HttpResponseRedirect( message_redirect_url )
+    return HttpResponseRedirect( redirect_url )
 
     # end def illiad_handler()
+
+
+def shib_logout( request ):
+    """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
+    message = request.session['message']
+    permalink_url = request.session.get( 'permalink_url', '' )
+    last_querystring = request.session.get( 'last_querystring', '' )
+    logout( request )  # from django.contrib.auth import logout
+    request.session['message'] = message
+    request.session['permalink_url'] = permalink_url
+    request.session['last_querystring'] = last_querystring
+    # redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
+
+    redirect_url = reverse( 'article_request:message_url' )
+    if not ( request.get_host() == '127.0.0.1' and settings.DEBUG2 == True ):  # eases local development
+        redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
+        encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
+        redirect_url = '%s?return=%s' % ( app_settings.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
+    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
+
+    log.debug( 'redirect_url, `{}`'.format(redirect_url) )
+    return HttpResponseRedirect( redirect_url )
 
 
 def message( request ):

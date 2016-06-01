@@ -20,8 +20,8 @@ urlpatterns = patterns('',
     url( r'^illiad_handler/$',  'article_request_app.views.illiad_handler', name='illiad_handler_url' ),
     # behind-the-scenes, submits request to illiad, then redirects to message_url
 
-    # url( r'^logout/$',  'article_request_app.views.logout', name='logout_url' ),
-    # for optional manual logout
+    url( r'^shib_logout/$',  'article_request_app.views.shib_logout', name=u'shib_logout_url' ),
+    # after shib_logout, redirects to 'message'
 
     url( r'^message/$',  'article_request_app.views.message', name='message_url' ),
     # shows confirmation or problem message

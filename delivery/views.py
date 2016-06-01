@@ -234,7 +234,7 @@ def login_handler( request ):
 def process_request( request ):
     """ (for now)
         - Saves data to easyBorrow db
-        - redirects user to message url/view
+        - redirects user (behind-the-scenes) to SP shib-logout ( which will then direct user to views.message() )
         (eventually)
         - Creates resource object, then
         - grabs user object
