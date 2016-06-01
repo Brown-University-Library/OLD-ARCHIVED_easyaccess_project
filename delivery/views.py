@@ -282,7 +282,7 @@ def process_request( request ):
 
 def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
-    message = request.session['message']
+    message = request.session.get( 'message', '' )
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
