@@ -43,7 +43,7 @@ class ShibChecker( object ):
             'name_first': meta_dct.get( 'Shibboleth-givenName', '' ),
             'name_last': meta_dct.get( 'Shibboleth-sn', '' ),
             'patron_barcode': meta_dct.get( 'Shibboleth-brownBarCode', '' ),
-            'phone': meta_dct.get( 'Shibboleth-phone', '' ),  # valid?
+            'phone': meta_dct.get( 'Shibboleth-phone', 'unavailable' ),  # valid?
             'title': meta_dct.get( 'Shibboleth-title', '' ),
             }
         return shib_dct
