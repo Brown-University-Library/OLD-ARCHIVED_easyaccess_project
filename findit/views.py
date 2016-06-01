@@ -75,10 +75,14 @@ def citation_form( request ):
     """ Displays citation form on GET; redirects built url to /find/?... on POST. """
     alog.debug( 'request.GET, ```%s```' % pprint.pformat(request.GET) )
     alog.debug( 'len(request.GET.keys()), `%s`' % len(request.GET.keys()) )
+    citation_form_message = request.session.get( 'citation_form_message', '' )
+    if citation_form_message:
+        request.session['citation_form_message'] = ''
     if len( request.GET.keys() ) == 0:
         context = form_helper.build_simple_context( request )
     else:
         context = form_helper.build_context_from_url( request )
+    context['citation_form_message'] = citation_form_message
     response = form_helper.build_get_response( request, context )
     return response
 
@@ -180,6 +184,7 @@ def findit_base_resolver( request ):
             alog.info( 'failed enough-metadata-check' )
             redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
             alog.info( 'failed enough-metadata-check; redirecting to citation-form at, ```{}```'.format(redirect_url) )
+            request.session['citation_form_message'] = 'There was not enough information provided to complete your request. Please add more information about the resource. A Journal, ISSN, DOI, or PMID is required.'
             return HttpResponseRedirect( redirect_url )
     except Exception as e:
         alog.info( 'passed enough-metadata-check; try-except result was, ```{}```'.format(unicode(repr(e))) )

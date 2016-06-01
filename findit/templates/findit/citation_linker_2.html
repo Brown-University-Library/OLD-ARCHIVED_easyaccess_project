@@ -7,19 +7,22 @@
 {% block content %}
 
 <div id="citation-linker" class="findit-core">
-    {% if linker_message %}
+
+    {% if citation_form_message %}
         {% if format == "journal" %}
             <p class="info">In order to deliver an article we need the article title,
                 journal title, date of publication, and the page in the journal
                 where the article starts.  An ISSN, DOI or Pubmed ID will speed
                 up delivery.</p>
-        {% else %}{% if format == "book" %}
+        {% else %}
+            {% if format == "book" %}
             <p class="info">In order to request a book on your behalf, we need
                 the title and date of publication.  An OCLC number or ISBN will
                 speed up delivery.</p>
-        {% else %}
-            <p class="info">{{ linker_message }}</p>
-        {% endif %}{% endif %}
+            {% else %}
+            <p class="info">{{ citation_form_message }}</p>
+            {% endif %}
+        {% endif %}
     {% endif %}
 
     <div id="form-select">
