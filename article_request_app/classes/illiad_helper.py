@@ -132,7 +132,7 @@ Apologies for the inconvenience.
                 handled = False
                 log.info( 'auto-registration for `%s` was not successful; will build web-page message' % illiad_instance.username )
                 message = self.make_illiad_unregistered_message(
-                    shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
+                    shib_dct['name_first'], shib_dct['name_last'], json.loads(citation_json) )
                 request.session['message'] = message
         log.debug( 'handled, `%s`' % handled )
         return handled
