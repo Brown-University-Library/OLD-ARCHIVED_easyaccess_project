@@ -178,6 +178,9 @@ def findit_base_resolver( request ):
     querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
 
+    ## check for pubmed journal that says it's a book
+    sersol_dct = fresolver.check_pubmed_result( sersol_dct )
+
     ## if not enough data, redirect to citation-form
     try:
         if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':

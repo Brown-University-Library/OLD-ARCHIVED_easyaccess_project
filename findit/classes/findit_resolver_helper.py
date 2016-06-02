@@ -210,6 +210,26 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 
+
+
+    def check_pubmed_result( self, sersol_dct ):
+        """ Checks sersol_dct for occasional situation in which a pubmed result for a journal has a format of 'book'.
+            Called by views.base_resolver() """
+        try:
+            citation = sersol_dct['results'][0]['citation']
+            format = sersol_dct['results'][0]['format']
+            if format == 'book':
+                if 'pmid' in citation.keys() and 'volume' in citation.keys():
+                    sersol_dct['results'][0]['format'] = 'journal'
+                    log.debug( 'sersol_dct updated, now, ```{}```'.format(pprint.pformat(sersol_dct)) )
+        except Exception as e:
+            log.debug( 'ok error on pubmed book check, ```{}```'.format(unicode(repr(e))) )
+            sersol_dct = sersol_dct
+        log.debug( 'sersol_dct not updated' )
+        return sersol_dct
+
+
+
     def check_direct_link( self, sersol_dct ):
         """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
             Called by views.base_resolver() """
