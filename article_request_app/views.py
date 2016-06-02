@@ -116,7 +116,7 @@ def login_handler( request ):
     ## log user into illiad
     ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
     if success is False:
-        return HttpResponseRedirect( reverse('article_request:oops_url') )  # handles blocked or failed-user-registration problems
+        return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
 
     ## illiad logout
     ill_helper.logout_user( illiad_instance )
