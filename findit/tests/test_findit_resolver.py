@@ -157,4 +157,29 @@ class FinditResolverTest( TestCase ):
             self.resolver.check_ebook( sersol_dct )
             )
 
+    def test_check_pubmed_result__pubmed_a(self):
+        """ Tests one style of pubmed info -- no change needed """
+        sersol_dct = {
+            'results': [ {
+                'citation': {'pmid': 'foo', 'volume': 'bar'},
+                'format': 'journal'
+                } ]
+            }
+        self.assertEqual( sersol_dct, self.resolver.check_pubmed_result(sersol_dct) )
+
+    def test_check_pubmed_result__pubmed_b(self):
+        """ Tests second style of pubmed info -- format should be `journal` """
+        sersol_dct = {
+            'results': [ {
+                'citation': {'pmid': 'foo', 'volume': 'bar'},
+                'format': 'book'
+                } ]
+            }
+        expected_result = {
+            u'results': [ {
+                'citation': {'pmid': 'foo', 'volume': 'bar'},
+                'format': u'journal'}
+                ] }
+        self.assertEqual( expected_result, self.resolver.check_pubmed_result(sersol_dct) )
+
     # end class FinditResolverTest
