@@ -3,6 +3,8 @@
 from __future__ import unicode_literals
 
 import logging, os, pprint
+from . import settings_app
+from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
 from django.conf import settings
 from django.http import HttpRequest
@@ -71,6 +73,40 @@ class ViewsTest( TestCase ):
         self.assertTrue( 'Please click submit to confirm.' in response.content )
 
     # end class ViewsTest()
+
+
+class NewIlliadHelperTest( TestCase ):
+    """ Tests classes.illiad_helper.NewIlliadHelper() """
+
+    def setUp(self):
+        self.helper = NewIlliadHelper()
+
+    def test_connect__good(self):
+        """ Known good user should be logged in smoothly. """
+        ill_username = settings_app.TEST_ILLIAD_GOOD_USERNAME
+        result_dct = self.helper._connect( ill_username )
+        self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+        self.assertEqual( None, result_dct['error_message'] )
+        self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
+        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+        self.assertEqual( False, result_dct['is_blocked'] )
+        self.assertEqual( True, result_dct['is_logged_in'] )
+        self.assertEqual( False, result_dct['is_new_user'] )
+        self.assertEqual( True, result_dct['is_registered'] )
+        result_dct['illiad_session_instance'].logout()
+
+    def test_login_user__good(self):
+        """ Known good user should be logged in smoothly. """
+        user_dct = { 'eppn': '{}@brown.edu'.format(settings_app.TEST_ILLIAD_GOOD_USERNAME) }
+        item_dct = {}  # needed for error-message preparation
+        result_dct = self.helper.login_user( user_dct, item_dct )
+        self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+        self.assertEqual( None, result_dct['error_message'] )
+        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+        self.assertEqual( True, result_dct['success'] )
+        result_dct['illiad_session_instance'].logout()
+
+    # end class IlliadHelperTest()
 
 
 class LoginHelper_Test( TestCase ):
