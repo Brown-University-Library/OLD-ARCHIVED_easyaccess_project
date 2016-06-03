@@ -20,11 +20,9 @@ class NewIlliadHelper( object ):
         self.problem_message = """
 Your request was not able to be submitted to ILLiad, our Interlibrary Loan system.
 
-Please try again later, and if the problem persists:
+Please try again later. If the problem persists, there may be an issue with your ILLiad account.
 
-- let us know at the easyArticle feedback/problem link.
-
-- Contact Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
+Contact Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
 
 Apologies for the inconvenience.
 """
@@ -63,8 +61,9 @@ Apologies for the inconvenience.
             Called by login_user() """
         return_dct = { 'error_message': None, 'illiad_login_dct': None, 'illiad_session_instance': False, 'is_blocked': None, 'is_logged_in': None, 'is_new_user': None, 'is_registered': None, 'submitted_username': ill_username }
         illiad_session_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )  # illiad_session_instance.registered will always be False before login attempt
+        log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
         return_dct['illiad_session_instance'] = illiad_session_instance
-        return_dct['is_blocked'] = illiad_session_instance.blocked_patron
+        # return_dct['is_blocked'] = illiad_session_instance.blocked_patron
         try:
             return_dct = self._login( illiad_session_instance, return_dct )
         except Exception as e:
@@ -77,10 +76,12 @@ Apologies for the inconvenience.
         """ Tries login.
             Called by _connect() """
         illiad_login_dct = illiad_session_instance.login()
+        # return_dct['is_blocked'] = illiad_login_dct['blocked']
+        return_dct['is_blocked'] = illiad_login_dct.get( 'blocked', illiad_session_instance.blocked_patron )  # will update value if it's in login_dct
         return_dct['illiad_login_dct'] = illiad_login_dct
         return_dct['is_logged_in'] = illiad_login_dct['authenticated']
         return_dct['is_new_user'] = illiad_login_dct['new_user']
-        return_dct['is_registered'] = illiad_login_dct['registered']
+        return_dct['is_registered'] = illiad_login_dct.get('registered', False)
         return return_dct
 
     def _prepare_failure_message( self, connect_result_dct, return_dct ):

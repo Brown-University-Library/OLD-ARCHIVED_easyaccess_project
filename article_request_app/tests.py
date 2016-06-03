@@ -3,6 +3,8 @@
 from __future__ import unicode_literals
 
 import logging, os, pprint
+from types import NoneType
+
 from . import settings_app
 from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
@@ -93,6 +95,34 @@ class NewIlliadHelperTest( TestCase ):
         self.assertEqual( True, result_dct['is_logged_in'] )
         self.assertEqual( False, result_dct['is_new_user'] )
         self.assertEqual( True, result_dct['is_registered'] )
+        result_dct['illiad_session_instance'].logout()
+
+    def test_connect__disavowed(self):
+        """ Disavowed user should contain correct error_message. """
+        ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
+        result_dct = self.helper._connect( ill_username )
+        self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+        self.assertTrue( 'there may be an issue with your ILLiad account' in result_dct['error_message'] )
+        self.assertEqual( NoneType, type(result_dct['illiad_login_dct']) )
+        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+        self.assertEqual( None, result_dct['is_blocked'] )
+        self.assertEqual( None, result_dct['is_logged_in'] )
+        self.assertEqual( None, result_dct['is_new_user'] )
+        self.assertEqual( None, result_dct['is_registered'] )
+        result_dct['illiad_session_instance'].logout()
+
+    def test_connect__blocked(self):
+        """ Blocked user should return is_blocked as True. """
+        ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
+        result_dct = self.helper._connect( ill_username )
+        self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+        self.assertEqual( None, result_dct['error_message'] )  # populated by login_user()
+        self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
+        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+        self.assertEqual( True, result_dct['is_blocked'] )
+        self.assertEqual( False, result_dct['is_logged_in'] )
+        self.assertEqual( False, result_dct['is_new_user'] )
+        self.assertEqual( False, result_dct['is_registered'] )
         result_dct['illiad_session_instance'].logout()
 
     def test_login_user__good(self):
