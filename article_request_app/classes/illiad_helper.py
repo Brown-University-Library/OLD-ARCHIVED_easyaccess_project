@@ -50,7 +50,7 @@ Apologies for the inconvenience.
         if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True:
             return_dct = self._prepare_failure_message( connect_result_dct, return_dct )
         elif connect_result_dct['is_new_user'] is True or connect_result_dct['is_registered'] is False:
-            return_dct = self._handle_new_user( return_dct )
+            return_dct = self._handle_new_user( connect_result_dct['illiad_session_instance'], user_dct, item_dct, return_dct )
         else:
             return_dct['success'] = True
         log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
@@ -97,27 +97,29 @@ Apologies for the inconvenience.
     def _handle_new_user( self, illiad_session_instance, user_dct, item_dct, return_dct ):
         """ Attempts to register new user, and prepares appropriate return_dct based on result.
             Called by login_user() """
-        new_user_result_dct = self._register_new_user( illiad_session_instance, user_dct )
-        if new_user_result_dct['is_registered'] is False:
+        updated_illiad_session_instance = self._register_new_user( illiad_session_instance, user_dct )
+        if updated_illiad_session_instance.registered is False:
             return_dct['error_message'] = self.make_illiad_unregistered_message( firstname, lastname, citation )
         else:
             return_dct['success'] = True
+        log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
         return return_dct
 
-    def _register_new_user( self, illiad_instance, user_dct ):
+    def _register_new_user( self, illiad_session_instance, user_dct ):
         """ Registers new user.
             Called by _handle_new_user() """
         try:
             illiad_profile = {
-                'first_name': user_dct['name_first'], 'last_name': shib_dct['name_last'],
+                'first_name': user_dct['name_first'], 'last_name': user_dct['name_last'],
                 'email': user_dct['email'], 'status': user_dct['brown_type'],
-                'phone': user_dct['phone'], 'department': user_dct[''], }
-            log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (illiad_instance.username, pprint.pformat(illiad_profile)) )
-            reg_response = illiad_instance.register_user( illiad_profile )
-            log.info( 'illiad registration response for `%s` is `%s`' % (illiad_instance.username, reg_response) )
+                'phone': user_dct['phone'], 'department': user_dct['department'], }
+            log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (illiad_session_instance.username, pprint.pformat(illiad_profile)) )
+            reg_response = illiad_session_instance.register_user( illiad_profile )
+            log.info( 'illiad registration response for `%s` is `%s`' % (illiad_session_instance.username, reg_response) )
         except Exception as e:
             log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
-        return illiad_instance
+        log.debug( 'illiad_session_instance.__dict__ AFTER registration, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
+        return illiad_session_instance
 
     def logout_user( self, illiad_instance ):
         """ Logs out user & logs any errors.
