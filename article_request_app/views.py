@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random, time
 import markdown
-from .classes.illiad_helper import IlliadHelper, NewIlliadHelper
+# from .classes.illiad_helper import IlliadHelper, NewIlliadHelper
+from .classes.illiad_helper import NewIlliadHelper
 from .classes.login_helper import LoginHelper
 from article_request_app import settings_app
 from django.conf import settings as project_settings
@@ -19,7 +20,7 @@ from illiad.account import IlliadSession
 
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
-ill_helper = IlliadHelper()
+# ill_helper = IlliadHelper()
 new_ill_helper = NewIlliadHelper()
 login_helper = LoginHelper()
 
@@ -133,7 +134,8 @@ def illiad_request( request ):
     """ Gives users chance to confirm their request via clicking 'Submit'."""
 
     ## check that we're here legitimately
-    ( referrer_ok, redirect_url ) = ill_helper.check_referrer( request.session, request.META )
+    # ( referrer_ok, redirect_url ) = ill_helper.check_referrer( request.session, request.META )
+    ( referrer_ok, redirect_url ) = new_ill_helper.check_referrer( request.session, request.META )
     if referrer_ok is not True:
         request.session['last_path'] = request.path
         return HttpResponseRedirect( redirect_url )
@@ -219,7 +221,9 @@ def illiad_handler( request ):
 
     ## send email
     subject = 'easyAccess request confirmation'
-    body = ill_helper.make_illiad_success_message(
+    # body = ill_helper.make_illiad_success_message(
+    #     shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation_json'), illiad_transaction_number, shib_dct['email'] )
+    body = new_ill_helper.make_illiad_success_message(
         shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation_json'), illiad_transaction_number, shib_dct['email'] )
     ffrom = settings_app.EMAIL_FROM
     addr = shib_dct['email']

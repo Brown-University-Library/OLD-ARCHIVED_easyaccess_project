@@ -53,7 +53,7 @@ class IlliadUrlBuilder( object ):
             extra_dct['Notes'] += '\rNot enough data provided by original request.'
         return extra_dct
 
-    # end class IlliadHelper
+    # end class IlliadUrlBuilder
 
 
 class IlliadValidator( object ):
