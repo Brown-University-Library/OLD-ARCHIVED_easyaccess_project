@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random, time
 import markdown
-from .classes.illiad_helper import IlliadHelper
+from .classes.illiad_helper import IlliadHelper, NewIlliadHelper
 from .classes.login_helper import LoginHelper
 from article_request_app import settings_app
 from django.conf import settings as project_settings
@@ -20,23 +20,8 @@ from illiad.account import IlliadSession
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 ill_helper = IlliadHelper()
+new_ill_helper = NewIlliadHelper()
 login_helper = LoginHelper()
-
-
-# def shib_login( request ):
-#     """ Redirects to an SP login, which then lands back at the login_handler() url.
-#         Called when views.availability() returns a Request button that's clicked. """
-#     localdev_check = False
-#     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
-#         localdev_check = True
-#     if localdev_check is True:
-#         return HttpResponseRedirect( reverse('article_request:login_handler_url') )
-#     login_handler_url = 'https://{host}{login_handler_url}'.format( host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url') )
-#     encoded_login_handler_url = urlquote( login_handler_url )
-#     redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-#         shib_login=settings_app.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
-#     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
-#     return HttpResponseRedirect( redirect_url )
 
 
 def shib_login( request ):
@@ -113,13 +98,25 @@ def login_handler( request ):
         localdev_check = True
     shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
 
+    # ## log user into illiad
+    # ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
+    # if success is False:
+    #     return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
+
     ## log user into illiad
-    ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
-    if success is False:
+    citation_jsn = request.session.get( 'citation', '{}' )
+    citation_dct = json.loads( citation_jsn )
+    if citation_dct.get( 'title', '' ) != '':
+        title = citation_dct['title']
+    else:
+        title = citation_dct.get('source', 'title_unavailable')
+
+    login_result_dct = new_ill_helper.login_user( shib_dct, title )
+    if login_result_dct['success'] is not True:
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
 
     ## illiad logout
-    ill_helper.logout_user( illiad_instance )
+    new_ill_helper.logout_user( login_result_dct['illiad_session_instance'] )
 
     ## build redirect to illiad-landing-page for submit
     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
@@ -163,20 +160,6 @@ def illiad_handler( request ):
     """ Processes the confirmation 'Submit' button behind-the-scenes by submitting the request to illiad and reading the result.
         Then redirects user (behind-the-scenes) to views.shib_logout() for the SP shib-logout ( which will then direct user to views.message() )
         """
-
-    # ## here check
-    # here_check = 'init'
-    # openurl = request.session.get( 'illiad_request_openurl', '' )
-    # if len( openurl ) == 0:
-    #     here_check = 'problem'
-    # if here_check == 'init':
-    #     shib_dct = json.loads( request.session.get('user_json', '{}') )
-    # if 'eppn' not in shib_dct.keys():
-    #     here_check = 'problem'
-    # if here_check == 'problem':
-    #     log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
-    #         request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-    #     return HttpResponseBadRequest( 'Bad request' )
 
     ## here check
     here_check = 'init'

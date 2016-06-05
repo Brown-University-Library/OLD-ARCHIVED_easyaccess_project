@@ -43,7 +43,7 @@ Apologies for the inconvenience.
         """ Logs user into illiad;
             Checks for and handles 'blocked' and 'newuser' status;
             Returns 'problem_message' if necessary.
-            Called by views.login() """
+            Called by views.login_handler() """
         return_dct = { 'illiad_session_instance': None, 'error_message': None, 'success': False }
         connect_result_dct = self._connect( ill_username=user_dct['eppn'].split('@')[0] )
         return_dct['illiad_session_instance'] = connect_result_dct['illiad_session_instance']
@@ -123,7 +123,7 @@ Apologies for the inconvenience.
 
     def logout_user( self, illiad_instance ):
         """ Logs out user & logs any errors.
-            Called by views.login() """
+            Called by views.login_handler() """
         try:
             illiad_instance.logout()
             log.debug( 'illiad logout successful' )
