@@ -39,7 +39,7 @@ Apologies for the inconvenience.
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
 
-    def login_user( self, user_dct, item_dct ):
+    def login_user( self, user_dct, title ):
         """ Logs user into illiad;
             Checks for and handles 'blocked' and 'newuser' status;
             Returns 'problem_message' if necessary.
@@ -47,10 +47,10 @@ Apologies for the inconvenience.
         return_dct = { 'illiad_session_instance': None, 'error_message': None, 'success': False }
         connect_result_dct = self._connect( ill_username=user_dct['eppn'].split('@')[0] )
         return_dct['illiad_session_instance'] = connect_result_dct['illiad_session_instance']
-        if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True:
-            return_dct = self._prepare_failure_message( connect_result_dct, return_dct )
+        if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True or connect_result_dct['error_message'] is not None:
+            return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
         elif connect_result_dct['is_new_user'] is True or connect_result_dct['is_registered'] is False:
-            return_dct = self._handle_new_user( connect_result_dct['illiad_session_instance'], user_dct, item_dct, return_dct )
+            return_dct = self._handle_new_user( connect_result_dct['illiad_session_instance'], user_dct, title, return_dct )
         else:
             return_dct['success'] = True
         log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
@@ -84,13 +84,13 @@ Apologies for the inconvenience.
         return_dct['is_registered'] = illiad_login_dct.get('registered', False)
         return return_dct
 
-    def _prepare_failure_message( self, connect_result_dct, return_dct ):
+    def _prepare_failure_message( self, connect_result_dct, user_dct, title, return_dct ):
         """ Sets return error_message on connect/login failure.
             Called by login_user() """
-        if connect_result_dct['illiad_session_instance'] is False:
+        if connect_result_dct['error_message'] is not None:
             return_dct['error_message'] = connect_result_dct['error_message']
         elif connect_result_dct['is_blocked'] is True:
-            return_dct['error_message'] = self.make_illiad_blocked_message( firstname, lastname, citation )
+            return_dct['error_message'] = self.make_illiad_blocked_message( user_dct['name_first'], user_dct['name_last'], title )
         log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
         return return_dct
 
@@ -99,7 +99,7 @@ Apologies for the inconvenience.
             Called by login_user() """
         updated_illiad_session_instance = self._register_new_user( illiad_session_instance, user_dct )
         if updated_illiad_session_instance.registered is False:
-            return_dct['error_message'] = self.make_illiad_unregistered_message( firstname, lastname, citation )
+            return_dct['error_message'] = self.make_illiad_unregistered_message( firstname, lastname, title )
         else:
             return_dct['success'] = True
         log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
@@ -134,7 +134,7 @@ Apologies for the inconvenience.
     ##########################
     ### illiad blocked message
     ##########################
-    def make_illiad_blocked_message( self, firstname, lastname, citation ):
+    def make_illiad_blocked_message( self, firstname, lastname, title ):
         """ Preps illiad blocked message.
             Called by _check_blocked() """
         message = '''
@@ -145,17 +145,17 @@ Your request for the item, '%s', could not be fulfilled by our easyArticle servi
 Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
 
 [end]
-    ''' % (
+    '''.strip() % (
         firstname,
         lastname,
-        citation )
+        title )
         log.debug( 'illiad blocked message built, ```%s```' % message )
         return message
 
     ###############################
     ### illiad unregistered message
     ###############################
-    def make_illiad_unregistered_message( self, firstname, lastname, citation ):
+    def make_illiad_unregistered_message( self, firstname, lastname, title ):
         """ Preps illiad blocked message.
             Called by _handle_new_user() """
         message = '''
@@ -169,21 +169,16 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
     ''' % (
         firstname,
         lastname,
-        citation )
+        title )
         log.debug( 'illiad unregistered message built, ```%s```' % message )
         return message
 
     ##########################
     ### illiad success message
     ##########################
-    def make_illiad_success_message( self, firstname, lastname, citation_jsn, illiad_transaction_number, email ):
+    def make_illiad_success_message( self, firstname, lastname, title, illiad_transaction_number, email ):
         """ Preps illiad success message.
             Called by views.illiad_handler() """
-        citation_dct = json.loads( citation_jsn )
-        if citation_dct.get( 'title', '' ) != '':
-            title = citation_dct['title']
-        else:
-            title = citation_dct['source']
         message = '''
 Greetings {firstname} {lastname},
 

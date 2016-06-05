@@ -141,28 +141,15 @@ class NewIlliadHelperTest( TestCase ):
     def test_login_user__good(self):
         """ Known good user should return success as True. """
         user_dct = { 'eppn': '{}@brown.edu'.format(settings_app.TEST_ILLIAD_GOOD_USERNAME) }
-        item_dct = {}  # needed for error-message preparation
-        result_dct = self.helper.login_user( user_dct, item_dct )
+        title = 'a_title'  # needed for error-message preparation
+        result_dct = self.helper.login_user( user_dct, title )
         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
         self.assertEqual( None, result_dct['error_message'] )
         self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
         self.assertEqual( True, result_dct['success'] )
         result_dct['illiad_session_instance'].logout()
 
-    def test_login_user__blocked(self):
-        1/0
-        """ Known blocked user should ... """
-        user_dct = { 'eppn': '{}@brown.edu'.format(settings_app.TEST_ILLIAD_GOOD_USERNAME) }
-        item_dct = {}  # needed for error-message preparation
-        result_dct = self.helper.login_user( user_dct, item_dct )
-        self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
-        self.assertEqual( 2, result_dct['error_message'] )
-        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-        self.assertEqual( 2, result_dct['illiad_session_instance'].registered )
-        self.assertEqual( 2, result_dct['success'] )
-        result_dct['illiad_session_instance'].logout()
-
-    def test_login__newuser(self):
+    def test_login_user__newuser(self):
         """ New-user connection should ? """
         username = '{test_root}{random}'.format( test_root=settings_app.TEST_ILLIAD_NEW_USER_ROOT, random=random.randint(11111, 99999) )
         user_dct = {
@@ -174,16 +161,55 @@ class NewIlliadHelperTest( TestCase ):
             'phone': 'test_phone',
             'department': 'test_department'
             }
-        item_dct = {}  # needed for error-message preparation
-        result_dct = self.helper.login_user( user_dct, item_dct )
+        title = 'a_title'  # needed for error-message preparation
+        result_dct = self.helper.login_user( user_dct, title )
         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
         self.assertEqual( None, result_dct['error_message'] )
         self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
         self.assertEqual( True, result_dct['illiad_session_instance'].registered )
         self.assertEqual( True, result_dct['success'] )
 
-    # def test_login__disavowed(self):
-        # TODO
+    def test_login_user__blocked(self):
+        """ Known blocked user should ... """
+        ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
+        user_dct = {
+            'eppn': '{}@brown.edu'.format(ill_username),
+            'name_first': 'test_firstname',
+            'name_last': 'test_lastname',
+            'email': 'test@test.edu',
+            'brown_type': 'test_brown_type',
+            'phone': 'test_phone',
+            'department': 'test_department'
+            }
+        title = 'a_title'  # needed for error-message preparation
+        result_dct = self.helper.login_user( user_dct, title )
+        self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+        self.assertTrue( 'It appears there is a problem' in result_dct['error_message'] )
+        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+        self.assertEqual( True, result_dct['illiad_session_instance'].registered )
+        self.assertEqual( False, result_dct['success'] )
+        result_dct['illiad_session_instance'].logout()
+
+    def test_login__disavowed(self):
+        """ Disavowed user login response should contain correct error_message. """
+        ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
+        user_dct = {
+            'eppn': '{}@brown.edu'.format(ill_username),
+            'name_first': 'test_firstname',
+            'name_last': 'test_lastname',
+            'email': 'test@test.edu',
+            'brown_type': 'test_brown_type',
+            'phone': 'test_phone',
+            'department': 'test_department'
+            }
+        title = 'a_title'  # needed for error-message preparation
+        result_dct = self.helper.login_user( user_dct, title )
+        self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+        self.assertTrue( 'there may be an issue with your ILLiad account' in result_dct['error_message'] )
+        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+        self.assertEqual( False, result_dct['illiad_session_instance'].registered )
+        self.assertEqual( False, result_dct['success'] )
+        result_dct['illiad_session_instance'].logout()
 
     # end class IlliadHelperTest()
 
