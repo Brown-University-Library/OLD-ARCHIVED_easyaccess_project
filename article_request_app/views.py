@@ -220,11 +220,16 @@ def illiad_handler( request ):
     ## update db eventually
 
     ## send email
+    citation_json = request.session.get( 'citation_json', '{}' )
+    citation_dct = json.loads( citation_json )
+    if citation_dct.get( 'title', '' ) != '':
+        citation_title = citation_dct['title']
+    else:
+        citation_title = citation_dct.get('source', 'title_unavailable')
+    #
     subject = 'easyAccess request confirmation'
-    # body = ill_helper.make_illiad_success_message(
-    #     shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation_json'), illiad_transaction_number, shib_dct['email'] )
     body = new_ill_helper.make_illiad_success_message(
-        shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation_json'), illiad_transaction_number, shib_dct['email'] )
+        shib_dct['name_first'], shib_dct['name_last'], citation_title, illiad_transaction_number, shib_dct['email'] )
     ffrom = settings_app.EMAIL_FROM
     addr = shib_dct['email']
     try:
