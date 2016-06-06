@@ -227,11 +227,17 @@ def illiad_handler( request ):
         shib_dct['name_first'], shib_dct['name_last'], request.session.get('citation_json'), illiad_transaction_number, shib_dct['email'] )
     ffrom = settings_app.EMAIL_FROM
     addr = shib_dct['email']
-    send_mail(
-        subject, body, ffrom, [addr], fail_silently=True )
+    try:
+        log.debug( 'about to send mail' )
+        send_mail(
+            subject, body, ffrom, [addr], fail_silently=True )
+        log.debug( 'mail sent' )
+    except Exception as e:
+        log.error( 'exception sending mail, ```{}```'.format(unicode(repr(e))) )
 
     ## store message
     request.session['message'] = '{}\n---'.format( body )
+    log.debug( 'session updated' )
 
     ## prep redirect
     message_redirect_url = reverse('article_request:message_url')
