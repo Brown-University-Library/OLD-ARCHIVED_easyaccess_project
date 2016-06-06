@@ -32,7 +32,7 @@ def shib_login( request ):
     log.debug( 'article_request shib_login() starting session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## store vars we're gonna need
-    citation_json = request.session.get( 'citation', '{}' )
+    citation_json = request.session.get( 'citation_json', '{}' )
     format = request.session.get( 'format', '' )
     illiad_url = request.session.get( 'illiad_url', '' )
     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
@@ -105,8 +105,8 @@ def login_handler( request ):
     #     return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
 
     ## log user into illiad
-    citation_jsn = request.session.get( 'citation', '{}' )
-    citation_dct = json.loads( citation_jsn )
+    citation_json = request.session.get( 'citation_json', '{}' )
+    citation_dct = json.loads( citation_json )
     if citation_dct.get( 'title', '' ) != '':
         title = citation_dct['title']
     else:

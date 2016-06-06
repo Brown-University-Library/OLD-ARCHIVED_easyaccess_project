@@ -270,7 +270,7 @@ If you have any questions, contact the Library's Interlibrary Loan office at <in
 #             Called by login_user() """
 #         blocked = illiad_session.get('blocked', False)
 #         if blocked is True:
-#             citation_json = request.session.get( 'citation', '{}' )
+#             citation_json = request.session.get( 'citation_json', '{}' )
 #             message = self.make_illiad_blocked_message(
 #                 shib_dct['firstname'], shib_dct['lastname'], json.loads(citation_json) )
 #             request.session['message'] = message
@@ -362,10 +362,10 @@ If you have any questions, contact the Library's Interlibrary Loan office at <in
 #     ##########################
 #     ### illiad success message
 #     ##########################
-#     def make_illiad_success_message( self, firstname, lastname, citation_jsn, illiad_transaction_number, email ):
+#     def make_illiad_success_message( self, firstname, lastname, citation_json, illiad_transaction_number, email ):
 #         """ Preps illiad success message.
 #             Called by views.illiad_handler() """
-#         citation_dct = json.loads( citation_jsn )
+#         citation_dct = json.loads( citation_json )
 #         if citation_dct.get( 'title', '' ) != '':
 #             title = citation_dct['title']
 #         else:

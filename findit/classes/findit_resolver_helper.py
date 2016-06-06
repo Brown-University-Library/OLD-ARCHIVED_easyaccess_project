@@ -308,7 +308,7 @@ class FinditResolver( object ):
             request.session['format'] = context.get( 'format', '' )
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
-            request.session['citation'] = citation_json
+            request.session['citation_json'] = citation_json
             request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'] )
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
