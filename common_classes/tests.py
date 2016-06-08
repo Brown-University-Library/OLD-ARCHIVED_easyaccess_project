@@ -60,6 +60,32 @@ class IlliadHelperTest( TestCase ):
         ## ok check
         self.assertEqual( True, ok )
 
+    # def test_login__new_user(self):
+    #     """ New-user login should show user is authenticated, but is not registered.
+    #         Test is good, but disabled so as not to unnecessarily create lots of new users. """
+    #     ill_username = '{test_root}{random}'.format( test_root=settings_app.TEST_ILLIAD_NEW_USER_ROOT, random=random.randint(11111, 99999) )
+    #     ( illiad_session_instance, ok ) = self.helper.connect( ill_username )
+    #     self.illiad_session_instance = illiad_session_instance
+    #     ( illiad_session_instance, login_dct, ok ) = self.helper.login( illiad_session_instance )
+    #     ## instance checks
+    #     self.assertEqual(
+    #         ['auth_header', 'blocked_patron', 'cookies', 'header', 'registered', 'session_id', 'url', 'username'],
+    #         sorted(illiad_session_instance.__dict__.keys()) )
+    #     self.assertEqual( False, illiad_session_instance.blocked_patron )
+    #     self.assertEqual( False, illiad_session_instance.registered )
+    #     self.assertEqual( 11, len(illiad_session_instance.session_id) )
+    #     self.assertEqual( ill_username, illiad_session_instance.username )
+    #     ## login_dct checks
+    #     self.assertEqual(
+    #         ['authenticated', 'new_user', 'registered', 'session_id'],
+    #         sorted(login_dct.keys()) )
+    #     self.assertEqual( True, login_dct['authenticated'])
+    #     self.assertEqual( False, login_dct['new_user'])
+    #     self.assertEqual( False, login_dct['registered'])
+    #     self.assertEqual( illiad_session_instance.session_id, login_dct['session_id'])
+    #     ## ok check
+    #     self.assertEqual( True, ok )
+
     def test_login__blocked_user(self):
         """ Blocked-user login should show user is not authenticated, is registered, and is blocked. """
         ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
