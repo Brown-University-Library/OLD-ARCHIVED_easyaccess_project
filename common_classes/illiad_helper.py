@@ -44,12 +44,12 @@ class IlliadHelper( object ):
     def login( self, illiad_session_instance ):
         """ Tries login.
             Called by check_illiad() """
-        illiad_login_dct = illiad_session_instance.login()
+        login_dct = illiad_session_instance.login()
         ok = True
-        log.debug( 'illiad_login_dct, ```{}```'.format(pprint.pformat(illiad_login_dct)) )
         log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
+        log.debug( 'login_dct, ```{}```'.format(pprint.pformat(login_dct)) )
         log.debug( 'ok, `{}`'.format(ok) )
-        return ( illiad_session_instance, ok )
+        return ( illiad_session_instance, login_dct, ok )
 
     def register_new_user( self, illiad_session_instance, user_dct ):
         """ Registers new user.
