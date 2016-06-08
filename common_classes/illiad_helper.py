@@ -16,21 +16,37 @@ class IlliadHelper( object ):
     def __init__(self):
         pass
 
+    # def check_illiad( self, user_dct ):
+    #     """ Logs user into illiad to check for, and handle, 'newuser' status.
+    #         Returns
+    #         Called by views.process_request() """
+    #     ( illiad_session_instance, ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
+    #     if ok is False:
+    #         return False
+    #     ( illiad_session_instance, login_dct, ok ) = self.login( illiad_session_instance )
+    #     if ok is False:
+    #         return False
+    #     ok = illiad_session_instance.registered  # boolean
+    #     if illiad_session_instance.registered is False:
+    #         ok = self.register_new_user( illiad_session_instance, user_dct )
+    #     self.logout_user( illiad_session_instance )
+    #     return ok
+
     def check_illiad( self, user_dct ):
         """ Logs user into illiad to check for, and handle, 'newuser' status.
-            Returns
+            Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
             Called by views.process_request() """
-        ( illiad_session_instance, ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
-        if ok is False:
-            return False
-        ( illiad_session_instance, ok ) = self.login( illiad_session_instance )
-        if ok is False:
-            return False
-        ok = illiad_session_instance.registered  # boolean
-        if illiad_session_instance.registered is False:
-            ok = self.register_new_user( illiad_session_instance, user_dct )
-        self.logout_user( login_result_dct['illiad_session_instance'] )
-        return ok
+        ( illiad_session_instance, connect_ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
+        if connect_ok is False: return False
+        ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
+        if login_ok is False: return False
+        if illiad_session_instance.registered is True:
+            log.info( 'not a new-user' )
+            check_ok = True  # the check succeeded, nothing needs done (other than logout)
+        else:
+            check_ok = self.register_new_user( illiad_session_instance, user_dct )  # registers new user and returns True on success
+        self.logout_user( illiad_session_instance )
+        return check_ok
 
     def connect( self, ill_username ):
         """ Initializes illiad-session instance -- does not yet contact ILLiad.
