@@ -85,8 +85,6 @@ class IlliadHelperTest( TestCase ):
         ## ok check
         self.assertEqual( True, ok )
 
-
-
     def test_login__disavowed_user(self):
         """ Disavowed-user login should just fail. """
         ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
@@ -99,8 +97,6 @@ class IlliadHelperTest( TestCase ):
         self.assertEqual( None, login_dct )
         ## ok check
         self.assertEqual( False, ok )
-
-
 
     def tearDown(self):
         self.helper.logout_user( self.illiad_session_instance )
