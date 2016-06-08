@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
-from delivery import app_settings as settings_app
+from common_classes import settings_common_tests as settings_app
 from illiad.account import IlliadSession
 
 
@@ -33,7 +33,7 @@ class IlliadHelper( object ):
         return ok
 
     def connect( self, ill_username ):
-        """ Makes session-connection, and tries login.
+        """ Initializes illiad-session instance -- does not yet contact ILLiad.
             Called by check_illiad() """
         illiad_session_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )  # illiad_session_instance.registered will always be False before login attempt
         ok = True
