@@ -41,12 +41,27 @@ class IlliadHelper( object ):
         log.debug( 'ill_username, `{name}`; ok, `{ok}`'.format(name=ill_username, ok=ok) )
         return ( illiad_session_instance, ok )
 
+    # def login( self, illiad_session_instance ):
+    #     """ Tries login.
+    #         Called by check_illiad() """
+    #     login_dct = illiad_session_instance.login()
+    #     ok = True
+    #     log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
+    #     log.debug( 'login_dct, ```{}```'.format(pprint.pformat(login_dct)) )
+    #     log.debug( 'ok, `{}`'.format(ok) )
+    #     return ( illiad_session_instance, login_dct, ok )
+
     def login( self, illiad_session_instance ):
         """ Tries login.
             Called by check_illiad() """
-        login_dct = illiad_session_instance.login()
-        ok = True
-        log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
+        try:
+            login_dct = illiad_session_instance.login()
+            log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
+            ok = True
+        except Exception as e:
+            log.error( 'exception on illiad login, ```{}```'.format(unicode(repr(e))) )
+            ( illiad_session_instance, login_dct, ok ) = ( None, None, False )
+        log.debug( 'illiad_session_instance, `{}`'.format(illiad_session_instance) )
         log.debug( 'login_dct, ```{}```'.format(pprint.pformat(login_dct)) )
         log.debug( 'ok, `{}`'.format(ok) )
         return ( illiad_session_instance, login_dct, ok )
