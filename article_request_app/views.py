@@ -176,7 +176,7 @@ def illiad_handler( request ):
     if here_check == 'problem':
         log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
             request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-        request.session['message'] = ill_helper.problem_message
+        request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
@@ -190,7 +190,7 @@ def illiad_handler( request ):
     except Exception as e:
         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
         if request.session.get( 'message', '' ) == '':
-            request.session['message'] = ill_helper.problem_message
+            request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
@@ -202,7 +202,7 @@ def illiad_handler( request ):
     if errors:
         log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
         if request.session.get( 'message', '' ) == '':
-            request.session['message'] = ill_helper.problem_message
+            request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
     else:
