@@ -210,8 +210,6 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
 
-
-
     def check_pubmed_result( self, sersol_dct ):
         """ Checks sersol_dct for occasional situation in which a pubmed result for a journal has a format of 'book'.
             Called by views.base_resolver() """
@@ -227,8 +225,6 @@ class FinditResolver( object ):
             sersol_dct = sersol_dct
         log.debug( 'sersol_dct not updated' )
         return sersol_dct
-
-
 
     def check_direct_link( self, sersol_dct ):
         """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
@@ -270,20 +266,6 @@ class FinditResolver( object ):
                         is_book = True
         log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )
         return is_book
-
-    # def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.base_resolver() """
-    #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
-    #     context['querystring'] = querystring
-    #     context['enhanced_querystring'] = self._enhance_querystring( querystring, context['citation'], context['genre'] )
-    #     context['permalink'] = permalink
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
 
     def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
         """ Preps the template view.
