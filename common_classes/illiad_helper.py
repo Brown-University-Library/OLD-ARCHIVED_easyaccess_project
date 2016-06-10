@@ -11,31 +11,16 @@ log = logging.getLogger('access')
 
 
 class IlliadHelper( object ):
-    """ Contains helpers for views.process_request() """
+    """ Contains helpers for delivery.views.process_request()
+        TODO, move article-requet checks to here, too. """
 
     def __init__(self):
         pass
 
-    # def check_illiad( self, user_dct ):
-    #     """ Logs user into illiad to check for, and handle, 'newuser' status.
-    #         Returns
-    #         Called by views.process_request() """
-    #     ( illiad_session_instance, ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
-    #     if ok is False:
-    #         return False
-    #     ( illiad_session_instance, login_dct, ok ) = self.login( illiad_session_instance )
-    #     if ok is False:
-    #         return False
-    #     ok = illiad_session_instance.registered  # boolean
-    #     if illiad_session_instance.registered is False:
-    #         ok = self.register_new_user( illiad_session_instance, user_dct )
-    #     self.logout_user( illiad_session_instance )
-    #     return ok
-
     def check_illiad( self, user_dct ):
         """ Logs user into illiad to check for, and handle, 'newuser' status.
             Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
-            Called by views.process_request() """
+            Called by delivery.views.process_request() """
         ( illiad_session_instance, connect_ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
         if connect_ok is False: return False
         ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
