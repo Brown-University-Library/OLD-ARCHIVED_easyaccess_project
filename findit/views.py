@@ -89,15 +89,18 @@ def citation_form( request ):
 
 def findit_base_resolver( request ):
     """ Handles link resolution. """
-    alog.info( '\n===\nstarting...\n===' )
-    alog.info( 'request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
+
+    fresolver = FinditResolver()
+    log_id = fresolver.get_log_id()
+    request.session['log_id'] = log_id
+    alog.info( '\n===\n`{}` starting...\n==='.format(log_id) )
+    alog.info( '`{id}` request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
     for key in request.session.keys():
         del request.session[key]
     alog.debug( 'session.items() after refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
-    fresolver = FinditResolver()
     alog.info( 'session cleared' )
 
     ## if index-page call

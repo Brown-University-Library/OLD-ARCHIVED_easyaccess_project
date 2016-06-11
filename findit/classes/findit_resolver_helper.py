@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import json, logging, os, pprint, re, urllib, urlparse
 from datetime import datetime
 
-import bibjsontools, markdown, requests
+import bibjsontools, markdown, random, requests
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -55,9 +55,15 @@ class FinditResolver( object ):
         self.redirect_url = ''
         # self.ABOUT_PATH = unicode( os.environ['EZACS__FINDIT_ABOUT_PATH'] )
 
+    def get_log_id( self ):
+        """ Returns log-identifier string.
+            Called by views.findit_base_resolver() """
+        log_id = '{}'.format( random.randint(10000, 99999) )
+        return log_id
+
     def check_index_page( self, querydict ):
         """ Checks to see if it's the demo landing page.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         log.debug( 'querydict, `%s`' % querydict )
         return_val = False
         if querydict == {} or ( querydict.keys() == ['output'] and querydict.get('output', '') == 'json' ):
@@ -67,13 +73,13 @@ class FinditResolver( object ):
 
     def make_index_context( self, querydict ):
         """ Builds context for index page.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
         return context
 
     def make_index_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         if request.GET.get('output', '') == 'json':
             output = json.dumps( context, sort_keys=True, indent = 2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
@@ -84,7 +90,7 @@ class FinditResolver( object ):
 
     def check_double_encoded_querystring( self, querystring ):
         """ Checks for apache redirect-bug.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         return_val = False
         if '%25' in querystring:
             good_querystring = urllib.unquote( querystring )
@@ -93,23 +99,9 @@ class FinditResolver( object ):
         log.debug( 'bad url found, {}'.format(return_val) )
         return return_val
 
-    # def check_double_encoded_querystring( self, scheme, host, path, querystring ):
-    #     """ Checks for apache redirect-bug.
-    #         Builds url explicitly to avoid revproxy url.
-    #         Called by views.base_resolver() """
-    #     return_val = False
-    #     if '%25' in querystring:
-    #         good_querystring = urllib.unquote( querystring )
-    #         # self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
-    #         self.redirect_url = '{scheme}://{host}{path}?{querystring}'.format(
-    #             scheme=scheme, host=host, path=path, querystring=querystring)
-    #         return_val = True
-    #     log.debug( 'bad url found, {}'.format(return_val) )
-    #     return return_val
-
     def check_summon( self, querydict ):
         """ Determines whether a summon check is needed.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         referrer = self._get_referrer( querydict ).lower()
         check_summon = True
         for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
@@ -121,7 +113,7 @@ class FinditResolver( object ):
 
     def enhance_link( self, direct_indicator, query_string ):
         """ Enhances link via summon lookup if necessary.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         enhanced = False
         if direct_indicator is not 'false':  # "ensure the GET request doesn't override this" -- (bjd: don't fully understand this; i assume this val is set somewhere)
             enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
@@ -133,7 +125,7 @@ class FinditResolver( object ):
 
     def check_sersol_publication( self, rqst_qdict, rqst_qstring ):
         """ Handles journal requests; passes them on to 360link for now.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         sersol_journal = False
         if rqst_qdict.get('rft.genre', 'null') == 'journal' or rqst_qdict.get('genre', 'null') == 'journal':
             if rqst_qdict.get( 'sid', 'null' ).startswith( 'FirstSearch' ):
@@ -146,7 +138,7 @@ class FinditResolver( object ):
     def check_ebook( self, sersol_dct ):
         """ Checks if item has an ebook, and if so, returns the label and url.
             Returns tuple: ( ebook_exists, label, url )
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         return_tuple = ( False, '', '' )
         if sersol_dct.get( 'results', None ):
             for result in sersol_dct['results']:
@@ -173,7 +165,7 @@ class FinditResolver( object ):
     def check_book( self, request ):
         """ Checks if request is for a book.
             If so, builds /borrow redirect link and updates session.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         ( is_book, querydct, querystring ) = ( False, request.GET, request.META.get('QUERY_STRING', '') )
         if querydct.get('genre', 'null') == 'book' or querydct.get('rft.genre', 'null') == 'book':
             is_book = True
@@ -187,7 +179,7 @@ class FinditResolver( object ):
 
     def update_querystring( self, querystring  ):
         """ Updates querystring if necessary to catch non-standard pubmed queries.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         PMID_QUERY = re.compile('^pmid\:(\d+)')
         pmid_match = re.match( PMID_QUERY, querystring )
         if pmid_match:
@@ -201,7 +193,7 @@ class FinditResolver( object ):
 
     def get_sersol_dct( self, scheme, host, querystring ):
         """ Builds initial data-dict.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         try:
             sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of pylink3602
         except Exception as e:
@@ -212,7 +204,7 @@ class FinditResolver( object ):
 
     def check_pubmed_result( self, sersol_dct ):
         """ Checks sersol_dct for occasional situation in which a pubmed result for a journal has a format of 'book'.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         try:
             citation = sersol_dct['results'][0]['citation']
             format = sersol_dct['results'][0]['format']
@@ -228,7 +220,7 @@ class FinditResolver( object ):
 
     def check_direct_link( self, sersol_dct ):
         """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         return_val = False
         if sersol_dct.get( 'results', None ):
             for result in sersol_dct['results']:
@@ -254,7 +246,7 @@ class FinditResolver( object ):
 
     def check_book_after_sersol( self, sersol_dct, rqst_qstring ):
         """ Handles book requests after sersol lookup; builds /borrow redirect link.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         is_book = False
         results = sersol_dct.get( 'results', '' )
         if type( results ) == list:
@@ -269,7 +261,7 @@ class FinditResolver( object ):
 
     def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
         """ Preps the template view.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
         ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         enhanced_querystring = self._enhance_querystring( querystring, context['citation'], context['genre'] )
@@ -284,7 +276,7 @@ class FinditResolver( object ):
 
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
-            Called by views.base_resolver() """
+            Called by views.findit_base_resolver() """
         if context.get( 'resolved', False ) == False:
             request.session['findit_illiad_check_flag'] = 'good'
             request.session['format'] = context.get( 'format', '' )
