@@ -87,30 +87,6 @@ def citation_form( request ):
     return response
 
 
-def ris_citation( request ):
-    """ Downloads a ris citation for endnote.
-        [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) ) """
-    querystring = request.META.get('QUERY_STRING', None)
-    if not querystring:
-        return HttpResponseBadRequest( 'Sorry, no data found to parse for EndNote.' )
-    bib_dct = bibjsontools.from_openurl( querystring )
-    slugified_title = ris_helper.make_title( bib_dct )
-    ris_string = bibjsontools_ris.convert( bib_dct )
-    response = HttpResponse( ris_string, content_type='application/x-research-info-systems' )
-    response['Content-Disposition'] = 'attachment; filename={}.ris'.format( slugified_title )
-    return response
-
-
-def permalink( request, permalink_str ):
-    """ Handles expansion and redirection back to '/find/?...' """
-    openurl = permalink_helper.get_openurl( permalink_str )
-    if openurl:
-        redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
-        return HttpResponsePermanentRedirect( redirect_url )
-    else:
-        return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
-
-
 def findit_base_resolver( request ):
     """ Handles link resolution. """
     alog.info( '\n===\nstarting...\n===' )
@@ -222,6 +198,30 @@ def findit_base_resolver( request ):
     return resp
 
     ## end def base_resolver()
+
+
+def permalink( request, permalink_str ):
+    """ Handles expansion and redirection back to '/find/?...' """
+    openurl = permalink_helper.get_openurl( permalink_str )
+    if openurl:
+        redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
+        return HttpResponsePermanentRedirect( redirect_url )
+    else:
+        return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
+
+
+def ris_citation( request ):
+    """ Downloads a ris citation for endnote.
+        [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) ) """
+    querystring = request.META.get('QUERY_STRING', None)
+    if not querystring:
+        return HttpResponseBadRequest( 'Sorry, no data found to parse for EndNote.' )
+    bib_dct = bibjsontools.from_openurl( querystring )
+    slugified_title = ris_helper.make_title( bib_dct )
+    ris_string = bibjsontools_ris.convert( bib_dct )
+    response = HttpResponse( ris_string, content_type='application/x-research-info-systems' )
+    response['Content-Disposition'] = 'attachment; filename={}.ris'.format( slugified_title )
+    return response
 
 
 def server_error(request, template_name='500.html'):
