@@ -92,7 +92,6 @@ def findit_base_resolver( request ):
 
     fresolver = FinditResolver()
     log_id = fresolver.get_log_id()
-    request.session['log_id'] = log_id
     alog.info( '\n===\n`{}` starting...\n==='.format(log_id) )
     alog.info( '`{id}` request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
 
@@ -101,19 +100,20 @@ def findit_base_resolver( request ):
     for key in request.session.keys():
         del request.session[key]
     alog.debug( 'session.items() after refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
-    alog.info( 'session cleared' )
+    alog.info( '`{}` session cleared'.format(log_id) )
+    request.session['log_id'] = log_id
 
     ## if index-page call
     if fresolver.check_index_page( request.GET ):
         # return fresolver.make_response( request, fresolver.make_index_context(request.GET), 'findit/index.html' )
         context = fresolver.make_index_context( request.GET )
         resp = fresolver.make_index_response( request, context )
-        alog.info( 'returning index page' )
+        alog.info( '`{}`returning index page'.format(log_id) )
         return resp
 
     ## temp fix for testing from in-production redirects
     if fresolver.check_double_encoded_querystring( request.META.get('QUERY_STRING', '') ):
-        alog.info( 'double-encoded querystring found, gonna redirect to, ```{}```'.format(fresolver.redirect_url) )
+        alog.info( '`{id}` double-encoded querystring found, gonna redirect to, ```{url}```'.format(id=log_id, url=fresolver.redirect_url) )
         return HttpResponseRedirect( fresolver.redirect_url )
 
     ## make permalink if one doesn't exist
@@ -122,65 +122,65 @@ def findit_base_resolver( request ):
         referrer=request.GET.get('rfr_id',''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url')
         )['permalink']
     request.session['permalink_url'] = permalink_url
-    alog.info( 'permalink made, ```{}```'.format(permalink_url) )
+    alog.info( '`{id}` permalink made, ```{url}```'.format(id=log_id, url=permalink_url) )
 
     ## if summon returns an enhanced link, go to it
     if fresolver.check_summon( request.GET ):
         if fresolver.enhance_link( request.GET.get('direct', None), querystring ):
-            alog.info( 'redirecting to summon enhanced link, ```{}```'.format(fresolver.enhanced_link) )
+            alog.info( '`{id}` redirecting to summon enhanced link, ```{link}```'.format(id=log_id, link=fresolver.enhanced_link) )
             return HttpResponseRedirect( fresolver.enhanced_link )
 
     ## if journal, redirect to 360link for now
     if fresolver.check_sersol_publication( request.GET, querystring ):
-        alog.info( 'redirecting to sersol publication link, ```{}```'.format(fresolver.sersol_publication_link) )
+        alog.info( '`{id}` redirecting to sersol publication link, ```{link}```'.format(id=log_id, link=fresolver.sersol_publication_link) )
         return HttpResponseRedirect( fresolver.sersol_publication_link )
 
     ## get serials-solution data-dct
     querystring = fresolver.update_querystring( querystring )  # update querystring if necessary to catch non-standard pubmed ids
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
-    alog.info( 'sersol data-dct prepared' )
+    alog.info( '`{}` sersol data-dct prepared'.format(log_id) )
 
     ## check for pubmed journal that says it's a book
     sersol_dct = fresolver.check_pubmed_result( sersol_dct )
-    alog.info( 'check for bad pubmed data complete' )
+    alog.info( '`{}` check for bad pubmed data complete'.format(log_id) )
 
     ## if not enough data, redirect to citation-form
     try:
         if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
             redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
-            alog.info( 'failed enough-metadata-check; redirecting to citation-form at, ```{}```'.format(redirect_url) )
+            alog.info( '`{id}` failed enough-metadata-check; redirecting to citation-form at, ```{url}```'.format(id=log_id, url=redirect_url) )
             request.session['citation_form_message'] = 'There was not enough information provided to complete your request. Please add more information about the resource. A Journal, ISSN, DOI, or PMID is required.'
             return HttpResponseRedirect( redirect_url )
     except Exception as e:
-        alog.info( 'passed enough-metadata-check' )
+        alog.info( '`{}` passed enough-metadata-check'.format(log_id) )
 
     ## if there's a direct-link, go right to it
     if fresolver.check_direct_link( sersol_dct ):
-        alog.info( 'redirecting to sersol direct-link' )
+        alog.info( '`{id}` redirecting to sersol direct-link, ```{url}```'.format(id=log_id, url=fresolver.direct_link) )
         return HttpResponseRedirect( fresolver.direct_link )
 
     ## if there's an ebook, put it in the session
     ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
-    alog.info( 'ebook check complete' )
+    alog.info( '`{}` ebook check complete'.format(log_id) )
     if ebook_exists is True:
         ebook_dct = { 'ebook_label': ebook_label, 'ebook_url':ebook_url }
         request.session['ebook_json'] = json.dumps( ebook_dct )
 
     ## if book, redirect to /borrow
     if fresolver.check_book( request ):
-        alog.info( 'book, redirecting to, ```{}```'.format(fresolver.borrow_link) )
+        alog.info( '`{id}` book, redirecting to, ```{url}```'.format(id=log_id, url=fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## if sersol-data shows it's a book, redirect to /borrow
     if fresolver.check_book_after_sersol( sersol_dct, querystring ):
         request.session['last_path'] = request.path
         request.session['last_querystring'] = querystring
-        alog.info( 'book found on second-check, redirecting to, ```{}```'.format(fresolver.borrow_link) )
+        alog.info( '`{id}` book found on second-check, redirecting to, ```{url}```'.format(id=log_id, url=fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
 
     ## build response context
     context = fresolver.make_resolve_context( request, permalink_url, querystring, sersol_dct )
-    alog.info( 'context built' )
+    alog.info( '`{}` context built'.format(log_id) )
 
     ## check for problem
     """ Saw this when findit_resolver_helper._try_resolved_obj_citation() had the exception:
@@ -188,16 +188,16 @@ def findit_base_resolver( request ):
     if context['citation'].keys() == [ 'type' ]:
         redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
         request.session['citation_form_message'] = 'Please confirm or enhance your request and click "Submit". A Journal, ISSN, DOI, or PMID is required.'
-        alog.info( 'weirdness detected; redirecting to citation-form, ```{}```'.format(redirect_url) )
+        alog.info( '`{id}` weirdness detected; redirecting to citation-form, ```{url}```'.format(id=log_id, url=redirect_url) )
         return HttpResponseRedirect( redirect_url )
 
     ## update session if necessary
     fresolver.update_session( request, context )
-    alog.info( 'session updated' )
+    alog.info( '`{}` session updated'.format(log_id) )
 
     ## return resolve response
     resp = fresolver.make_resolve_response( request, context )
-    alog.info( 'returning response' )
+    alog.info( '`{}` returning response'.format(log_id) )
     return resp
 
     ## end def base_resolver()
