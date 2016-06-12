@@ -53,13 +53,14 @@ class FinditResolver( object ):
         self.direct_link = False
         self.referrer = ''
         self.redirect_url = ''
+        self.log_id = ''
         # self.ABOUT_PATH = unicode( os.environ['EZACS__FINDIT_ABOUT_PATH'] )
 
     def get_log_id( self ):
         """ Returns log-identifier string.
             Called by views.findit_base_resolver() """
-        log_id = '{}'.format( random.randint(10000, 99999) )
-        return log_id
+        self.log_id = '{}'.format( random.randint(10000, 99999) )
+        return self.log_id
 
     def check_index_page( self, querydict ):
         """ Checks to see if it's the demo landing page.
@@ -68,7 +69,8 @@ class FinditResolver( object ):
         return_val = False
         if querydict == {} or ( querydict.keys() == ['output'] and querydict.get('output', '') == 'json' ):
             return_val = True
-        log.debug( 'return_val, `%s`' % return_val )
+        # log.debug( 'return_val, `%s`' % return_val )
+        log.debug( '`{id}` return_val, `{val}`'.format(id=self.log_id, val=return_val) )
         return return_val
 
     def make_index_context( self, querydict ):
@@ -85,7 +87,7 @@ class FinditResolver( object ):
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
             resp = render( request, 'findit/index.html', context )
-        log.debug( 'returning response' )
+        log.debug( '`{id}` returning index response'.format(id=self.log_id) )
         return resp
 
     def check_double_encoded_querystring( self, querystring ):
@@ -96,7 +98,8 @@ class FinditResolver( object ):
             good_querystring = urllib.unquote( querystring )
             self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
             return_val = True
-        log.debug( 'bad url found, {}'.format(return_val) )
+        # log.debug( 'bad url found, {}'.format(return_val) )
+        log.debug( '`{id}` bad url check, `{val}`'.format(id=self.log_id, val=return_val) )
         return return_val
 
     def check_summon( self, querydict ):
@@ -108,7 +111,8 @@ class FinditResolver( object ):
             if referrer.find( provider ) > 0:
                 check_summon = False
                 break
-        log.debug( 'check_summon, `%s`' % check_summon )
+        # log.debug( 'check_summon, `%s`' % check_summon )
+        log.debug( '`{id}` check_summon result, `{val}`'.format(id=self.log_id, val=check_summon) )
         return check_summon
 
     def enhance_link( self, direct_indicator, query_string ):
@@ -120,7 +124,8 @@ class FinditResolver( object ):
             if enhanced_link:
                 self.enhanced_link = enhanced_link
                 enhanced = True
-        log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
+        # log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
+        log.debug( '`{id}` enhanced-check result, `{bool}`; enhanced-link, ```{link}```'.format(id=self.log_id, bool=enhanced, link=self.enhanced_link) )
         return enhanced
 
     def check_sersol_publication( self, rqst_qdict, rqst_qstring ):
@@ -132,7 +137,8 @@ class FinditResolver( object ):
                 issn = rqst_qdict.get( 'rft.issn' )  # TODO: remove this or return it if necessary
                 self.sersol_publication_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, rqst_qstring)
                 sersol_journal = True
-        log.debug( "sersol_journal, `%s`; sersol_publication_link, `%s`" % (sersol_journal, self.sersol_publication_link) )
+        # log.debug( "sersol_journal, `%s`; sersol_publication_link, `%s`" % (sersol_journal, self.sersol_publication_link) )
+        log.debug( '`{id}` sersol_journal-check result, `{val}`'.format(id=self.log_id, val=sersol_journal) )
         return sersol_journal
 
     def check_ebook( self, sersol_dct ):
@@ -147,7 +153,8 @@ class FinditResolver( object ):
                         return_tuple = self._check_group_for_ebook( link_group, return_tuple )
                         if return_tuple[0]: break
                 if return_tuple[0]: break
-        log.debug( 'return_tuple, ```{}```'.format(pprint.pformat(return_tuple)) )
+        # log.debug( 'return_tuple, ```{}```'.format(pprint.pformat(return_tuple)) )
+        log.debug( '`{id}` ebook check complete'.format(id=self.log_id) )
         return return_tuple
 
     def _check_group_for_ebook( self, link_group, return_tuple ):
@@ -159,7 +166,8 @@ class FinditResolver( object ):
             ( database_name, journal_url ) = ( holding_data_dct.get('databaseName', ''), url_dct.get('journal', '') )
             if database_name and journal_url:
                 return_tuple = ( True, database_name, journal_url )
-        log.debug( 'return_tuple, ```{}```'.format(pprint.pformat(return_tuple)) )
+        # log.debug( 'return_tuple, ```{}```'.format(pprint.pformat(return_tuple)) )
+        log.debug( '`{id}` ebook check fields "boolean", "database_name", "journal_url", ```{val}```'.format(id=self.log_id, val=pprint.pformat(return_tuple)) )
         return return_tuple
 
     def check_book( self, request ):
@@ -174,7 +182,8 @@ class FinditResolver( object ):
             log.debug( 'self.borrow_link, `%s`' % self.borrow_link )
             request.session['last_path'] = request.path
             request.session['last_querystring'] = querystring
-        log.debug( 'is_book, `%s`' % is_book )
+        # log.debug( 'is_book, `%s`' % is_book )
+        log.debug( '`{id}` is_book, `{val}`'.format(id=self.log_id, val=is_book) )
         return is_book
 
     def update_querystring( self, querystring  ):
@@ -183,11 +192,13 @@ class FinditResolver( object ):
         PMID_QUERY = re.compile('^pmid\:(\d+)')
         pmid_match = re.match( PMID_QUERY, querystring )
         if pmid_match:
-            log.debug( 'non-standard pmid found' )
+            # log.debug( 'non-standard pmid found' )
             pmid = pmid_match.group(1)
             updated_querystring = 'pmid=%s' % pmid
+            log.debug( '`{id}` non-standard pmid found, updated_querystring, ```{val}```'.format(id=self.log_id, val=updated_querystring) )
         else:
-            log.debug( 'non-standard pmid not found' )
+            # log.debug( 'non-standard pmid not found' )
+            log.debug( '`{id}` no non-standard pmid found'.format(id=self.log_id) )
             updated_querystring = querystring
         return updated_querystring
 
@@ -197,9 +208,11 @@ class FinditResolver( object ):
         try:
             sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of pylink3602
         except Exception as e:
-            log.error( 'exception grabbing sersol data, ```{}```'.format(unicode(repr(e))) )
+            # log.error( 'exception grabbing sersol data, ```{}```'.format(unicode(repr(e))) )
+            log.debug( '`{id}` exception grabbing sersol data, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
             sersol_dct = {}
-        log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
+        # log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
+        log.debug( '`{id}` sersol_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(sersol_dct)) )
         return sersol_dct
 
     def check_pubmed_result( self, sersol_dct ):
