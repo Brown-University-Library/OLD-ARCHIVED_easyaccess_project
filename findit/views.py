@@ -73,15 +73,16 @@ alog = logging.getLogger('access')
 
 def citation_form( request ):
     """ Displays citation form on GET; redirects built url to /find/?... on POST. """
-    alog.debug( 'request.GET, ```%s```' % pprint.pformat(request.GET) )
-    alog.debug( 'len(request.GET.keys()), `%s`' % len(request.GET.keys()) )
-    citation_form_message = request.session.get( 'citation_form_message', '' )
+    ( form_helper.log_id, citation_form_message ) = ( request.session.get('log_id', ''), request.session.get('citation_form_message', '') )
+    alog.debug( '`{id}` len-get-keys, `{len}`; request.GET, ```{get}```'.format(id=form_helper.log_id, len=len(request.GET.keys()), get=pprint.pformat(request.GET)) )
     if citation_form_message:
         request.session['citation_form_message'] = ''
     if len( request.GET.keys() ) == 0:
         context = form_helper.build_simple_context( request )
+        alog.info( '`{id}` simple context built'.format(id=form_helper.log_id) )
     else:
         context = form_helper.build_context_from_url( request )
+        alog.info( '`{id}` context built from querystring'.format(id=form_helper.log_id) )
     context['citation_form_message'] = citation_form_message
     response = form_helper.build_get_response( request, context )
     return response

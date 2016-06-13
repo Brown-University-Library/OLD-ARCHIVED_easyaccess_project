@@ -42,9 +42,7 @@ class CitationFormDctMaker( object ):
             citation_form_dct = self.update_book_fields( citation_form_dct )
         else:  # article
             citation_form_dct = self.update_article_fields( bibjson_dct, citation_form_dct )
-
         citation_form_dct = self.update_common_fields( bibjson_dct, citation_form_dct )
-
         log.debug( 'final citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
 
@@ -223,6 +221,9 @@ class CitationFormDctMaker( object ):
 class CitationFormHelper( object ):
     """ Handles views.citation_form() calls. """
 
+    def __init__(self):
+        self.log_id = ''
+
     def build_simple_context( self, request ):
         """ Prepares simple GET context.
             Called by views.citation_form() """
@@ -232,29 +233,34 @@ class CitationFormHelper( object ):
             u'form_type': u'article',
             u'problem_link': u'https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dEhXOXNEMnI0T0pHaTA3WFFCQkJ1ZHc6MQ&entry_3=http://127.0.0.1/citation-form/&entry_4=127.0.0.1',
             }
-        log.debug( 'context, `%s`' % context )
+        # log.debug( 'context, `%s`' % context )
+        log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
         return context
 
     def build_context_from_url( self, request ):
         """ Populates form from url.
             Called by views.citation_form() """
-        log.debug( 'request.__dict__, ```%s```' % pprint.pformat(request.__dict__) )
+        # log.debug( 'request.__dict__, ```%s```' % pprint.pformat(request.__dict__) )
+        log.debug( '`{id}` request.__dict__, ```{val}```'.format(id=self.log_id, val=pprint.pformat(request.__dict__)) )
         form_dct_maker = CitationFormDctMaker()
         citation_form_dct = form_dct_maker.make_form_dct( request.GET )
+        log.info( '`{id}` citation_form_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(citation_form_dct)) )
         context = {
             u'article_form': forms.ArticleForm(citation_form_dct),
             u'book_form': forms.BookForm(citation_form_dct),
             u'form_type': self.make_form_type( citation_form_dct ),
             u'problem_link': 'https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dEhXOXNEMnI0T0pHaTA3WFFCQkJ1ZHc6MQ&entry_3=http://127.0.0.1/citation-form/&entry_4=127.0.0.1',
             }
-        log.debug( 'context, `%s`' % context )
+        # log.debug( 'context, `%s`' % context )
+        log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
         return context
 
     def build_get_response( self, request, context ):
         """ Prepares GET response
             Called by views.citation_form() """
         resp = render( request, 'findit/citation_linker_2.html', context )
-        log.debug( 'returning response' )
+        # log.debug( 'returning response' )
+        log.debug( '`{id}` returning response'.format(id=self.log_id) )
         return resp
 
     def make_form_type( self, dct ):
@@ -265,7 +271,8 @@ class CitationFormHelper( object ):
             form_type = 'book'
         elif dct.get('genre', '') == 'book':
             form_type = 'book'
-        log.debug( 'form_type, `%s`' % form_type )
+        # log.debug( 'form_type, `%s`' % form_type )
+        log.debug( '`{id}` form_type, ```{val}```'.format(id=self.log_id, val=form_type) )
         return form_type
 
     # end class CitationFormHelper
