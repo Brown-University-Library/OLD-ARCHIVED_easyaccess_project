@@ -251,6 +251,18 @@ def process_request( request ):
         # request.session['message'] = 'Sorry, there was a problem with that url. easyBorrow requests should start _here_; contact us if this problem continues.'
         return HttpResponseRedirect( redirect_url )
 
+
+
+    ## check if authorized
+    shib_dct = json.loads( request.session.get('user_json', '{}') )
+    ( is_authorized, redirect_url, message ) = process_view_helper.check_if_authorized( shib_dct )
+    if is_authorized is False:
+        log.info( '`{id}` user, `{val}` not authorized; redirecting to message-url'.format(id='coming', val='coming') )
+        request.session['message'] = message
+        return HttpResponseRedirect( redirect_url )
+
+
+
     ## get/create resource object
     # resource_obj = process_view_helper.grab_resource( querystring )
 
@@ -263,7 +275,7 @@ def process_request( request ):
     #     return HttpResponseRedirect( reverse('delivery:message_url') )
 
     ## check for new-user
-    shib_dct = json.loads( request.session.get('user_json', '{}') )
+    # shib_dct = json.loads( request.session.get('user_json', '{}') )
     try:
         illiad_helper.check_illiad( shib_dct )
     except Exception as e:

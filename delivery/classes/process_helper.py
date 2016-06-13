@@ -17,7 +17,13 @@ class ProcessViewHelper(object):
     """ Contains helpers for views.process_request() """
 
     def __init__(self):
-        pass
+        self.denied_permission_message = '''
+It appears you are not authorized to use interlibrary-loan services, which are for the use of faculty, staff, and students.
+
+If you believe you should be permitted to use interlibrary-loan services, please contact the circulation staff at the Rockefeller Library, or call them at {phone}, or email them at {email}, and they'll help you.
+'''.format( phone=app_settings.PERMISSION_DENIED_PHONE, email=app_settings.PERMISSION_DENIED_EMAIL )
+
+
 
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
@@ -30,6 +36,21 @@ class ProcessViewHelper(object):
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
         log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
         return ( referrer_check, redirect_url )
+
+
+
+    def check_if_authorized( self, shib_dct ):
+        """ Checks whether user is authorized to request book.
+            Called by views.process_request() """
+        log.debug( '`{id}` checking authorization'.format(id='coming') )
+        ( is_authorized, redirect_url, message ) = ( False, reverse('delivery:message_url'), self.denied_permission_message )
+        if app_settings.REQUIRED_GROUPER_GROUP in shib_dct['member_of']:
+            log.debug( '`{id}` user authorized'.format(id='coming') )
+            ( is_authorized, redirect_url, message ) = ( True, '', '' )
+        log.debug( '`{id}` is_authorized, `{auth}`; redirect_url, `{url}`; message, ```{msg}```'.format(id='coming', auth=is_authorized, url=redirect_url, msg=message) )
+        return ( is_authorized, redirect_url, message )
+
+
 
     def save_to_easyborrow( self, shib_dct, bib_dct, querystring ):
         """ Creates an easyBorrow db entry.
