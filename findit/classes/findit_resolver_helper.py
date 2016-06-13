@@ -204,14 +204,15 @@ class FinditResolver( object ):
 
     def get_sersol_dct( self, scheme, host, querystring ):
         """ Builds initial data-dict.
-            Called by views.findit_base_resolver() """
+            Called by views.findit_base_resolver()
+            Error note:
+                Occational ```XMLSyntaxError(u'Opening and ending tag mismatch: hr line 1 and body, line 1, column 922',)``` caused by unknown blip.
+                Result: eventual redirect to  citation form for confirmation -- always seems to work second time. """
         try:
             sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of pylink3602
         except Exception as e:
-            # log.error( 'exception grabbing sersol data, ```{}```'.format(unicode(repr(e))) )
-            log.debug( '`{id}` exception grabbing sersol data, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
+            log.debug( '`{id}` problem grabbing sersol data, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
             sersol_dct = {}
-        # log.debug( 'sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         log.debug( '`{id}` sersol_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(sersol_dct)) )
         return sersol_dct
 
@@ -332,7 +333,10 @@ class FinditResolver( object ):
 
     def _try_resolved_obj_citation( self, sersol_dct ):
         """ Returns initial context based on a resolved-object.
-            Called by make_resolve_context() """
+            Called by make_resolve_context()
+            Exeption note:
+                Occasional ```Link360Exception(u'Invalid syntax Invalid check sum',)``` caused by data being sent like: `rft.jtitle={content.jtitle}`.
+                Result: eventual redirect to  citation form for confirmation -- always seems to work second time. """
         context = {}
         try:
             resolved_obj = BulSerSol( sersol_dct )
