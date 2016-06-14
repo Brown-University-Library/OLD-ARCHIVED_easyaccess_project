@@ -23,8 +23,6 @@ It appears you are not authorized to use interlibrary-loan services, which are f
 If you believe you should be permitted to use interlibrary-loan services, please contact the circulation staff at the Rockefeller Library, or call them at {phone}, or email them at {email}, and they'll help you.
 '''.format( phone=app_settings.PERMISSION_DENIED_PHONE, email=app_settings.PERMISSION_DENIED_EMAIL )
 
-
-
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
             Called by views.login() """
@@ -44,7 +42,7 @@ If you believe you should be permitted to use interlibrary-loan services, please
             Called by views.process_request() """
         log.debug( '`{id}` checking authorization'.format(id='coming') )
         ( is_authorized, redirect_url, message ) = ( False, reverse('delivery:message_url'), self.denied_permission_message )
-        if app_settings.REQUIRED_GROUPER_GROUP in shib_dct['member_of']:
+        if app_settings.REQUIRED_GROUPER_GROUP in shib_dct.get( 'member_of', '' ):
             log.debug( '`{id}` user authorized'.format(id='coming') )
             ( is_authorized, redirect_url, message ) = ( True, '', '' )
         log.debug( '`{id}` is_authorized, `{auth}`; redirect_url, `{url}`; message, ```{msg}```'.format(id='coming', auth=is_authorized, url=redirect_url, msg=message) )
