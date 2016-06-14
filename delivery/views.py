@@ -34,7 +34,7 @@ SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 availability_view_helper = AvailabilityViewHelper()
 illiad_helper = IlliadHelper()
 login_view_helper = LoginViewHelper()
-process_view_helper = ProcessViewHelper()
+# process_view_helper = ProcessViewHelper()
 
 
 def availability( request ):
@@ -244,6 +244,9 @@ def process_request( request ):
         - saves data to easyBorrow db
         - redirects user to message url/view """
 
+    process_view_helper = ProcessViewHelper( request.session.get('log_id', '') )
+    # process_view_helper.set_log_id( request.session.get( 'log_id', '' ) )
+
     ## check referrer
     ( referrer_ok, redirect_url ) = process_view_helper.check_referrer( request.session, request.META )
     request.session['last_path'] = request.path
@@ -303,13 +306,17 @@ def process_request( request ):
 
 def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
+    log_id = request.session.get( 'log_id', '' )
     message = request.session.get( 'message', '' )
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
+    request.session['log_id'] = log_id
     request.session['message'] = message
     request.session['permalink_url'] = permalink_url
     request.session['last_querystring'] = last_querystring
+    process_view_helper = ProcessViewHelper( log_id )
+    # process_view_helper.set_log_id( log_id )
     redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
     log.debug( 'redirect_url, `{}`'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )

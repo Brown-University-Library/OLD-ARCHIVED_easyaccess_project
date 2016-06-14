@@ -16,7 +16,8 @@ log = logging.getLogger('access')
 class ProcessViewHelper(object):
     """ Contains helpers for views.process_request() """
 
-    def __init__(self):
+    def __init__( self, log_id='not_set' ):
+        self.log_id = log_id
         self.denied_permission_message = '''
 It appears you are not authorized to use interlibrary-loan services, which are for the use of faculty, staff, and students.
 
