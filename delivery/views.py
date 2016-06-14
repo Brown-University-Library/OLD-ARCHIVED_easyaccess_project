@@ -266,7 +266,7 @@ def process_request( request ):
     shib_dct = json.loads( request.session.get('user_json', '{}') )
     ( is_authorized, redirect_url, message ) = process_view_helper.check_if_authorized( shib_dct )
     if is_authorized is False:
-        log.info( '`{id}` user, `{val}` not authorized; redirecting to message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
+        log.info( '`{id}` user, `{val}` not authorized; redirecting to shib-logout-url, then message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
         request.session['message'] = message
         return HttpResponseRedirect( redirect_url )
 
@@ -322,14 +322,14 @@ def shib_logout( request ):
     request.session['permalink_url'] = permalink_url
     request.session['last_querystring'] = last_querystring
     process_view_helper = ProcessViewHelper( log_id )
-    # process_view_helper.set_log_id( log_id )
     redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
-    log.debug( 'redirect_url, `{}`'.format(redirect_url) )
+    log.debug( '`{id}` redirect_url, `{val}`'.format(id=log_id, val=redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
 
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
+    log_id = request.session.get( 'log_id', '' )
     permalink_url = request.session.get( 'permalink_url', '' )
     querystring = request.session.get( 'last_querystring', '' )
     context = {
@@ -340,7 +340,7 @@ def message( request ):
         'openurl': querystring,  # for export to refworks
         'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring ),
         }
-    log.debug( 'message context, ```{}```'.format(pprint.pformat(context)) )
+    log.debug( '`{id}` message context, ```{val}```'.format(id=log_id, val=pprint.pformat(context)) )
     request.session['message'] = ''
     request.session['last_path'] = request.path
     # logout( request )  # from django.contrib.auth import logout

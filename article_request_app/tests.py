@@ -241,4 +241,20 @@ class LoginHelper_Test( TestCase ):
     #         ( True, '' ),  # ( referrer_ok, redirect_url )
     #         self.helper.check_referrer(session, meta_dict) )
 
+    def test_check_if_authorized__bad_data(self):
+        """ Bad data should return False. """
+        shib_dct = {}
+        ( is_authorized, redirect_url, message ) = self.helper.check_if_authorized(shib_dct)
+        self.assertEqual( False, is_authorized )
+        self.assertEqual( '/article_request/shib_logout/', redirect_url )
+        self.assertTrue( 'you are not authorized' in message )
+
+    def test_check_if_authorized__good_data(self):
+        """ Good data should return True. """
+        shib_dct = { 'member_of': settings_app.REQUIRED_GROUPER_GROUP }
+        ( is_authorized, redirect_url, message ) = self.helper.check_if_authorized(shib_dct)
+        self.assertEqual( True, is_authorized )
+        self.assertEqual( '', redirect_url )
+        self.assertEqual( '', message )
+
     # end class LoginHelper_Test

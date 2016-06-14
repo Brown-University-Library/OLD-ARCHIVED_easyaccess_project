@@ -25,7 +25,7 @@ class ProcessHelperTest(TestCase):
         shib_dct = {}
         ( is_authorized, redirect_url, message ) = self.helper.check_if_authorized(shib_dct)
         self.assertEqual( False, is_authorized )
-        self.assertEqual( '/borrow/message/', redirect_url )
+        self.assertEqual( '/borrow/shib_logout/', redirect_url )
         self.assertTrue( 'you are not authorized' in message )
 
     def test_check_if_authorized__good_data(self):
