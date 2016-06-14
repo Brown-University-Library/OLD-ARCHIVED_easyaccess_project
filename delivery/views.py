@@ -40,9 +40,10 @@ login_view_helper = LoginViewHelper()
 def availability( request ):
     """ Manages borrow landing page where availability checks happen.
         Should get here after landing at 'find' urls, when item is a book. """
+    log_id = request.session.get( 'log_id', '' )
     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
-    log.debug( 'starting; querystring, `{}`'.format(querystring) )
-    log.debug( 'availability() request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` starting; querystring, `{val}`'.format(id=log_id, val=querystring) )
+    log.debug( '`{id}` availability() request.session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## check arrival
     valid = False
@@ -158,7 +159,8 @@ def shib_login( request ):
     """ Tries an sp login, which returns to the login_handler() url.
         Called when views.availability() returns a Request button that's clicked.
         Session cleared and info put in url due to revproxy resetting session. """
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+    log_id = request.session.get( 'log_id', '' )
+    log.debug( '`{id}` session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     bib_dct_json = request.session['bib_dct_json']
     last_querystring = request.session['last_querystring']
@@ -169,8 +171,10 @@ def shib_login( request ):
         del request.session[key]
 
     ## build login_handler url
-    login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}'.format(
-        bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url) )
+    # login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}'.format(
+    #     bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url) )
+    login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}&ezlogid={id}'.format(
+        bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url), id=log_id )
     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
@@ -199,8 +203,9 @@ def login_handler( request ):
         - redirects user to process_request url/view """
 
     ## check referrer
-    log.debug( 'request.__dict__, ```{}```'.format(pprint.pformat(request.__dict__)) )
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+    log_id = request.GET.get( 'ezlogid', '' )
+    log.debug( '`{id}` request.__dict__, ```{val}```'.format(id=log_id, val=pprint.pformat(request.__dict__)) )
+    log.debug( '`{id}` session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
     # if referrer_ok is not True:
     #     request.session['last_path'] = request.path
@@ -208,6 +213,7 @@ def login_handler( request ):
     request.session['last_path'] = request.path
 
     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+    request.session['log_id'] = log_id
     request.session['bib_dct_json'] = request.GET['bib_dct_json']
     request.session['last_querystring'] = request.GET['last_querystring']
     request.session['permalink_url'] = request.GET.get( 'permalink_url', '' )
