@@ -35,8 +35,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
         log.debug( 'referrer_check, `{referrer_check}`; redirect_url, ```{redirect_url}```'.format(referrer_check=referrer_check, redirect_url=redirect_url) )
         return ( referrer_check, redirect_url )
 
-
-
     def check_if_authorized( self, shib_dct ):
         """ Checks whether user is authorized to request book.
             Called by views.process_request() """
@@ -47,8 +45,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
             ( is_authorized, redirect_url, message ) = ( True, '', '' )
         log.debug( '`{id}` is_authorized, `{auth}`; redirect_url, `{url}`; message, ```{msg}```'.format(id='coming', auth=is_authorized, url=redirect_url, msg=message) )
         return ( is_authorized, redirect_url, message )
-
-
 
     def save_to_easyborrow( self, shib_dct, bib_dct, querystring ):
         """ Creates an easyBorrow db entry.
@@ -82,20 +78,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
             log.error( 'exception creating patron_dct, ```{}```'.format(unicode(repr(e))) )
         log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
         return patron_dct
-
-    # def _make_item_dct( self, bib_dct, querystring ):
-    #     """ Maps item info to db info.
-    #         Called by save_to_easyborrow() """
-    #     try: oclc_num = int( bib_dct.get('oclc_num', '') )
-    #     except: oclc_num = 0
-    #     item_dct = {
-    #         'title': bib_dct.get( 'title', ''),
-    #         'isbn': bib_dct.get( 'isbn', ''),
-    #         'wc_accession': oclc_num,
-    #         'sfxurl': querystring,
-    #         'volumes': bib_dct.get( 'easyborrow_volumes', '' ) }
-    #     log.debug( 'item_dct, ```{}```'.format(pprint.pformat(item_dct)) )
-    #     return item_dct
 
     def _make_item_dct( self, bib_dct, querystring ):
         """ Maps item info to db info.

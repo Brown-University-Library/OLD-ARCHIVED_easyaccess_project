@@ -13,7 +13,6 @@ log = logging.getLogger('access')
 log.debug( 'testing123' )
 
 
-
 class ProcessHelperTest(TestCase):
     """ Checks ProcessViewHelper()
         Not going to test save_to_easyborrow() with good data to avoid executing real request. """
