@@ -99,7 +99,7 @@ class LoginViewTest(TestCase):
         parse_result = urlparse.urlparse( redirect_url )
         self.assertEqual( '/borrow/login_handler/', parse_result.path )
         self.assertEqual(
-            'bib_dct_json=%7B%22color%22%3A%20%22r%5Cu00e9d%22%7D&last_querystring=isbn%3D123&permalink_url=foo',
+            'bib_dct_json=%7B%22color%22%3A%20%22r%5Cu00e9d%22%7D&last_querystring=isbn%3D123&permalink_url=foo&ezlogid=',
             parse_result.query
             )
         self.assertEqual(
