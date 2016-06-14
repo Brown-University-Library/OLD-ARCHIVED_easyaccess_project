@@ -111,7 +111,7 @@ def login_handler( request ):
     ## check if authorized
     ( is_authorized, redirect_url, message ) = login_helper.check_if_authorized( shib_dct )
     if is_authorized is False:
-        log.info( '`{id}` user, `{val}` not authorized; redirecting to message-url'.format(id=log_id, val='coming') )
+        log.info( '`{id}` user, `{val}` not authorized; redirecting to shib-logout-url, then message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
         request.session['message'] = message
         return HttpResponseRedirect( redirect_url )
 
@@ -146,6 +146,8 @@ def login_handler( request ):
 
     ## redirect
     return HttpResponseRedirect( illiad_landing_redirect_url )
+
+    # end def login_handler()
 
 
 def illiad_request( request ):
@@ -282,32 +284,32 @@ def illiad_handler( request ):
 
 def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
+    log_id = request.session.get( 'log_id', '' )
     message = request.session['message']
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
+    request.session['log_id'] = log_id
     request.session['message'] = message
     request.session['permalink_url'] = permalink_url
     request.session['last_querystring'] = last_querystring
-    # redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
-
     redirect_url = reverse( 'article_request:message_url' )
     if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True ):  # eases local development
         redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
-    log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
-
-    log.debug( 'redirect_url, `{}`'.format(redirect_url) )
+    log.debug( '`{id}` redirect_url, ```{val}```'.format(id=log_id, val=redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
 
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
+    log_id = request.session.get( 'log_id', '' )
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
         }
     request.session['message'] = ''
     request.session['last_path'] = request.path
+    log.debug( '`{id}` will render message.html'.format(id=log_id) )
     return render( request, 'article_request_app/message.html', context )

@@ -57,7 +57,8 @@ If you believe you should be permitted to use interlibrary-loan services, please
         """ Checks whether user is authorized to request article.
             Called by views.login_handler() """
         log.debug( '`{id}` checking authorization'.format(id=self.log_id) )
-        ( is_authorized, redirect_url, message ) = ( False, reverse('article_request:message_url'), self.denied_permission_message )
+        # ( is_authorized, redirect_url, message ) = ( False, reverse('article_request:message_url'), self.denied_permission_message )
+        ( is_authorized, redirect_url, message ) = ( False, reverse('article_request:shib_logout_url'), self.denied_permission_message )
         if settings_app.REQUIRED_GROUPER_GROUP in shib_dct.get( 'member_of', '' ):
             log.debug( '`{id}` user authorized'.format(id=self.log_id) )
             ( is_authorized, redirect_url, message ) = ( True, '', '' )

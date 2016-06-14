@@ -250,8 +250,8 @@ def process_request( request ):
         - saves data to easyBorrow db
         - redirects user to message url/view """
 
-    process_view_helper = ProcessViewHelper( request.session.get('log_id', '') )
-    # process_view_helper.set_log_id( request.session.get( 'log_id', '' ) )
+    log_id = request.session.get('log_id', '')
+    process_view_helper = ProcessViewHelper( log_id )
 
     ## check referrer
     ( referrer_ok, redirect_url ) = process_view_helper.check_referrer( request.session, request.META )
@@ -266,7 +266,7 @@ def process_request( request ):
     shib_dct = json.loads( request.session.get('user_json', '{}') )
     ( is_authorized, redirect_url, message ) = process_view_helper.check_if_authorized( shib_dct )
     if is_authorized is False:
-        log.info( '`{id}` user, `{val}` not authorized; redirecting to message-url'.format(id='coming', val='coming') )
+        log.info( '`{id}` user, `{val}` not authorized; redirecting to message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
         request.session['message'] = message
         return HttpResponseRedirect( redirect_url )
 
