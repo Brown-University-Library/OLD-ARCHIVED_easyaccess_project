@@ -22,14 +22,15 @@ log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 # ill_helper = IlliadHelper()
 new_ill_helper = NewIlliadHelper()
-login_helper = LoginHelper()
+# login_helper = LoginHelper()
 
 
 def shib_login( request ):
     """ Builds the SP login and target-return url; redirects to the SP login, which then lands back at the login_handler() url.
         Called when views.availability() returns a Request button that's clicked.
         Session cleared and info put in url due to revproxy resetting session. """
-    log.debug( 'article_request shib_login() starting session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+    log_id = request.session.get( 'log_id', '' )
+    log.debug( '`{id}` article_request shib_login() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## store vars we're gonna need
     citation_json = request.session.get( 'citation_json', '{}' )
@@ -42,8 +43,11 @@ def shib_login( request ):
         del request.session[key]
 
     ## build login-handler url, whether it's direct (localdev), or indircect-via-shib
-    login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}'.format(
-        ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring)
+    # login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}'.format(
+    #     ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring)
+    #     )
+    login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
+        ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring), id=log_id
         )
     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url'), querystring=login_handler_querystring )
@@ -70,14 +74,16 @@ def login_handler( request ):
         then checks illiad for new-user or blocked;
         if happy, redirects to `illiad`, otherwise to `message` with error info. """
 
+    log_id = request.GET.get( 'ezlogid', '' )
+    login_helper = LoginHelper( log_id )
+
     ## check referrer
     # ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
     # if referrer_ok is not True:
     #     request.session['last_path'] = request.path
     #     return HttpResponseRedirect( redirect_url )
-    log.debug( 'request.GET.keys(), ```{}```'.format(pprint.pformat(request.GET.keys())) )
+    log.debug( '`{id}` request.GET.keys(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.GET.keys())) )
     for key in [ 'citation_json', 'format', 'illiad_url', 'querystring' ]:
-
         if key not in request.GET.keys():
             redirect_url = '{main}?{qs}'.format( main=reverse('findit:findit_base_resolver_url'), qs=request.META.get('QUERY_STRING', '') )
             log.debug( 'referrer-check failed, redirecting to, ```{}```'.format(redirect_url) )
@@ -86,6 +92,7 @@ def login_handler( request ):
     # request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
 
     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+    request.session['log_id'] = log_id
     request.session['citation_json'] = request.GET['citation_json']
     request.session['format'] = request.GET['format']
     request.session['illiad_url'] = request.GET['illiad_url']
@@ -98,6 +105,17 @@ def login_handler( request ):
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
         localdev_check = True
     shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
+
+
+
+    ## check if authorized
+    ( is_authorized, redirect_url, message ) = login_helper.check_if_authorized( shib_dct )
+    if is_authorized is False:
+        log.info( '`{id}` user, `{val}` not authorized; redirecting to message-url'.format(id=log_id, val='coming') )
+        request.session['message'] = message
+        return HttpResponseRedirect( redirect_url )
+
+
 
     # ## log user into illiad
     # ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
