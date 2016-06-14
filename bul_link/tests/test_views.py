@@ -60,11 +60,10 @@ class PermalinkTest(TestCase):
         request = self.factory.get(url)
         response = views.ResolveView(request=request)
         context = response.get_context_data(tiny='C')
-        self.assertEqual(
-            context['citation']['source'],
-            # 'The Journal of hand surgery, European volume'
-            'Journal of Hand Surgery (European Volume)'
-            )
+        # self.assertEqual(
+        #     context['citation']['source'],
+        #     'The Journal of hand surgery, European volume' )
+        self.assertTrue( context['citation']['source'] in ['The Journal of hand surgery, European volume', 'Journal of Hand Surgery (European Volume)'] )  # returned data seems to vary between these two strings
         self.assertTrue(context['is_permalink'])
         #See if there is a link groups.  These will vary from site to site
         #so this will be a simple check.
