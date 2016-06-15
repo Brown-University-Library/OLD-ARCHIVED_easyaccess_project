@@ -201,7 +201,7 @@ def findit_base_resolver( request ):
     alog.info( '`{}` returning response'.format(log_id) )
     return resp
 
-    ## end def base_resolver()
+    ## end def findit_base_resolver()
 
 
 def permalink( request, permalink_str ):
