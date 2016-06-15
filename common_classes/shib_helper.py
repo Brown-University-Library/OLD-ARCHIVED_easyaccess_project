@@ -39,7 +39,7 @@ class ShibChecker( object ):
             'eppn': meta_dct.get( 'Shibboleth-eppn', '' ),
             'id_net': meta_dct.get( 'Shibboleth-brownNetId', '' ),
             'id_short': meta_dct.get( 'Shibboleth-brownShortId', '' ),
-            'member_of': meta_dct.get( 'Shibboleth-isMemberOf', '' ).split(';'),  # only dct element that's not a unicode string
+            'member_of': sorted( meta_dct.get('Shibboleth-isMemberOf', '').split(';') ),  # only dct element that's not a unicode string
             'name_first': meta_dct.get( 'Shibboleth-givenName', '' ),
             'name_last': meta_dct.get( 'Shibboleth-sn', '' ),
             'patron_barcode': meta_dct.get( 'Shibboleth-brownBarCode', '' ),
