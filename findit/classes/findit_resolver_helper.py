@@ -280,8 +280,8 @@ class FinditResolver( object ):
         ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         enhancer = QueryStringEnhancer()
         # enhanced_querystring = enhancer.enhance_querystring( querystring, context['citation'], context['genre'] )
-        ( context['querystring'] = querystring
-        context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=enhanced_querystring )
+        context['querystring'] = querystring
+        context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
         context['permalink'] = permalink
         context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
         ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
@@ -362,7 +362,7 @@ class FinditResolver( object ):
             log.debug( '`{id}` resolved_obj.openurl, ```{val}```'.format(id=self.log_id, val=resolved_obj.openurl) )
             context = resolved_obj.access_points()
             ( context['citation'], context['link_groups'], context['format'] ) = ( resolved_obj.citation, resolved_obj.link_groups, resolved_obj.format )
-            ( context['enhanced_querystring'] = resolved_obj.openurl )
+            context['enhanced_querystring'] = resolved_obj.openurl
         except Exception as e:
             log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
             context['citation'] = {}
