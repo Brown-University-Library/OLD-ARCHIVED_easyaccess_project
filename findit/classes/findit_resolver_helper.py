@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import json, logging, os, pprint, re, urllib, urlparse
+import json, logging, os, pprint, re, time, urllib, urlparse
 from datetime import datetime
 
 import bibjsontools, markdown, random, requests
@@ -115,16 +115,40 @@ class FinditResolver( object ):
         log.debug( '`{id}` check_summon result, `{val}`'.format(id=self.log_id, val=check_summon) )
         return check_summon
 
+    # def enhance_link( self, direct_indicator, query_string ):
+    #     """ Enhances link via summon lookup if necessary.
+    #         Called by views.findit_base_resolver() """
+    #     enhanced = False
+    #     if direct_indicator is not 'false':  # "ensure the GET request doesn't override this" -- (bjd: don't fully understand this; i assume this val is set somewhere)
+    #         enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
+    #         if enhanced_link:
+    #             self.enhanced_link = enhanced_link
+    #             enhanced = True
+    #     # log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
+    #     log.debug( '`{id}` enhanced-check result, `{bool}`; enhanced-link, ```{link}```'.format(id=self.log_id, bool=enhanced, link=self.enhanced_link) )
+    #     return enhanced
+
     def enhance_link( self, direct_indicator, query_string ):
         """ Enhances link via summon lookup if necessary.
-            Called by views.findit_base_resolver() """
+            Called by views.findit_base_resolver()
+            Try/except handles a summon.py error ```return self.response['documents']``` with an associated response, excerpted...
+            ```{u'errors': [{u'code': u'too.many.requests',
+                          u'message': u'The system is currently experiencing a higher than normal traffic volume. Please retry this request at a later time.',``` """
         enhanced = False
+        enhanced_link = None
         if direct_indicator is not 'false':  # "ensure the GET request doesn't override this" -- (bjd: don't fully understand this; i assume this val is set somewhere)
-            enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
+            try:
+                enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
+            except Exception as e:
+                log.debug( '`{id}` handled exception, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
+                time.sleep(2)
+                try:
+                    enhanced_link = summon.get_enhanced_link( query_string )
+                except Exception as e:
+                    log.debug( '`{id}` 2nd handled exception, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
             if enhanced_link:
                 self.enhanced_link = enhanced_link
                 enhanced = True
-        # log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
         log.debug( '`{id}` enhanced-check result, `{bool}`; enhanced-link, ```{link}```'.format(id=self.log_id, bool=enhanced, link=self.enhanced_link) )
         return enhanced
 
