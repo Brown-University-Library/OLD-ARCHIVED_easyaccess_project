@@ -278,7 +278,7 @@ class FinditResolver( object ):
             Called by views.findit_base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
         ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
-        enhancer = QueryStringEnhancer()
+        # enhancer = QueryStringEnhancer()
         # enhanced_querystring = enhancer.enhance_querystring( querystring, context['citation'], context['genre'] )
         context['querystring'] = querystring
         context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
@@ -399,25 +399,6 @@ class FinditResolver( object ):
         log.debug( 'genre, `%s`; genre_type, `%s`' % (genre, genre_type) )
         return ( genre, genre_type )
 
-    def _enhance_querystring( self, querystring, citation_dct, genre ):
-        """ Takes original querystring openurl and adds to it from citation info.
-            Called by make_resolve_context() """
-        log.debug( '`{id}` querystring, ```{qstr}```; citation_dct, ```{cit_dct}```; genre, `{genre}`'.format(id=self.log_id, qstr=querystring, cit_dct=pprint.pformat(citation_dct), genre=genre) )
-        citation_dct['type'] = genre
-        initial_citation_querystring = bibjsontools.to_openurl( citation_dct )
-        log.debug( '`{id}` initial_citation_querystring, ```{val}```'.format(id=self.log_id, val=initial_citation_querystring) )
-        updated_citation_dct = bibjsontools.from_openurl( initial_citation_querystring )
-        log.debug( '`{id}` updated_citation_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(updated_citation_dct)) )
-        bib_dct = bibjsontools.from_openurl( querystring )
-        log.debug( '`{id}` bib_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(bib_dct)) )
-        for (key, val) in bib_dct.items():
-            if key not in updated_citation_dct.keys():
-                log.debug( '`{id}` adding key/val, `{key}` and `{val}`'.format(id=self.log_id, key=key, val=val) )
-                updated_citation_dct[key] = val
-        enhanced_querystring = urllib.unquote( bibjsontools.to_openurl(updated_citation_dct) )
-        log.debug( 'enhanced_querystring, ```%s```' % enhanced_querystring )
-        return enhanced_querystring
-
     # def _enhance_querystring( self, querystring, citation_dct, genre ):
     #     """ Takes original querystring openurl and adds to it from citation info.
     #         Called by make_resolve_context() """
@@ -433,31 +414,3 @@ class FinditResolver( object ):
     #     return enhanced_querystring
 
     ## end class FinditResolver
-
-
-class QueryStringEnhancer( object ):
-    """ Manages querystring enhancement """
-
-    def __init__(self, log_id=None):
-        self.log_id = log_id
-
-    def enhance_querystring( self, querystring, citation_dct, genre ):
-        """ Takes original querystring openurl and adds to it from citation info.
-            Called by make_resolve_context() """
-        log.debug( '`{id}` querystring, ```{qstr}```; citation_dct, ```{cit_dct}```; genre, `{genre}`'.format(id=self.log_id, qstr=querystring, cit_dct=pprint.pformat(citation_dct), genre=genre) )
-        citation_dct['type'] = genre
-        initial_citation_querystring = bibjsontools.to_openurl( citation_dct )
-        log.debug( '`{id}` initial_citation_querystring, ```{val}```'.format(id=self.log_id, val=initial_citation_querystring) )
-        updated_citation_dct = bibjsontools.from_openurl( initial_citation_querystring )
-        log.debug( '`{id}` updated_citation_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(updated_citation_dct)) )
-        bib_dct = bibjsontools.from_openurl( querystring )
-        log.debug( '`{id}` bib_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(bib_dct)) )
-        for (key, val) in bib_dct.items():
-            if key not in updated_citation_dct.keys():
-                log.debug( '`{id}` adding key/val, `{k}` and `{v}`'.format(id=self.log_id, k=key, v=val) )
-                updated_citation_dct[key] = val
-        enhanced_querystring = urllib.unquote( bibjsontools.to_openurl(updated_citation_dct) )
-        log.debug( 'enhanced_querystring, ```%s```' % enhanced_querystring )
-        return enhanced_querystring
-
-    # end class QueryStringEnhancer
