@@ -42,7 +42,7 @@ class IlliadUrlBuilder( object ):
         log.debug( 'check_identifiers call complete' )
         extra_dct = self.check_validity( ill_bib_dct, extra_dct )
         log.debug( 'check_validity call complete' )
-        extra_dct['Notes'] = self.update_note( extra_dct['Notes'], '`shortlink: <{}>`'.format(permalink) )
+        extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <{}>`'.format(permalink) )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
         for k,v in extra_dct.iteritems():
             openurl += '&%s=%s' % ( urllib.quote_plus(k), urllib.quote_plus(v) )
