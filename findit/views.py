@@ -147,7 +147,8 @@ def findit_base_resolver( request ):
 
     ## if not enough data, redirect to citation-form
     try:
-        if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
+        # if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
+        if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied' or sersol_dct['diagnostics'][0]['message'] == 'Invalid syntax':
             redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
             alog.info( '`{id}` failed enough-metadata-check; redirecting to citation-form at, ```{url}```'.format(id=log_id, url=redirect_url) )
             request.session['citation_form_message'] = 'There was not enough information provided to complete your request. Please add more information about the resource. A Journal, ISSN, DOI, or PMID is required.'

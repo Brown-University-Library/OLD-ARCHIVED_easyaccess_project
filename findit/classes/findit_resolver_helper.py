@@ -302,6 +302,8 @@ class FinditResolver( object ):
             Called by views.findit_base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
         ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+        if context.get( 'enhanced_querystring', '' ) == '':
+            context['enhanced_querystring'] = querystring
         # enhancer = QueryStringEnhancer()
         # enhanced_querystring = enhancer.enhance_querystring( querystring, context['citation'], context['genre'] )
         context['querystring'] = querystring
@@ -312,6 +314,22 @@ class FinditResolver( object ):
         context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
+
+    # def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
+    #     """ Preps the template view.
+    #         Called by views.findit_base_resolver() """
+    #     context = self._try_resolved_obj_citation( sersol_dct )
+    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+    #     # enhancer = QueryStringEnhancer()
+    #     # enhanced_querystring = enhancer.enhance_querystring( querystring, context['citation'], context['genre'] )
+    #     context['querystring'] = querystring
+    #     context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
+    #     context['permalink'] = permalink
+    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
+    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
+    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
+    #     return context
 
     # def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
     #     """ Preps the template view.
@@ -426,6 +444,7 @@ class FinditResolver( object ):
 
     # def _enhance_querystring( self, querystring, citation_dct, genre ):
     #     """ Takes original querystring openurl and adds to it from citation info.
+    #         Only called when
     #         Called by make_resolve_context() """
     #     citation_dct['type'] = genre
     #     initial_citation_querystring = bibjsontools.to_openurl( citation_dct )
