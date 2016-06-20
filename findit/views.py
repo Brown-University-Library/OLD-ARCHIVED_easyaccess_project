@@ -259,7 +259,11 @@ def shib_info( request ):
         shib_dct = { 'datetime': unicode( datetime.datetime.now() ) }
         for key in request.META.keys():
             if 'Shibboleth-' in key:
-                shib_dct[key] = request.META[key]
+                if key in [ 'Shibboleth-eduPersonAffiliation', 'Shibboleth-eduPersonEntitlement', 'Shibboleth-eduPersonScopedAffiliation', 'Shibboleth-isMemberOf' ]:
+                    elements = request.META[key].split( ';' )
+                    shib_dct[key] = sorted( elements )
+                else:
+                    shib_dct[key] = request.META[key]
         jsn = json.dumps( shib_dct, sort_keys=True, indent=2 )
     except Exception as e:
         alog.debug( 'exception, `{}`'.format(unicode(repr(e))) )
