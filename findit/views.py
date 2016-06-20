@@ -6,10 +6,11 @@ Views for the resolver.
 """
 
 #stdlib
-import json, logging, pprint, re, urllib2
+import datetime, json, logging, pprint, re, urllib2
 
 #django stuff
 from django.conf import settings
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
@@ -43,7 +44,8 @@ from .models import Request, UserMessage
 from .utils import BulSerSol, Ourl
 from .utils import get_cache_key, make_illiad_url
 from bul_link.views import BulLinkBase
-from django.contrib.auth import logout
+# from common_classes.shib_helper import ShibChecker
+
 
 # try:
 #     from easy_article.delivery.decorators import has_email, has_service
@@ -63,6 +65,7 @@ PMID_QUERY = re.compile('^pmid\:(\d+)')
 form_helper = CitationFormHelper()
 permalink_helper = Permalink()
 ris_helper = RisHelper()
+# shib_checker = ShibChecker()
 
 #logging
 # import logging
@@ -250,24 +253,29 @@ def server_error(request, template_name='500.html'):
     return resp
 
 
-# def server_error(request, template_name='500.html'):
-#     """
-#     500 error handler.
+def shib_info( request ):
+    """ Displays user's shib_info. """
+    try:
+        shib_dct = { 'datetime': unicode( datetime.datetime.now() ) }
+        for key in request.META.keys():
+            if 'Shibboleth-' in key:
+                shib_dct[key] = request.META[key]
+        jsn = json.dumps( shib_dct, sort_keys=True, indent=2 )
+    except Exception as e:
+        alog.debug( 'exception, `{}`'.format(unicode(repr(e))) )
+        jsn = 'problem; unable to show your shib info'
+    return HttpResponse( jsn, content_type='application/javascript; charset=utf-8' )
 
-#     Templates: `500.html`
-#     Context: None
-#     """
-#     from django.shortcuts import render_to_response
-#     from django.template import RequestContext
-#     template_name = 'findit/500.html'
-#     return render_to_response(template_name,
-#         context_instance = RequestContext(request)
-#     )
 
-
-# def tiny_resolver( request, tiny ):
-#     return HttpResponse( 'tiny url perceived' )
-
+# def shib_info( request ):
+#     """ Displays user's shib_info. """
+#     try:
+#         shib_dct = shib_checker.grab_shib_info( request.META, request.get_host() )
+#         jsn = json.dumps( shib_dct, sort_keys=True, indent=2 )
+#     except Exception as e:
+#         alog.debug( 'exception, `{}`'.format(unicode(repr(e))) )
+#         jsn = 'problem; unable to show your shib info'
+#     return HttpResponse( jsn, content_type='application/javascript; charset=utf-8' )
 
 
 # def redirect_to_sersol(query):

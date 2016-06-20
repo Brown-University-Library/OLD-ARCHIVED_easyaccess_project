@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
 from article_request_app import settings_app
+from django.conf import settings as project_settings
 
 
 log = logging.getLogger('access')
