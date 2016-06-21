@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import os
+import json, os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -71,10 +71,15 @@ PROBLEM_URL = os.environ['EZACS__PROBLEM_REPORT_URL'] + '%s&entry_4=%s'
 #Timeout for urllib2 requests to third party sources
 EXTRAS_TIMEOUT = getattr(settings, 'FINDIT_EXTRAS_TIMEOUT', 10)
 
-
 #For sorting databases returned by provider.
 DB_SORT_BY = getattr(settings, 'FINDIT_DB_SORT_BY', [])
 #Providers in this list will be forced to the top.
 DB_PUSH_TOP = getattr(settings, 'FINDIT_DB_PUSH_TOP', [])
 #Providers in this list will be forced to the bottom.
 DB_PUSH_BOTTOM = getattr(settings, 'FINDIT_DB_PUSH_BOTTOM', [])
+
+## if true, will take user directly to full text when it's found; if false, will show landing page.
+FLY_TO_FULLTEXT = json.loads( os.environ['EZACS__FINDIT_GO_DIRECT_TO_FULLTEXT_JSON'] )
+
+
+## EOF ###
