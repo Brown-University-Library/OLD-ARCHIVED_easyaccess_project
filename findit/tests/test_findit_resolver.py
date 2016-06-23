@@ -23,6 +23,9 @@ class FinditResolverTest( TestCase ):
         self.resolver = FinditResolver()
         self.qdct = QueryDict( '', mutable=True )
 
+    #########################
+    ## check_direct_link() ##
+
     def test_check_direct_link__none( self ):
         """ No direct link should return False. """
         sersol_dct = {
@@ -98,6 +101,9 @@ class FinditResolverTest( TestCase ):
             self.resolver.direct_link
             )
 
+    ###################
+    ## check_ebook() ##
+
     def test_check_ebook_no(self):
         """ Checks for proper response when _no_ ebook is found. """
         sersol_dct = {
@@ -157,6 +163,9 @@ class FinditResolverTest( TestCase ):
             self.resolver.check_ebook( sersol_dct )
             )
 
+    ###########################
+    ## check_pubmed_result() ##
+
     def test_check_pubmed_result__pubmed_a(self):
         """ Tests one style of pubmed info -- no change needed """
         sersol_dct = {
@@ -181,5 +190,40 @@ class FinditResolverTest( TestCase ):
                 'format': u'journal'}
                 ] }
         self.assertEqual( expected_result, self.resolver.check_pubmed_result(sersol_dct) )
+
+    ######################
+    ## check_bad_data() ##
+
+    def test_check_bad_data__good_data(self):
+        """ Good sersol_dct should return (False, no-redirect-url, no-message) for (check-boolean, redirect-url-string, message) """
+        querystring = 'foo=bar'
+        sersol_dct = {}
+        ( is_bad_data, redirect_url, problem_message ) = self.resolver.check_bad_data( querystring, sersol_dct )
+        self.assertEqual( (False, None, None), (is_bad_data, redirect_url, problem_message) )
+
+    def test_check_bad_data__incomplete_data(self):
+        """ sersol_dct indicating not-enough-metadata should return (True, a redirect-url, appropriate-message) """
+        querystring = 'foo=bar'
+        sersol_dct = {
+            'diagnostics': [ {
+                'message': 'Not enough metadata supplied'
+                } ] }
+        ( is_bad_data, redirect_url, problem_message ) = self.resolver.check_bad_data( querystring, sersol_dct )
+        ( is_bad_data, redirect_url, problem_message ) = self.resolver.check_bad_data( querystring, sersol_dct )
+        self.assertEqual( (True, '/find/citation_form/?foo=bar'), (is_bad_data, redirect_url) )
+        self.assertTrue( 'not enough information provided' in problem_message )
+
+    def test_check_bad_data__bad_data(self):
+        """ sersol_dct indicating not-enough-metadata should return (True, a redirect-url, appropriate-message) """
+        querystring = 'foo=bar'
+        sersol_dct = {
+            'diagnostics': [ {
+                'message': 'Invalid syntax'
+                } ] }
+        ( is_bad_data, redirect_url, problem_message ) = self.resolver.check_bad_data( querystring, sersol_dct )
+        self.assertEqual( (True, '/find/citation_form/?foo=bar'), (is_bad_data, redirect_url) )
+        self.assertTrue( 'confirm the information' in problem_message )
+
+
 
     # end class FinditResolverTest
