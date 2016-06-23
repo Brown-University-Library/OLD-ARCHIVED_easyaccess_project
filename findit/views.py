@@ -5,10 +5,24 @@ from __future__ import unicode_literals
 Views for the resolver.
 """
 
-#stdlib
+## stdlib
 import datetime, json, logging, pprint, re, urllib2
 
-#django stuff
+## other
+import bibjsontools
+
+from . import app_settings, forms, summon
+from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM, MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
+from .classes.baseconv import base62
+from .classes.citation_form_helper import CitationFormHelper
+from .classes.findit_resolver_helper import FinditResolver
+from .classes.findit_resolver_helper import RisHelper
+from .classes.permalink_helper import Permalink
+from .models import Request, UserMessage
+from .utils import BulSerSol, Ourl
+from .utils import get_cache_key, make_illiad_url
+from bibjsontools import ris as bibjsontools_ris
+from bul_link.views import BulLinkBase
 from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -19,32 +33,7 @@ from django.core.urlresolvers import reverse, get_script_prefix
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.decorators import method_decorator
-# from django.utils.log import dictConfig
-
-#installed packages
-# from bul_link.baseconv import base62
-# from bul_link.views import BulLinkBase, ResolveView
-# from bul_link.models import Resource
-# from py360link2 import Link360Exception
-import bibjsontools
-from bibjsontools import ris as bibjsontools_ris
 from py360link2 import get_sersol_data, Link360Exception, Resolved
-
-#local
-# from utils import BulSerSol, make_illiad_url, Ourl, get_cache_key
-from . import forms, summon
-from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM, MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
-from .classes.baseconv import base62
-from .classes.citation_form_helper import CitationFormHelper
-from .classes.findit_resolver_helper import FinditResolver
-from .classes.findit_resolver_helper import RisHelper
-from .classes.permalink_helper import Permalink
-from .models import Request, UserMessage
-# from .utils import BulSerSol, FinditResolver, Ourl
-from .utils import BulSerSol, Ourl
-from .utils import get_cache_key, make_illiad_url
-from bul_link.views import BulLinkBase
-# from common_classes.shib_helper import ShibChecker
 
 
 # try:
@@ -171,10 +160,20 @@ def findit_base_resolver( request ):
     # except Exception as e:
     #     alog.info( '`{}` passed enough-good-metadata-check'.format(log_id) )
 
+
+
     ## if there's a direct-link, go right to it
-    if fresolver.check_direct_link( sersol_dct ):
+    direct_link_check = fresolver.check_direct_link(sersol_dct)
+    if direct_link_check is True and app_settings.FLY_TO_FULLTEXT is True:
         alog.info( '`{id}` redirecting to sersol direct-link, ```{url}```'.format(id=log_id, url=fresolver.direct_link) )
         return HttpResponseRedirect( fresolver.direct_link )
+    else:
+        alog.info( '`{id}` would have redirected to sersol direct-link, ```{url}``` if FLY_TO_FULLTEXT was True'.format(id=log_id, url=fresolver.direct_link) )
+    # if fresolver.check_direct_link( sersol_dct ):
+    #     alog.info( '`{id}` redirecting to sersol direct-link, ```{url}```'.format(id=log_id, url=fresolver.direct_link) )
+    #     return HttpResponseRedirect( fresolver.direct_link )
+
+
 
     ## if there's an ebook, put it in the session
     ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
