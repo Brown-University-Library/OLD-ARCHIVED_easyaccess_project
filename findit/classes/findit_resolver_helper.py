@@ -256,12 +256,9 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct not updated' )
         return sersol_dct
 
-
-
-
     def check_bad_data( self, querystring, sersol_dct ):
         """ Checks sersol_dct response for indicator of bad or incomplete data.
-            Returns redirect_url to citation form if data's not good.
+            Returns redirect_url to citation form, and problem-message, if data's not good.
             Called by views.findit_base_resolver() """
         ( data_bad, redirect_url, problem_message ) = ( True, 'init', 'init' )
         try:
@@ -276,9 +273,6 @@ class FinditResolver( object ):
             log.info( '`{id}` detected good-metadata'.format(id=self.log_id) )
             ( data_bad, redirect_url, problem_message ) = ( False, None, None )
         return ( data_bad, redirect_url, problem_message )
-
-
-
 
     def check_direct_link( self, sersol_dct ):
         """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
