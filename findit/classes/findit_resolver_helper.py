@@ -256,6 +256,30 @@ class FinditResolver( object ):
         log.debug( 'sersol_dct not updated' )
         return sersol_dct
 
+
+
+
+    def check_bad_data( self, querystring, sersol_dct ):
+        """ Checks sersol_dct response for indicator of bad or incomplete data.
+            Returns redirect_url to citation form if data's not good.
+            Called by views.findit_base_resolver() """
+        ( data_bad, redirect_url, problem_message ) = ( True, 'init', 'init' )
+        try:
+            if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
+                log.info( '`{id}` detected not-enough-metadata'.format(id=self.log_id) )
+                problem_message = 'There was not enough information provided to complete your request. Please add more information about the resource. A Journal, ISSN, DOI, or PMID is required.'
+            elif sersol_dct['diagnostics'][0]['message'] == 'Invalid syntax':
+                log.info( '`{id}` detected bad-metadata'.format(id=self.log_id) )
+                problem_message = 'Please add-to or confirm the information about this resource. A Journal, ISSN, DOI, or PMID is required.'
+            redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
+        except Exception as e:  # a good exception! no diagnostics message means data is good
+            log.info( '`{id}` detected good-metadata'.format(id=self.log_id) )
+            ( data_bad, redirect_url, problem_message ) = ( False, None, None )
+        return ( data_bad, redirect_url, problem_message )
+
+
+
+
     def check_direct_link( self, sersol_dct ):
         """ Checks for a direct link, and if so, returns True and updates self.direct_link with the url.
             Called by views.findit_base_resolver() """

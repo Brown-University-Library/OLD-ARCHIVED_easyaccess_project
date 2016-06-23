@@ -149,15 +149,27 @@ def findit_base_resolver( request ):
     alog.info( '`{}` check for bad pubmed data complete'.format(log_id) )
 
     ## if not enough data, redirect to citation-form
-    try:
-        # if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
-        if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied' or sersol_dct['diagnostics'][0]['message'] == 'Invalid syntax':
-            redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
-            alog.info( '`{id}` failed enough-metadata-check; redirecting to citation-form at, ```{url}```'.format(id=log_id, url=redirect_url) )
-            request.session['citation_form_message'] = 'There was not enough information provided to complete your request. Please add more information about the resource. A Journal, ISSN, DOI, or PMID is required.'
-            return HttpResponseRedirect( redirect_url )
-    except Exception as e:
-        alog.info( '`{}` passed enough-metadata-check'.format(log_id) )
+    ( is_bad_data, redirect_url, problem_message ) = fresolver.check_bad_data( querystring, sersol_dct )
+    if is_bad_data:
+        request.session['citation_form_message'] = problem_message
+        alog.info( '`{id}` problem-data; redirecting to citation-form, ```{url}```'.format(id=log_id, url=redirect_url) )
+        return HttpResponseRedirect( redirect_url )
+    # try:
+    #     redirect_flag = False
+    #     redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
+    #     if sersol_dct['diagnostics'][0]['message'] == 'Not enough metadata supplied':
+    #         alog.info( '`{id}` failed enough-metadata-check; redirecting to citation-form at, ```{url}```'.format(id=log_id, url=redirect_url) )
+    #         request.session['citation_form_message'] = 'There was not enough information provided to complete your request. Please add more information about the resource. A Journal, ISSN, DOI, or PMID is required.'
+    #         redirect_flag = True
+    #     elif sersol_dct['diagnostics'][0]['message'] == 'Invalid syntax':
+    #         alog.info( '`{id}` looks like some bad metadata; redirecting to citation-form at, ```{url}```'.format(id=log_id, url=redirect_url) )
+    #         request.session['citation_form_message'] = 'Please add-to or confirm the information about this resource. A Journal, ISSN, DOI, or PMID is required.'
+    #         redirect_flag = True
+    #     if redirect_flag is True:
+    #         redirect_flag = False
+    #         return HttpResponseRedirect( redirect_url )
+    # except Exception as e:
+    #     alog.info( '`{}` passed enough-good-metadata-check'.format(log_id) )
 
     ## if there's a direct-link, go right to it
     if fresolver.check_direct_link( sersol_dct ):
