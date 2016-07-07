@@ -219,6 +219,11 @@ def findit_base_resolver( request ):
     ## end def findit_base_resolver()
 
 
+def link360( request ):
+    """ Returns 360link json response. """
+    return HttpResponse( 'coming' )
+
+
 def permalink( request, permalink_str ):
     """ Handles expansion and redirection back to '/find/?...' """
     openurl = permalink_helper.get_openurl( permalink_str )
