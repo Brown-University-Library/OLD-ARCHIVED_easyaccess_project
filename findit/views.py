@@ -160,8 +160,6 @@ def findit_base_resolver( request ):
     # except Exception as e:
     #     alog.info( '`{}` passed enough-good-metadata-check'.format(log_id) )
 
-
-
     ## if there's a direct-link, go right to it
     direct_link_check = fresolver.check_direct_link(sersol_dct)
     if direct_link_check is True and app_settings.FLY_TO_FULLTEXT is True:
@@ -172,8 +170,6 @@ def findit_base_resolver( request ):
     # if fresolver.check_direct_link( sersol_dct ):
     #     alog.info( '`{id}` redirecting to sersol direct-link, ```{url}```'.format(id=log_id, url=fresolver.direct_link) )
     #     return HttpResponseRedirect( fresolver.direct_link )
-
-
 
     ## if there's an ebook, put it in the session
     ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
@@ -219,9 +215,20 @@ def findit_base_resolver( request ):
     ## end def findit_base_resolver()
 
 
+
+
 def link360( request ):
-    """ Returns 360link json response. """
-    return HttpResponse( 'coming' )
+    """ Returns 360link json response.
+        Called by OCRA service. """
+    fresolver = FinditResolver()
+    log_id = fresolver.get_log_id()
+    alog.info( '`{id}` OCRA request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
+    querystring = request.META.get('QUERY_STRING', None)
+    sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
+    jsn = json.dumps( sersol_dct, sort_keys=True, indent=2 )
+    return HttpResponse( jsn, content_type='application/javascript; charset=utf-8' )
+
+
 
 
 def permalink( request, permalink_str ):
