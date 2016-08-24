@@ -279,7 +279,7 @@ def server_error(request, template_name='500.html'):
 def shib_info( request ):
     """ Displays user's shib_info. """
     try:
-        shib_dct = { 'datetime': unicode( datetime.datetime.now() ) }
+        shib_dct = { 'datetime': unicode(datetime.datetime.now()), 'ip_perceived': unicode(request.META.get('REMOTE_ADDR', 'unknown')) }
         for key in request.META.keys():
             if 'Shibboleth-' in key:
                 if key in [ 'Shibboleth-eduPersonAffiliation', 'Shibboleth-eduPersonEntitlement', 'Shibboleth-eduPersonScopedAffiliation', 'Shibboleth-isMemberOf' ]:
