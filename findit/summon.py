@@ -3,12 +3,12 @@
 from __future__ import unicode_literals
 
 import httplib2
-import os, urllib
+import logging, os, pprint, urllib
 from datetime import datetime
 import hmac
 import base64
 import hashlib
-from pprint import pprint
+# from pprint import pprint
 import json
 import requests
 import sys
@@ -16,9 +16,13 @@ import sys
 api_id = os.environ['EZACS__SUMMON_API_ID']
 api_key = os.environ['EZACS__SUMMON_API_KEY']
 
+log = logging.getLogger('access')
+log.debug( 'summon.py loaded' )
+
 
 class SummonSearch(object):
     def __init__(self, api_id, api_key):
+        log.debug( 'SummonSearch instantiated' )
         self.api_id = api_id
         self.api_key = api_key
         self.host = 'api.summon.serialssolutions.com'
@@ -59,6 +63,7 @@ class SummonSearch(object):
 
 class SummonResponse(object):
     def __init__(self, response):
+        log.debug( 'SummonResponse instantiated' )
         self.response = response
 
     @property
@@ -126,6 +131,7 @@ def summon_citation(doc):
     }
 
 def get_summon_enhanced_link(qtype, value):
+    log.debug( 'starting get_summon_enhanced_link()' )
     link = None
     if qtype == 'doi':
         q = 's.q=' + 'DOI:"%s"' % value.replace('/', '%2F')
@@ -138,6 +144,7 @@ def get_summon_enhanced_link(qtype, value):
     if resp is None:
         return
     docs = SummonResponse(resp).docs()
+    log.debug( 'summon docs, ```{}```' )
     try:
         doc = docs[0]
     except IndexError:
@@ -153,11 +160,13 @@ def get_enhanced_link(query_string):
     and send the user there before hitting the 360Link
     API.
     """
+    log.debug( 'starting get_enhanced_link()' )
     from bibjsontools import from_openurl
     link = None
     bib = from_openurl(query_string)
     #Get referrer.
     rfr = bib.get('_rfr')
+    log.debug( 'rfr, `{}`'.format(rfr) )
     #Skip summon requests because they have already been
     #enhanced by the index.
     if rfr != 'info:sid/summon.serialssolutions.com':
