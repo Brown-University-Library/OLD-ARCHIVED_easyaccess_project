@@ -43,7 +43,7 @@ def availability( request ):
     log_id = request.session.get( 'log_id', '' )
     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
     log.debug( '`{id}` starting; querystring, `{val}`'.format(id=log_id, val=querystring) )
-    log.debug( '`{id}` availability() request.session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` availability() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## check arrival
     valid = False
@@ -104,7 +104,7 @@ def availability( request ):
         'ebook_dct': ebook_dct,
         'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
         }
-    log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` availability() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## display landing page
     # resp = render( request, 'delivery/availability.html', context )
@@ -160,21 +160,24 @@ def shib_login( request ):
         Called when views.availability() returns a Request button that's clicked.
         Session cleared and info put in url due to revproxy resetting session. """
     log_id = request.session.get( 'log_id', '' )
-    log.debug( '`{id}` session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     bib_dct_json = request.session['bib_dct_json']
     last_querystring = request.session['last_querystring']
     permalink_url = request.session['permalink_url']
 
-    ## clear session so we know that regular-processing happens same was as revproxy-processing
+    ## clear session so we know that regular-processing happens same way as revproxy-processing
     for key in request.session.keys():
         del request.session[key]
+    log.debug( '`{id}` session.items() after deletion, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## build login_handler url
     # login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}'.format(
     #     bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url) )
     login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}&ezlogid={id}'.format(
         bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url), id=log_id )
+    log.debug( '`{id}` len(login_handler_querystring), ```{val}```'.format(id=log_id, val=len(login_handler_querystring)) )
+
     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
@@ -195,7 +198,8 @@ def shib_login( request ):
 
 
 def login_handler( request ):
-    """ (for now)
+    """ User redirected here from shib_login().
+        (for now)
         - stores shib info to session
         - redirects user to process_request url/view
         (eventually)
@@ -205,7 +209,7 @@ def login_handler( request ):
     ## check referrer
     log_id = request.GET.get( 'ezlogid', '' )
     log.debug( '`{id}` request.__dict__, ```{val}```'.format(id=log_id, val=pprint.pformat(request.__dict__)) )
-    log.debug( '`{id}` session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
     # if referrer_ok is not True:
     #     request.session['last_path'] = request.path
@@ -234,13 +238,16 @@ def login_handler( request ):
     shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
     request.session['user_json'] = json.dumps( shib_dct )
 
+    log.debug( '`{id}` ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     ## redirect to process_request
     redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session.get('last_querystring', '') )
     return HttpResponseRedirect( redirect_url )
 
 
 def process_request( request ):
-    """ (for now)
+    """ User redirected here from login_handler().
+        (for now)
         - Saves data to easyBorrow db
         - redirects user (behind-the-scenes) to SP shib-logout ( which will then direct user to views.message() )
         (eventually)
@@ -251,6 +258,8 @@ def process_request( request ):
         - redirects user to message url/view """
 
     log_id = request.session.get('log_id', '')
+    log.debug( '`{id}` starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     process_view_helper = ProcessViewHelper( log_id )
 
     ## check referrer
@@ -260,8 +269,6 @@ def process_request( request ):
         # request.session['message'] = 'Sorry, there was a problem with that url. easyBorrow requests should start _here_; contact us if this problem continues.'
         return HttpResponseRedirect( redirect_url )
 
-
-
     ## check if authorized
     shib_dct = json.loads( request.session.get('user_json', '{}') )
     ( is_authorized, redirect_url, message ) = process_view_helper.check_if_authorized( shib_dct )
@@ -269,8 +276,6 @@ def process_request( request ):
         log.info( '`{id}` user, `{val}` not authorized; redirecting to shib-logout-url, then message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
         request.session['message'] = message
         return HttpResponseRedirect( redirect_url )
-
-
 
     ## get/create resource object
     # resource_obj = process_view_helper.grab_resource( querystring )

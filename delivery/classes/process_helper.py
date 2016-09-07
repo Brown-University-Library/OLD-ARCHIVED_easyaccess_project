@@ -14,7 +14,7 @@ log = logging.getLogger('access')
 
 
 class ProcessViewHelper(object):
-    """ Contains helpers for views.process_request() """
+    """ Contains helpers for delivery.views.process_request() """
 
     def __init__( self, log_id='not_set' ):
         self.log_id = log_id
@@ -26,8 +26,9 @@ If you believe you should be permitted to use interlibrary-loan services, please
 
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /availability/.
-            Called by views.login() """
-        log.debug( 'meta_dct, ```{}```'.format(pprint.pformat(meta_dct)) )
+            Called by delivery.views.process_request() """
+        log.debug( 'meta_dct before referrer_check, ```{}```'.format(pprint.pformat(meta_dct)) )
+        log.debug( 'session.items() before referrer_check, ```{}```'.format(pprint.pformat(request.session.items())) )
         ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
         if last_path == '/easyaccess/borrow/login_handler/':
             referrer_check = True
