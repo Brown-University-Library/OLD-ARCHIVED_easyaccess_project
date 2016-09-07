@@ -28,7 +28,7 @@ If you believe you should be permitted to use interlibrary-loan services, please
         """ Ensures request came from /availability/.
             Called by delivery.views.process_request() """
         log.debug( 'meta_dct before referrer_check, ```{}```'.format(pprint.pformat(meta_dct)) )
-        log.debug( 'session_dct before referrer_check, ```{}```'.format(pprint.pformat(session_dct)) )
+        log.debug( 'session_dct.items() before referrer_check, ```{}```'.format(pprint.pformat(session_dct.items())) )
         ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
         if last_path == '/easyaccess/borrow/login_handler/':
             referrer_check = True
