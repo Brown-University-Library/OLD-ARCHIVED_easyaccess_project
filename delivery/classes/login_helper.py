@@ -36,10 +36,12 @@ class LoginViewHelper(object):
         """ For now just returns shib_dct, with courses removed to make it shorter (it'll be jsonized into the session);
             eventually with create or update a user object and return that.
             Called by views.login_handler() """
+        log.debug( 'localdev, `{}`'.format(localdev) )
         if localdev is False:
             ( shib_dct, filtered_memberships ) = ( shib_checker.grab_shib_info(meta_dct, host), [] )
             memberships = shib_dct['member_of']
             for membership in memberships:
+                log.debug( 'membership[0:7], `{}`'.format(membership[0:7]) )
                 if not memberships[0:7] == 'COURSE:':
                     filtered_memberships.append( membership )
             shib_dct['member_of'] = filtered_memberships
