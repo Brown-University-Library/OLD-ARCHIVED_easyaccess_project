@@ -44,6 +44,7 @@ class LoginViewHelper(object):
                 log.debug( 'membership[0:7], `{}`'.format(membership[0:7]) )
                 if not memberships[0:7] == 'COURSE:':
                     filtered_memberships.append( membership )
+            log.debug( 'filtered_memberships, ```{}```'.format(pprint.pformat(filtered_memberships)) )
             shib_dct['member_of'] = filtered_memberships
         else:  # localdev
             shib_dct = settings_app.DEVELOPMENT_SHIB_DCT
