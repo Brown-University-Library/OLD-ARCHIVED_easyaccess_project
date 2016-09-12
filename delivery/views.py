@@ -120,41 +120,6 @@ def availability( request ):
     ## end def availability()
 
 
-# def shib_login( request ):
-#     """ Tries an sp login, then redirects to login_url.
-#         Called when views.availability() returns a Request button that's clicked.
-#         Session cleared and info put in url due to revproxy resetting session. """
-#     log.debug( 'session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
-
-#     bib_dct_json = request.session['bib_dct_json']
-#     last_querystring = request.session['last_querystring']
-
-#     ## clear session so we know that regular-processing happens same was as revproxy-processing
-#     for key in request.session.keys():
-#         del request.session[key]
-
-#     ## build login_handler url
-#     login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}'.format(
-#         bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring) )
-#     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
-#         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
-#     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
-
-#     localdev_check = False
-#     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
-#         localdev_check = True
-
-#     if localdev_check is True:
-#         log.debug( 'localdev_check is True, redirecting right to pre-encoded login_handler' )
-#         return HttpResponseRedirect( login_handler_url )
-#     else:
-#         encoded_login_handler_url = urlquote( login_handler_url )
-#         redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-#             shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
-#         log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
-#         return HttpResponseRedirect( redirect_url )
-
-
 def shib_login( request ):
     """ Tries an sp login, which returns to the login_handler() url.
         Called when views.availability() returns a Request button that's clicked.
