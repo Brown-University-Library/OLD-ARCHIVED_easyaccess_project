@@ -32,6 +32,22 @@ class LoginViewHelper(object):
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
 
+    def check_querystring( self, querystring ):
+        """ Handles situation where querystring is truncated in the middle of character-encoding,
+              leaving a badly-formed openurl which borks the illiad openurl.
+            TODO: - consider massaging long-urls earlier...
+                  - or consider passing in the short-link, then doing a lookup to get the original querystring.
+            Called by views.login_handler() """
+        flag = 'go'
+        while flag == 'go':
+            last_chars = querystring[-2:]
+            if last_chars[0] == '%' and last_chars[1].isdigit():
+                querystring= querystring[0:-2]
+            else:
+                flag = 'stop'
+        log.debug( 'returning querystring, ```{}```'.format(querystring) )
+        return querystring
+
     def update_user( self, localdev, meta_dct, host ):
         """ For now just returns shib_dct, with courses removed to make it shorter (it'll be jsonized into the session);
             eventually with create or update a user object and return that.

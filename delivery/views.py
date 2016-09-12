@@ -181,10 +181,13 @@ def login_handler( request ):
     #     return HttpResponseRedirect( redirect_url )
     request.session['last_path'] = request.path
 
-    ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+    ## rebuild session (revproxy can destroy it, so all info must be in request.GET)
     request.session['log_id'] = log_id
     request.session['bib_dct_json'] = request.GET['bib_dct_json']
-    request.session['last_querystring'] = request.GET['last_querystring']
+
+    last_querystring = login_view_helper.check_querystring( request.GET['last_querystring'] )
+
+    request.session['last_querystring'] = last_querystring
     request.session['permalink_url'] = request.GET.get( 'permalink_url', '' )
     log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
 
@@ -208,6 +211,54 @@ def login_handler( request ):
     ## redirect to process_request
     redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session.get('last_querystring', '') )
     return HttpResponseRedirect( redirect_url )
+
+
+# def login_handler( request ):
+#     """ User redirected here from shib_login().
+#         (for now)
+#         - stores shib info to session
+#         - redirects user to process_request url/view
+#         (eventually)
+#         - gets or creates user-object and library-profile-data
+#         - redirects user to process_request url/view """
+
+#     ## check referrer
+#     log_id = request.GET.get( 'ezlogid', '' )
+#     log.debug( '`{id}` request.__dict__, ```{val}```'.format(id=log_id, val=pprint.pformat(request.__dict__)) )
+#     log.debug( '`{id}` starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+#     # ( referrer_ok, redirect_url ) = login_view_helper.check_referrer( request.session, request.META )
+#     # if referrer_ok is not True:
+#     #     request.session['last_path'] = request.path
+#     #     return HttpResponseRedirect( redirect_url )
+#     request.session['last_path'] = request.path
+
+#     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+#     request.session['log_id'] = log_id
+#     request.session['bib_dct_json'] = request.GET['bib_dct_json']
+#     request.session['last_querystring'] = request.GET['last_querystring']
+#     request.session['permalink_url'] = request.GET.get( 'permalink_url', '' )
+#     log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
+
+#     ## update bib_dct_json if needed -- TODO: redo, since availability posts to shib_login(), not login_hander()
+#     # easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
+#     # if easyborrow_volumes != '':
+#     #     bib_dct = request.session.get( 'bib_dct_json', {} )
+#     #     bib_dct['easyborrow_volumes'] = easyborrow_volumes
+#     #     request.session['bib_dct_json'] = json.dumps( bib_dct )
+
+#     ## update user/profile objects
+#     localdev_check = False
+#     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+#         localdev_check = True
+#     log.debug( 'localdev_check, `{}`'.format(localdev_check) )
+#     shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
+#     request.session['user_json'] = json.dumps( shib_dct )
+
+#     log.debug( '`{id}` ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
+#     ## redirect to process_request
+#     redirect_url = '{root_url}?{querystring}'.format( root_url=reverse('delivery:process_request_url'), querystring=request.session.get('last_querystring', '') )
+#     return HttpResponseRedirect( redirect_url )
 
 
 def process_request( request ):
