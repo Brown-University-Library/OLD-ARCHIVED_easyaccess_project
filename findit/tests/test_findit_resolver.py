@@ -23,6 +23,46 @@ class FinditResolverTest( TestCase ):
         self.resolver = FinditResolver()
         self.qdct = QueryDict( '', mutable=True )
 
+
+
+    def test__check_double_encoded_querystring__good_string(self):
+        """ For good string, the bad-check sould be false. """
+        s = 'ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fsummon.serialssolutions.com&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.genre=article&rft.atitle=Finance-dominated+capitalism+and+re-distribution+of+income%3A+a+Kaleckian+perspective&rft.jtitle=Cambridge+Journal+of+Economics&rft.au=Hein%2C+E&rft.date=2015-05-01&rft.issn=0309-166X&rft.eissn=1464-3545&rft.volume=39&rft.issue=3&rft.spage=907&rft.epage=934&rft_id=info:doi/10.1093%2Fcje%2Fbet038&rft.externalDBID=n%2Fa&rft.externalDocID=10_1093_cje_bet038'
+        self.assertEqual(
+            False,
+            self.resolver.check_double_encoded_querystring( s )
+            )
+        self.assertEqual(
+            '',
+            self.resolver.redirect_url
+            )
+
+    def test__check_double_encoded_querystring__double_encoded_string(self):
+        """ For double-encoded string, the bad-check sould be true. """
+        s = 'ctx_ver=Z39.88-2004&ctx_enc=info%253Aofi%252Fenc%253AUTF-8&rfr_id=info%253Asid%252Fsummon.serialssolutions.com&rft_val_fmt=info%253Aofi%252Ffmt%253Akev%253Amtx%253Ajournal&rft.genre=article&rft.atitle=Finance-dominated+capitalism+and+re-distribution+of+income%253A+a+Kaleckian+perspective&rft.jtitle=Cambridge+Journal+of+Economics&rft.au=Hein%252C+E&rft.date=2015-05-01&rft.issn=0309-166X&rft.eissn=1464-3545&rft.volume=39&rft.issue=3&rft.spage=907&rft.epage=934&rft_id=info:doi/10.1093%252Fcje%252Fbet038&rft.externalDBID=n%252Fa&rft.externalDocID=10_1093_cje_bet038'
+        self.assertEqual(
+            True,
+            self.resolver.check_double_encoded_querystring( s )
+            )
+        self.assertEqual(
+            '/find/?ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fsummon.serialssolutions.com&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.genre=article&rft.atitle=Finance-dominated+capitalism+and+re-distribution+of+income%3A+a+Kaleckian+perspective&rft.jtitle=Cambridge+Journal+of+Economics&rft.au=Hein%2C+E&rft.date=2015-05-01&rft.issn=0309-166X&rft.eissn=1464-3545&rft.volume=39&rft.issue=3&rft.spage=907&rft.epage=934&rft_id=info:doi/10.1093%2Fcje%2Fbet038&rft.externalDBID=n%2Fa&rft.externalDocID=10_1093_cje_bet038',
+            self.resolver.redirect_url
+            )
+
+    def test__check_double_encoded_querystring__non_double_encoded_with_embedded_25(self):
+        """ For non double-encoded string with an embedded 25, the string can return true, but should be handled fine. """
+        s = 'ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fsummon.serialssolutions.com&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&rft.genre=article&rft.atitle=Examination+of+breakdown+stress+in+creep+by+viscous+glide+in+Al–5·5+at.-%25Mg+solid+solution+alloy+at+high+stress+levels&rft.jtitle=Materials+Science+and+Technology&rft.au=Graiss%2C+G&rft.au=El-Rehim%2C+A.+F.+Abd&rft.date=2007-10-01&rft.issn=0267-0836&rft.eissn=1743-2847&rft.volume=23&rft.issue=10&rft.spage=1144&rft.epage=1148&rft_id=info:doi/10.1179%2F174328407X226545&rft.externalDBID=n%2Fa&rft.externalDocID=10_1179_174328407X226545'
+        self.assertEqual(
+            True,
+            self.resolver.check_double_encoded_querystring( s )
+            )
+        self.assertEqual(
+            '/find/?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&rfr_id=info:sid/summon.serialssolutions.com&rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rft.genre=article&rft.atitle=Examination+of+breakdown+stress+in+creep+by+viscous+glide+in+Al\u20135\xb75+at.-%Mg+solid+solution+alloy+at+high+stress+levels&rft.jtitle=Materials+Science+and+Technology&rft.au=Graiss,+G&rft.au=El-Rehim,+A.+F.+Abd&rft.date=2007-10-01&rft.issn=0267-0836&rft.eissn=1743-2847&rft.volume=23&rft.issue=10&rft.spage=1144&rft.epage=1148&rft_id=info:doi/10.1179/174328407X226545&rft.externalDBID=n/a&rft.externalDocID=10_1179_174328407X226545',
+            self.resolver.redirect_url
+            )
+
+
+
     #########################
     ## check_direct_link() ##
 
