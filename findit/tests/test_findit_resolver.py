@@ -23,7 +23,8 @@ class FinditResolverTest( TestCase ):
         self.resolver = FinditResolver()
         self.qdct = QueryDict( '', mutable=True )
 
-
+    ########################################
+    ## check_double_encoded_querystring() ##
 
     def test__check_double_encoded_querystring__good_string(self):
         """ For good string, the bad-check sould be false. """
@@ -60,8 +61,6 @@ class FinditResolverTest( TestCase ):
             '/find/?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&rfr_id=info:sid/summon.serialssolutions.com&rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rft.genre=article&rft.atitle=Examination+of+breakdown+stress+in+creep+by+viscous+glide+in+Al\u20135\xb75+at.-%Mg+solid+solution+alloy+at+high+stress+levels&rft.jtitle=Materials+Science+and+Technology&rft.au=Graiss,+G&rft.au=El-Rehim,+A.+F.+Abd&rft.date=2007-10-01&rft.issn=0267-0836&rft.eissn=1743-2847&rft.volume=23&rft.issue=10&rft.spage=1144&rft.epage=1148&rft_id=info:doi/10.1179/174328407X226545&rft.externalDBID=n/a&rft.externalDocID=10_1179_174328407X226545',
             self.resolver.redirect_url
             )
-
-
 
     #########################
     ## check_direct_link() ##
