@@ -63,15 +63,29 @@ class LinkGroupTests(unittest.TestCase):
         resolved = BulSerSol(data)
         return resolved
 
-
-    def test_vague_links(self):
-        #ourl = "volume=9&genre=article&spage=39&sid=EBSCO:qrh&title=Gay+%26+Lesbian+Review+Worldwide&date=20020501&issue=3&issn=15321118&pid=&atitle=Chaste+Take+on+Those+Naughty+Victorian's."
-        ourl = "rft.issn=0301-0066&rft.externalDocID=19806992&rft.date=2009-01-01&rft.volume=38&rft.issue=6&rft.spage=927&rft.jtitle=Perception&rft.au=Rhodes%2C+Gillian&rft.au=Jeffery%2C+Linda&rft.atitle=The+Thatcher+illusion%3A+now+you+see+it%2C+now+you+don%27t&ctx_ver=Z39.88-2004&rft.genre=article&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal"
+    def test_vague_links__true(self):
+        """ Checks that given openurl is determined to have 'vague links'. """
+        ourl = "volume=9&genre=article&spage=39&sid=EBSCO:qrh&title=Gay+%26+Lesbian+Review+Worldwide&date=20020501&issue=3&issn=15321118&pid=&atitle=Chaste+Take+on+Those+Naughty+Victorian's."
         data = get_sersol_data(ourl, key=settings.BUL_LINK_SERSOL_KEY)
+        # alog.debug( 'data, ```{}```'.format(pprint.pformat(data)) )
         resolved = BulSerSol(data)
         access = resolved.access_points()
+        # alog.debug( 'access, ```{}```'.format(pprint.pformat(access)) )
         self.assertTrue(access['has_vague_links'])
-        self.assertEqual(access['online'][0]['type'], 'journal')
+        self.assertEqual( 'journal', access['online'][0]['type'] )
+        self.assertEqual(access['print'], [])
+        #pprint(resolved.access_points())
+
+    def test_vague_links__false(self):
+        """ Checks that given openurl is determined not to have 'vague links'. """
+        ourl = "rft.issn=0301-0066&rft.externalDocID=19806992&rft.date=2009-01-01&rft.volume=38&rft.issue=6&rft.spage=927&rft.jtitle=Perception&rft.au=Rhodes%2C+Gillian&rft.au=Jeffery%2C+Linda&rft.atitle=The+Thatcher+illusion%3A+now+you+see+it%2C+now+you+don%27t&ctx_ver=Z39.88-2004&rft.genre=article&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal"
+        data = get_sersol_data(ourl, key=settings.BUL_LINK_SERSOL_KEY)
+        # alog.debug( 'data, ```{}```'.format(pprint.pformat(data)) )
+        resolved = BulSerSol(data)
+        access = resolved.access_points()
+        # alog.debug( 'access, ```{}```'.format(pprint.pformat(access)) )
+        self.assertFalse(access['has_vague_links'])
+        self.assertEqual( 'direct', access['online'][0]['type'] )
         self.assertEqual(access['print'], [])
         #pprint(resolved.access_points())
 

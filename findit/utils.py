@@ -125,6 +125,7 @@ class BulSerSol(Resolved):
 
         Return dict with direct link and full link groups.
         """
+        log.debug( 'starting access_points()' )
         raw_link_groups = self.link_groups
         #Sort the link groups
         link_groups = self.do_db_sort(raw_link_groups)
