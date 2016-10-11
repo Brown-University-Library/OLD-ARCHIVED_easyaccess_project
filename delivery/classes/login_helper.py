@@ -38,15 +38,34 @@ class LoginViewHelper(object):
             TODO: - consider massaging long-urls earlier...
                   - or consider passing in the short-link, then doing a lookup to get the original querystring.
             Called by views.login_handler() """
+        last_char = querystring[-1:]
+        if last_char == '%':  # handles failing ending like 'param=abc+d%'
+            querystring = querystring[0:-1]
         flag = 'go'
         while flag == 'go':
             last_chars = querystring[-2:]
-            if last_chars[0] == '%' and last_chars[1].isdigit():
+            if last_chars[0] == '%' and last_chars[1].isdigit():  # handles failing ending like 'param=abc+def%2'
                 querystring= querystring[0:-2]
             else:
                 flag = 'stop'
         log.debug( 'returning querystring, ```{}```'.format(querystring) )
         return querystring
+
+    # def check_querystring( self, querystring ):
+    #     """ Handles situation where querystring is truncated in the middle of character-encoding,
+    #           leaving a badly-formed openurl which borks the illiad openurl.
+    #         TODO: - consider massaging long-urls earlier...
+    #               - or consider passing in the short-link, then doing a lookup to get the original querystring.
+    #         Called by views.login_handler() """
+    #     flag = 'go'
+    #     while flag == 'go':
+    #         last_chars = querystring[-2:]
+    #         if last_chars[0] == '%' and last_chars[1].isdigit():
+    #             querystring= querystring[0:-2]
+    #         else:
+    #             flag = 'stop'
+    #     log.debug( 'returning querystring, ```{}```'.format(querystring) )
+    #     return querystring
 
     def update_user( self, localdev, meta_dct, host ):
         """ For now just returns shib_dct, with courses removed to make it shorter (it'll be jsonized into the session);
