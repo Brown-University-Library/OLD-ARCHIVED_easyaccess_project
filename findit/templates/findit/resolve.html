@@ -57,66 +57,68 @@
 	{% endif %}
 
 	{% if print or online %}
-	<div class="holdings">
-    	{# If we have a direct link - hyperlinked from title - and no other online holdings to display, pass.  Else, print each with the helper messages as necessary.#}
+    	<div class="holdings">
+
+        	{# If we have a direct link - hyperlinked from title - and no other online holdings to display, pass.  Else, print each with the helper messages as necessary.#}
             {% if online|length > 0 %}
-            <h3>Available online</h3>
-            <ul class="online-holdings">
-                {% for provider in online %}
-                    <li class="source"><a href="{{ provider.link }}" title="Full text from {{ provider.name }}">{{ provider.name }}</a>
-                        {# Put an asterik up as a warning about journal or issue level links #}
-                        {% if provider.type != "direct" %}<span class="asterisk">&#8727;</span>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        {# Do print #}
-        {% if print %}
-            <h3>Available at the library</h3>
-            <ul class="print-holdings">
-                {% for held in print %}
-                    <li>
-                        {% comment %}
-                        Put the loc and callnum in a separate span that will be replaced
-                        by the book locator for Sci and Rock items.
-                        {% endcomment %}
-                        <span class="loc-callnum">
-                            <span class="print-location">{{ held.location }}</span>
-                            <span class="print-callnumber">{{ held.call_number }}</span>
-                        </span>
-                        {% comment %}
-                         Faculty can request any print item.
-                         Non-faculty can request annex items.
-                        {% endcomment %}
-                        {% ifequal held.location "Annex" %}
-                            <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}">Request for delivery via Josiah</a></span>
-                        {% else %}
-                            {% if can_request_print %}
-                                <span class="request-link"><a href="{% url 'findit:request-view' resource=resource.id %}">Request for delivery</a></span>
+                <h3>Available online</h3>
+                <ul class="online-holdings">
+                    {% for provider in online %}
+                        <li class="source"><a href="{{ provider.link }}" title="Full text from {{ provider.name }}">{{ provider.name }}</a>
+                            {# Put an asterik up as a warning about journal or issue level links #}
+                            {% if provider.type != "direct" %}<span class="asterisk">&#8727;</span>
                             {% endif %}
-                        {% endifequal %}
-                   </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
-        {% if prompt_login %}
-            <div id="login-prompt" class="alert-box">
-                <em><a href="{{ login_link }}">Login</a></em> for full services.
-            </div>
-        {% endif %}
+            {# Do print #}
+            {% if print %}
+                <h3>Available at the library</h3>
+                <ul class="print-holdings">
+                    {% for held in print %}
+                        <li>
+                            {% comment %}
+                            Put the loc and callnum in a separate span that will be replaced
+                            by the book locator for Sci and Rock items.
+                            {% endcomment %}
+                            <span class="loc-callnum">
+                                <span class="print-location">{{ held.location }}</span>
+                                <span class="print-callnumber">{{ held.call_number }}</span>
+                            </span>
+                            {% comment %}
+                             Faculty can request any print item.
+                             Non-faculty can request annex items.
+                            {% endcomment %}
+                            {% ifequal held.location "Annex" %}
+                                <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}">Request for delivery via Josiah</a></span>
+                            {% else %}
+                                {% if can_request_print %}
+                                    <span class="request-link"><a href="{% url 'findit:request-view' resource=resource.id %}">Request for delivery</a></span>
+                                {% endif %}
+                            {% endifequal %}
+                       </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if prompt_login %}
+                <div id="login-prompt" class="alert-box">
+                    <em><a href="{{ login_link }}">Login</a></em> for full services.
+                </div>
+            {% endif %}
 
 
-        {# Handle vague links with a notice#}
-        {% if has_vague_links %}
-        <div class="notice" id="not-direct-link">
-            <p><span class="asterisk">&#8727;</span>This is not a direct link to the article. You will need to search for the title or locate the date, volume, and issue on the publisher's website. If you don't find what you are looking for, please <a href="{{ problem_link }}">let us know.</a>
-        </div>
-        {% endif %}
+            {# Handle vague links with a notice #}
+            {% if has_vague_links %}
+                <div class="notice" id="not-direct-link">
+                    <p><span class="asterisk">&#8727;</span>This is not a direct link to the article. You will need to search for the title or locate the date, volume, and issue on the publisher's website. If you don't find what you are looking for, please <a href="{{ problem_link }}">let us know.</a>
+                </div>
+            {% endif %}
 
-    </div>
-    {% endif %}
+        </div>  <!-- end of div class="holdings"-->
+    {% endif %}  {# end of {% if print or online %} #}
 
     {% if terminal %}
         <div id="logout-prompt" class="alert-box">
