@@ -115,19 +115,6 @@ class FinditResolver( object ):
         log.debug( '`{id}` check_summon result, `{val}`'.format(id=self.log_id, val=check_summon) )
         return check_summon
 
-    # def enhance_link( self, direct_indicator, query_string ):
-    #     """ Enhances link via summon lookup if necessary.
-    #         Called by views.findit_base_resolver() """
-    #     enhanced = False
-    #     if direct_indicator is not 'false':  # "ensure the GET request doesn't override this" -- (bjd: don't fully understand this; i assume this val is set somewhere)
-    #         enhanced_link = summon.get_enhanced_link( query_string )  # TODO - use the metadata from Summon to render the request page rather than hitting the 360Link API for something that is known not to be held.
-    #         if enhanced_link:
-    #             self.enhanced_link = enhanced_link
-    #             enhanced = True
-    #     # log.debug( "enhanced, `%s`; enhanced_link, `%s`" % (enhanced, self.enhanced_link) )
-    #     log.debug( '`{id}` enhanced-check result, `{bool}`; enhanced-link, ```{link}```'.format(id=self.log_id, bool=enhanced, link=self.enhanced_link) )
-    #     return enhanced
-
     def enhance_link( self, direct_indicator, query_string ):
         """ Enhances link via summon lookup if necessary.
             Called by views.findit_base_resolver()
@@ -340,7 +327,6 @@ class FinditResolver( object ):
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation_json'] = citation_json
-            # request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'] )
             request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'], context['permalink'] )
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
@@ -384,8 +370,6 @@ class FinditResolver( object ):
         context = {}
         try:
             resolved_obj = BulSerSol( sersol_dct )
-            # log.debug( 'resolved_obj.__dict__, ```%s```' % pprint.pformat(resolved_obj.__dict__) )  # does not show the openurl
-            # log.debug( 'resolved_obj.openurl, ```%s```' % resolved_obj.openurl )
             log.debug( '`{id}` resolved_obj.__dict__, ```{val}```'.format(id=self.log_id, val=pprint.pformat(resolved_obj.__dict__)) )  # does not show the openurl
             log.debug( '`{id}` resolved_obj.openurl, ```{val}```'.format(id=self.log_id, val=resolved_obj.openurl) )
             context = resolved_obj.access_points()
