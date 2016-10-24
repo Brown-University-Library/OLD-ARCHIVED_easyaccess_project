@@ -131,11 +131,13 @@ class BulSerSol(Resolved):
         link_groups = self.do_db_sort(raw_link_groups)
         issns = [self.citation.get('eissn', None)]
         issns += self.citation.get('issn', {}).values()
+        log.debug( 'issns, ```{}```'.format(issns) )
         resolved_issn = self.citation.get('issn', None)
         if resolved_issn:
             pissn = resolved_issn.get('print', None)
             if pissn :
                 issns.append(pissn)
+        log.debug( 'issns after resolved/pissn check, ```{}```'.format(issns) )
         online = []
         direct = None
         vague_links = False
@@ -145,8 +147,10 @@ class BulSerSol(Resolved):
         for group in link_groups:
             this_holding = {}
             name = group['holdingData']['databaseName']
+            log.debug( 'group in link_groups name, `{}`'.format(name) )
             #Check for print
             if name == PRINT_PROVIDER:
+                log.debug( 'handling print' )
                 #database of print titles to get location and call number.
                 print_held = {}
                 #hd = group['holdingData']
