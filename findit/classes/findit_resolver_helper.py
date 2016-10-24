@@ -322,8 +322,6 @@ class FinditResolver( object ):
         ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         if context.get( 'enhanced_querystring', '' ) == '':
             context['enhanced_querystring'] = querystring
-        # enhancer = QueryStringEnhancer()
-        # enhanced_querystring = enhancer.enhance_querystring( querystring, context['citation'], context['genre'] )
         context['querystring'] = querystring
         context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
         context['permalink'] = permalink
@@ -332,37 +330,6 @@ class FinditResolver( object ):
         context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
-
-    # def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.findit_base_resolver() """
-    #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
-    #     # enhancer = QueryStringEnhancer()
-    #     # enhanced_querystring = enhancer.enhance_querystring( querystring, context['citation'], context['genre'] )
-    #     context['querystring'] = querystring
-    #     context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
-    #     context['permalink'] = permalink
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
-
-    # def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
-    #     """ Preps the template view.
-    #         Called by views.findit_base_resolver() """
-    #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
-    #     enhanced_querystring = self._enhance_querystring( querystring, context['citation'], context['genre'] )
-    #     ( context['querystring'], context['enhanced_querystring'] ) = ( querystring, enhanced_querystring )
-    #     context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=enhanced_querystring )
-    #     context['permalink'] = permalink
-    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-    #     context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
-    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
-    #     return context
 
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
@@ -430,24 +397,6 @@ class FinditResolver( object ):
         log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
         return context
 
-    # def _try_resolved_obj_citation( self, sersol_dct ):
-    #     """ Returns initial context based on a resolved-object.
-    #         Called by make_resolve_context()
-    #         Exeption note:
-    #             Occasional ```Link360Exception(u'Invalid syntax Invalid check sum',)``` caused by data being sent like: `rft.jtitle={content.jtitle}`.
-    #             Result: eventual redirect to  citation form for confirmation -- always seems to work second time. """
-    #     context = {}
-    #     try:
-    #         resolved_obj = BulSerSol( sersol_dct )
-    #         log.debug( 'resolved_obj.__dict__, ```%s```' % pprint.pformat(resolved_obj.__dict__) )
-    #         context = resolved_obj.access_points()
-    #         ( context['citation'], context['link_groups'], context['format'] ) = ( resolved_obj.citation, resolved_obj.link_groups, resolved_obj.format )
-    #     except Exception as e:
-    #         log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
-    #         context['citation'] = {}
-    #     log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
-    #     return context
-
     def _check_genre( self, context ):
         """ Sets `easyBorrow` or `easyArticle`, and context genre.
             Called by make_resolve_context()"""
@@ -459,20 +408,5 @@ class FinditResolver( object ):
             genre_type = 'easyBorrow'
         log.debug( 'genre, `%s`; genre_type, `%s`' % (genre, genre_type) )
         return ( genre, genre_type )
-
-    # def _enhance_querystring( self, querystring, citation_dct, genre ):
-    #     """ Takes original querystring openurl and adds to it from citation info.
-    #         Only called when
-    #         Called by make_resolve_context() """
-    #     citation_dct['type'] = genre
-    #     initial_citation_querystring = bibjsontools.to_openurl( citation_dct )
-    #     updated_citation_dct = bibjsontools.from_openurl( initial_citation_querystring )
-    #     bib_dct = bibjsontools.from_openurl( querystring )
-    #     for (key, val) in bib_dct.items():
-    #         if key not in updated_citation_dct.keys():
-    #             updated_citation_dct[key] = val
-    #     enhanced_querystring = urllib.unquote( bibjsontools.to_openurl(updated_citation_dct) )
-    #     log.debug( 'enhanced_querystring, ```%s```' % enhanced_querystring )
-    #     return enhanced_querystring
 
     ## end class FinditResolver
