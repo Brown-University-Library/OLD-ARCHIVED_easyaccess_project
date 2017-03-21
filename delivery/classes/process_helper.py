@@ -101,8 +101,8 @@ If you believe you should be permitted to use interlibrary-loan services, please
         try: oclc_num = int( bib_dct.get('oclc_num', '') )
         except: oclc_num = 0
         item_dct = {
-            'title': bib_dct.get( 'title', ''),
-            'isbn': bib_dct.get( 'isbn', ''),
+            'title': bib_dct.get( 'title', '' ),
+            'isbn': bib_dct.get( 'isbn', '').replace( '-', '' ),
             'wc_accession': oclc_num,
             'sfxurl': 'http://{ss_key}.search.serialssolutions.com/?{querystring}'.format( ss_key=app_settings.SERSOL_KEY, querystring=querystring ),
             'volumes': bib_dct.get( 'easyborrow_volumes', '' ) }
