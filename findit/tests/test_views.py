@@ -95,66 +95,24 @@ class IndexPageLinksTest( TestCase ):
     ## end class IndexPageLinksTest
 
 
-# #Non-book, non-article item
-# #http://www.worldcat.org/title/einstein-on-the-beach/oclc/29050194
-# #coins
-# #http://generator.ocoins.info/?sitePage=info/journal.html
-# class PmidResolverTest(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-
-#     # def test_pmid(self):
-#     #     request = self.factory.get('?pmid=21221393')
-#     #     response = views.ResolveView(request=request)
-#     #     #Call get context data to simulate browser hit.
-#     #     context = response.get_context_data()
-#     #     #Verify returned links
-#     #     names = [link['holdingData']['providerName'] for link in context['link_groups']]
-#     #     self.assertIn("National Library of Medicine", names)
-#     #     #Verify citation.
-#     #     citation = context['citation']
-#     #     self.assertTrue(citation['source'], 'Canadian family physician')
-#     #     self.assertTrue(citation['volume'], '38')
-#     #     self.assertTrue(citation['pmid'], '21221393')
-#     #     self.assertIn('0008-350X', context['citation']['issn']['print'])
-
-#     def test_pmid(self):
-#         request = self.factory.get('?pmid=21221393')
-#         # response = views.ResolveView(request=request)
-#         response = views.base_resolver( request=request )
-#         log.debug( 'response, ```%s```' % pprint.pformat(response.__dict__) )
-
-#         ## Call get context data to simulate browser hit.
-#         context = response.get_context_data()
-#         ## Verify returned links
-#         names = [link['holdingData']['providerName'] for link in context['link_groups']]
-#         self.assertIn("National Library of Medicine", names)
-#         #Verify citation.
-#         citation = context['citation']
-#         self.assertTrue(citation['source'], 'Canadian family physician')
-#         self.assertTrue(citation['volume'], '38')
-#         self.assertTrue(citation['pmid'], '21221393')
-#         self.assertIn('0008-350X', context['citation']['issn']['print'])
-
-
 class PmidResolverTest(TestCase):
-    """ Checks non-book, non-article item.
-        - http://www.worldcat.org/title/einstein-on-the-beach/oclc/29050194
-        - coins -- http://generator.ocoins.info/?sitePage=info/journal.html """
+    """ New version of above. Under construction """
 
     def test_pmid(self):
-        """ Checks non-book, non-article item. """
-        url = '/find/?pmid=21221393'
+        """ Pubmed request - locally-held at Annex, and no direct link.
+            Should show W.H.O. link, and local Annex holding. """
+        from findit.models import PrintTitle
+        print_title = PrintTitle(
+            key='051230541950', issn='0512-3054', start='1950', end='2015', location='AnnexFoo', call_number='RA8 .A27Foo' )
+        print_title.save()
+        url = '/find/?pmid=11234459'
         c = Client()
         response = c.get( url )
-        # log.debug( 'response.content, ```%s```' % response.content )
-        # log.debug( 'response.context, ```%s```' % pprint.pformat(response.context) )
-        # log.debug( 'response.__dict__, ```%s```' % pprint.pformat(response.__dict__) )
-        # log.debug( 'dir(response), ```%s```' % pprint.pformat(dir(response)) )
-        # log.debug( 'response._headers, ```%s```' % pprint.pformat(response._headers) )
-        # log.debug( 'response._headers["location"][1], ```%s```' % pprint.pformat(response._headers['location'][1]) )
-        redirect_url = response._headers['location'][1]
-        self.assertEqual( 'http://brown.summon.serialssolutions.com/2.0.0/link/0/eLv', redirect_url[0:57] )
+        html = response.content
+        self.assertEqual( True, '<h3>Available online</h3>' in html )
+        self.assertEqual( True, 'https://login.revproxy.brown.edu/login?url=http://search.who.int/search?' in html )
+        self.assertEqual( True, '<span class="print-location">AnnexFoo</span>' in html )
+        self.assertEqual( True, '<span class="print-callnumber">RA8 .A27Foo</span>' in html )
 
     # end class PmidResolverTest
 
