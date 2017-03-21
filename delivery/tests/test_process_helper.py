@@ -43,4 +43,30 @@ class ProcessHelperTest(TestCase):
         querystring = ''
         self.assertEqual( None, self.helper.save_to_easyborrow(shib_dct, bib_dct, querystring) )  # a good save would return the ezb-db-id
 
+    def test_make_item_dct__good_data(self):
+        """ Good data should return good dct. """
+        bib_dct = { 'title': 'the_title', 'isbn': '9781439867976'}
+        querystring = 'id=doi:10.1201/b12738-10&sid=crc&iuid=2210&date=2012&pub=Chapman+and+Hall/CRC&aulast=Der&atitle=Logistic+Regression&genre=book&isbn=9781439867976&title=Applied+Medical+Statistics+Using+SAS&btitle=Applied+Medical+Statistics+Using+SAS'
+        expected = {
+            u'isbn': u'9781439867976',
+            u'sfxurl': u'http://rl3tp7zf5x.search.serialssolutions.com/?id=doi:10.1201/b12738-10&sid=crc&iuid=2210&date=2012&pub=Chapman+and+Hall/CRC&aulast=Der&atitle=Logistic+Regression&genre=book&isbn=9781439867976&title=Applied+Medical+Statistics+Using+SAS&btitle=Applied+Medical+Statistics+Using+SAS',
+            u'title': u'the_title',
+            u'volumes': u'',
+            u'wc_accession': 0 }
+        self.assertEqual(
+            expected, self.helper._make_item_dct(bib_dct,querystring) )
+
+    def test_make_item_dct__bad_isbn(self):
+        """ ISBN with hyphens should return cleaned isbn field. """
+        bib_dct = { 'title': 'the_title', 'isbn': '978-1-4398-6797-6'}
+        querystring = 'id=doi:10.1201/b12738-10&sid=crc&iuid=2210&date=2012&pub=Chapman+and+Hall/CRC&aulast=Der&atitle=Logistic+Regression&genre=book&isbn=978-1-4398-6797-6&title=Applied+Medical+Statistics+Using+SAS&btitle=Applied+Medical+Statistics+Using+SAS'
+        expected = {
+            u'isbn': u'9781439867976',
+            u'sfxurl': u'http://rl3tp7zf5x.search.serialssolutions.com/?id=doi:10.1201/b12738-10&sid=crc&iuid=2210&date=2012&pub=Chapman+and+Hall/CRC&aulast=Der&atitle=Logistic+Regression&genre=book&isbn=978-1-4398-6797-6&title=Applied+Medical+Statistics+Using+SAS&btitle=Applied+Medical+Statistics+Using+SAS',
+            u'title': u'the_title',
+            u'volumes': u'',
+            u'wc_accession': 0 }
+        self.assertEqual(
+            expected, self.helper._make_item_dct(bib_dct,querystring) )
+
     # end ProcessHelperTest()
