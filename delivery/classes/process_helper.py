@@ -81,20 +81,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
         log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
         return patron_dct
 
-    # def _make_item_dct( self, bib_dct, querystring ):
-    #     """ Maps item info to db info.
-    #         Called by save_to_easyborrow() """
-    #     try: oclc_num = int( bib_dct.get('oclc_num', '') )
-    #     except: oclc_num = 0
-    #     item_dct = {
-    #         'title': bib_dct.get( 'title', ''),
-    #         'isbn': bib_dct.get( 'isbn', ''),
-    #         'wc_accession': oclc_num,
-    #         'sfxurl': 'http://{ss_key}.search.serialssolutions.com/?{querystring}'.format( ss_key=app_settings.SERSOL_KEY, querystring=querystring ),
-    #         'volumes': bib_dct.get( 'easyborrow_volumes', '' ) }
-    #     log.debug( 'item_dct, ```{}```'.format(pprint.pformat(item_dct)) )
-    #     return item_dct
-
     def _make_item_dct( self, bib_dct, querystring ):
         """ Maps item info to db info.
             Called by save_to_easyborrow() """
@@ -188,61 +174,3 @@ If you have any questions, contact the Library's Interlibrary Loan office at <in
         return redirect_url
 
     # end class ProcessViewHelper()
-
-
-
-
-
-
-# def prep_book_request(request):
-#     """
-#     Map the incoming bibjson object to the ezborrow request.
-#     """
-#     from easyborrow_models import EasyBorrowRequest
-#     from datetime import datetime
-#     bib = request.bib
-#     user = request.user
-#     #Helper to pull out first ID of a given type.
-#     def _first_id(id_type):
-#         try:
-#             return [id['id'] for id in bib.get('identifier', []) if id['type'] == id_type][0]
-#         except IndexError:
-#             return ''
-#             if id_type == 'isbn':
-#                 return ''
-#             else:
-#                 return None
-#     #import pdb; pdb.set_trace();
-#     #Register the user with illiad if necessary.
-#     registration = illiad_client(request)
-#     req = EasyBorrowRequest()
-#     req.created = datetime.now()
-#     req.title = bib.get('title')
-#     isbn = _first_id('isbn')
-#     if isbn is not None:
-#         req.isbn = isbn.replace('-', '').strip()
-#     try:
-#         oclc = int(_first_id('oclc'))
-#         req.wc_accession = oclc
-#     except (TypeError, ValueError):
-#         pass
-#     req.volumes = bib.get('_volume_note', '')
-#     #This sersol url is required at the moment for the controller code.
-#     req.sfxurl = 'http://%s.search.serialssolutions.com/?%s' % ( os.environ['EZACS__BUL_LINK_SERSOL_KEY'], bib.get('_query') )
-#     req.eppn = user.username.replace('@brown.edu', '')
-#     req.name = "%s %s" % (user.first_name, user.last_name)
-#     req.firstname = user.first_name
-#     req.lastname = user.last_name
-#     #Pull barcode from profile.
-#     profile = user.libraryprofile
-#     req.barcode = profile.barcode
-#     req.email = user.email
-#     #import pdb; pdb.set_trace();
-#     req.save(using='ezborrow')
-#     #This is a workaround to return the id of the object created above.
-#     #Since this is an existing database, I would prefer just to hit the db
-#     #again and get this users latest request id rather than try to alter the
-#     #schema to make it return an id.
-#     #This causes a second hit to the database to fetch the id of the item just requested.
-#     latest = EasyBorrowRequest.objects.using('ezborrow').filter(email=user.email).order_by('-created')[0]
-#     return {'transaction_number': latest.id}
