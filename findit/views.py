@@ -203,7 +203,8 @@ def permalink( request, permalink_str ):
 
 def ris_citation( request ):
     """ Downloads a ris citation for endnote.
-        [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) ) """
+        [RIS]( https://en.wikipedia.org/wiki/RIS_(file_format) )
+        Triggered via click of `Export to Endnote` link on book page. """
     querystring = request.META.get('QUERY_STRING', None)
     if not querystring:
         return HttpResponseBadRequest( 'Sorry, no data found to parse for EndNote.' )

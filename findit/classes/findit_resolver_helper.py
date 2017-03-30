@@ -220,7 +220,7 @@ class FinditResolver( object ):
                 Occational ```XMLSyntaxError(u'Opening and ending tag mismatch: hr line 1 and body, line 1, column 922',)``` caused by unknown blip.
                 Result: eventual redirect to  citation form for confirmation -- always seems to work second time. """
         try:
-            sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of pylink3602
+            sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of py360link2
         except Exception as e:
             log.debug( '`{id}` problem grabbing sersol data, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
             sersol_dct = {}
