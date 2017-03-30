@@ -21,6 +21,7 @@ log.debug( 'summon.py loaded' )
 
 
 class SummonSearch(object):
+
     def __init__(self, api_id, api_key):
         log.debug( 'SummonSearch instantiated' )
         self.api_id = api_id
@@ -31,9 +32,9 @@ class SummonSearch(object):
 
     def make_headers(self, query):
         """
-        Search Summon API with Python.
+        Prepares headers for summon call.
         See Dough Chesnut's Code4Lib mailing list post: http://serials.infomotions.com/code4lib/archive/2010/201010/2408.html
-        """
+        Called by self.fetch() """
         summonAccessID = self.api_id
         summonSecretKey = self.api_key
         summonAccept = self.accept
@@ -44,12 +45,14 @@ class SummonSearch(object):
         summonDigest = base64.encodestring(hmac.new(summonSecretKey, unicode(summonIdString), hashlib.sha1).digest())
         summonAuthstring = "Summon "+summonAccessID+';'+summonDigest
         summonAuthstring = summonAuthstring.replace('\n','')
-        return {'Accept':summonAccept,
-                'x-summon-date':summonThedate,
-                'Host':self.host,
-                'Authorization':summonAuthstring}
+        header_dct = {
+            'Accept':summonAccept, 'x-summon-date':summonThedate, 'Host':self.host, 'Authorization':summonAuthstring}
+        log.debug( 'header_dct, ```{}```'.format( pprint.pformat(header_dct) ) )
+        return header_dct
 
     def fetch(self, query):
+        """ Queries summon.
+            Called by def get_summon_enhanced_link() """
         #Set a timeout for the Summon request.
         http = httplib2.Http(timeout=10)
         headers = self.make_headers(query)
@@ -57,11 +60,16 @@ class SummonSearch(object):
         response, content = http.request(url, 'GET', headers=headers)
         try:
             out = json.loads(content)
+            log.debug( 'response from summon, ```{}```'.format( pprint.pformat(out) ) )
         except ValueError:
             return None
         return out
 
+    ## end class SummonSearch()
+
+
 class SummonResponse(object):
+
     def __init__(self, response):
         log.debug( 'SummonResponse instantiated' )
         self.response = response
@@ -83,17 +91,18 @@ class SummonResponse(object):
         return q.get('queryString', '')
 
     def docs(self):
+        """ Wraps response in a label.
+            Called by def get_summon_enhanced_link() """
         if self.response is None:
             return []
         return self.response['documents']
 
+    ## end class SummonResponse()
 
 
 def summon_citation(doc):
-    """
-    Turn a Summon response into a normalized 'citation' that matches
-    responses from other systems.
-    """
+    """ 2017-03-30 note: not called; only call is by a commented-out test.
+        Turn a Summon response into a normalized 'citation' that matches responses from other systems. """
 
     def _format(value):
         if value == 'Journal Article':
@@ -128,38 +137,14 @@ def summon_citation(doc):
                 'date': _g(doc, 'PublicationDate')
                 },
             'openurl': doc.get('openUrl', ''),
-    }
+        }
 
-def get_summon_enhanced_link(qtype, value):
-    log.debug( 'starting get_summon_enhanced_link()' )
-    link = None
-    if qtype == 'doi':
-        q = 's.q=' + 'DOI:"%s"' % value.replace('/', '%2F')
-    elif qtype == 'pmid':
-        q = 's.q=' + 'PMID:"%s"' % value
-    else:
-        raise Exception("Invalid Summon query type.  Must be DOI or PMID. %s received." % qtype)
-    session = SummonSearch(api_id, api_key)
-    resp = session.fetch(q)
-    if resp is None:
-        return
-    docs = SummonResponse(resp).docs()
-    log.debug( 'summon docs, ```{}```' )
-    try:
-        doc = docs[0]
-    except IndexError:
-        return
-    if doc.get('inHoldings') == True:
-	if doc.get('LinkModel', ['null'])[0] == "DirectLink":
-	    link = doc.get('link')
-    return link
+    ## end def summon_citation()
+
 
 def get_enhanced_link(query_string):
-    """
-    This will attempt to find a best bet link via Summon
-    and send the user there before hitting the 360Link
-    API.
-    """
+    """ Attempts to find a best bet link via Summon and send the user there before hitting the 360Link API.
+        Called by findit.classes.findit_resolver_helper.FinditResolver.enhance_link() """
     log.debug( 'starting get_enhanced_link()' )
     from bibjsontools import from_openurl
     link = None
@@ -180,6 +165,34 @@ def get_enhanced_link(query_string):
             if link:
                 return link
     return
+
+
+def get_summon_enhanced_link(qtype, value):
+    """ Initiates summon call.
+        Called by def get_enhanced_link() """
+    log.debug( 'starting get_summon_enhanced_link()' )
+    link = None
+    if qtype == 'doi':
+        q = 's.q=' + 'DOI:"%s"' % value.replace('/', '%2F')
+    elif qtype == 'pmid':
+        q = 's.q=' + 'PMID:"%s"' % value
+    else:
+        raise Exception("Invalid Summon query type.  Must be DOI or PMID. %s received." % qtype)
+    session = SummonSearch(api_id, api_key)
+    resp = session.fetch(q)
+    if resp is None:
+        return
+    docs = SummonResponse(resp).docs()
+    log.debug( 'summon docs, ```{}```' )
+    try:
+        doc = docs[0]
+    except IndexError:
+        return
+    if doc.get('inHoldings') == True:
+    if doc.get('LinkModel', ['null'])[0] == "DirectLink":
+        link = doc.get('link')
+    return link
+
 
 def get_brown_proxy_link(summonlink):
     """
