@@ -52,7 +52,10 @@ class AvailabilityCheckerTest(TestCase):
         isbn = ''
         oclc_num = '673595'
         self.assertEqual(
-            [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.3', 'location': 'ROCK'},
+            # [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.3', 'location': 'ROCK'},
+            #   {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
+            #   ],
+            [
               {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
               ],
             self.checker.check_josiah_availability( isbn, oclc_num )
@@ -72,7 +75,10 @@ class AvailabilityCheckerTest(TestCase):
         isbn = '9780688002305'
         oclc_num = '673595'
         self.assertEqual(
-            [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.3', 'location': 'ROCK'},
+            # [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.3', 'location': 'ROCK'},
+            #   {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
+            #   ],
+            [
               {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
               ],
             self.checker.check_josiah_availability( isbn, oclc_num )
