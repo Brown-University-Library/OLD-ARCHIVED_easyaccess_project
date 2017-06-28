@@ -189,8 +189,8 @@ def get_summon_enhanced_link(qtype, value):
     except IndexError:
         return
     if doc.get('inHoldings') == True:
-    if doc.get('LinkModel', ['null'])[0] == "DirectLink":
-        link = doc.get('link')
+        if doc.get('LinkModel', ['null'])[0] == "DirectLink":
+            link = doc.get('link')
     return link
 
 
