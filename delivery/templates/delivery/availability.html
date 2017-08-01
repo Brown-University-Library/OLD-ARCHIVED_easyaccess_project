@@ -143,16 +143,17 @@
 
     {% if not available_locally %}
     <div id="request">
-        <div id="multi-volume">
-                <input type="checkbox" onclick="$('#hideablearea').toggle();">
-                Check here <strong>IF</strong> this is a MULTI-VOLUME work.<br><br>
-                <div id="hideablearea" class="hidden">
-                            <p>Volumes needed (if applicable):
-                                <input type="text" name="volumes" id="volume-note">
-                            </p>
-                </div>
-         </div>
         <form method="post" name="request" action="{% url 'delivery:shib_login_url' %}">{% csrf_token %}
+            <div id="multi-volume">
+                <input type="checkbox" onclick="$('#hideablearea').toggle();">
+                Check here <strong>IF</strong> this is a MULTI-VOLUME work.
+                <br><br>
+                <div id="hideablearea" class="hidden">
+                    <p>Volumes needed (if applicable):
+                        <input type="text" name="volumes" id="volume-note">
+                    </p>
+                </div>
+            </div>
             <input type="hidden" name="bib"/>
             <input type="submit" class="medium white radius button" value="Request via easyBorrow" />
         </form>
