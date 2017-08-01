@@ -126,8 +126,20 @@ def shib_login( request ):
         Session cleared and info put in url due to revproxy resetting session. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( 'request.POST, ```%s```' % pprint.pformat(request.POST) )
 
+    ## update bib_dct_json if user has submitted volume-notes
+    easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
+    log.debug( '`%s` easyborrow_volumes, ```%s```' % (log_id, easyborrow_volumes) )
+    if easyborrow_volumes != '':
+        bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
+        log.debug( 'initial bib_dct, ```%s```' % pprint.pformat(bib_dct) )
+        bib_dct['easyborrow_volumes'] = easyborrow_volumes
+        request.session['bib_dct_json'] = json.dumps( bib_dct )
     bib_dct_json = request.session['bib_dct_json']
+    log.debug( 'updated bib_dct, ```%s```' % pprint.pformat(bib_dct) )
+
+    ## get other info from session
     last_querystring = request.session['last_querystring']
     permalink_url = request.session['permalink_url']
 
