@@ -25,7 +25,7 @@ DATABASES = json.loads( os.environ['EZACS__DATABASES_JSON'] )
 
 TIME_ZONE = 'America/New_York'
 
-USE_TZ = True
+USE_TZ = False
 
 ## https://docs.djangoproject.com/en/1.8/howto/static-files/
 STATIC_URL = os.environ['EZACS__STATIC_URL']

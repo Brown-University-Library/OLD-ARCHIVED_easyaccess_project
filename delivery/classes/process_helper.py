@@ -7,6 +7,7 @@ from delivery import app_settings
 from delivery.easyborrow_models import EasyBorrowRequest
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 from django.utils.http import urlquote
 
 
@@ -125,8 +126,8 @@ If you believe you should be permitted to use interlibrary-loan services, please
             ezb_rqst.staffnote = ''
             ## request-meta-dynamic
             # ezb_rqst.created = datetime.datetime.now()
-            from django.utils import timezone
-            ezb_rqst.created = timezone.now()
+            ezb_rqst.created = timezone.now()  # if settings.USE_TZ were True, would automatically create proper UTC time
+            log.debug( 'ezb_rqst.created, ```%s```' % unicode(ezb_rqst.created) )
             return ezb_rqst
         except Exception as e:
             log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )
