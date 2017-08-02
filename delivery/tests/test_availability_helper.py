@@ -51,14 +51,13 @@ class AvailabilityCheckerTest(TestCase):
         """ Should return holdings for both isbn check and oclc check. """
         isbn = ''
         oclc_num = '673595'
+        result_lst = self.checker.check_josiah_availability( isbn, oclc_num )
+        result_check = False
+        for entry in result_lst:
+            if entry['status'] == 'AVAILABLE' and 'CT275.P648 A33' in entry['callnumber'] and entry['location'] == 'ROCK':  # not checking full entry-dct because the available callnumber-copy changes.
+                result_check = True
         self.assertEqual(
-            # [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.3', 'location': 'ROCK'},
-            #   {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
-            #   ],
-            [
-              {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
-              ],
-            self.checker.check_josiah_availability( isbn, oclc_num )
+            True, result_check
             )
 
     def test_check_josiah_availability__no_oclcnum(self):
@@ -74,16 +73,13 @@ class AvailabilityCheckerTest(TestCase):
         """ Should return holdings for both isbn check and oclc check. """
         isbn = '9780688002305'
         oclc_num = '673595'
+        result_lst = self.checker.check_josiah_availability( isbn, oclc_num )
+        result_check = False
+        for entry in result_lst:
+            if entry['status'] == 'AVAILABLE' and 'CT275.P648 A33' in entry['callnumber'] and entry['location'] == 'ROCK':  # not checking full entry-dct because the available callnumber-copy changes.
+                result_check = True
         self.assertEqual(
-            # [ {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.3', 'location': 'ROCK'},
-            #   {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
-            #   ],
-            [
-              {'status': 'AVAILABLE', 'callnumber': 'CT275.P648 A33  c.4', 'location': 'ROCK'}
-              ],
-            self.checker.check_josiah_availability( isbn, oclc_num )
+            True, result_check
             )
 
-    # end AvailabilityCheckerTest()
-
-# querystring = 'sid=FirstSearch%3AWorldCat&genre=book&title=Zen&date=1978&aulast=Yoshioka&aufirst=T%C5%8Dichi&id=doi%3A&pid=6104671%3Cfssessid%3E0%3C%2Ffssessid%3E%3Cedition%3E1st+ed.%3C%2Fedition%3E&url_ver=Z39.88-2004&rfr_id=info%3Asid%2Ffirstsearch.oclc.org%3AWorldCat&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&rft.genre=book&req_dat=%3Csessionid%3E0%3C%2Fsessionid%3E&rfe_dat=%3Caccessionnumber%3E6104671%3C%2Faccessionnumber%3E&rft_id=info%3Aoclcnum%2F6104671&rft.aulast=Yoshioka&rft.aufirst=T%C5%8Dichi&rft.btitle=Zen&rft.date=1978&rft.place=Osaka++Japan&rft.pub=Hoikusha&rft.edition=1st+ed.&rft.genre=book'
+    ## end AvailabilityCheckerTest()
