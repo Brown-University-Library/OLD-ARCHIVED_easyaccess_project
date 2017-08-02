@@ -135,9 +135,9 @@ def shib_login( request ):
         bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
         log.debug( 'initial bib_dct, ```%s```' % pprint.pformat(bib_dct) )
         bib_dct['easyborrow_volumes'] = easyborrow_volumes
+        log.debug( 'updated bib_dct, ```%s```' % pprint.pformat(bib_dct) )
         request.session['bib_dct_json'] = json.dumps( bib_dct )
     bib_dct_json = request.session['bib_dct_json']
-    log.debug( 'updated bib_dct, ```%s```' % pprint.pformat(bib_dct) )
 
     ## get other info from session
     last_querystring = request.session['last_querystring']
