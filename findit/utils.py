@@ -206,6 +206,7 @@ class BulSerSol(Resolved):
             resolved = False
         else:
             resolved = True
+        log.debug( 'resolved, `%s`' % resolved )
 
         #Change vague_links to false if we did find a direct link.  This prevents
         #the warning/caveat box from appearing.
@@ -222,6 +223,8 @@ class BulSerSol(Resolved):
                 'print': pholdings,
                 'resolved': resolved,
                 'has_vague_links': vague_links}
+
+        ## end def def access_points()
 
     def is_requestable(self):
         """
@@ -367,6 +370,8 @@ class BulSerSol(Resolved):
         #Add the OCLC number
         qdict['rfe_dat'] = self.oclc_number
         return urllib.urlencode(qdict, doseq=True)
+
+    ## end class class BulSerSol( Resolved )
 
 
 #===============================================================================

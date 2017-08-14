@@ -53,10 +53,12 @@ class SummonSearch(object):
     def fetch(self, query):
         """ Queries summon.
             Called by def get_summon_enhanced_link() """
+        log.debug( 'query about to be sent to summon, ```%s```' % query )
         #Set a timeout for the Summon request.
         http = httplib2.Http(timeout=10)
         headers = self.make_headers(query)
         url = 'http://%s%s?%s' % (self.host, self.path, query)
+        log.debug( 'url to summon (works because of associated prepared headers), ```%s```' % url )
         response, content = http.request(url, 'GET', headers=headers)
         try:
             out = json.loads(content)
@@ -146,6 +148,7 @@ def get_enhanced_link(query_string):
     """ Attempts to find a best bet link via Summon and send the user there before hitting the 360Link API.
         Called by findit.classes.findit_resolver_helper.FinditResolver.enhance_link() """
     log.debug( 'starting get_enhanced_link()' )
+    log.debug( 'initial query_string, ```%s```' % query_string )
     from bibjsontools import from_openurl
     link = None
     bib = from_openurl(query_string)
@@ -162,35 +165,40 @@ def get_enhanced_link(query_string):
             elif ident['type'] == 'pmid':
                 pmid = ident['id'].lstrip('info:pmid/')
                 link = get_summon_enhanced_link('pmid', pmid)
-            if link:
-                return link
-    return
+            # if link:
+            #     return link
+    log.debug( 'returned link, ```%s```' % link )
+    return link
 
 
 def get_summon_enhanced_link(qtype, value):
     """ Initiates summon call.
         Called by def get_enhanced_link() """
     log.debug( 'starting get_summon_enhanced_link()' )
+    log.debug( 'qtype, `%s`; value, `%s`' % (qtype, value) )
     link = None
     if qtype == 'doi':
         q = 's.q=' + 'DOI:"%s"' % value.replace('/', '%2F')
     elif qtype == 'pmid':
         q = 's.q=' + 'PMID:"%s"' % value
     else:
+        log.error( 'not checking summon due to invalid query type' )
         raise Exception("Invalid Summon query type.  Must be DOI or PMID. %s received." % qtype)
     session = SummonSearch(api_id, api_key)
     resp = session.fetch(q)
     if resp is None:
         return
     docs = SummonResponse(resp).docs()
-    log.debug( 'summon docs, ```{}```' )
+    # log.debug( 'summon docs, ```%s```' % docs )  # not needed, logged in Summon.fetch()
     try:
         doc = docs[0]
     except IndexError:
+        log.debug( 'returning None because no docs returned' )
         return
     if doc.get('inHoldings') == True:
         if doc.get('LinkModel', ['null'])[0] == "DirectLink":
             link = doc.get('link')
+    log.debug( 'returned enhanced link, ```%s```' % link )
     return link
 
 

@@ -106,9 +106,11 @@ class FinditResolver( object ):
         """ Determines whether a summon check is needed.
             Called by views.findit_base_resolver() """
         referrer = self._get_referrer( querydict ).lower()
+        log.debug( 'referrer, `%s`' % referrer )
         check_summon = True
         for provider in settings.FINDIT_SKIP_SUMMON_DIRECT_LINK:
             if referrer.find( provider ) > 0:
+                log.debug( 'skipping summon for this referrer' )
                 check_summon = False
                 break
         # log.debug( 'check_summon, `%s`' % check_summon )
