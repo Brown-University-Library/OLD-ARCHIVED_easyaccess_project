@@ -31,12 +31,13 @@ It also contains code for the handling of article-delivery (easyArticle); for bo
 - if still in flow, a check is made on the openurl to see if the item is specifically for a journal. If so, the openurl request is redirected to Brown's 'search.serialssolutions.com' url
 
 - if still in flow, a check is made on a Brown's [360Link](http://www.proquest.com/libraries/academic/discovery-services/360-Link.html) 'openurl.xml.serialssolutions.com' api
-    - if a direct link to full-text is found, easyAccess _used_ to take the user right to that url, but a decision was made to instead have the user land at an easyArticle page showing all links to full text
-        - note: all serialsolutions fulltext links begin with `https://login.revproxy.brown.edu/login?url=the_destination_url` which triggers shib login
-    - if a direct link to full-text is not found, but 360link indicates we have electronic access to that issue of the journal, the user lands at a page with a link to the journal and a note that the article _is_ available online, but that the link is not directly to the article, and some additional searching will be required on the publisher's website
-    - if there is no link to full-text or close to it, the user lands at a page with a link to 'Request from another library'
+    - if a direct link to full-text is found, easyAccess used to take the user right to that url, but a decision was made to instead have the user land at an easyArticle page showing all links to full text
+        - note: all serialsolutions online links begin with `https://login.revproxy.brown.edu/login?url=the_destination_url` which triggers shib login
+    - if a direct link to full-text is not found, but the 360link api indicates we have electronic access to that issue of the journal, the user lands at a page with a link to the journal and a note that the article _is_ available online, but that the link is not directly to the article, and some additional searching will be required on the publisher's website
+    - if the 360link api lookup shows that we have the article in print, that information will appear on the landing page, whether or not there are also online links
+    - if the 360link api has no online link information about the item, and no print information about the item, the user lands at a page with a link to 'Request from another library'
 
-- if still in flow, and the user clicks the 'Request from another library' link, a confirmation 'Submit' button appears; if clicked, the request is submitted to ILLiad on behalf of the user.
+- if still in flow, and the user clicks the 'Request from another library' link, a confirmation 'Submit' button appears; if clicked, the request is submitted to [ILLiad](https://www.atlas-sys.com/illiad/) (our interlibary-loan service) on behalf of the user.
 
 ---
 
@@ -54,7 +55,7 @@ It also contains code for the handling of article-delivery (easyArticle); for bo
 
 - separate easyBorrow code detects the new request, and, depending on a few factors:
     - searches for the book in [BorrowDirect](http://www.borrowdirect.org) (our consortial loan partner), and requests it for the user if it's available
-    - submits the request to [ILLiad](https://www.atlas-sys.com/illiad/) (our interlibary-loan service) for the user if necessary
+    - submits the request to ILLiad for the user if necessary
 
 ---
 
