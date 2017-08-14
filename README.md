@@ -9,7 +9,7 @@ on this page
 
 ---
 
-##### overview
+#### overview
 
 This repository contains code for a project of the [Brown University Library](http://library.brown.edu) to make getting articles and books easier.
 
@@ -19,7 +19,7 @@ It also contains code for the handling of article-delivery (easyArticle); for bo
 
 ---
 
-##### article flow
+#### article flow
 
 - from information in the openurl, the item is determined to be an article, and all subsequent pages the user sees will be branded 'easyArticle'
 
@@ -39,9 +39,11 @@ It also contains code for the handling of article-delivery (easyArticle); for bo
 
 - if still in flow, and the user clicks the 'Request from another library' link, a confirmation 'Submit' button appears; if clicked, the request is submitted to [ILLiad](https://www.atlas-sys.com/illiad/) (our interlibary-loan service) on behalf of the user.
 
+- see 'Article Examples' on the [easyAccess home page](https://library.brown.edu/easyaccess/find/)
+
 ---
 
-##### book flow
+#### book flow
 
 - from information in the openurl, the item is determined to be a book, and all subsequent pages the user sees will be branded 'easyBorrow'
 
@@ -57,9 +59,11 @@ It also contains code for the handling of article-delivery (easyArticle); for bo
     - searches for the book in [BorrowDirect](http://www.borrowdirect.org) (our consortial loan partner), and requests it for the user if it's available
     - submits the request to ILLiad for the user if necessary
 
+- see 'Book Examples' on the [easyAccess home page](https://library.brown.edu/easyaccess/find/)
+
 ---
 
-##### acknowledgements
+#### acknowledgements
 
 Not shown in the commit history is the fact that this entire project was implemented by [Ted Lawless](https://github.com/lawlesst) from 2012 through 2015. It has made the work of thousands of Brown University students and faculty vastly easier.
 
