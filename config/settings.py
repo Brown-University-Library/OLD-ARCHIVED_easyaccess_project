@@ -140,19 +140,20 @@ LOGGING = {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            # 'propagate': True,
+            'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
         },
-    'illiad': { # I keep all my apps here, but you can also add them one by one
+    'illiad': {
             'handlers': ['illiad_log_file'],
-            # 'level': 'DEBUG',
             'level': os.environ['EZACS__ILLIAD_LOG_LEVEL'],
-            'propagate': True,
+            # 'propagate': True,
+            'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
         },
-    'access': { # I keep all my apps here, but you can also add them one by one
+    'access': {
             'handlers': ['access_log_file'],
-            # 'level': 'INFO',
             'level': os.environ['EZACS__ACCESS_LOG_LEVEL'],
-            'propagate': True,
+            # 'propagate': True,
+            'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
         },
     }
 }
@@ -168,13 +169,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    # 'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
-    # 'findit.context_processors.login_link',
-    # 'findit.context_processors.debug_mode',
-    # 'shibboleth.context_processors.login_link',
-    # 'shibboleth.context_processors.logout_link',
     )
 
 LOGIN_URL = os.environ['EZACS__LOGIN_URL']
