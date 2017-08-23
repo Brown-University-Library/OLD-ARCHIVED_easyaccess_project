@@ -100,11 +100,11 @@ def findit_base_resolver( request ):
     request.session['permalink_url'] = permalink_url
     alog.info( '`{id}` permalink made, ```{url}```'.format(id=log_id, url=permalink_url) )
 
-    ## if summon returns an enhanced link, go to it
-    if fresolver.check_summon( request.GET ):
-        if fresolver.enhance_link( request.GET.get('direct', None), querystring ):
-            alog.info( '`{id}` redirecting to summon enhanced link, ```{link}```'.format(id=log_id, link=fresolver.enhanced_link) )
-            return HttpResponseRedirect( fresolver.enhanced_link )
+    # ## if summon returns an enhanced link, go to it
+    # if fresolver.check_summon( request.GET ):
+    #     if fresolver.enhance_link( request.GET.get('direct', None), querystring ):
+    #         alog.info( '`{id}` redirecting to summon enhanced link, ```{link}```'.format(id=log_id, link=fresolver.enhanced_link) )
+    #         return HttpResponseRedirect( fresolver.enhanced_link )
 
     ## if journal, redirect to 360link for now
     if fresolver.check_sersol_publication( request.GET, querystring ):
