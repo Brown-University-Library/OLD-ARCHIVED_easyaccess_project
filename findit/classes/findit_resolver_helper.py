@@ -253,6 +253,16 @@ class FinditResolver( object ):
         log.debug( 'is_bad_issn, `%s`; redirect_url, ```%s```' % (is_bad_issn, redirect_url) )
         return return_val
 
+    def remove_issn_val( self, bad_querystring ):
+        """ Removes bad issn val from querystring.
+            Called by check_bad_issn() """
+        pieces = bad_querystring.split( '&' )
+        indices = [i for i, piece in enumerate(pieces) if 'issn=' in piece]  # generally, like, `[5]`
+        for element in indices:
+            pieces[element] = 'issn='
+        better_querystring = '&'.join( pieces )
+        log.debug( 'better_querystring, ```%s```' % better_querystring )
+        return better_querystring
 
 
 
