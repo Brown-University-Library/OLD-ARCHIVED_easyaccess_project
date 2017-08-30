@@ -140,23 +140,20 @@ LOGGING = {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            # 'propagate': True,
             'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
-        },
-    'illiad': {
+            },
+        'illiad': {
             'handlers': ['illiad_log_file'],
             'level': os.environ['EZACS__ILLIAD_LOG_LEVEL'],
-            # 'propagate': True,
             'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
-        },
-    'access': {
+            },
+        'access': {
             'handlers': ['access_log_file'],
             'level': os.environ['EZACS__ACCESS_LOG_LEVEL'],
-            # 'propagate': True,
             'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
-        },
+            },
+        }
     }
-}
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
