@@ -229,6 +229,34 @@ class FinditResolver( object ):
         log.debug( '`{id}` sersol_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(sersol_dct)) )
         return sersol_dct
 
+
+
+
+    def check_bad_issn( self, sersol_dct ):
+        """ Checks for invalid issn and builds redirect url.
+            Called by views.findit_base_resolver()
+            Info: EDS sometimes puts bad metadata into the issn field.
+                  The 360Link-api can detect this, so check for the condition and handle it. """
+        ( is_bad_issn, redirect_url ) = ( False, None )
+        if 'diagnostics'in sersol_dct.keys():
+            for diagnostic_entry in sersol_dct['diagnostics']:
+                if 'message' in diagnostic_entry.keys() and 'details' in diagnostic_entry.keys():
+                    if 'Invalid check sum' == diagnostic_entry['message']:
+                        if 'Removed issn:' in diagnostic_entry['details']:
+                            if 'echoedQuery' in sersol_dct.keys():
+                                if 'queryString' in sersol_dct['echoedQuery'].keys():
+                                    is_bad_issn = True
+                                    issnless_querystring = self.remove_issn_val( sersol_dct['echoedQuery']['queryString'] )
+                                    redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=issnless_querystring )
+                                    break
+        return_val = ( is_bad_issn, redirect_url )
+        log.debug( 'is_bad_issn, `%s`; redirect_url, ```%s```' % (is_bad_issn, redirect_url) )
+        return return_val
+
+
+
+
+
     def check_pubmed_result( self, sersol_dct ):
         """ Checks sersol_dct for occasional situation in which a pubmed result for a journal has a format of 'book'.
             Called by views.findit_base_resolver() """
