@@ -202,6 +202,43 @@ class FinditResolverTest( TestCase ):
             self.resolver.check_ebook( sersol_dct )
             )
 
+
+
+    ######################
+    ## check_bad_issn() ##
+
+    def test_check_bad_issn(self):
+        """ Tests bad-issn handling. """
+        sersol_dct = {
+            u'dbDate': u'foo',
+            u'diagnostics': [{
+                u'details': u'Removed issn: edsagr',
+                u'message': u'Invalid check sum',
+                u'uri': u'sersol/diagnostics/101'
+                }],
+            u'echoedQuery': {
+                u'library': {u'id': u'foo', u'name': u'foo'},
+                u'queryString': u'version=1.0&url_ver=Z39.88-2004&version=1.0&url_ver=Z39.88-2004&genre=article&issn=edsagr&title=[Organic%20agriculture%20adoption%20by%20coffe%20producers%20in%20Brasil]%20/%20Ado%c3%a7ao%20da%20agricultura%20organica%20por%20produtores%20de%20caf%c3%a9%20no%20Brasil&volume=&issue=&date=20020101&atitle=%5BOrganic%20agriculture%20adoption%20by%20coffe%20producers%20in%20Brasil%5D%20%2F%20Ado%C3%A7ao%20da%20agricultura%20organica%20por%20produtores%20de%20caf%C3%A9%20no%20Brasil&spage=&pages=&sid=EBSCO:AGRIS&aulast=5.%20Congreso%20de%20la%20Sociedad%20Espa%c3%b1ola%20de%20Agricultura%20Ecol%c3%b3gica,%20Gij%c3%b3n%20(Espa%c3%b1a),%2016-21%20Sep%202002',
+                u'timeStamp': u'2017-08-30T07:00:01'},
+            u'results': [{
+                u'citation': {
+                    u'creator': u'5. Congreso de la Sociedad Espa\xf1ola de Agricultura Ecol\xf3gica, Gij\xf3n (Espa\xf1a), 16-21 Sep 2002',
+                    u'creatorLast': u'5. Congreso de la Sociedad Espa\xf1ola de Agricultura Ecol\xf3gica, Gij\xf3n (Espa\xf1a), 16-21 Sep 2002',
+                    u'date': u'2002-01-01',
+                    u'source': u'[Organic agriculture adoption by coffe producers in Brasil] / Ado\xe7ao da agricultura organica por produtores de caf\xe9 no Brasil',
+                    u'title': u'[Organic agriculture adoption by coffe producers in Brasil] / Ado\xe7ao da agricultura organica por produtores de caf\xe9 no Brasil'
+                    },
+               u'format': u'journal',
+               u'linkGroups': []
+               }],
+            u'version': u'1.0'
+            }
+        ( is_bad_issn, redirect_url ) = self.resolver.check_bad_issn( sersol_dct )
+        self.assertEqual( True, is_bad_issn )
+        self.assertEqual( 3, redirect_url )
+
+
+
     ###########################
     ## check_pubmed_result() ##
 
