@@ -234,8 +234,17 @@ class FinditResolverTest( TestCase ):
             u'version': u'1.0'
             }
         ( is_bad_issn, redirect_url ) = self.resolver.check_bad_issn( sersol_dct )
+        expected_good_querystring = '/find/?version=1.0&url_ver=Z39.88-2004&version=1.0&url_ver=Z39.88-2004&genre=article&issn=&title=[Organic%20agriculture%20adoption%20by%20coffe%20producers%20in%20Brasil]%20/%20Ado%c3%a7ao%20da%20agricultura%20organica%20por%20produtores%20de%20caf%c3%a9%20no%20Brasil&volume=&issue=&date=20020101&atitle=%5BOrganic%20agriculture%20adoption%20by%20coffe%20producers%20in%20Brasil%5D%20%2F%20Ado%C3%A7ao%20da%20agricultura%20organica%20por%20produtores%20de%20caf%C3%A9%20no%20Brasil&spage=&pages=&sid=EBSCO:AGRIS&aulast=5.%20Congreso%20de%20la%20Sociedad%20Espa%c3%b1ola%20de%20Agricultura%20Ecol%c3%b3gica,%20Gij%c3%b3n%20(Espa%c3%b1a),%2016-21%20Sep%202002'
         self.assertEqual( True, is_bad_issn )
-        self.assertEqual( 3, redirect_url )
+        self.assertEqual( expected_good_querystring, redirect_url )
+        ## make good sersol-dct
+        sersol_dct['diagnostics'][0]['message'] = ''
+        ## rerun tests
+        ( is_bad_issn, redirect_url ) = self.resolver.check_bad_issn( sersol_dct )
+        self.assertEqual( False, is_bad_issn )
+        self.assertEqual( None, redirect_url )
+
+
 
 
 
