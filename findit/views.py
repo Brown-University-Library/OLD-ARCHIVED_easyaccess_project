@@ -118,13 +118,18 @@ def findit_base_resolver( request ):
 
 
 
+    ## add eds fulltext link to serials-solution data-dct if available
+    eds_fulltext_url = fresolver.prep_eds_fulltext_url( querystring )
+    if eds_fulltext_url:
+        sersol_dct = fresolver.add_eds_fulltext_url( eds_fulltext_url, sersol_dct )
+
+
+
     ## if bad issn, remove it and redirect
     ( is_bad_issn, redirect_url ) = fresolver.check_bad_issn( sersol_dct )
     if is_bad_issn:
         alog.info( '`{id}` redirecting to non-issn url, ```{url}```'.format(id=log_id, url=redirect_url) )
         return HttpResponseRedirect( redirect_url )
-
-
 
     ## check for pubmed journal that says it's a book
     sersol_dct = fresolver.check_pubmed_result( sersol_dct )
