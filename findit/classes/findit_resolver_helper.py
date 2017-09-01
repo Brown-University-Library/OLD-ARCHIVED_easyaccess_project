@@ -232,6 +232,20 @@ class FinditResolver( object ):
 
 
 
+    def prep_eds_fulltext_url( self, querystring ):
+        """ Checks querystring for submitted eds fulltext url.
+            Updates it and returns it.
+            Called by views.findit_base_resolver() """
+        return 'foo'
+
+    def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
+        """ Adds fulltext-url to sersol-dct.
+            Called by views.findit_base_resolver() """
+        return 'foo2'
+
+
+
+
     def check_bad_issn( self, sersol_dct ):
         """ Checks for invalid issn and builds redirect url.
             Called by views.findit_base_resolver()
