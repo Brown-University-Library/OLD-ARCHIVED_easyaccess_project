@@ -301,6 +301,8 @@ class FinditResolverTest( TestCase ):
         }
         self.assertEqual( expected_sersol_dct, self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct) )
 
+        # end def test_add_eds_fulltext_url__should_add()
+
 
 
 
