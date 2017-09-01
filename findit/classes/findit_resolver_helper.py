@@ -251,7 +251,7 @@ class FinditResolver( object ):
                             new_holdings_dct = {
                                 'holdingData': {
                                     'databaseId': '',
-                                    'databaseName': '',
+                                    'databaseName': 'EBSCO Discovery Service',
                                     'providerId': '',
                                     'providerName': '',
                                     'startDate': ''},
