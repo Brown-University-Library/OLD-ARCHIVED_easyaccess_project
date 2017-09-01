@@ -97,60 +97,58 @@ issue: "4"
 
 """
 
-def _mapper(key, format):
-        """
-        Maps 360Link citation to RIS.
-        http://en.wikipedia.org/wiki/RIS_(file_format)
 
-        Adding pubmed IDS to the AN field per:
-        http://forums.zotero.org/discussion/5404/pubmed-id/
-        """
-        common = {
-              'creator': 'AU',
-              'date': 'PY',
-              'volume': 'VL',
-              'issue': 'IS',
-              'spage': 'SP',
-              'publisher': 'PB',
-              'publicationPlace': 'CY',
-              'pmid': 'AN',
-        }
-        _j = {
-              'title': 'TI',
-              'source': 'JO',
-              'doi': 'DO',
-        }
-        _b = {
-            'title': 'TI',
-            'source': 'JO',
-            'publicationPlace': 'place',
-        }
-        _j.update(common)
-        _b.update(common)
-        #Treat everything as a book unless it is a journal.
-        if format == 'journal':
-            try:
-                return _j[key]
-            except KeyError:
-                pass
-        else:
-            try:
-                return _b[key]
-            except KeyError:
-                pass
-        #default is to return original key
-        return key
+def _mapper(key, format):
+    """
+    Maps 360Link citation to RIS.
+    http://en.wikipedia.org/wiki/RIS_(file_format)
+
+    Adding pubmed IDS to the AN field per:
+    http://forums.zotero.org/discussion/5404/pubmed-id/
+    """
+    common = {
+        'creator': 'AU',
+        'date': 'PY',
+        'volume': 'VL',
+        'issue': 'IS',
+        'spage': 'SP',
+        'publisher': 'PB',
+        'publicationPlace': 'CY',
+        'pmid': 'AN', }
+    _j = {
+        'title': 'TI',
+        'source': 'JO',
+        'doi': 'DO', }
+    _b = {
+        'title': 'TI',
+        'source': 'JO',
+        'publicationPlace': 'place', }
+    _j.update(common)
+    _b.update(common)
+    # Treat everything as a book unless it is a journal.
+    if format == 'journal':
+        try:
+            return _j[key]
+        except KeyError:
+            pass
+    else:
+        try:
+            return _b[key]
+        except KeyError:
+            pass
+    # default is to return original key
+    return key
 
 
 def ris(citation, format):
     import re
-    #map
+    # map
     ris = dict(map(lambda (key, value): (_mapper(str(key), format), value), citation.items()))
     if format == 'journal':
         ris['TY'] = 'JOUR'
     else:
         ris['TY'] = 'BOOK'
-    #convert to string
+    # convert to string
     out = """Provider: 360 Link
     Database:
     Tagformat:
@@ -158,11 +156,11 @@ def ris(citation, format):
     """
     out = ""
 
-    for k,v in ris.items():
-        #Skip non-RIS keys.
+    for k, v in ris.items():
+        # Skip non-RIS keys.
         if not re.match('[A-Z]{2}', k):
             continue
-        #Munge year
+        # Munge year
         if k == 'PY':
             v = v.split('-')[0] + '///'
         out += "%s  - %s\n" % (k, v)

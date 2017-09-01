@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 #                          encoded_path)
 #     return { 'login_link': ll }
 
+
 def debug_mode(request):
     from app_settings import DEBUG
     return {'debug_mode': DEBUG}
-
