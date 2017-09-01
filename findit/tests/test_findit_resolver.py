@@ -208,7 +208,7 @@ class FinditResolverTest( TestCase ):
     ######################################################################
     ## add add_eds_fulltext_url()
 
-    def test_add_eds_fulltext_url(self):
+    def test_add_eds_fulltext_url__should_add(self):
         """ Checks addition of eds url. """
         fulltext_url = 'https://foo/'
         initial_sersol_dct = {
