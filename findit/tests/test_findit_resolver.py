@@ -204,11 +204,59 @@ class FinditResolverTest( TestCase ):
 
 
 
+
+    ######################################################################
+    ## add add_eds_fulltext_url()
+
+    def test_add_eds_fulltext_url(self):
+        """ Checks addition of eds url. """
+        sersol_dct = {
+            u'dbDate': None,
+            u'diagnostics': [],
+            u'echoedQuery': {},
+            u'results': [ {
+                u'linkGroups': [
+                        {
+                            u'holdingData': {
+                                u'databaseId': u'WIK',
+                                u'databaseName': u'Wiley-Blackwell Science, Technology and Medicine Collection',
+                                u'providerId': u'PRVWIB',
+                                u'providerName': u'Wiley-Blackwell',
+                                u'startDate': u'1969-01-01'},
+                            u'type': u'holding',
+                            u'url': {
+                                u'article': u'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
+                                u'issue': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/resolve/openurl?genre=issue&eissn=1095-8312&volume=102&issue=4',
+                                u'journal': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1095-8312',
+                                u'source': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com.revproxy.brown.edu/journal/10.1107/S20532296'}},
+                        {
+                            u'holdingData': {
+                                u'databaseId': u'EAP',
+                                u'databaseName': u'Academic Search Premier',
+                                u'endDate': u'2015-03-30',
+                                u'providerId': u'PRVEBS',
+                                u'providerName': u'EBSCOhost',
+                                u'startDate': u'2003-01-01'},
+                            u'type': u'holding',
+                            u'url': {
+                                u'article': u'https://login.revproxy.brown.edu/login?url=http://openurl.ebscohost.com/linksvc/linking.aspx?genre=article&issn=0024-4066&date=2011&volume=102&issue=4&spage=715&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+in+East+Asia+PHYLOGENY+OF+TIGER+BEETLES+IN+EAST+ASIA&aulast=SOTA&aufirst=TEIJI',
+                                u'journal': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph&jid=JT0&scope=site',
+                                u'source': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph'}}
+                        ]
+                    }
+                ],
+            u'version': u'1.0'
+            }
+        self.assertEqual( 2, 3 )
+
+
+
+
     ######################
     ## check_bad_issn() ##
 
     def test_check_bad_issn(self):
-        """ Tests bad-issn handling. """
+        """ Checks bad-issn handling. """
         sersol_dct = {
             u'dbDate': u'foo',
             u'diagnostics': [{
@@ -243,10 +291,6 @@ class FinditResolverTest( TestCase ):
         ( is_bad_issn, redirect_url ) = self.resolver.check_bad_issn( sersol_dct )
         self.assertEqual( False, is_bad_issn )
         self.assertEqual( None, redirect_url )
-
-
-
-
 
     ###########################
     ## check_pubmed_result() ##
