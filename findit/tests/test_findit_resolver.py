@@ -376,8 +376,13 @@ class FinditResolverTest( TestCase ):
             'dbDate': None,
             'diagnostics': [],
             'echoedQuery': {},
-            'results': [ {
-                'linkGroups': [ {
+            'results': [
+                {
+                'linkGroups': []
+                },
+                {
+                'linkGroups': [
+                    {
                     'holdingData': {
                         'databaseId': '',
                         'databaseName': 'EBSCO Discovery Service',
@@ -390,8 +395,10 @@ class FinditResolverTest( TestCase ):
                         'issue': '',
                         'journal': '',
                         'source': ''}
-                }, ]
-            } ],
+                    },
+                    ]
+                }
+            ],
             'version': '1.0'
         }
         self.assertEqual( expected_sersol_dct, self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct) )
