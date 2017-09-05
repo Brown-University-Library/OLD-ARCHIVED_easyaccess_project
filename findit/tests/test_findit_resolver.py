@@ -208,13 +208,15 @@ class FinditResolverTest( TestCase ):
     ######################################################################
     ## add add_eds_fulltext_url()
 
-    def test_prep_eds_fulltext_url__url_found(self):
+    def test_prep_eds_fulltext_url__encoded_url_found(self):
         """ Checks extract of eds url from querystring when present. """
-        querystring = 'genre=article&issn=03515796&title=International%20review%20of%20the%20aesthetics%20and%20sociology%20of%20music&volume=10&issue=1&date=19790601&atitle=The%20Orpheon%20societies%3A%20%27Music%20for%20the%20workers%27%20in%20Second-Empire%20France&spage=47&pages=&sid=EBSCO:RILM%20Abstracts%20of%20Music%20Literature%20%281967%20to%20Present%20only%29&aulast=Fulcher,%20Jane%20F.&ebscoperma_link=http://search.ebscohost.com/login.aspx?direct=true&site=eds-live&scope=site&db=rih&AN=A406989'
+        querystring = 'genre=article&issn=03515796&title=International%20review%20of%20the%20aesthetics%20and%20sociology%20of%20music&volume=10&issue=1&date=19790601&atitle=The%20Orpheon%20societies%3A%20%27Music%20for%20the%20workers%27%20in%20Second-Empire%20France&spage=47&pages=&sid=EBSCO:RILM%20Abstracts%20of%20Music%20Literature%20%281967%20to%20Present%20only%29&aulast=Fulcher,%20Jane%20F.&ebscoperma_link=http%3A%2F%2Fsearch.ebscohost.com%2Flogin.aspx%3Fdirect%3Dtrue%26site%3Deds-live%26scope%3Dsite%26db%3Drih%26AN%3DA406989'
         self.assertEqual(
             'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/login.aspx?direct=true&site=eds-live&scope=site&db=rih&AN=A406989',
-            self.resolver.test_prep_eds_fulltext_url( querystring )
+            self.resolver.prep_eds_fulltext_url( querystring )
             )
+
+    # test__no_eds_fulltext
 
 
 
