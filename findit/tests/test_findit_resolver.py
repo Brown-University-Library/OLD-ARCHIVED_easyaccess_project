@@ -208,8 +208,8 @@ class FinditResolverTest( TestCase ):
     ######################################################################
     ## add add_eds_fulltext_url()
 
-    def test_add_eds_fulltext_url__should_add(self):
-        """ Checks addition of eds url. """
+    def test_add_eds_fulltext_url__360_direct_links_exist(self):
+        """ Checks addition of eds url when 360Link direct-links are found. """
         fulltext_url = 'https://foo/'
         initial_sersol_dct = {
             u'dbDate': None,
@@ -283,7 +283,7 @@ class FinditResolverTest( TestCase ):
                         {
                             'holdingData': {
                                 'databaseId': '',
-                                'databaseName': '',
+                                'databaseName': 'EBSCO Discovery Service',
                                 'providerId': '',
                                 'providerName': '',
                                 'startDate': ''},
@@ -301,8 +301,45 @@ class FinditResolverTest( TestCase ):
         }
         self.assertEqual( expected_sersol_dct, self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct) )
 
-        # end def test_add_eds_fulltext_url__should_add()
+        # end def test_add_eds_fulltext_url__360_direct_links_exist()
 
+    def test_add_eds_fulltext_url__NO_360_direct_links_exist(self):
+        """ Checks addition of eds url when 360Link direct-links are _not_ found. """
+        fulltext_url = 'https://foo/'
+        initial_sersol_dct = {
+            'dbDate': None,
+            'diagnostics': [],
+            'echoedQuery': {},
+            'results': [ {
+                'linkGroups': [],
+            } ],
+            'version': '1.0'
+        }
+        expected_sersol_dct = {
+            'dbDate': None,
+            'diagnostics': [],
+            'echoedQuery': {},
+            'results': [ {
+                'linkGroups': [ {
+                    'holdingData': {
+                        'databaseId': '',
+                        'databaseName': 'EBSCO Discovery Service',
+                        'providerId': '',
+                        'providerName': '',
+                        'startDate': ''},
+                    'type': 'holding',
+                    'url': {
+                        'article': 'https://login.revproxy.brown.edu/login?url=https://foo/',
+                        'issue': '',
+                        'journal': '',
+                        'source': ''}
+                }, ]
+            } ],
+            'version': '1.0'
+        }
+        self.assertEqual( expected_sersol_dct, self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct) )
+
+        # end def test_add_eds_fulltext_url__NO_360_direct_links_exist()
 
 
 
