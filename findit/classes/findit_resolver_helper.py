@@ -252,31 +252,71 @@ class FinditResolver( object ):
     def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
         """ Adds fulltext-url to sersol-dct.
             Called by views.findit_base_resolver() """
+        add_linkgroup = False
         if 'results' in sersol_dct.keys():
             if type( sersol_dct['results'] ) == list:
                 for results_element in sersol_dct['results']:
-                    # log.debug( 'results_element, ```%s```' % pprint.pformat(results_element) )
+                    log.debug( 'results_element, ```%s```' % pprint.pformat(results_element) )
                     ( key, value_lst ) = results_element.items()[0]
                     if key == 'linkGroups':
+                        log.debug( 'linkGroups key found' )
                         if type( results_element['linkGroups'] ) == list:
-                            new_holdings_dct = {
-                                'holdingData': {
-                                    'databaseId': '',
-                                    'databaseName': 'EBSCO Discovery Service',
-                                    'providerId': '',
-                                    'providerName': '',
-                                    'startDate': ''},
-                                'type': 'holding',
-                                'url': {
-                                    'article': 'https://login.revproxy.brown.edu/login?url=%s' % eds_fulltext_url,
-                                    'issue': '',
-                                    'journal': '',
-                                    'source': ''}
-                                }
-                            results_element['linkGroups'].append(new_holdings_dct)
+                            log.debug( 'linkGroups is of type list' )
+                            add_linkgroup = True
                             break
+        if add_linkgroup is True:
+            new_linkgroup = {
+                'linkGroups': [
+                    {
+                    'holdingData': {
+                        'databaseId': '',
+                        'databaseName': 'EBSCO Discovery Service',
+                        'providerId': '',
+                        'providerName': '',
+                        'startDate': ''},
+                    'type': 'holding',
+                    'url': {
+                        'article': 'https://login.revproxy.brown.edu/login?url=%s' % eds_fulltext_url,
+                        'issue': '',
+                        'journal': '',
+                        'source': ''}
+                    },
+                ]
+            }
+
+            sersol_dct['results'].append(new_linkgroup)
+
         log.debug( 'returning sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
+
+    # def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
+    #     """ Adds fulltext-url to sersol-dct.
+    #         Called by views.findit_base_resolver() """
+    #     if 'results' in sersol_dct.keys():
+    #         if type( sersol_dct['results'] ) == list:
+    #             for results_element in sersol_dct['results']:
+    #                 log.debug( 'results_element, ```%s```' % pprint.pformat(results_element) )
+    #                 ( key, value_lst ) = results_element.items()[0]
+    #                 if key == 'linkGroups':
+    #                     if type( results_element['linkGroups'] ) == list:
+    #                         new_holdings_dct = {
+    #                             'holdingData': {
+    #                                 'databaseId': '',
+    #                                 'databaseName': 'EBSCO Discovery Service',
+    #                                 'providerId': '',
+    #                                 'providerName': '',
+    #                                 'startDate': ''},
+    #                             'type': 'holding',
+    #                             'url': {
+    #                                 'article': 'https://login.revproxy.brown.edu/login?url=%s' % eds_fulltext_url,
+    #                                 'issue': '',
+    #                                 'journal': '',
+    #                                 'source': ''}
+    #                             }
+    #                         results_element['linkGroups'].append(new_holdings_dct)
+    #                         break
+    #     log.debug( 'returning sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
+    #     return sersol_dct
 
 
 
