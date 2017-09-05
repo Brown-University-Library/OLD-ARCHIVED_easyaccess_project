@@ -116,14 +116,10 @@ def findit_base_resolver( request ):
     sersol_dct = fresolver.get_sersol_dct( request.scheme, request.get_host(), querystring )
     alog.info( '`{}` sersol data-dct prepared'.format(log_id) )
 
-
-
-    ## add eds fulltext link to serials-solution data-dct if available
+    ## if available, add eds fulltext link to serials-solution data-dct
     eds_fulltext_url = fresolver.prep_eds_fulltext_url( querystring )
     if eds_fulltext_url:
         sersol_dct = fresolver.add_eds_fulltext_url( eds_fulltext_url, sersol_dct )
-
-
 
     ## if bad issn, remove it and redirect
     ( is_bad_issn, redirect_url ) = fresolver.check_bad_issn( sersol_dct )
