@@ -216,7 +216,22 @@ class FinditResolverTest( TestCase ):
             self.resolver.prep_eds_fulltext_url( querystring )
             )
 
-    # test__no_eds_fulltext
+    def test_prep_eds_fulltext_url__url_found_but_not_encoded(self):
+        """ Checks extract of eds url from querystring when present but not encoded. """
+        querystring = 'genre=article&issn=03515796&title=International%20review%20of%20the%20aesthetics%20and%20sociology%20of%20music&volume=10&issue=1&date=19790601&atitle=The%20Orpheon%20societies%3A%20%27Music%20for%20the%20workers%27%20in%20Second-Empire%20France&spage=47&pages=&sid=EBSCO:RILM%20Abstracts%20of%20Music%20Literature%20%281967%20to%20Present%20only%29&aulast=Fulcher,%20Jane%20F.&ebscoperma_link=http://search.ebscohost.com/login.aspx?direct=true&site=eds-live&scope=site&db=rih&AN=A406989'
+        self.assertEqual(
+            None,
+            self.resolver.prep_eds_fulltext_url( querystring )
+            )
+
+    def test_prep_eds_fulltext_url__no_url_found(self):
+        """ Checks extract of eds url from querystring when _not_ present. """
+        querystring = 'genre=article&issn=03515796&title=International%20review%20of%20the%20aesthetics%20and%20sociology%20of%20music&volume=10&issue=1&date=19790601&atitle=The%20Orpheon%20societies%3A%20%27Music%20for%20the%20workers%27%20in%20Second-Empire%20France&spage=47&pages=&sid=EBSCO:RILM%20Abstracts%20of%20Music%20Literature%20%281967%20to%20Present%20only%29&aulast=Fulcher,%20Jane%20F.'
+        self.assertEqual(
+            None,
+            self.resolver.prep_eds_fulltext_url( querystring )
+            )
+
 
 
 

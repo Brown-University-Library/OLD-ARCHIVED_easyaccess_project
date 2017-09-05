@@ -239,11 +239,28 @@ class FinditResolver( object ):
         eds_fulltext_url = None
         parse_result = urlparse.parse_qs( querystring )
         log.debug( 'parse_result, ```%s```' % pprint.pformat(parse_result) )
-        url_lst = parse_result.get( 'ebscoperma_link', None )
+        url_lst = parse_result.get( 'ebscoperma_link', None )  # single-element list
         if url_lst:
-            eds_fulltext_url = 'https://login.revproxy.brown.edu/login?url=%s' % url_lst[0]
+            probable_url = url_lst[0]
+            parse2_result = urlparse.parse_qs( probable_url )
+            log.debug( 'parse2_result, ```%s```' % pprint.pformat(parse2_result) )
+            if 'AN' in parse2_result.keys() and 'db' in parse2_result.keys():
+                eds_fulltext_url = 'https://login.revproxy.brown.edu/login?url=%s' % probable_url  # url-param intentionally not encoded for revproxy
         log.debug( 'eds_fulltext_url, ```%s```' % eds_fulltext_url )
         return eds_fulltext_url
+
+    # def prep_eds_fulltext_url( self, querystring ):
+    #     """ Checks querystring for submitted eds fulltext url.
+    #         Updates it and returns it.
+    #         Called by views.findit_base_resolver() """
+    #     eds_fulltext_url = None
+    #     parse_result = urlparse.parse_qs( querystring )
+    #     log.debug( 'parse_result, ```%s```' % pprint.pformat(parse_result) )
+    #     url_lst = parse_result.get( 'ebscoperma_link', None )
+    #     if url_lst:
+    #         eds_fulltext_url = 'https://login.revproxy.brown.edu/login?url=%s' % url_lst[0]
+    #     log.debug( 'eds_fulltext_url, ```%s```' % eds_fulltext_url )
+    #     return eds_fulltext_url
 
     def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
         """ Adds fulltext-url to sersol-dct.
