@@ -37,8 +37,8 @@ class BulSerSol(Resolved):
         date = self.citation.get( 'date', None )
         if date:
             date = date[:4]
-            log.debug( 'len( PrintTitle.objects.all() ), `%s`' % len(PrintTitle.objects.all()) )
-            log.debug( 'issns, `%s`; date, `%s`' % (issns, date) )
+            # log.debug( 'len( PrintTitle.objects.all() ), `%s`' % len(PrintTitle.objects.all()) )
+            # log.debug( 'issns, `%s`; date, `%s`' % (issns, date) )
             print_set = PrintTitle.objects.filter(
                 issn__in=issns, start__lte=date, end__gte=date)
             rslt = print_set
@@ -100,7 +100,7 @@ class BulSerSol(Resolved):
         A low or negative value will bring the link to the top of the list.
         A low or negative value will push the link to the bottom of the list.
         """
-        log.debug( 'link_groups initially, ```%s```' % pprint.pformat(link_groups) )
+        # log.debug( 'link_groups initially, ```%s```' % pprint.pformat(link_groups) )
         criteria = DB_SORT_BY
         def _mapped(provider):
             if provider in DB_PUSH_TOP:
