@@ -210,6 +210,17 @@ FINDIT_SUMMON_KEY = os.environ['EZACS__FINDIT_SUMMON_KEY']
 
 FINDIT_SERVICE_ACTIVE = True  # notes said "Turn on or off." -- why would this ever be off?
 
+# FINDIT_DB_SORT_BY = [
+#     'American Association for the Advancement of Science',
+#     'Nature Publishing',
+#     'Massachusetts Medical Society',
+#     'American Medical Association',
+#     'Ovid',
+#     'Project MUSE',
+#     'JSTOR',
+#     'Wiley-Blackwell',
+#     'Elsevier',
+#     ]
 FINDIT_DB_SORT_BY = [
     'American Association for the Advancement of Science',
     'Nature Publishing',
@@ -220,6 +231,7 @@ FINDIT_DB_SORT_BY = [
     'JSTOR',
     'Wiley-Blackwell',
     'Elsevier',
+    'EBSCO Discovery Service'
     ]
 FINDIT_DB_PUSH_TOP = []
 FINDIT_DB_PUSH_BOTTOM = ['EBSCOhost', 'LexisNexis']
