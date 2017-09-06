@@ -100,6 +100,7 @@ class BulSerSol(Resolved):
         A low or negative value will bring the link to the top of the list.
         A low or negative value will push the link to the bottom of the list.
         """
+        log.debug( 'link_groups initially, ```%s```' % pprint.pformat(link_groups) )
         criteria = DB_SORT_BY
         def _mapped(provider):
             if provider in DB_PUSH_TOP:
@@ -116,6 +117,7 @@ class BulSerSol(Resolved):
                     #dbs not specified are treated the same.
                     return 99
         link_groups.sort(key=lambda x: _mapped(x['holdingData']['providerName']))
+        log.debug( 'link_groups sorted, ```%s```' % pprint.pformat(link_groups) )
         return link_groups
 
     def access_points(self):
