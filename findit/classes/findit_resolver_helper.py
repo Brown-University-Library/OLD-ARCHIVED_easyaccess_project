@@ -268,7 +268,7 @@ class FinditResolver( object ):
                                     'startDate': ''},
                                 'type': 'holding',
                                 'url': {
-                                    'article': 'https://login.revproxy.brown.edu/login?url=%s' % eds_fulltext_url,
+                                    'article': eds_fulltext_url,
                                     'issue': '',
                                     'journal': '',
                                     'source': ''}

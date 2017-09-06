@@ -238,7 +238,6 @@ class FinditResolverTest( TestCase ):
     def test_add_eds_fulltext_url__360_direct_links_exist(self):
         """ Checks addition of eds url when 360Link direct-links are found. """
         fulltext_url = 'https://foo/'
-
         initial_sersol_dct = {
              u'dbDate': None,
              u'diagnostics': [],
@@ -280,7 +279,7 @@ class FinditResolverTest( TestCase ):
                                                              u'providerName': u'EBSCO Discovery Service',
                                                              u'startDate': u''},
                                             u'type': u'holding',
-                                            u'url': {u'article': u'https://login.revproxy.brown.edu/login?url=https://foo/',
+                                            u'url': {u'article': u'https://foo/',
                                                      u'issue': u'',
                                                      u'journal': u'',
                                                      u'source': u''}}]},
@@ -336,7 +335,7 @@ class FinditResolverTest( TestCase ):
                         'startDate': ''},
                     'type': 'holding',
                     'url': {
-                        'article': 'https://login.revproxy.brown.edu/login?url=https://foo/',
+                        'article': 'https://foo/',
                         'issue': '',
                         'journal': '',
                         'source': ''}
