@@ -234,7 +234,7 @@ FINDIT_DB_SORT_BY = [
     'EBSCO Discovery Service'
     ]
 FINDIT_DB_PUSH_TOP = []
-FINDIT_DB_PUSH_BOTTOM = ['EBSCOhost', 'LexisNexis']
+FINDIT_DB_PUSH_BOTTOM = ['EBSCOhost', 'LexisNexis', 'EBSCO Discovery Service']
 
 FINDIT_GSCHOLAR = os.environ['EZACS__FINDIT_GSCHOLAR']
 
