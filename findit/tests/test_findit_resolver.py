@@ -238,127 +238,75 @@ class FinditResolverTest( TestCase ):
     def test_add_eds_fulltext_url__360_direct_links_exist(self):
         """ Checks addition of eds url when 360Link direct-links are found. """
         fulltext_url = 'https://foo/'
+
         initial_sersol_dct = {
-            u'dbDate': None,
-            u'diagnostics': [],
-            u'echoedQuery': {},
-            u'results': [
-                {
-                    'linkGroups': [
-                        {
-                        'citation': {},
-                        'holdingData': {},
-                        'etc': '...'
-                        },
-                    ]  # there can be more than one set of linkGroups
-                },
-                {
-                u'linkGroups': [
-                    {
-                        u'holdingData': {
-                            u'databaseId': u'WIK',
-                            u'databaseName': u'Wiley-Blackwell Science, Technology and Medicine Collection',
-                            u'providerId': u'PRVWIB',
-                            u'providerName': u'Wiley-Blackwell',
-                            u'startDate': u'1969-01-01'},
-                        u'type': u'holding',
-                        u'url': {
-                            u'article': u'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
-                            u'issue': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/resolve/openurl?genre=issue&eissn=1095-8312&volume=102&issue=4',
-                            u'journal': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1095-8312',
-                            u'source': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com.revproxy.brown.edu/journal/10.1107/S20532296'}
-                    },
-                    {
-                        u'holdingData': {
-                            u'databaseId': u'EAP',
-                            u'databaseName': u'Academic Search Premier',
-                            u'endDate': u'2015-03-30',
-                            u'providerId': u'PRVEBS',
-                            u'providerName': u'EBSCOhost',
-                            u'startDate': u'2003-01-01'},
-                        u'type': u'holding',
-                        u'url': {
-                            u'article': u'https://login.revproxy.brown.edu/login?url=http://openurl.ebscohost.com/linksvc/linking.aspx?genre=article&issn=0024-4066&date=2011&volume=102&issue=4&spage=715&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+in+East+Asia+PHYLOGENY+OF+TIGER+BEETLES+IN+EAST+ASIA&aulast=SOTA&aufirst=TEIJI',
-                            u'journal': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph&jid=JT0&scope=site',
-                            u'source': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph'}
-                    }
-                ]
-                }
-            ],
-            u'version': u'1.0'
-            }
+             u'dbDate': None,
+             u'diagnostics': [],
+             u'echoedQuery': {},
+             u'results': [{'linkGroups': [{'citation': {},
+                                           'etc': '...',
+                                           'holdingData': {}}]},
+                          {u'linkGroups': [{u'holdingData': {u'databaseId': u'WIK',
+                                                             u'databaseName': u'Wiley-Blackwell Science, Technology and Medicine Collection',
+                                                             u'providerId': u'PRVWIB',
+                                                             u'providerName': u'Wiley-Blackwell',
+                                                             u'startDate': u'1969-01-01'},
+                                            u'type': u'holding',
+                                            u'url': {u'article': u'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
+                                                     u'issue': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/resolve/openurl?genre=issue&eissn=1095-8312&volume=102&issue=4',
+                                                     u'journal': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1095-8312',
+                                                     u'source': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com.revproxy.brown.edu/journal/10.1107/S20532296'}},
+                                           {u'holdingData': {u'databaseId': u'EAP',
+                                                             u'databaseName': u'Academic Search Premier',
+                                                             u'endDate': u'2015-03-30',
+                                                             u'providerId': u'PRVEBS',
+                                                             u'providerName': u'EBSCOhost',
+                                                             u'startDate': u'2003-01-01'},
+                                            u'type': u'holding',
+                                            u'url': {u'article': u'https://login.revproxy.brown.edu/login?url=http://openurl.ebscohost.com/linksvc/linking.aspx?genre=article&issn=0024-4066&date=2011&volume=102&issue=4&spage=715&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+in+East+Asia+PHYLOGENY+OF+TIGER+BEETLES+IN+EAST+ASIA&aulast=SOTA&aufirst=TEIJI',
+                                                     u'journal': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph&jid=JT0&scope=site',
+                                                     u'source': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph'}}]}],
+             u'version': u'1.0'}
         expected_sersol_dct = {
-            u'dbDate': None,
-            u'diagnostics': [],
-            u'echoedQuery': {},
-            u'results': [
-                {
-                    'linkGroups': [
-                        {
-                        'citation': {},
-                        'holdingData': {},
-                        'etc': '...'
-                        },
-                    ]  # there can be more than one set of linkGroups
-                },
-                {
-                    u'linkGroups': [
-                    {
-                        u'holdingData': {
-                            u'databaseId': u'WIK',
-                            u'databaseName': u'Wiley-Blackwell Science, Technology and Medicine Collection',
-                            u'providerId': u'PRVWIB',
-                            u'providerName': u'Wiley-Blackwell',
-                            u'startDate': u'1969-01-01'},
-                        u'type': u'holding',
-                        u'url': {
-                            u'article': u'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
-                            u'issue': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/resolve/openurl?genre=issue&eissn=1095-8312&volume=102&issue=4',
-                            u'journal': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1095-8312',
-                            u'source': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com.revproxy.brown.edu/journal/10.1107/S20532296'}
-                    },
-                    {
-                        u'holdingData': {
-                            u'databaseId': u'EAP',
-                            u'databaseName': u'Academic Search Premier',
-                            u'endDate': u'2015-03-30',
-                            u'providerId': u'PRVEBS',
-                            u'providerName': u'EBSCOhost',
-                            u'startDate': u'2003-01-01'},
-                        u'type': u'holding',
-                        u'url': {
-                            u'article': u'https://login.revproxy.brown.edu/login?url=http://openurl.ebscohost.com/linksvc/linking.aspx?genre=article&issn=0024-4066&date=2011&volume=102&issue=4&spage=715&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+in+East+Asia+PHYLOGENY+OF+TIGER+BEETLES+IN+EAST+ASIA&aulast=SOTA&aufirst=TEIJI',
-                            u'journal': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph&jid=JT0&scope=site',
-                            u'source': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph'}
-                    },
-                    ]
-                },
-
-                {
-                    u'linkGroups': [
-                    {
-                        'holdingData': {
-                            'databaseId': '',
-                            'databaseName': 'EBSCO Discovery Service',
-                            'providerId': '',
-                            'providerName': '',
-                            'startDate': ''},
-                        'type': 'holding',
-                        'url': {
-                            'article': 'https://login.revproxy.brown.edu/login?url=https://foo/',
-                            'issue': '',
-                            'journal': '',
-                            'source': ''}
-                    },
-                    ]
-                }
-
-            ],  # end `'results': [`
-            u'version': u'1.0'
-        }
+             u'dbDate': None,
+             u'diagnostics': [],
+             u'echoedQuery': {},
+             u'results': [{u'linkGroups': [{u'citation': {},
+                                            u'etc': u'...',
+                                            u'holdingData': {}},
+                                           {u'holdingData': {u'databaseId': u'',
+                                                             u'databaseName': u'EBSCO Discovery Service',
+                                                             u'providerId': u'',
+                                                             u'providerName': u'EBSCO Discovery Service',
+                                                             u'startDate': u''},
+                                            u'type': u'holding',
+                                            u'url': {u'article': u'https://login.revproxy.brown.edu/login?url=https://foo/',
+                                                     u'issue': u'',
+                                                     u'journal': u'',
+                                                     u'source': u''}}]},
+                          {u'linkGroups': [{u'holdingData': {u'databaseId': u'WIK',
+                                                             u'databaseName': u'Wiley-Blackwell Science, Technology and Medicine Collection',
+                                                             u'providerId': u'PRVWIB',
+                                                             u'providerName': u'Wiley-Blackwell',
+                                                             u'startDate': u'1969-01-01'},
+                                            u'type': u'holding',
+                                            u'url': {u'article': u'https://login.revproxy.brown.edu/login?url=http://doi.wiley.com/10.1111/j.1095-8312.2011.01617.x',
+                                                     u'issue': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/resolve/openurl?genre=issue&eissn=1095-8312&volume=102&issue=4',
+                                                     u'journal': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1095-8312',
+                                                     u'source': u'https://login.revproxy.brown.edu/login?url=http://onlinelibrary.wiley.com.revproxy.brown.edu/journal/10.1107/S20532296'}},
+                                           {u'holdingData': {u'databaseId': u'EAP',
+                                                             u'databaseName': u'Academic Search Premier',
+                                                             u'endDate': u'2015-03-30',
+                                                             u'providerId': u'PRVEBS',
+                                                             u'providerName': u'EBSCOhost',
+                                                             u'startDate': u'2003-01-01'},
+                                            u'type': u'holding',
+                                            u'url': {u'article': u'https://login.revproxy.brown.edu/login?url=http://openurl.ebscohost.com/linksvc/linking.aspx?genre=article&issn=0024-4066&date=2011&volume=102&issue=4&spage=715&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+in+East+Asia+PHYLOGENY+OF+TIGER+BEETLES+IN+EAST+ASIA&aulast=SOTA&aufirst=TEIJI',
+                                                     u'journal': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph&jid=JT0&scope=site',
+                                                     u'source': u'https://login.revproxy.brown.edu/login?url=http://search.ebscohost.com/direct.asp?db=aph'}}]}],
+             u'version': u'1.0'}
         self.assertEqual( expected_sersol_dct, self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct) )
-
-        # end def test_add_eds_fulltext_url__360_direct_links_exist()
+        ## end def test_add_eds_fulltext_url__360_direct_links_exist()
 
     def test_add_eds_fulltext_url__NO_360_direct_links_exist(self):
         """ Checks addition of eds url when 360Link direct-links are _not_ found. """
@@ -378,16 +326,13 @@ class FinditResolverTest( TestCase ):
             'echoedQuery': {},
             'results': [
                 {
-                'linkGroups': []
-                },
-                {
                 'linkGroups': [
                     {
                     'holdingData': {
                         'databaseId': '',
                         'databaseName': 'EBSCO Discovery Service',
                         'providerId': '',
-                        'providerName': '',
+                        'providerName': 'EBSCO Discovery Service',
                         'startDate': ''},
                     'type': 'holding',
                     'url': {
@@ -401,9 +346,10 @@ class FinditResolverTest( TestCase ):
             ],
             'version': '1.0'
         }
-        self.assertEqual( expected_sersol_dct, self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct) )
-
-        # end def test_add_eds_fulltext_url__NO_360_direct_links_exist()
+        returned_sersol_dct = self.resolver.add_eds_fulltext_url(fulltext_url, initial_sersol_dct)
+        log.debug( 'returned_sersol_dct, ```%s```' % pprint.pformat(returned_sersol_dct) )
+        self.assertEqual( expected_sersol_dct, returned_sersol_dct )
+        ## end def test_add_eds_fulltext_url__NO_360_direct_links_exist()
 
 
 
