@@ -230,11 +230,6 @@ FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of ref
 # misc settings to properly categorize
 # ===============================================================================
 
-SHIB_EMAIL = os.environ['EZACS__SHIB_EMAIL']
-SHIB_USERNAME = os.environ['EZACS__SHIB_USERNAME']
-SHIBBOLETH_LOGOUT_URL = os.environ['EZACS__SHIBBOLETH_LOGOUT_URL']
-SHIBBOLETH_ATTRIBUTE_MAP = json.loads( os.environ['EZACS__SHIBBOLETH_ATTRIBUTE_MAP_JSON'] )
-
 DELIVERY_SERVICE_CHECK_STRING = os.environ['EZACS__DELIVERY_SERVICE_CHECK_STRING']
 
 ## Previous note:
