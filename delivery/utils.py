@@ -139,17 +139,6 @@ class JSONResponseMixin(object):
                 pass
         return json.dumps(context)
 
-#Login optional mixin
-from django.utils.decorators import method_decorator
-#shibboleth helpers
-# from shibboleth.decorators import login_optional
-class LoginOptionalMixin(object):
-    u"""Will log the user in if Shib attributes found."""
-
-    # @method_decorator(login_optional)
-    def dispatch(self, *args, **kwargs):
-        return super(LoginOptionalMixin, self).dispatch(*args, **kwargs)
-
 
 class PublicTerminalMixin(object):
     """
@@ -172,7 +161,7 @@ class PublicTerminalMixin(object):
         return ctx
 
 
-class DeliveryBaseView(PublicTerminalMixin, TemplateView, LoginOptionalMixin, JSONResponseMixin):
+class DeliveryBaseView(PublicTerminalMixin, TemplateView, JSONResponseMixin):
     template_name = 'delivery/index.html'
     default_json = False
 
