@@ -35,13 +35,10 @@ def has_service(func):
     #Check to see if this is a dev environment.
     #If it is, return.
     if request.user.is_authenticated():
-        if request.META.get('SERVER_NAME') in settings.DEV_SERVERS:
-            pass
-        else:
-          shib = request.session.get('shib')
-          if (not shib) or (SERVICE_CHECK_STRING not in shib.get('membership', '')):
-              c = make_denied_context(request)
-              return HttpResponse(c)
+      shib = request.session.get('shib')
+      if (not shib) or (SERVICE_CHECK_STRING not in shib.get('membership', '')):
+          c = make_denied_context(request)
+          return HttpResponse(c)
     return func(request, *args, **kwargs)
   return decorator
 
