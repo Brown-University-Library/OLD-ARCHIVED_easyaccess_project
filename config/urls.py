@@ -14,8 +14,6 @@ urlpatterns = [
 
     url( r'^admin/', include(admin.site.urls) ),
 
-    # url( r'^user/', include('shibboleth.urls', namespace='shibboleth') ),  # will likely retire
-
     url( r'^borrow/', include('delivery.urls', namespace='delivery') ),  # submits to easyBorrow
 
     url( r'^find/', include('findit.urls', namespace='findit') ),  # resolver -- enhances, finds, redirects
@@ -24,7 +22,6 @@ urlpatterns = [
 
     url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),  # will likely retire
 
-    # url( r'^$',  RedirectView.as_view(url='find/', permanent=True) ),
     url( r'^$',  RedirectView.as_view(pattern_name='findit:findit_base_resolver_url') ),
 
     ]
