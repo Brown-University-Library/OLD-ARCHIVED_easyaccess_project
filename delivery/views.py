@@ -309,15 +309,14 @@ def process_request( request ):
     # resource_obj = process_view_helper.grab_resource( querystring )
 
     ## get user object
-    # user_obj = process_view_helper.grab_user( request.META.get('Shibboleth-eppn', '') )
+    # user_obj = process_view_helper.grab_user( request.META.get(SHIB_EPPN_LABEL, '') )
 
     ## check for recent request
     # if process_view_helper.check_recently_requested( user_obj, resource_obj ) is True:
     #     request.session['message'] = "You've recently requested this item and should soon receive an update email."
     #     return HttpResponseRedirect( reverse('delivery:message_url') )
 
-    ## check for new-user
-    # shib_dct = json.loads( request.session.get('user_json', '{}') )
+    ## check for new-illiad-user
     try:
         illiad_helper.check_illiad( shib_dct )
     except Exception as e:
@@ -325,7 +324,6 @@ def process_request( request ):
 
     ## save new request
     # process_view_helper.save_request( user_obj, resource_obj )
-    # shib_dct = json.loads( request.session.get('user_json', '{}') )
     bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
     ezb_db_id = process_view_helper.save_to_easyborrow( shib_dct, bib_dct, request.session.get('last_querystring', '') )
 
