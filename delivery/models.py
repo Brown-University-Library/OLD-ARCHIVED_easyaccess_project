@@ -405,8 +405,6 @@ def illiad_client(request, make_request=False):
         #If blocked comes back in the post key, stop here with appropriate status.
         blocked = illiad_post_key.get('blocked', None)
         errors = illiad_post_key.get('errors', None)
-        #for mocking errors
-        #errors = True
         if blocked:
             out['blocked'] = blocked
             ilog.info("%s is blocked in Illiad." % ill_username)
@@ -420,13 +418,6 @@ def illiad_client(request, make_request=False):
             out['message'] = msg
         else:
             submit_status = illiad.make_request(illiad_post_key)
-            #Mock a request for testing.
-#            submit_status = {
-#                           'transaction_number': '1234',
-#                           'submitted': True,
-#                           'error': False,
-#                           'message': None
-#                           }
             out['submit_status'] = submit_status
             #Write the request to the requests table.
             if submit_status['submitted']:
