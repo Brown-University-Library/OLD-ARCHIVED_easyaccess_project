@@ -59,9 +59,7 @@ INSTALLED_APPS = (
     'findit',
     'delivery',
     'django.contrib.admin',
-    # 'south',
     'shorturls',
-    # 'shibboleth',
     'article_request_app'
     )
 
@@ -157,7 +155,6 @@ LOGGING = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    # 'shibboleth.backends.ShibbolethRemoteUserBackend',
     )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -229,14 +226,6 @@ FINDIT_GSCHOLAR = os.environ['EZACS__FINDIT_GSCHOLAR']
 FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of referring sites to not consult Summon for.
 
 
-## ============================================================================
-## shibboleth app settings
-## ============================================================================
-
-SHIB_MOCK_HEADERS = json.loads( os.environ['EZACS__SHIBBOLETH_MOCK_HEADERS_JSON'] )
-SHIB_MOCK_MAP = json.loads( os.environ['EZACS__SHIBBOLETH_MOCK_MAP_JSON'] )
-
-
 # ===============================================================================
 # misc settings to properly categorize
 # ===============================================================================
@@ -254,10 +243,6 @@ DELIVERY_SERVICE_CHECK_STRING = os.environ['EZACS__DELIVERY_SERVICE_CHECK_STRING
 ## Don't know if the old url is still there.
 CLASSIC_EZBORROW = os.environ['EZACS__CLASSIC_EZBORROW']  # url to old landing page.
 CLASSIC_IPS = json.loads( os.environ['EZACS__CLASSIC_IPS_JSON'] )
-
-## for mocking shib
-DEV_SERVERS = json.loads( os.environ['EZACS__DEV_SERVERS_JSON'] )
-TEST_USER = tuple( json.loads(os.environ['EZACS__TEST_USER_JSON']) )
 
 
 ## eof
