@@ -20,7 +20,7 @@ class ShibChecker( object ):
             Called by: article_request_app/classes/login_helper.LoginHelper.grab_user_info()
                        delivery/classes/login_helper.LoginViewHelper.update_user() """
         shib_dct = {}
-        if 'Shibboleth-eppn' in meta_dct:
+        if project_settings.SHIB_EPPN_KEY in meta_dct:
             shib_dct = self.grab_shib_from_meta( meta_dct )
         else:
             if host == '127.0.0.1' and project_settings.DEBUG == True:

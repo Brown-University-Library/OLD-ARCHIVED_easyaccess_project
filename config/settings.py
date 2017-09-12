@@ -232,6 +232,24 @@ FINDIT_SHIB_FRAGMENT = unicode( os.environ['EZACS__FINDIT_SHIB_FRAGMENT'] )
 # common settings -- used different places
 # ===============================================================================
 
+SHIB_AFFILIATION_KEY = unicode( os.environ['EZACS__COMMON_SHIB_AFFILIATION_KEY'] )
+SHIB_AFFILIATIONPRIMARY_KEY = unicode( os.environ['EZACS__COMMON_SHIB_AFFILIATIONPRIMARY_KEY'] )
+SHIB_AFFILIATIONSCOPED_KEY = unicode( os.environ['EZACS__COMMON_SHIB_AFFILIATIONSCOPED_KEY'] )
+SHIB_BARCODE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_BARCODE_KEY'] )
+SHIB_DEPARTMENT_KEY = unicode( os.environ['EZACS__COMMON_SHIB_DEPARTMENT_KEY'] )
+SHIB_ENTITLEMENT_KEY = unicode( os.environ['EZACS__COMMON_SHIB_ENTITLEMENT_KEY'] )
+SHIB_EPPN_KEY = unicode( os.environ['EZACS__COMMON_SHIB_EPPN_KEY'] )
+SHIB_MAIL_KEY = unicode( os.environ['EZACS__COMMON_SHIB_MAIL_KEY'] )
+SHIB_MEMBEROF_KEY = unicode( os.environ['EZACS__COMMON_SHIB_MEMBEROF_KEY'] )
+SHIB_NAMEFIRST_KEY = unicode( os.environ['EZACS__COMMON_SHIB_NAMEFIRST_KEY'] )
+SHIB_NAMELAST_KEY = unicode( os.environ['EZACS__COMMON_SHIB_NAMELAST_KEY'] )
+SHIB_NETID_KEY = unicode( os.environ['EZACS__COMMON_SHIB_NETID_KEY'] )
+SHIB_PHONE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_PHONE_KEY'] )
+SHIB_SHORTID_KEY = unicode( os.environ['EZACS__COMMON_SHIB_SHORTID_KEY'] )
+SHIB_STATUS_KEY = unicode( os.environ['EZACS__COMMON_SHIB_STATUS_KEY'] )
+SHIB_TITLE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_TITLE_KEY'] )
+SHIB_TYPE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_TYPE_KEY'] )
+
 
 # ===============================================================================
 # misc settings to properly categorize
