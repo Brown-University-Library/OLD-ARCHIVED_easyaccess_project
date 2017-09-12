@@ -33,6 +33,7 @@ from django.core.urlresolvers import reverse, get_script_prefix
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseServerError
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.decorators import method_decorator
+from findit import app_settings
 from py360link2 import get_sersol_data, Link360Exception, Resolved
 
 

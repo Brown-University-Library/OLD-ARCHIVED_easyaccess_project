@@ -81,5 +81,7 @@ DB_PUSH_BOTTOM = getattr(settings, 'FINDIT_DB_PUSH_BOTTOM', [])
 ## if true, will take user directly to full text when it's found; if false, will show landing page.
 FLY_TO_FULLTEXT = json.loads( os.environ['EZACS__FINDIT_GO_DIRECT_TO_FULLTEXT_JSON'] )
 
+SHIB_FRAGMENT = unicode( os.environ['EZACS__FINDIT_SHIB_FRAGMENT'] )
+
 
 ## EOF ###
