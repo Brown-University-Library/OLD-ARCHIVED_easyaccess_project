@@ -32,23 +32,21 @@ class ShibChecker( object ):
         """ Extracts shib values from http-header.
             Called by grab_shib_info() """
         shib_dct = {
-            'brown_status': meta_dct.get( 'Shibboleth-brownStatus', '' ),  # eg. 'active'
-            'brown_type': meta_dct.get( 'Shibboleth-brownType', '' ),  # eg. 'Staff'
-            'department': meta_dct.get( 'Shibboleth-department', '' ),
-            'edu_person_primary_affiliation': meta_dct.get( 'Shibboleth-eduPersonPrimaryAffiliation', '' ),  # eg. 'staff'
-            'email': meta_dct.get( 'Shibboleth-mail', '' ).lower(),
-            'eppn': meta_dct.get( 'Shibboleth-eppn', '' ),
-            'id_net': meta_dct.get( 'Shibboleth-brownNetId', '' ),
-            'id_short': meta_dct.get( 'Shibboleth-brownShortId', '' ),
-            'member_of': sorted( meta_dct.get('Shibboleth-isMemberOf', '').split(';') ),  # only dct element that's not a unicode string
-            'name_first': meta_dct.get( 'Shibboleth-givenName', '' ),
-            'name_last': meta_dct.get( 'Shibboleth-sn', '' ),
-            'patron_barcode': meta_dct.get( 'Shibboleth-brownBarCode', '' ),
-            'phone': meta_dct.get( 'Shibboleth-phone', 'unavailable' ),  # valid?
-            'title': meta_dct.get( 'Shibboleth-title', '' ),
+            'brown_status': meta_dct.get( project_settings.SHIB_STATUS_KEY, '' ),  # eg. 'active'
+            'brown_type': meta_dct.get( project_settings.SHIB_TYPE_KEY, '' ),  # eg. 'Staff'
+            'department': meta_dct.get( project_settings.SHIB_DEPARTMENT_KEY, '' ),
+            'edu_person_primary_affiliation': meta_dct.get( project_settings.SHIB_AFFILIATIONPRIMARY_KEY, '' ),  # eg. 'staff'
+            'email': meta_dct.get( project_settings.SHIB_MAIL_KEY, '' ).lower(),
+            'eppn': meta_dct.get( project_settings.SHIB_EPPN_KEY, '' ),
+            'id_net': meta_dct.get( project_settings.SHIB_NETID_KEY, '' ),
+            'id_short': meta_dct.get( project_settings.SHIB_SHORTID_KEY, '' ),
+            'member_of': sorted( meta_dct.get(project_settings.SHIB_MEMBEROF_KEY, '').split(';') ),  # only dct element that's not a unicode string
+            'name_first': meta_dct.get( project_settings.SHIB_NAMEFIRST_KEY, '' ),
+            'name_last': meta_dct.get( project_settings.SHIB_NAMELAST_KEY, '' ),
+            'patron_barcode': meta_dct.get( project_settings.SHIB_BARCODE_KEY, '' ),
+            'phone': meta_dct.get( project_settings.SHIB_PHONE_KEY, 'unavailable' ),  # valid?
+            'title': meta_dct.get( project_settings.SHIB_TITLE_KEY, '' ),
             }
         return shib_dct
 
     # end class ShibChecker
-
-
