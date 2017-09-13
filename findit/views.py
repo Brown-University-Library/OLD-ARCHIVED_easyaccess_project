@@ -251,8 +251,8 @@ def shib_info( request ):
     try:
         shib_dct = { 'datetime': unicode(datetime.datetime.now()), 'ip_perceived': unicode(request.META.get('REMOTE_ADDR', 'unknown')) }
         for key in request.META.keys():
-            if 'Shibboleth-' in key:
-                if key in [ 'Shibboleth-eduPersonAffiliation', 'Shibboleth-eduPersonEntitlement', 'Shibboleth-eduPersonScopedAffiliation', 'Shibboleth-isMemberOf' ]:
+            if settings.FINDIT_SHIB_FRAGMENT in key:
+                if key in [ settings.SHIB_AFFILIATION_KEY, settings.SHIB_ENTITLEMENT_KEY, settings.SHIB_AFFILIATIONSCOPED_KEY, settings.SHIB_MEMBEROF_KEY ]:
                     elements = request.META[key].split( ';' )
                     shib_dct[key] = sorted( elements )
                 else:
