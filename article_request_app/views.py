@@ -40,6 +40,14 @@ def shib_login( request ):
     for key in request.session.keys():
         del request.session[key]
 
+    ## check if localdev
+    localdev_check = False
+    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+        localdev_check = True
+    1/0
+
+
+
     ## build login-handler url, whether it's direct (localdev), or indirect-via-shib
     login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
         ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring), id=log_id

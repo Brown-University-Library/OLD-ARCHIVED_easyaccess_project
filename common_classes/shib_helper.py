@@ -10,6 +10,12 @@ from django.conf import settings as project_settings
 log = logging.getLogger('access')
 
 
+def build_shib_login_url( ):
+    """ Builds a shib Service-Provider login url.
+        This url is to the server Service-Provider login url, with a `?target=` parameter that lets shib know where to redirect the user.
+        Called by: article_request_app.views.shib_login() """
+
+
 class ShibChecker( object ):
     """ Contains helpers for checking Shib.
         Called by `article_request_app/classes/login_helper.py`

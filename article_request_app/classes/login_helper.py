@@ -51,8 +51,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
         log.debug( 'shib_dct, `%s`' % pprint.pformat(shib_dct) )
         return shib_dct
 
-
-
     def check_if_authorized( self, shib_dct ):
         """ Checks whether user is authorized to request article.
             Called by views.login_handler() """
@@ -64,8 +62,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
             ( is_authorized, redirect_url, message ) = ( True, '', '' )
         log.debug( '`{id}` is_authorized, `{auth}`; redirect_url, `{url}`; message, ```{msg}```'.format(id=self.log_id, auth=is_authorized, url=redirect_url, msg=message) )
         return ( is_authorized, redirect_url, message )
-
-
 
     def update_session( self, request ):
         """ Updates necessary session attributes.
