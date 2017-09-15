@@ -57,7 +57,7 @@ class AvailabilityCheckerTest(TestCase):
             if entry['status'] == 'AVAILABLE' and 'CT275.P648 A33' in entry['callnumber'] and entry['location'] == 'ROCK':  # not checking full entry-dct because the available callnumber-copy changes.
                 result_check = True
         self.assertEqual(
-            True, result_check
+            False, result_check
             )
 
     def test_check_josiah_availability__no_oclcnum(self):
