@@ -2,16 +2,10 @@
 
 from __future__ import unicode_literals
 
-import httplib2
-import logging, os, pprint, urllib
+import base64, hashlib, hmac, json, logging, os, pprint, unittest, urllib
+import httplib2, requests
 from datetime import datetime
-import hmac
-import base64
-import hashlib
-# from pprint import pprint
-import json
-import requests
-import sys
+
 
 api_id = os.environ['EZACS__SUMMON_API_ID']
 api_key = os.environ['EZACS__SUMMON_API_KEY']
@@ -43,10 +37,10 @@ class SummonSearch(object):
         summonQS = urllib.unquote_plus(summonQS)
         summonIdString = summonAccept + "\n" + summonThedate + "\n" + self.host + "\n" + self.path + "\n" + summonQS + "\n"
         summonDigest = base64.encodestring(hmac.new(summonSecretKey, unicode(summonIdString), hashlib.sha1).digest())
-        summonAuthstring = "Summon "+summonAccessID+';'+summonDigest
-        summonAuthstring = summonAuthstring.replace('\n','')
+        summonAuthstring = "Summon " + summonAccessID + ';' + summonDigest
+        summonAuthstring = summonAuthstring.replace('\n', '')
         header_dct = {
-            'Accept':summonAccept, 'x-summon-date':summonThedate, 'Host':self.host, 'Authorization':summonAuthstring}
+            'Accept': summonAccept, 'x-summon-date': summonThedate, 'Host': self.host, 'Authorization': summonAuthstring}
         log.debug( 'header_dct, ```{}```'.format( pprint.pformat(header_dct) ) )
         return header_dct
 
@@ -54,7 +48,7 @@ class SummonSearch(object):
         """ Queries summon.
             Called by def get_summon_enhanced_link() """
         log.debug( 'query about to be sent to summon, ```%s```' % query )
-        #Set a timeout for the Summon request.
+        ## Set a timeout for the Summon request.
         http = httplib2.Http(timeout=10)
         headers = self.make_headers(query)
         url = 'http://%s%s?%s' % (self.host, self.path, query)
@@ -121,25 +115,25 @@ def summon_citation(doc):
             return ''
 
     return {
-            'format': _format(_g(doc, 'ContentType')),
-            'citation': {
-                'source': _g(doc, 'PublicationTitle'),
-                'title': _g(doc, 'Title'),
-                #First creator only.
-                'creator': _g(doc, 'Author'),
-                'volume': _g(doc, 'Volume'),
-                'issue': _g(doc, 'Issue'),
-                'pmid': _g(doc, 'PMID'),
-                'doi': _g(doc, 'DOI'),
-                'issn': _g(doc, 'ISSN'),
-                'date': _g(doc, 'PublicationYear'),
-                'isbn': doc.get('ISBN', []),
-                'held': doc.get('inHoldings', False),
-                'abstract': _g(doc, 'Abstract'),
-                'date': _g(doc, 'PublicationDate')
-                },
-            'openurl': doc.get('openUrl', ''),
-        }
+        'format': _format(_g(doc, 'ContentType')),
+        'citation': {
+            'source': _g(doc, 'PublicationTitle'),
+            'title': _g(doc, 'Title'),
+            ## First creator only.
+            'creator': _g(doc, 'Author'),
+            'volume': _g(doc, 'Volume'),
+            'issue': _g(doc, 'Issue'),
+            'pmid': _g(doc, 'PMID'),
+            'doi': _g(doc, 'DOI'),
+            'issn': _g(doc, 'ISSN'),
+            # 'date': _g(doc, 'PublicationYear'),
+            'isbn': doc.get('ISBN', []),
+            'held': doc.get('inHoldings', False),
+            'abstract': _g(doc, 'Abstract'),
+            'date': _g(doc, 'PublicationDate')
+        },
+        'openurl': doc.get('openUrl', ''),
+    }
 
     ## end def summon_citation()
 
@@ -152,13 +146,12 @@ def get_enhanced_link(query_string):
     from bibjsontools import from_openurl
     link = None
     bib = from_openurl(query_string)
-    #Get referrer.
+    ## Get referrer.
     rfr = bib.get('_rfr')
     log.debug( 'rfr, `{}`'.format(rfr) )
-    #Skip summon requests because they have already been
-    #enhanced by the index.
+    ## Skip summon requests because they have already been enhanced by the index.
     if rfr != 'info:sid/summon.serialssolutions.com':
-        for ident in  bib.get('identifier', []):
+        for ident in bib.get('identifier', []):
             if ident['type'] == 'doi':
                 doi = ident['id'].lstrip('doi:')
                 link = get_summon_enhanced_link('doi', doi)
@@ -195,7 +188,7 @@ def get_summon_enhanced_link(qtype, value):
     except IndexError:
         log.debug( 'returning None because no docs returned' )
         return
-    if doc.get('inHoldings') == True:
+    if doc.get('inHoldings') is True:
         if doc.get('LinkModel', ['null'])[0] == "DirectLink":
             link = doc.get('link')
     log.debug( 'returned enhanced link, ```%s```' % link )
@@ -211,12 +204,11 @@ def get_brown_proxy_link(summonlink):
 
     """
     resp = requests.head(summonlink)
-    #Store a best bet if something doesn't work with fetching the url
+    ## Store a best bet if something doesn't work with fetching the url
     best = summonlink
     for index, h in enumerate(resp.history):
         url = h.url
-        #print>>sys.stderr, '*****', url
-        #If we have followed a link this far, it's now the best bet.
+        ## If we have followed a link this far, it's now the best bet.
         if index == 1:
             best = url
         if url.find('revproxy.brown.edu') > 0:
@@ -224,7 +216,6 @@ def get_brown_proxy_link(summonlink):
     return best
 
 
-import unittest
 class TestSummon(unittest.TestCase):
 
     def test_pmid_query(self):
@@ -236,7 +227,6 @@ class TestSummon(unittest.TestCase):
         doc = docs[0]
         self.assertTrue(doc['Title'], "Not All Patients with Vancomycin-Resistant Enterococci Need To Be Isolated")
         self.assertTrue("1058-4838" in doc['ISSN'])
-        #pprint(summon_citation(doc))
 
     def test_doi_query(self):
         doi = '10.1002/cne.22033'
@@ -287,20 +277,17 @@ class TestSummon(unittest.TestCase):
         self.assertFalse(link)
 
     def test_enhanced_link_pmid_held_openurl(self):
-	"""
-	This link leads to an OpenURL via LinkModel
-	"""
+        """
+        This link leads to an OpenURL via LinkModel
+        """
         qstring = 'id=pmid:7593094'
         link = get_enhanced_link(qstring)
-	self.assertFalse(link)
-        #print get_brown_proxy_link(link)
+        self.assertFalse(link)
 
     def test_enhanched_link_pmid_direct(self):
-	qstring = 'id=pmid:8205861'
-	link = get_enhanced_link(qstring)
-	self.assertTrue(link.find('brown.summon') > 0)
-
-
+        qstring = 'id=pmid:8205861'
+        link = get_enhanced_link(qstring)
+        self.assertTrue(link.find('brown.summon') > 0)
 
 
 if __name__ == '__main__':
