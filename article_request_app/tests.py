@@ -8,6 +8,7 @@ from types import NoneType
 from . import settings_app
 from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
+from .classes.shib_helper import ShibLoginHelper
 from django.conf import settings
 from django.http import HttpRequest
 from django.test import Client, TestCase
@@ -16,6 +17,26 @@ from django.utils.module_loading import import_module
 
 log = logging.getLogger( 'access' )
 TestCase.maxDiff = None
+
+
+class ShibLoginHelperTest( TestCase ):
+    """ Tests querystring builder called from views.shib_login() """
+
+    def setUp(self):
+        self.helper = ShibLoginHelper()
+
+    def test_build_localdev_querystring(self):
+        """ Checks localdev querystring. """
+        citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
+        format = 'journal'
+        illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
+        querystring = 'rft.atitle=Stalking the Wild Basenji'
+        log_id = 'foo'
+        self.assertEqual(
+            'citation_json=%7B%22param_a%22%3A%20%22a%5Cu00e1a%22%7D&format=journal&illiad_url=https%3A//domain/aa/bb/OpenURL%3Frft.atitle%3DStalking%20the%20Wild%20Basenji&querystring=rft.atitle%3DStalking%20the%20Wild%20Basenji&ezlogid=foo',
+            self.helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
+            )
+
 
 
 class SessionHack(object):
