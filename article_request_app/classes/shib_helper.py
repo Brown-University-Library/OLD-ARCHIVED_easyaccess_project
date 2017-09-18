@@ -16,26 +16,48 @@ class ShibLoginHelper( object ):
         """ Builds querystring for redirect to shib SP url, which will redirect back to views.login_handler().
             Called by views.shib_login() """
         self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )
+
+        # segment = '/easyaccess/article_request/login_handler/?citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
+        #     ctn_jsn=citation_json,
+        #     fmt=format,
+        #     ill_url=illiad_url,
+        #     qs=querystring,
+        #     id=log_id
+        #     )
+
         segment = '/easyaccess/article_request/login_handler/?citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
-            ctn_jsn=citation_json,
-            fmt=format,
-            ill_url=illiad_url,
-            qs=querystring,
+            ctn_jsn=urlquote(citation_json),
+            fmt=urlquote(format),
+            ill_url=urlquote(illiad_url),
+            qs=urlquote(querystring),
             id=log_id
             )
+
         querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'
         assert type(querystring) == unicode, type(querystring)
         log.debug( 'querystring for redirect to shib SP login url, ```%s```' % querystring )
         return querystring
 
+    # def build_shib_sp_querystring( self, citation_json, format, illiad_url, querystring, log_id ):
+    #     """ Builds querystring for redirect to shib SP url, which will redirect back to views.login_handler().
+    #         Called by views.shib_login() """
+    #     self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )
+    #     segment = '/easyaccess/article_request/login_handler/?citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
+    #         ctn_jsn=citation_json,
+    #         fmt=format,
+    #         ill_url=illiad_url,
+    #         qs=querystring,
+    #         id=log_id
+    #         )
+    #     querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'
+    #     assert type(querystring) == unicode, type(querystring)
+    #     log.debug( 'querystring for redirect to shib SP login url, ```%s```' % querystring )
+    #     return querystring
+
     def build_localdev_querystring( self, citation_json, format, illiad_url, querystring, log_id ):
         """ Builds querystring for redirect right to views.login_handler()
             Called by views.shib_login() """
-        assert type(citation_json) == unicode, type(citation_json)
-        assert type(format) == unicode, type(format)
-        assert type(illiad_url) == unicode, type(illiad_url)
-        assert type(querystring) == unicode, type(querystring)
-        assert type(log_id) == unicode, type(log_id)
+        self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )
         querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
             ctn_jsn=urlquote(citation_json),
             fmt=urlquote(format),
