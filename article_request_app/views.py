@@ -50,7 +50,7 @@ def shib_login( request ):
     else:
         log.debug( 'not localdev, so building target url, and redirecting to shib SP login url' )
         querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
-        redirect_url = '%s/?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
+        redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
     return HttpResponseRedirect( redirect_url )
 
     ## end def shib_login()
