@@ -2,20 +2,14 @@
 
 from __future__ import unicode_literals
 
-import json,logging, pprint, re, urlparse
+import logging, pprint, urlparse
 from datetime import datetime
 
-import requests
-from . import forms, summon
+from . import forms
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from .app_settings import PRINT_PROVIDER
 from .models import PrintTitle
-from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
-from django.shortcuts import render
-# from django.utils.log import dictConfig
-from py360link2 import get_sersol_data, Resolved
+from py360link2 import Resolved
 
 
 CURRENT_YEAR = datetime.now().year
@@ -33,7 +27,7 @@ class BulSerSol(Resolved):
     def pull_print(self, issns):
         """ Get the print title information and return Django query object.
             Called by self.access_points() """
-        #Normalize start and end - dates are 2007-01-01.
+        ## Normalize start and end - dates are 2007-01-01.
         date = self.citation.get( 'date', None )
         if date:
             date = date[:4]
@@ -73,13 +67,13 @@ class BulSerSol(Resolved):
         """
         Get non-direct links from a link group.  These are journals only.
         """
-        #Dict to hold the link
+        ## Dict to hold the link
         d = {}
         d['link'] = None
         d['type'] = None
-        #Provider
+        ## Provider
         d['name'] = group['holdingData']['databaseName']
-        #Try issue
+        ## Try issue
         issue = group['url'].get('issue', None)
         journal = group['url'].get('journal', None)
         if issue:
@@ -102,6 +96,7 @@ class BulSerSol(Resolved):
         """
         # log.debug( 'link_groups initially, ```%s```' % pprint.pformat(link_groups) )
         criteria = DB_SORT_BY
+
         def _mapped(provider):
             if provider in DB_PUSH_TOP:
                 return -100
@@ -111,10 +106,10 @@ class BulSerSol(Resolved):
                 try:
                     return criteria.index(provider)
                 except ValueError:
-                    #Return 99 .  The lowest value a db in the criteria list
-                    #could have is 0 up to the length of the list.  If the
-                    #db is not found.  Return something high so that all
-                    #dbs not specified are treated the same.
+                    ## Return 99 .  The lowest value a db in the criteria list
+                    ## could have is 0 up to the length of the list.  If the
+                    ## db is not found.  Return something high so that all
+                    ## dbs not specified are treated the same.
                     return 99
         link_groups.sort(key=lambda x: _mapped(x['holdingData']['providerName']))
         log.debug( 'link_groups sorted, ```%s```' % pprint.pformat(link_groups) )
@@ -129,7 +124,7 @@ class BulSerSol(Resolved):
         """
         log.debug( 'starting access_points()' )
         raw_link_groups = self.link_groups
-        #Sort the link groups
+        ## Sort the link groups
         link_groups = self.do_db_sort(raw_link_groups)
         issns = [self.citation.get('eissn', None)]
         issns += self.citation.get('issn', {}).values()
@@ -137,85 +132,84 @@ class BulSerSol(Resolved):
         resolved_issn = self.citation.get('issn', None)
         if resolved_issn:
             pissn = resolved_issn.get('print', None)
-            if pissn :
+            if pissn:
                 issns.append(pissn)
         log.debug( 'issns after resolved/pissn check, ```{}```'.format(issns) )
         online = []
         direct = None
         vague_links = False
         pholdings = []
-        #Holder so we don't duplicate the print holdings.
+        ## Holder so we don't duplicate the print holdings.
         seen_print = []
         for group in link_groups:
             this_holding = {}
             name = group['holdingData']['databaseName']
             log.debug( 'group in link_groups name, `{}`'.format(name) )
-            #Check for print
+            ## Check for print
             if name == PRINT_PROVIDER:
                 log.debug( 'handling print' )
-                #database of print titles to get location and call number.
+                ## database of print titles to get location and call number.
                 print_held = {}
-                #hd = group['holdingData']
-                #print_held['start'] = hd['startDate']
-                #print_held['end'] = hd.get('endDate', str(CURRENT_YEAR))
-                #We want anything with same issn and start greater than or equal to this start and end less than this cite.
+                # hd = group['holdingData']
+                # print_held['start'] = hd['startDate']
+                # print_held['end'] = hd.get('endDate', str(CURRENT_YEAR))
+                ## We want anything with same issn and start greater than or equal to this start and end less than this cite.
                 print_titles = self.pull_print(issns)
                 for item in print_titles:
                     print_held['location'] = item.location
                     print_held['call_number'] = item.call_number
-                    #We are checking this pair of print items - location + call number
-                    #against a list of seen locations to prevent duplicate holdings from
-                    #appearing.  360Link seems to be returning multiple sets in some cases.
+                    ## We are checking this pair of print items - location + call number
+                    ## against a list of seen locations to prevent duplicate holdings from
+                    ## appearing.  360Link seems to be returning multiple sets in some cases.
                     pair = (print_held['location'],
                             print_held['call_number'])
                     if pair not in seen_print:
                         seen_print.append(pair)
                         pholdings.append(print_held)
             else:
-                #Handle book and article links.
+                ## Handle book and article links.
                 if self.format == 'book':
-                    #For 'books' that are actually chapters we want the article
-                    #level link returned by SerSol.
+                    ## For 'books' that are actually chapters we want the article
+                    ## level link returned by SerSol.
                     dl = group['url'].get('article', None)
-                    #If that is empty, get the book level link.
+                    ## If that is empty, get the book level link.
                     if not dl:
                         dl = group['url'].get('book', None)
 
                 else:
-                    #Handle journals.
-                    #Try to get a direct link first
+                    ## Handle journals.
+                    ## Try to get a direct link first
                     dl = group['url'].get('article', None)
                     if dl:
                         this_holding['link'] = dl
                         this_holding['name'] = name
                         this_holding['type'] = 'direct'
                         if direct is None:
-                            direct = {'provider': name, 'link' : dl}
+                            direct = {'provider': name, 'link': dl}
                     else:
-                        #Non-direct to full text links.
+                        ## Non-direct to full text links.
                         not_direct = self.get_non_direct(group)
                         if not_direct:
                             vague_links = True
                             this_holding = not_direct
 
-                    #Only add links that aren't duplicates
+                    ## Only add links that aren't duplicates
                     if this_holding['link'] not in [n['link'] for n in online]:
                         if this_holding['name'] not in [n['name'] for n in online]:
                             online.append(this_holding)
 
-        if ((len(pholdings) == 0) and\
-            (len(online) == 0)):
+        if ( (len(pholdings) == 0) and (len(online) == 0) ):
             resolved = False
         else:
             resolved = True
         log.debug( 'resolved, `%s`' % resolved )
 
-        #Change vague_links to false if we did find a direct link.  This prevents
-        #the warning/caveat box from appearing.
-        #Template will prevent non direct links from displaying to users.
+        ## Change vague_links to false if we did find a direct link.  This prevents
+        ## the warning/caveat box from appearing.
+        ## Template will prevent non direct links from displaying to users.
         if direct:
             vague_links = False
-            #Remove non-direc links from the online
+            ## Remove non-direc links from the online
             for n, link in enumerate(online):
                 if link['type'] != 'direct':
                     del online[n]
@@ -237,11 +231,11 @@ class BulSerSol(Resolved):
         source = self.citation.get('source', None)
         date = self.citation.get('date', None)
         if self.format == 'book':
-            #Requiring, title, date, encouraging ISBN and OCLC number
+            ## Requiring, title, date, encouraging ISBN and OCLC number
             if ((title or source is not None) and date is not None):
                 return True
         elif self.format == 'journal':
-            #Requiring title, source, date/year, pages
+            ## Requiring title, source, date/year, pages
             pages = self.citation.get('spage', None)
             if title is not None:
                 if source is not None:
@@ -249,7 +243,7 @@ class BulSerSol(Resolved):
                         if pages is not None:
                             return True
             return False
-        #How should we validate other metdata - require OCLC number?
+        ## How should we validate other metdata - require OCLC number?
         else:
             return True
 
@@ -261,14 +255,14 @@ class BulSerSol(Resolved):
         Maps 360Link returned values to the citation linker form.
         """
         common = {
-              'creator': 'au',
-              'creatorLast': 'aulast',
-              'creatorFirst': 'aufirst',
+            'creator': 'au',
+            'creatorLast': 'aulast',
+            'creatorFirst': 'aufirst',
         }
         _j = {
-              'title': 'atitle',
-              'source': 'jtitle',
-              'doi': 'id',
+            'title': 'atitle',
+            'source': 'jtitle',
+            'doi': 'id',
         }
         _b = {
             'title': 'btitle',
@@ -288,13 +282,13 @@ class BulSerSol(Resolved):
                 return _b[key]
             except KeyError:
                 pass
-        #now handle other forms - treat all as books for now.
+        ## now handle other forms - treat all as books for now.
         else:
             try:
                 return _b[key]
             except KeyError:
                 pass
-        #default is to return original key
+        ## default is to return original key
         return key
 
     def citation_form_dict(self):
@@ -302,22 +296,22 @@ class BulSerSol(Resolved):
         Map the resolved citation to the form field names.
         Putting the original OCLC number, if present, in rfe_dat
         """
-        #Sent to 360 link to get a citation object.
-        query = self.query
+        ## Sent to 360 link to get a citation object.
+        # query = self.query
         citation = self.citation
         format = self.format
-        #Always just use the first issn or isbn
+        ## Always just use the first issn or isbn
         issn = citation.get('issn', None)
         if issn:
             citation['issn'] = issn.values()[0]
         isbn = citation.get('isbn', None)
         if isbn:
             citation['isbn'] = isbn[0]
-        #mapping lambda from http://stackoverflow.com/questions/2213334/in-python-i-have-a-dictionary-how-do-i-change-the-keys-of-this-dictionary
+        ## mapping lambda from http://stackoverflow.com/questions/2213334/in-python-i-have-a-dictionary-how-do-i-change-the-keys-of-this-dictionary
         cd = dict(map(lambda (key, value): (self._mapper(str(key), format), value), citation.items()))
         citation_form_dict = cd
         citation_form_dict['rfe_dat'] = self.oclc_number
-        #massage pages.
+        ## massage pages.
         pages = citation_form_dict.get('pages', None)
         if not pages:
             spage = citation_form_dict.get('spage', None)
@@ -330,14 +324,13 @@ class BulSerSol(Resolved):
                 citation_form_dict['pages'] = cpages
         return citation_form_dict
 
-
     def prep_resolver_form(self):
         citation_form_dict = self.citation_form_dict()
         d = {}
         format = self.format
-        #Hook in forms.
+        ## Hook in forms.
         if format == 'journal':
-            #citation_form_dict['title'] = citation['atitle']
+            ## citation_form_dict['title'] = citation['atitle']
             d['form_type'] = 'article'
         else:
             d['form_type'] = format
@@ -356,47 +349,50 @@ class BulSerSol(Resolved):
         """
         import urllib
         qdict = self.citation
-        #Massage authors
+        ## Massage authors
         qdict['author'] = qdict.get('creator', None)
-        #del qdict['creator']
+        ## del qdict['creator']
         qdict['aulast'] = qdict.get('creatorLast', None)
-        #put source in title
+        ## put source in title
         if qdict.get('title', None) is None:
             qdict['title'] = qdict.get('source', None)
-        #del qdict['creatorLast']
-        #do genre
+        # del qdict['creatorLast']
+        ## do genre
         if self.format == 'book':
             qdict['genre'] = 'book'
         else:
             qdict['genre'] = 'article'
-        #Add the OCLC number
+        ## Add the OCLC number
         qdict['rfe_dat'] = self.oclc_number
         return urllib.urlencode(qdict, doseq=True)
 
     ## end class class BulSerSol( Resolved )
 
 
-#===============================================================================
-# Illiad URLs
-#===============================================================================
+##  ===============================================================================
+##  Illiad URLs
+##  ===============================================================================
+
+
 def pull_genre(odict):
     possible_keys = ['rft.genre', 'genre']
     for p in possible_keys:
         genre = odict.get(p, ['null'])[0]
         if genre == 'journal':
             genre = 'article'
-        #take the first one we find.
+        ## take the first one we find.
         if genre != 'null':
             break
     if genre == 'article':
         return genre
     elif genre == 'null':
-        #Try too determine format by looking at some characteristics.
-        #doi = odict.get('rft_id', [''])
+        ## Try too determine format by looking at some characteristics.
+        # doi = odict.get('rft_id', [''])
         return None
-    #last guess
+    ## last guess
     else:
         return 'book'
+
 
 def pull_oclc(odict):
     import re
@@ -409,15 +405,16 @@ def pull_oclc(odict):
             oclc = match.group()
     return oclc
 
+
 def pull_referrer(odict):
-    ea='bul_easy_article'
+    # ea='bul_easy_article'
     sid = odict.get('sid', None)
-    #Try rfr_id if not found in sid.
+    ## Try rfr_id if not found in sid.
     if not sid:
         sid = odict.get('rfr_id', None)
     if sid:
         return sid
-        #return ['%s-%s' % (s, ea) for s in sid]
+        # return ['%s-%s' % (s, ea) for s in sid]
     return []
 
 
@@ -430,10 +427,10 @@ def illiad_date(datestr):
         - Reactivating date massaging per Bart - 8/1/13
         - Deactivating date massaging per Bart - 4/24/14 """
     return datestr
-    #if datestr:
-    #   return datestr.split('-')[0]
-    #else:
-    #   return
+    # if datestr:
+    #    return datestr.split('-')[0]
+    # else:
+    #    return
 
 
 def make_illiad_url(openurl):
@@ -441,12 +438,12 @@ def make_illiad_url(openurl):
     import urllib
     o = urllib.unquote(openurl)
     odict = urlparse.parse_qs(o)
-    #pprint(odict)
+    # pprint(odict)
     out = odict
-    #out['sid'] = sid
-    #Switch the genre to book if it's not an article.
+    # out['sid'] = sid
+    ## Switch the genre to book if it's not an article.
     genre = pull_genre(odict)
-    #Delete original genres.
+    ## Delete original genres.
     try:
         del out['rft.genre']
         del out['genre']
@@ -454,34 +451,38 @@ def make_illiad_url(openurl):
         pass
     if genre:
         out['rft.genre'] = genre
-    #massage date to be four character year - 1990 not 1990-2
+    ## massage date to be four character year - 1990 not 1990-2
     out['rft.date'] = illiad_date(out.get('rft.date', [''])[0])
-    #Get pubmed if we can find it and put into the Notes field.
+    ## Get pubmed if we can find it and put into the Notes field.
     pmid = odict.get('pmid', None)
     if not pmid:
         for ident in odict.get('rft_id', []):
             if ident.startswith('info:/pmid/'):
-                pmid = indent
+                # pmid = indent
+                pmid = ident
                 out['Notes'] = "PMID: %s" % pmid[0]
                 break
     else:
         out['Notes'] = "PMID: %s" % pmid[0]
-    #get oclc number
+    ## get oclc number
     oclc = pull_oclc(odict)
     if oclc:
         out['ESPNumber'] = oclc
-    #get referring site
+    ## get referring site
     out['sid'] = pull_referrer(odict)
-    #Change an empty end page to EOA for end of article per Bart.
+    ## Change an empty end page to EOA for end of article per Bart.
     endpage = odict.get('rft.epage', None)
     if (not endpage) or (endpage == ''):
-        out['rft.epage'] =  'EOA'
+        out['rft.epage'] = 'EOA'
     ourl = urllib.urlencode(out, doseq=True)
     return ourl
 
-#===============================================================================
-# Raw open url parsing.
-#===============================================================================
+
+## ===============================================================================
+#  Raw open url parsing.
+## ===============================================================================
+
+
 class Ourl(object):
     def __init__(self, query):
         self.query = query
@@ -495,14 +496,14 @@ class Ourl(object):
         return self.cite
 
     def pull_id(self):
-        #get id param
+        ## get id param
         id = self.qdict.get('id', [])
-        #see if pmid was passed in.
+        ## see if pmid was passed in.
         id += ['pmid:%s' % p for p in self.qdict.get('pmid', []) if p]
-        #or doi
+        ## or doi
         id += ['doi:%s' % d for d in self.qdict.get('doi', []) if d]
-        #look at rft_id
-        _t =  self.qdict.get('rft_id', None)
+        ## look at rft_id
+        _t = self.qdict.get('rft_id', None)
         if _t:
             for e in _t:
                 if e.startswith('info:doi/'):
@@ -526,7 +527,7 @@ class Ourl(object):
             return f
 
     def prest(self):
-        #Maybe turn these into items to check rather than items to skip
+        ## Maybe turn these into items to check rather than items to skip
         skips = ['rft_val_fmt', 'id', 'url_ver',
                  'url_ctx_fmt', 'rft_id', 'openurl', 'req_dat',
                  '__char_set']
@@ -534,7 +535,7 @@ class Ourl(object):
             v = [e.strip() for e in v]
             if (k == 'rft.genre') or (k == 'genre'):
                 k = 'format'
-                #del self.qdict['genre']
+                # del self.qdict['genre']
             if k in skips:
                 continue
             else:
@@ -554,12 +555,14 @@ class Ourl(object):
         self.cite['oclc'] = oclc
         log.debug( 'self.cite after pull_oclc(), `%s`' % self.cite )
 
-    # end class Ourl()
+    ## end class Ourl()
 
 
-#===============================================================================
-# Utility for making cache keys for the extra utilities.
-#===============================================================================
+## ===============================================================================
+##  Utility for making cache keys for the extra utilities.
+## ===============================================================================
+
+
 def get_cache_key(query):
     """
     Makes a hash of an incoming query for use as a cache key.
