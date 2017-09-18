@@ -10,30 +10,15 @@ import datetime, json, logging, pprint, re
 
 ## other
 import bibjsontools
-
 from . import app_settings
-# from .classes.baseconv import base62
 from .classes.citation_form_helper import CitationFormHelper
 from .classes.findit_resolver_helper import FinditResolver
 from .classes.findit_resolver_helper import RisHelper
 from .classes.permalink_helper import Permalink
-# from .models import Request, UserMessage
-# from .utils import BulSerSol, Ourl
-# from .utils import get_cache_key, make_illiad_url
 from bibjsontools import ris as bibjsontools_ris
-# from bul_link.views import BulLinkBase
 from django.conf import settings
-# from django.contrib.auth import logout
-# from django.contrib.auth.decorators import login_required
-# from django.core.cache import cache
-# from django.core.exceptions import ObjectDoesNotExist
-# from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
-# from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-# from django.utils.decorators import method_decorator
-# from findit import app_settings
-# from py360link2 import get_sersol_data, Link360Exception, Resolved
 
 
 EXTRAS_CACHE_TIMEOUT = 604800  # 60*60*24*7 == one week
