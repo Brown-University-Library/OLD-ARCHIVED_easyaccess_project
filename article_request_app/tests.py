@@ -25,6 +25,18 @@ class ShibLoginHelperTest( TestCase ):
     def setUp(self):
         self.helper = ShibLoginHelper()
 
+    def test_build_shib_sp_querystring(self):
+        """ Checks localdev querystring. """
+        citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
+        format = 'journal'
+        illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
+        querystring = 'rft.atitle=Stalking the Wild Basenji'
+        log_id = 'foo'
+        self.assertEqual(
+            'target=%2Feasyaccess%2Farticle_request%2Flogin_handler%2F%3Fcitation_json%3D%7B%22param_a%22%3A+%22a%5Cu00e1a%22%7D%26format%3Djournal%26illiad_url%3Dhttps%3A%2F%2Fdomain%2Faa%2Fbb%2FOpenURL%3Frft.atitle%3DStalking+the+Wild+Basenji%26querystring%3Drft.atitle%3DStalking+the+Wild+Basenji%26ezlogid%3Dfoo',
+            self.helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
+            )
+
     def test_build_localdev_querystring(self):
         """ Checks localdev querystring. """
         citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
@@ -37,6 +49,7 @@ class ShibLoginHelperTest( TestCase ):
             self.helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
             )
 
+    ## end class ShibLoginHelperTest()
 
 
 class SessionHack(object):
