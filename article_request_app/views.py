@@ -38,12 +38,6 @@ def shib_login( request ):
     illiad_url = request.session.get( 'illiad_url', '' )
     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
 
-    ## check 'em
-    assert type(citation_json) == unicode, type(citation_json)
-    assert type(format) == unicode, type(format)
-    assert type(illiad_url) == unicode, type(illiad_url)
-    assert type(querystring) == unicode, type(querystring)
-
     ## clear session so non-rev and rev work same way
     for key in request.session.keys():
         del request.session[key]
@@ -51,11 +45,11 @@ def shib_login( request ):
     ## check if localdev
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
         log.debug( 'localdev, so redirecting right to login_handler' )
-        querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring )
-        redirect_url = '%s/?%s' % ( reverse('article_request:login_handler_url'), querystring )
+        querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
+        redirect_url = '%s?%s' % ( reverse('article_request:login_handler_url'), querystring )
     else:
         log.debug( 'not localdev, so building target url, and redirecting to shib SP login url' )
-        querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring )
+        querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
         redirect_url = '%s/?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
     return HttpResponseRedirect( redirect_url )
 
