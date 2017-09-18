@@ -32,7 +32,7 @@ class ShibLoginHelperTest( TestCase ):
         querystring = 'rft.atitle=Stalking the Wild Basenji'
         log_id = 'foo'
         self.assertEqual(
-            'target=%2Feasyaccess%2Farticle_request%2Flogin_handler%2F%3Fcitation_json%3D%7B%22param_a%22%3A+%22a%5Cu00e1a%22%7D%26format%3Djournal%26illiad_url%3Dhttps%3A%2F%2Fdomain%2Faa%2Fbb%2FOpenURL%3Frft.atitle%3DStalking+the+Wild+Basenji%26querystring%3Drft.atitle%3DStalking+the+Wild+Basenji%26ezlogid%3Dfoo',
+            'target=%2Feasyaccess%2Farticle_request%2Flogin_handler%2F%3Fcitation_json%3D%257B%2522param_a%2522%253A%2520%2522a%255Cu00e1a%2522%257D%26format%3Djournal%26illiad_url%3Dhttps%253A%2F%2Fdomain%2Faa%2Fbb%2FOpenURL%253Frft.atitle%253DStalking%2520the%2520Wild%2520Basenji%26querystring%3Drft.atitle%253DStalking%2520the%2520Wild%2520Basenji%26ezlogid%3Dfoo',
             self.helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
         )
 
