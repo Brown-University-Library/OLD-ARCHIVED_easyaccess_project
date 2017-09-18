@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 import json, logging, pprint
 import markdown
-# from .classes.illiad_helper import IlliadHelper, NewIlliadHelper
 from .classes.illiad_helper import NewIlliadHelper
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
@@ -14,7 +13,7 @@ from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.utils.http import urlquote
 from illiad.account import IlliadSession
 
@@ -34,7 +33,7 @@ def shib_login( request ):
 
     ## store vars we're gonna need
     citation_json = request.session.get( 'citation_json', '{}' )
-    format = request.session.get( 'format', '' );
+    format = request.session.get( 'format', '' )
     illiad_url = request.session.get( 'illiad_url', '' )
     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
 
@@ -43,7 +42,7 @@ def shib_login( request ):
         del request.session[key]
 
     ## check if localdev
-    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True:  # eases local development
         log.debug( 'localdev, so redirecting right to login_handler' )
         querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
         redirect_url = '%s?%s' % ( reverse('article_request:login_handler_url'), querystring )
@@ -135,11 +134,9 @@ def login_handler( request ):
     ## get user info
     # shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info
     localdev_check = False
-    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True:  # eases local development
         localdev_check = True
     shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
-
-
 
     ## check if authorized
     ( is_authorized, redirect_url, message ) = login_helper.check_if_authorized( shib_dct )
@@ -147,8 +144,6 @@ def login_handler( request ):
         log.info( '`{id}` user, `{val}` not authorized; redirecting to shib-logout-url, then message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
         request.session['message'] = message
         return HttpResponseRedirect( redirect_url )
-
-
 
     # ## log user into illiad
     # ( illiad_instance, success ) = ill_helper.login_user( request, shib_dct )
@@ -180,7 +175,7 @@ def login_handler( request ):
     ## redirect
     return HttpResponseRedirect( illiad_landing_redirect_url )
 
-    # end def login_handler()
+    ## end def login_handler()
 
 
 def illiad_request( request ):
