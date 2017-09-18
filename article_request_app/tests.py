@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import logging, os, pprint, random
+import logging
 from types import NoneType
 
 from . import settings_app
@@ -10,7 +10,6 @@ from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from django.conf import settings
-from django.http import HttpRequest
 from django.test import Client, TestCase
 from django.utils.module_loading import import_module
 
@@ -35,7 +34,7 @@ class ShibLoginHelperTest( TestCase ):
         self.assertEqual(
             'target=%2Feasyaccess%2Farticle_request%2Flogin_handler%2F%3Fcitation_json%3D%7B%22param_a%22%3A+%22a%5Cu00e1a%22%7D%26format%3Djournal%26illiad_url%3Dhttps%3A%2F%2Fdomain%2Faa%2Fbb%2FOpenURL%3Frft.atitle%3DStalking+the+Wild+Basenji%26querystring%3Drft.atitle%3DStalking+the+Wild+Basenji%26ezlogid%3Dfoo',
             self.helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
-            )
+        )
 
     def test_build_localdev_querystring(self):
         """ Checks localdev querystring. """
@@ -47,7 +46,7 @@ class ShibLoginHelperTest( TestCase ):
         self.assertEqual(
             'citation_json=%7B%22param_a%22%3A%20%22a%5Cu00e1a%22%7D&format=journal&illiad_url=https%3A//domain/aa/bb/OpenURL%3Frft.atitle%3DStalking%20the%20Wild%20Basenji&querystring=rft.atitle%3DStalking%20the%20Wild%20Basenji&ezlogid=foo',
             self.helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
-            )
+        )
 
     ## end class ShibLoginHelperTest()
 
@@ -212,7 +211,7 @@ class NewIlliadHelperTest( TestCase ):
             'brown_type': 'test_brown_type',
             'phone': 'test_phone',
             'department': 'test_department'
-            }
+        }
         title = 'a_title'  # needed for error-message preparation
         result_dct = self.helper.login_user( user_dct, title )
         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
@@ -233,7 +232,7 @@ class NewIlliadHelperTest( TestCase ):
             'brown_type': 'test_brown_type',
             'phone': 'test_phone',
             'department': 'test_department'
-            }
+        }
         title = 'a_title'  # needed for error-message preparation
         result_dct = self.helper.login_user( user_dct, title )
         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
