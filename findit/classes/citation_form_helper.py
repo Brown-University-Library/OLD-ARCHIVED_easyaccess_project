@@ -2,12 +2,12 @@
 
 from __future__ import unicode_literals
 
-import json,logging, pprint, re, urlparse
-from datetime import datetime
+import logging, pprint
+# from datetime import datetime
 
 import bibjsontools
-from django.conf import settings
-from django.http import HttpResponse
+# from django.conf import settings
+# from django.http import HttpResponse
 from django.shortcuts import render
 # from django.utils.log import dictConfig
 from findit import forms
@@ -50,8 +50,8 @@ class CitationFormDctMaker( object ):
         """ Transforms querystring into bibjson dictionary.
             Called by make_form_dct() """
         qstring = ''
-        for k,v in querydct.items():
-            qstring = qstring + '%s=%s&' % (k,v)
+        for k, v in querydct.items():
+            qstring = qstring + '%s=%s&' % (k, v)
         qstring = qstring[0:-1]
         log.debug( 'qstring, `%s`' % qstring )
         log.debug( 'type(qstring), `%s`' % type(qstring) )
@@ -63,10 +63,10 @@ class CitationFormDctMaker( object ):
         """ Makes initial citation_form_dct from key-value pairs.
             Called by make_form_dct() """
         citation_form_dct = {}
-        for k,v in querydct.items():
+        for k, v in querydct.items():
             # log.debug( 'querydict (k,v), `(%s,%s)`' % (k,v) )
             v = self.handle_v_list( v )
-            ( k,v ) = self.handle_k( k,v )
+            ( k, v ) = self.handle_k( k, v )
             citation_form_dct[k] = v
         log.debug( 'initial_citation_form_dct, ```%s```' % pprint.pformat(citation_form_dct) )
         return citation_form_dct
@@ -85,11 +85,11 @@ class CitationFormDctMaker( object ):
         """ Populates book-specific fields: btitle, isbn, pub, place, spage, epage.
             Called by make_form_dct() """
         log.debug( 'in book handler')
-        if citation_form_dct.get('btitle', None) == None:
+        if citation_form_dct.get('btitle', None) is None:
             citation_form_dct['btitle'] = citation_form_dct.get('title', None)
-        if citation_form_dct.get('pub', None) == None:
+        if citation_form_dct.get('pub', None) is None:
             citation_form_dct['pub'] = citation_form_dct.get('rft.pub', None)
-        if citation_form_dct.get('place', None) == None:
+        if citation_form_dct.get('place', None) is None:
             citation_form_dct['place'] = citation_form_dct.get('rft.place', None)
         return citation_form_dct
 
@@ -197,7 +197,7 @@ class CitationFormDctMaker( object ):
         """ Handles querydict list values, and checks for a replace.
             Called by make_form_dct(). """
         # log.debug( 'initial v, `%s`' % v )
-        if (v) and (v != '') and (type(v)==list):
+        if (v) and (v != '') and (type(v) == list):
             v = v[0]
         if type(v) == unicode and 'accessionnumber' in v:
             v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
@@ -209,11 +209,11 @@ class CitationFormDctMaker( object ):
             Called by make_form_dct(). """
         if k == 'id':
             if v.startswith('doi'):
-                ( k,v ) = ( 'id', v.replace('doi:', '') )
+                ( k, v ) = ( 'id', v.replace('doi:', '') )
         elif k == 'doi':
             k = 'id'
-        log.debug( '(k,v), `(%s,%s)`' % (k,v) )
-        return ( k,v )
+        log.debug( '(k, v), `(%s, %s)`' % (k, v) )
+        return ( k, v )
 
     # end class CitationFormDictMaker
 
@@ -232,7 +232,7 @@ class CitationFormHelper( object ):
             u'book_form': forms.BookForm,
             u'form_type': u'article',
             u'problem_link': u'https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dEhXOXNEMnI0T0pHaTA3WFFCQkJ1ZHc6MQ&entry_3=http://127.0.0.1/citation-form/&entry_4=127.0.0.1',
-            }
+        }
         # log.debug( 'context, `%s`' % context )
         log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
         return context
@@ -250,7 +250,7 @@ class CitationFormHelper( object ):
             u'book_form': forms.BookForm(citation_form_dct),
             u'form_type': self.make_form_type( citation_form_dct ),
             u'problem_link': 'https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dEhXOXNEMnI0T0pHaTA3WFFCQkJ1ZHc6MQ&entry_3=http://127.0.0.1/citation-form/&entry_4=127.0.0.1',
-            }
+        }
         # log.debug( 'context, `%s`' % context )
         log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
         return context
