@@ -234,7 +234,8 @@ def illiad_handler( request ):
     illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
     log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
     try:
-        illiad_session = illiad_instance.login()
+        # illiad_session = illiad_instance.login()
+        illiad_instance.login()
     except Exception as e:
         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
         if request.session.get( 'message', '' ) == '':
@@ -322,7 +323,7 @@ def shib_logout( request ):
     request.session['permalink_url'] = permalink_url
     request.session['last_querystring'] = last_querystring
     redirect_url = reverse( 'article_request:message_url' )
-    if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True ):  # eases local development
+    if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
         redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
@@ -336,7 +337,7 @@ def message( request ):
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
-        }
+    }
     request.session['message'] = ''
     request.session['last_path'] = request.path
     log.debug( '`{id}` will render message.html'.format(id=log_id) )
