@@ -7,6 +7,7 @@ import markdown
 # from .classes.illiad_helper import IlliadHelper, NewIlliadHelper
 from .classes.illiad_helper import NewIlliadHelper
 from .classes.login_helper import LoginHelper
+from .classes.shib_helper import ShibLoginHelper
 from article_request_app import settings_app
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
@@ -21,6 +22,7 @@ from illiad.account import IlliadSession
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 new_ill_helper = NewIlliadHelper()
+shib_login_helper = ShibLoginHelper()
 
 
 def shib_login( request ):
@@ -32,41 +34,30 @@ def shib_login( request ):
 
     ## store vars we're gonna need
     citation_json = request.session.get( 'citation_json', '{}' )
-    format = request.session.get( 'format', '' )
+    format = request.session.get( 'format', '' );
     illiad_url = request.session.get( 'illiad_url', '' )
     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+
+    ## check 'em
+    assert type(citation_json) == unicode, type(citation_json)
+    assert type(format) == unicode, type(format)
+    assert type(illiad_url) == unicode, type(illiad_url)
+    assert type(querystring) == unicode, type(querystring)
 
     ## clear session so non-rev and rev work same way
     for key in request.session.keys():
         del request.session[key]
 
     ## check if localdev
-    localdev_check = False
     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
-        localdev_check = True
-    1/0
-
-
-
-    ## build login-handler url, whether it's direct (localdev), or indirect-via-shib
-    login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
-        ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring), id=log_id
-        )
-    login_handler_url = '%s/?%s' % ( reverse('article_request:login_handler_url'), login_handler_querystring )
-    log.debug( 'login_handler_url, ```{}```'.format(login_handler_url) )
-
-    ## return response
-    localdev_check = False
-    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
-        localdev_check = True
-    if localdev_check is True:
-        log.debug( 'localdev_check is True, redirecting right to non-encoded login_handler' )
-        return HttpResponseRedirect( login_handler_url )
+        log.debug( 'localdev, so redirecting right to login_handler' )
+        querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring )
+        redirect_url = '%s/?%s' % ( reverse('article_request:login_handler_url'), querystring )
     else:
-        encoded_login_handler_url = urlquote( login_handler_url )
-        redirect_url = '%s?target=%s' % ( settings_app.SHIB_LOGIN_URL, encoded_login_handler_url )
-        log.debug( 'redirect_url to shib-sp-login, ```%s```' % redirect_url )
-        return HttpResponseRedirect( redirect_url )
+        log.debug( 'not localdev, so building target url, and redirecting to shib SP login url' )
+        querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring )
+        redirect_url = '%s/?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
+    return HttpResponseRedirect( redirect_url )
 
     ## end def shib_login()
 
