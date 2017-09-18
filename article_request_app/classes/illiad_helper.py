@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import datetime, json, logging, os, pprint, random
+import logging, pprint
 from article_request_app import settings_app
 from django.core.urlresolvers import reverse
 from illiad.account import IlliadSession
@@ -30,7 +30,8 @@ Apologies for the inconvenience.
     def check_referrer( self, session_dct, meta_dct ):
         """ Ensures request came from /find/.
             Called by views.illiad_request() """
-        ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
+        # ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
+        ( referrer_ok, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
         log.debug( 'last_path, `{}`'.format(last_path) )
         if last_path == '/easyaccess/article_request/login_handler/':
             referrer_ok = True
