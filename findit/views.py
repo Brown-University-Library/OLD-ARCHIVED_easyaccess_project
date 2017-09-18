@@ -6,38 +6,37 @@ Views for the resolver.
 """
 
 ## stdlib
-import datetime, json, logging, pprint, re, urllib2
+import datetime, json, logging, pprint, re
 
 ## other
 import bibjsontools
 
-from . import app_settings, forms, summon
-from .app_settings import BOOK_RESOLVER, ILLIAD_REMOTE_AUTH_URL, ILLIAD_REMOTE_AUTH_HEADER, EMAIL_FROM, MAS_KEY, PROBLEM_URL, SUMMON_ID, SUMMON_KEY,SERVICE_ACTIVE, EXTRAS_TIMEOUT, SERVICE_OFFLINE
-from .classes.baseconv import base62
+from . import app_settings
+# from .classes.baseconv import base62
 from .classes.citation_form_helper import CitationFormHelper
 from .classes.findit_resolver_helper import FinditResolver
 from .classes.findit_resolver_helper import RisHelper
 from .classes.permalink_helper import Permalink
-from .models import Request, UserMessage
-from .utils import BulSerSol, Ourl
-from .utils import get_cache_key, make_illiad_url
+# from .models import Request, UserMessage
+# from .utils import BulSerSol, Ourl
+# from .utils import get_cache_key, make_illiad_url
 from bibjsontools import ris as bibjsontools_ris
-from bul_link.views import BulLinkBase
+# from bul_link.views import BulLinkBase
 from django.conf import settings
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
-from django.core.urlresolvers import reverse, get_script_prefix
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseServerError
-from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-from django.utils.decorators import method_decorator
-from findit import app_settings
-from py360link2 import get_sersol_data, Link360Exception, Resolved
+# from django.contrib.auth import logout
+# from django.contrib.auth.decorators import login_required
+# from django.core.cache import cache
+# from django.core.exceptions import ObjectDoesNotExist
+# from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
+# from django.shortcuts import get_object_or_404, redirect, render, render_to_response
+# from django.utils.decorators import method_decorator
+# from findit import app_settings
+# from py360link2 import get_sersol_data, Link360Exception, Resolved
 
 
-EXTRAS_CACHE_TIMEOUT = 604800 # 60*60*24*7 == one week
+EXTRAS_CACHE_TIMEOUT = 604800  # 60*60*24*7 == one week
 PMID_QUERY = re.compile('^pmid\:(\d+)')  # check for non-standard pubmed queries.
 
 form_helper = CitationFormHelper()
@@ -96,8 +95,8 @@ def findit_base_resolver( request ):
     ## make permalink if one doesn't exist
     querystring = request.META.get('QUERY_STRING', '')
     permalink_url = permalink_helper.make_permalink(
-        referrer=request.GET.get('rfr_id',''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url')
-        )['permalink']
+        referrer=request.GET.get('rfr_id', ''), qstring=querystring, scheme=request.scheme, host=request.get_host(), path=reverse('findit:findit_base_resolver_url')
+    )['permalink']
     request.session['permalink_url'] = permalink_url
     alog.info( '`{id}` permalink made, ```{url}```'.format(id=log_id, url=permalink_url) )
 
@@ -151,7 +150,7 @@ def findit_base_resolver( request ):
     ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
     alog.info( '`{}` ebook check complete'.format(log_id) )
     if ebook_exists is True:
-        ebook_dct = { 'ebook_label': ebook_label, 'ebook_url':ebook_url }
+        ebook_dct = { 'ebook_label': ebook_label, 'ebook_url': ebook_url }
         request.session['ebook_json'] = json.dumps( ebook_dct )
 
     ## if book, redirect to /borrow
@@ -240,8 +239,8 @@ def server_error(request, template_name='500.html'):
     template_name = 'findit/500.html'
     resp = render_to_response(
         template_name,
-        context_instance = RequestContext(request)
-        )
+        context_instance=RequestContext(request)
+    )
     resp.status_code = 500
     return resp
 
