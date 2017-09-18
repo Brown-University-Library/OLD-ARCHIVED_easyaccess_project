@@ -27,36 +27,36 @@ class PrintTitle(models.Model):
 
 class Request(models.Model):
     item = models.ForeignKey(Resource)
-    # user = models.ForeignKey(User)
     user = models.OneToOneField(User)  # <http://deathofagremmie.com/2014/05/24/retiring-get-profile-and-auth-profile-module/>
     illiad_tn = models.CharField(max_length=25, blank=True, null=True)
-    #http://djangosnippets.org/snippets/1017/
-    date_created = models.DateTimeField()
+    date_created = models.DateTimeField()  # timestamps in model, <http://djangosnippets.org/snippets/1017/>
     date_modified = models.DateTimeField()
 
     def save(self, *args, **kwargs):
-        if self.date_created == None:
+        if self.date_created is None:
             self.date_created = datetime.now()
         self.date_modified = datetime.now()
         super(Request, self).save()
-        #send a message to admin
-        send_mail("easyA request %s" % self.illiad_tn,
-              "Illiad TN: %s\n\nUser:%s\n\nReferrer:%s\n\nURL:http://library.brown.edu/easyarticle/?%s\n" %\
-                    (self.illiad_tn,
-                     self.user.username.rstrip('@brown.edu'),
-                     self.item.referrer,
-                     self.item.query),
-              os.environ['EZACS__FINDIT_MODELS_REQUEST_MAIL_FROM'],
-              json.loads( os.environ['EZACS__FINDIT_MODELS_REQUEST_MAIL_TO_JSON'] ),
-              fail_silently=False)
+        ## send a message to admin
+        send_mail(
+            "easyA request %s" % self.illiad_tn,
+            "Illiad TN: %s\n\nUser:%s\n\nReferrer:%s\n\nURL:http://library.brown.edu/easyarticle/?%s\n" % (
+                self.illiad_tn,
+                self.user.username.rstrip('@brown.edu'),
+                self.item.referrer,
+                self.item.query ),
+            os.environ['EZACS__FINDIT_MODELS_REQUEST_MAIL_FROM'],
+            json.loads( os.environ['EZACS__FINDIT_MODELS_REQUEST_MAIL_TO_JSON'] ),
+            fail_silently=False
+        )
 
     def __unicode__(self):
         return "%s-%s" % (self.item, self.user)
 
 
 MESSAGE_TYPE_CHOICES = (
-    ('blocked','blocked'),
-    ('confirmation','confirmation'),
+    ('blocked', 'blocked'),
+    ('confirmation', 'confirmation'),
 )
 
 helper = """
@@ -74,7 +74,7 @@ class UserMessage(models.Model):
     date_modified = models.DateTimeField(editable=False)
 
     def save(self, *args, **kwargs):
-        if self.date_created == None:
+        if self.date_created is None:
             self.date_created = datetime.now()
         self.date_modified = datetime.now()
         super(UserMessage, self).save()
