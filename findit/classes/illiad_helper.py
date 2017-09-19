@@ -2,8 +2,8 @@
 
 from __future__ import unicode_literals
 
-import datetime, json, logging, os, pprint, random, urllib
-import urlparse  # remove?
+import logging, urllib
+# import urlparse  # remove?
 import bibjsontools  # requirements.txt module
 from findit import app_settings
 
@@ -44,7 +44,7 @@ class IlliadUrlBuilder( object ):
         log.debug( 'check_validity call complete' )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <{}>`'.format(permalink) )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
-        for k,v in extra_dct.iteritems():
+        for k, v in extra_dct.iteritems():
             openurl += '&%s=%s' % ( urllib.quote_plus(k), urllib.quote_plus(v) )
         illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
         log.debug( 'illiad_url, ```%s```' % illiad_url )
@@ -90,7 +90,7 @@ class IlliadUrlBuilder( object ):
             Called by check_identifiers(), check_validity(), make_illiad_url() """
         log.debug( 'starting update_note' )
         note = initial_note
-        if note == None:
+        if note is None:
             note = additional_note
         elif len( note.strip() ) == 0:
             note = additional_note
@@ -137,7 +137,7 @@ class IlliadValidator( object ):
             Called by add_required_kvs() """
         if bib_dct.get('title') is None:
             bib_dct['title'] = 'Not available'
-            valid = False
+            valid_check = False
         return ( bib_dct, valid_check )
 
     def _handle_bookish( self, bib_dct, valid_check ):
