@@ -2,20 +2,19 @@
 
 from __future__ import unicode_literals
 
-import json, logging, os, pprint, re, time, urllib, urlparse
+import json, logging, pprint, random, re, time, urllib, urlparse
 from datetime import datetime
 
-import bibjsontools, markdown, random, requests
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.text import slugify
-from findit import app_settings, forms, summon
+from findit import app_settings, summon
 from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
 from py360link2 import get_sersol_data
-from shorturls import baseconv
+# from shorturls import baseconv
 
 
 log = logging.getLogger('access')
@@ -83,7 +82,7 @@ class FinditResolver( object ):
         """ Returns json or html response object for index.html or resolve.html template.
             Called by views.findit_base_resolver() """
         if request.GET.get('output', '') == 'json':
-            output = json.dumps( context, sort_keys=True, indent = 2 )
+            output = json.dumps( context, sort_keys=True, indent=2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
             resp = render( request, 'findit/index.html', context )
@@ -147,7 +146,7 @@ class FinditResolver( object ):
         sersol_journal = False
         if rqst_qdict.get('rft.genre', 'null') == 'journal' or rqst_qdict.get('genre', 'null') == 'journal':
             if rqst_qdict.get( 'sid', 'null' ).startswith( 'FirstSearch' ):
-                issn = rqst_qdict.get( 'rft.issn' )  # TODO: remove this or return it if necessary
+                # issn = rqst_qdict.get( 'rft.issn' )  # TODO: remove this or return it if necessary
                 self.sersol_publication_link = 'http://%s.search.serialssolutions.com/?%s' % ( settings.BUL_LINK_SERSOL_KEY, rqst_qstring)
                 sersol_journal = True
         # log.debug( "sersol_journal, `%s`; sersol_publication_link, `%s`" % (sersol_journal, self.sersol_publication_link) )
@@ -164,9 +163,10 @@ class FinditResolver( object ):
                 if result.get( 'linkGroups', None ):
                     for link_group in result['linkGroups']:
                         return_tuple = self._check_group_for_ebook( link_group, return_tuple )
-                        if return_tuple[0]: break
-                if return_tuple[0]: break
-        # log.debug( 'return_tuple, ```{}```'.format(pprint.pformat(return_tuple)) )
+                        if return_tuple[0]:
+                            break
+                if return_tuple[0]:
+                    break
         log.debug( '`{id}` ebook check complete'.format(id=self.log_id) )
         return return_tuple
 
@@ -175,7 +175,7 @@ class FinditResolver( object ):
             Returns tuple: ( ebook_exists, label, url )
             Called by check_ebook() """
         ( holding_data_dct, lg_type, url_dct ) = ( link_group.get('holdingData', {}), link_group.get('type', ''), link_group.get('url', {}) )
-        if holding_data_dct and lg_type=='holding' and url_dct:
+        if holding_data_dct and lg_type == 'holding' and url_dct:
             ( database_name, journal_url ) = ( holding_data_dct.get('databaseName', ''), url_dct.get('journal', '') )
             if database_name and journal_url:
                 return_tuple = ( True, database_name, journal_url )
@@ -229,9 +229,6 @@ class FinditResolver( object ):
         log.debug( '`{id}` sersol_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(sersol_dct)) )
         return sersol_dct
 
-
-
-
     def prep_eds_fulltext_url( self, querystring ):
         """ Checks querystring for submitted eds fulltext url.
             Updates it and returns it.
@@ -272,14 +269,11 @@ class FinditResolver( object ):
                                     'issue': '',
                                     'journal': '',
                                     'source': ''}
-                                }
+                            }
                             results_element['linkGroups'].append(new_holdings_dct)
                             break
         log.debug( 'returning sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
-
-
-
 
     def check_bad_issn( self, sersol_dct ):
         """ Checks for invalid issn and builds redirect url.
@@ -342,7 +336,7 @@ class FinditResolver( object ):
                 log.info( '`{id}` detected bad-metadata'.format(id=self.log_id) )
                 problem_message = 'Please add-to or confirm the information about this resource. A Journal, ISSN, DOI, or PMID is required.'
             redirect_url = '{citation_url}?{openurl}'.format( citation_url=reverse('findit:citation_form_url'), openurl=querystring )
-        except Exception as e:  # a good exception! no diagnostics message means data is good
+        except Exception:  # a good exception! no diagnostics message means data is good
             log.info( '`{id}` detected good-metadata'.format(id=self.log_id) )
             ( data_bad, redirect_url, problem_message ) = ( False, None, None )
         return ( data_bad, redirect_url, problem_message )
@@ -356,8 +350,10 @@ class FinditResolver( object ):
                 if result.get( 'linkGroups', None ):
                     for group in result['linkGroups']:
                         return_val = self._check_group_for_direct_link( group )
-                        if return_val: break
-                if return_val: break
+                        if return_val:
+                            break
+                if return_val:
+                    break
         log.debug( 'return_val, `{}`'.format(return_val) )
         return return_val
 
@@ -407,7 +403,7 @@ class FinditResolver( object ):
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
-        if context.get( 'resolved', False ) == False:
+        if context.get( 'resolved', False ) is False:
             request.session['findit_illiad_check_flag'] = 'good'
             request.session['format'] = context.get( 'format', '' )
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
@@ -423,7 +419,7 @@ class FinditResolver( object ):
             Called by views.base_resolver()
             TODO: refactor. """
         if request.GET.get('output', '') == 'json':
-            output = json.dumps( context, sort_keys=True, indent = 2 )
+            output = json.dumps( context, sort_keys=True, indent=2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
             resp = render( request, 'findit/resolve.html', context )
