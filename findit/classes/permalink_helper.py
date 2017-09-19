@@ -2,10 +2,9 @@
 
 from __future__ import unicode_literals
 
-import json, logging, pprint, re, urlparse
+import logging, pprint
 
 from delivery.models import Resource
-from django.core.urlresolvers import reverse
 from shorturls import baseconv
 
 
@@ -44,7 +43,7 @@ class Permalink( object ):
     def get_openurl( self, permalink_str ):
         """ Retreives querystring for given permalink_str.
             Called by views.permalink() """
-        record_id = permastring = baseconv.base62.to_decimal( permalink_str )
+        record_id = baseconv.base62.to_decimal( permalink_str )
         try:
             rsc = Resource.objects.get( id=record_id )
             qstring = rsc.query
