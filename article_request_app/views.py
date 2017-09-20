@@ -300,4 +300,8 @@ def message( request ):
     request.session['message'] = ''
     request.session['last_path'] = request.path
     log.debug( '`{id}` will render message.html'.format(id=log_id) )
-    return render( request, 'article_request_app/message.html', context )
+    try:
+        log.debug( '`{id}` article_request message() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+        return render( request, 'article_request_app/message.html', context )
+    except Exception as e:
+        log.error( '`{id}` article_request message() error, ```{err}```'.format(id=log_id, err=unicode(repr(e))) )
