@@ -55,51 +55,6 @@ def shib_login( request ):
     ## end def shib_login()
 
 
-# def shib_login( request ):
-#     """ Builds the SP login and target-return url; redirects to the SP login, which then lands back at the login_handler() url.
-#         Called when views.availability() returns a Request button that's clicked.
-#         Session cleared and info put in url due to revproxy resetting session. """
-#     log_id = request.session.get( 'log_id', '' )
-#     log.debug( '`{id}` article_request shib_login() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
-#     ## store vars we're gonna need
-#     citation_json = request.session.get( 'citation_json', '{}' )
-#     format = request.session.get( 'format', '' )
-#     illiad_url = request.session.get( 'illiad_url', '' )
-#     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
-
-#     ## clear session so non-rev and rev work same way
-#     for key in request.session.keys():
-#         del request.session[key]
-
-#     ## build login-handler url, whether it's direct (localdev), or indircect-via-shib
-#     # login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}'.format(
-#     #     ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring)
-#     #     )
-#     login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
-#         ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring), id=log_id
-#         )
-#     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
-#         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url'), querystring=login_handler_querystring )
-#     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
-
-#     ## return response
-#     localdev_check = False
-#     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
-#         localdev_check = True
-#     if localdev_check is True:
-#         log.debug( 'localdev_check is True, redirecting right to pre-encoded login_handler' )
-#         return HttpResponseRedirect( login_handler_url )
-#     else:
-#         encoded_login_handler_url = urlquote( login_handler_url )
-#         redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-#             shib_login=settings_app.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
-#         log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
-#         return HttpResponseRedirect( redirect_url )
-
-#     ## end def shib_login()
-
-
 def login_handler( request ):
     """ Ensures user comes from correct 'findit' url;
         then grabs shib info;
@@ -305,6 +260,9 @@ def illiad_handler( request ):
         main_url=reverse('article_request:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
 
+    log_id = request.session.get( 'log_id', '' )
+    log.debug( '`{id}` article_request illiad_handler() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     ## redirect
     return HttpResponseRedirect( redirect_url )
 
@@ -334,6 +292,7 @@ def shib_logout( request ):
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
     log_id = request.session.get( 'log_id', '' )
+    log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
