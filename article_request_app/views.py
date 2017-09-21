@@ -288,6 +288,7 @@ def shib_logout( request ):
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
     log.debug( '`{id}` redirect_url, ```{val}```'.format(id=log_id, val=redirect_url) )
     log.debug( '`{id}` article_request shib_logout() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` article_request shib_logout() ending session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
     return HttpResponseRedirect( redirect_url )
 
 
@@ -295,6 +296,7 @@ def message( request ):
     """ Handles successful confirmation messages and problem messages. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` article_request message() beginning session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
