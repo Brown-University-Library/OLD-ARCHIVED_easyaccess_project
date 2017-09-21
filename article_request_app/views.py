@@ -273,6 +273,7 @@ def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request shib_logout() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    log.debug( '`{id}` article_request shib_logout() beginning session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
     message = request.session['message']
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
@@ -281,6 +282,7 @@ def shib_logout( request ):
     request.session['message'] = message
     request.session['permalink_url'] = permalink_url
     request.session['last_querystring'] = last_querystring
+    request.session.modified = True
     redirect_url = reverse( 'article_request:message_url' )
     if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
         redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
