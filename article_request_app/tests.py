@@ -2,13 +2,13 @@
 
 from __future__ import unicode_literals
 
-import logging
+import logging, urlparse
 from types import NoneType
 
 from . import settings_app
 from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
-from .classes.shib_helper import ShibLoginHelper
+from .classes.shib_helper import ShibLoginHelper, ShibLogoutHelper
 from django.conf import settings
 from django.test import Client, TestCase
 from django.utils.module_loading import import_module
@@ -16,6 +16,26 @@ from django.utils.module_loading import import_module
 
 log = logging.getLogger( 'access' )
 TestCase.maxDiff = None
+
+
+# class ShibLogoutHelperTest( TestCase ):
+#     """ Tests shib logout url builder from views.shib_logout() """
+
+#     def setUp(self):
+#         self.helper = ShibLogoutHelper()
+
+#     def test_build_shib_idp_logout_return_url(self):
+#         """ Check unencoded return-url. """
+#         prs_result = urlparse.urlparse( self.helper.build_shib_idp_logout_return_url() )
+#         self.assertEqual(
+#             True,
+#             '127.0.0.1' in prs_result.netloc or 'brown.edu' in prs_result.netloc  )
+#         self.assertEqual(
+#             '/easyaccess/article_request/message/',
+#             prs_result.path )
+#         self.assertEqual(
+#             True,
+#             prs_result.params == '' and  prs_result.query == '' and prs_result.fragment == '' )
 
 
 class ShibLoginHelperTest( TestCase ):
