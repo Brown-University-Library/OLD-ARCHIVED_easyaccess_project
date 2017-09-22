@@ -279,6 +279,14 @@ def shib_logout( request ):
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
+
+    from django.contrib.sessions.models import Session
+    s = Session.objects.get(pk=easya_sess_key)
+    info_dct = s.get_decoded()
+    log.debug( '`{id}` article_request shib_logout() info_dct, ```{val}```'.format(id=log_id, val=pprint.pformat(info_dct)) )
+
+    ## maybe recreate new session here, even with it's new key, and then populate it
+
     request.session['log_id'] = log_id
     request.session['message'] = message
     request.session['permalink_url'] = permalink_url
@@ -302,12 +310,12 @@ def message( request ):
     log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     log.debug( '`{id}` article_request message() beginning session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
 
-    easya_sess_key = request.GET['easya_sess_key']
-    if not request.session.exists( easya_sess_key ):
-        from django.contrib.sessions.backends.db import SessionStore
-        s = SessionStore( session_key=easya_sess_key )
-        request.session.create()
-    log.debug( '`{id}` article_request message() session.items() after session.create(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+    # easya_sess_key = request.GET['easya_sess_key']
+    # if not request.session.exists( easya_sess_key ):
+    #     from django.contrib.sessions.backends.db import SessionStore
+    #     s = SessionStore( session_key=easya_sess_key )
+    #     request.session.create()
+    # log.debug( '`{id}` article_request message() session.items() after session.create(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     context = {
         'last_path': request.session.get( 'last_path', '' ),
