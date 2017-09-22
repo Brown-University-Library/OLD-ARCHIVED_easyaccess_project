@@ -8,7 +8,7 @@ from types import NoneType
 from . import settings_app
 from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
-from .classes.shib_helper import ShibLoginHelper, ShibLogoutHelper
+from .classes.shib_helper import ShibLoginHelper
 from django.conf import settings
 from django.test import Client, TestCase
 from django.utils.module_loading import import_module
