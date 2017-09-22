@@ -55,6 +55,51 @@ def shib_login( request ):
     ## end def shib_login()
 
 
+# def shib_login( request ):
+#     """ Builds the SP login and target-return url; redirects to the SP login, which then lands back at the login_handler() url.
+#         Called when views.availability() returns a Request button that's clicked.
+#         Session cleared and info put in url due to revproxy resetting session. """
+#     log_id = request.session.get( 'log_id', '' )
+#     log.debug( '`{id}` article_request shib_login() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
+#     ## store vars we're gonna need
+#     citation_json = request.session.get( 'citation_json', '{}' )
+#     format = request.session.get( 'format', '' )
+#     illiad_url = request.session.get( 'illiad_url', '' )
+#     querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+
+#     ## clear session so non-rev and rev work same way
+#     for key in request.session.keys():
+#         del request.session[key]
+
+#     ## build login-handler url, whether it's direct (localdev), or indircect-via-shib
+#     # login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}'.format(
+#     #     ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring)
+#     #     )
+#     login_handler_querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
+#         ctn_jsn=urlquote(citation_json), fmt=urlquote(format), ill_url=urlquote(illiad_url), qs=urlquote(querystring), id=log_id
+#         )
+#     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
+#         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('article_request:login_handler_url'), querystring=login_handler_querystring )
+#     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
+
+#     ## return response
+#     localdev_check = False
+#     if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 == True:  # eases local development
+#         localdev_check = True
+#     if localdev_check is True:
+#         log.debug( 'localdev_check is True, redirecting right to pre-encoded login_handler' )
+#         return HttpResponseRedirect( login_handler_url )
+#     else:
+#         encoded_login_handler_url = urlquote( login_handler_url )
+#         redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
+#             shib_login=settings_app.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
+#         log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
+#         return HttpResponseRedirect( redirect_url )
+
+#     ## end def shib_login()
+
+
 def login_handler( request ):
     """ Ensures user comes from correct 'findit' url;
         then grabs shib info;
@@ -260,9 +305,6 @@ def illiad_handler( request ):
         main_url=reverse('article_request:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
 
-    log_id = request.session.get( 'log_id', '' )
-    log.debug( '`{id}` article_request illiad_handler() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
     ## redirect
     return HttpResponseRedirect( redirect_url )
 
@@ -272,57 +314,26 @@ def illiad_handler( request ):
 def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
     log_id = request.session.get( 'log_id', '' )
-    log.debug( '`{id}` article_request shib_logout() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-    easya_sess_key = request.session.session_key
-    log.debug( '`{id}` article_request shib_logout() beginning session.key, ```{val}```'.format(id=log_id, val=easya_sess_key) )
     message = request.session['message']
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
-
-    # try:
-    #     from django.contrib.sessions.models import Session
-    #     s = Session.objects.get(pk=easya_sess_key)
-    #     info_dct = s.get_decoded()
-    #     log.debug( '`{id}` article_request shib_logout() info_dct, ```{val}```'.format(id=log_id, val=pprint.pformat(info_dct)) )
-    # except Exception as e:
-    #     log.debug( '`{id}` article_request shib_logout() err, ```{val}```'.format(id=log_id, val=unicode(repr(e))) )
-
-    ## maybe recreate new session here, even with it's new key, and then populate it
-
-    request.session.create()
-    log.debug( '`{id}` article_request shib_logout() new session key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
-
     request.session['log_id'] = log_id
     request.session['message'] = message
     request.session['permalink_url'] = permalink_url
     request.session['last_querystring'] = last_querystring
-    request.session.modified = True
     redirect_url = reverse( 'article_request:message_url' )
     if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
-        # redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
-        redirect_url = 'https://{host}{message_url}?easya_sess_key={sess_key}'.format( host=request.get_host(), message_url=reverse('article_request:message_url'), sess_key=easya_sess_key )
+        redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
     log.debug( '`{id}` redirect_url, ```{val}```'.format(id=log_id, val=redirect_url) )
-    log.debug( '`{id}` article_request shib_logout() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-    log.debug( '`{id}` article_request shib_logout() ending session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
     return HttpResponseRedirect( redirect_url )
 
 
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
     log_id = request.session.get( 'log_id', '' )
-    log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-    log.debug( '`{id}` article_request message() beginning session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
-
-    # easya_sess_key = request.GET['easya_sess_key']
-    # if not request.session.exists( easya_sess_key ):
-    #     from django.contrib.sessions.backends.db import SessionStore
-    #     s = SessionStore( session_key=easya_sess_key )
-    #     request.session.create()
-    # log.debug( '`{id}` article_request message() session.items() after session.create(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
@@ -330,8 +341,4 @@ def message( request ):
     request.session['message'] = ''
     request.session['last_path'] = request.path
     log.debug( '`{id}` will render message.html'.format(id=log_id) )
-    try:
-        log.debug( '`{id}` article_request message() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-        return render( request, 'article_request_app/message.html', context )
-    except Exception as e:
-        log.error( '`{id}` article_request message() error, ```{err}```'.format(id=log_id, err=unicode(repr(e))) )
+    return render( request, 'article_request_app/message.html', context )
