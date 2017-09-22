@@ -264,15 +264,6 @@ def shib_logout( request ):
     """ Builds SP shib-logout url, with target of 'article_request/message/'; redirects. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request shib_logout() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
-    # message = request.session['message']
-    # permalink_url = request.session.get( 'permalink_url', '' )
-    # last_querystring = request.session.get( 'last_querystring', '' )
-    # # logout( request )  # from django.contrib.auth import logout
-    # request.session['log_id'] = log_id
-    # request.session['message'] = message
-    # request.session['permalink_url'] = permalink_url
-    # request.session['last_querystring'] = last_querystring
     redirect_url = reverse( 'article_request:message_url' )
     if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
         # return_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
@@ -281,7 +272,6 @@ def shib_logout( request ):
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_return_url )
     log.debug( '`{id}` redirect_url, ```{val}```'.format(id=log_id, val=redirect_url) )
     log.debug( '`{id}` article_request shib_logout() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
     return HttpResponseRedirect( redirect_url )
 
 
@@ -289,15 +279,13 @@ def message( request ):
     """ Handles successful confirmation messages and problem messages; clears session. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
     }
     request.session['message'] = ''
     request.session['last_path'] = request.path
-
     logout( request )  # from django.contrib.auth import logout
-
     log.debug( '`{id}` will render message.html'.format(id=log_id) )
+    log.debug( '`{id}` article_request message() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     return render( request, 'article_request_app/message.html', context )
