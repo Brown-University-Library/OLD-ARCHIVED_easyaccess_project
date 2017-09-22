@@ -280,10 +280,13 @@ def shib_logout( request ):
     last_querystring = request.session.get( 'last_querystring', '' )
     logout( request )  # from django.contrib.auth import logout
 
-    from django.contrib.sessions.models import Session
-    s = Session.objects.get(pk=easya_sess_key)
-    info_dct = s.get_decoded()
-    log.debug( '`{id}` article_request shib_logout() info_dct, ```{val}```'.format(id=log_id, val=pprint.pformat(info_dct)) )
+    try:
+        from django.contrib.sessions.models import Session
+        s = Session.objects.get(pk=easya_sess_key)
+        info_dct = s.get_decoded()
+        log.debug( '`{id}` article_request shib_logout() info_dct, ```{val}```'.format(id=log_id, val=pprint.pformat(info_dct)) )
+    except Exception as e:
+        log.debug( '`{id}` article_request shib_logout() err, ```{val}```'.format(id=log_id, val=unicode(repr(e))) )
 
     ## maybe recreate new session here, even with it's new key, and then populate it
 
