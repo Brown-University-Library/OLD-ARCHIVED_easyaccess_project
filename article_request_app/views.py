@@ -262,7 +262,7 @@ def illiad_handler( request ):
 
 def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
-    # log_id = request.session.get( 'log_id', '' )
+    log_id = request.session.get( 'log_id', '' )
     # message = request.session['message']
     # permalink_url = request.session.get( 'permalink_url', '' )
     # last_querystring = request.session.get( 'last_querystring', '' )
