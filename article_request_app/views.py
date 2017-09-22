@@ -263,6 +263,8 @@ def illiad_handler( request ):
 def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
     log_id = request.session.get( 'log_id', '' )
+    log.debug( '`{id}` article_request shib_logout() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     # message = request.session['message']
     # permalink_url = request.session.get( 'permalink_url', '' )
     # last_querystring = request.session.get( 'last_querystring', '' )
@@ -277,12 +279,16 @@ def shib_logout( request ):
         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
     log.debug( '`{id}` redirect_url, ```{val}```'.format(id=log_id, val=redirect_url) )
+    log.debug( '`{id}` article_request shib_logout() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     return HttpResponseRedirect( redirect_url )
 
 
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
     log_id = request.session.get( 'log_id', '' )
+    log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
