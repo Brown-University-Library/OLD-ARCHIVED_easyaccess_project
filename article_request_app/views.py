@@ -273,7 +273,8 @@ def shib_logout( request ):
     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request shib_logout() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-    log.debug( '`{id}` article_request shib_logout() beginning session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
+    easya_sess_key = request.session.session_key
+    log.debug( '`{id}` article_request shib_logout() beginning session.key, ```{val}```'.format(id=log_id, val=easya_sess_key) )
     message = request.session['message']
     permalink_url = request.session.get( 'permalink_url', '' )
     last_querystring = request.session.get( 'last_querystring', '' )
@@ -285,7 +286,8 @@ def shib_logout( request ):
     request.session.modified = True
     redirect_url = reverse( 'article_request:message_url' )
     if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
-        redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
+        # redirect_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
+        redirect_url = 'https://{host}{message_url}?easya_sess_key={sess_key}'.format( host=request.get_host(), message_url=reverse('article_request:message_url'), sess_key=easya_sess_key )
         encoded_redirect_url = urlquote( redirect_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_redirect_url )
     log.debug( '`{id}` redirect_url, ```{val}```'.format(id=log_id, val=redirect_url) )
@@ -299,6 +301,14 @@ def message( request ):
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request message() beginning session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     log.debug( '`{id}` article_request message() beginning session.key, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.session_key)) )
+
+    easya_sess_key = request.GET['easya_sess_key']
+    if not request.session.exists( easya_sess_key ):
+        from django.contrib.sessions.backends.db import SessionStore
+        s = SessionStore( session_key=easya_sess_key )
+        request.session.create()
+    log.debug( '`{id}` article_request message() session.items() after session.create(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
+
     context = {
         'last_path': request.session.get( 'last_path', '' ),
         'message': markdown.markdown( request.session.get('message', '') )
