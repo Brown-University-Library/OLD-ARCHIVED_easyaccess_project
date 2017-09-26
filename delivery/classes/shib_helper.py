@@ -12,29 +12,29 @@ log = logging.getLogger('access')
 class ShibLoginHelper( object ):
     """ Contains helpers for views.login_handler() """
 
-    def build_shib_sp_querystring( self, bib_dct_json, last_querystring, shortlink_url, ezlogid ):
+    def build_shib_sp_querystring( self, bib_dct_json, last_querystring, shortlink_url, log_id ):
         """ Builds querystring for redirect to shib SP url, which will redirect back to views.login_handler().
             Called by views.shib_login() """
-        self.check_params( [ bib_dct_json, last_querystring, shortlink_url, ezlogid ] )
+        self.check_params( [ bib_dct_json, last_querystring, shortlink_url, log_id ] )
         segment = '/easyaccess/borrow/login_handler/?bib_dct_json={bib_jsn}&last_querystring={qs}&shortlink_url={shrtlnk}&ezlogid={id}'.format(
             bib_jsn=urlquote( bib_dct_json ),
             qs=urlquote( last_querystring ),
             shrtlnk=urlquote( shortlink_url ),
-            id=ezlogid )
+            id=log_id )
         querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'
         assert type(querystring) == unicode, type(querystring)
         log.debug( 'querystring for redirect to shib SP login url, ```%s```' % querystring )
         return querystring
 
-    def build_localdev_querystring( self, bib_dct_json, last_querystring, shortlink_url, ezlogid ):
+    def build_localdev_querystring( self, bib_dct_json, last_querystring, shortlink_url, log_id ):
         """ Builds querystring for redirect right to views.login_handler()
             Called by views.shib_login() """
-        self.check_params( [ bib_dct_json, last_querystring, shortlink_url, ezlogid ] )
+        self.check_params( [ bib_dct_json, last_querystring, shortlink_url, log_id ] )
         querystring = 'bib_dct_json={bib_jsn}&last_querystring={qs}&shortlink_url={shrtlnk}&ezlogid={id}'.format(
             bib_jsn=urlquote( bib_dct_json ),
             qs=urlquote( last_querystring ),
             shrtlnk=urlquote( shortlink_url ),
-            id=ezlogid )
+            id=log_id )
         assert type(querystring) == unicode, type(querystring)
         log.debug( 'querystring for localdev redirect to views.login_handler(), ```%s```' % querystring )
         return querystring
