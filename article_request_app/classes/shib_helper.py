@@ -50,12 +50,3 @@ class ShibLoginHelper( object ):
         return
 
     ## end class ShibLoginHelper()
-
-
-# class ShibLogoutHelper( object):
-#     """ Contains helper for views.shib_logout() """
-
-#     def build_shib_idp_logout_return_url( self ):
-#         """ Builds the url that shib will return to after idp logout.
-#             Called by views.shib_logout() """
-#         return settings_app.SHIB_LOGOUT_URL_RETURN_ROOT
