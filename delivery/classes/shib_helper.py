@@ -16,7 +16,7 @@ class ShibLoginHelper( object ):
         """ Builds querystring for redirect to shib SP url, which will redirect back to views.login_handler().
             Called by views.shib_login() """
         self.check_params( [ bib_dct_json, last_querystring, shortlink_url, log_id ] )
-        segment = '/easyaccess/borrow/login_handler/?bib_dct_json={bib_jsn}&last_querystring={qs}&shortlink_url={shrtlnk}&ezlogid={id}'.format(
+        segment = '/easyaccess/borrow/login_handler/?bib_dct_json={bib_jsn}&last_querystring={qs}&permalink_url={shrtlnk}&ezlogid={id}'.format(
             bib_jsn=urlquote( bib_dct_json ),
             qs=urlquote( last_querystring ),
             shrtlnk=urlquote( shortlink_url ),
@@ -30,7 +30,7 @@ class ShibLoginHelper( object ):
         """ Builds querystring for redirect right to views.login_handler()
             Called by views.shib_login() """
         self.check_params( [ bib_dct_json, last_querystring, shortlink_url, log_id ] )
-        querystring = 'bib_dct_json={bib_jsn}&last_querystring={qs}&shortlink_url={shrtlnk}&ezlogid={id}'.format(
+        querystring = 'bib_dct_json={bib_jsn}&last_querystring={qs}&permalink_url={shrtlnk}&ezlogid={id}'.format(
             bib_jsn=urlquote( bib_dct_json ),
             qs=urlquote( last_querystring ),
             shrtlnk=urlquote( shortlink_url ),
