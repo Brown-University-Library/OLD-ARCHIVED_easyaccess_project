@@ -8,7 +8,7 @@ from datetime import datetime
 import bibjsontools, markdown, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
 from common_classes.illiad_helper import IlliadHelper
-from delivery import app_settings
+from delivery import app_settings as settings_app
 from delivery.classes.availability_helper import AvailabilityViewHelper
 from delivery.classes.availability_helper import JosiahAvailabilityChecker
 from delivery.classes.login_helper import LoginViewHelper
