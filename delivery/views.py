@@ -73,7 +73,7 @@ def availability( request ):
                 oclc_num = identifier['id']
     bib_dct['isbn'] = isbn
     bib_dct['oclc_num'] = oclc_num
-    request.session['bib_dct_json'] = json.dumps(bib_dct)
+    request.session['bib_dct_json'] = json.dumps(bib_dct).decode( 'utf-8' )
 
     ## run recent-request check -- TODO
 
@@ -131,13 +131,10 @@ def shib_login( request ):
 
     ## update bib_dct_json if user has submitted volume-notes
     easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
-    log.debug( '`%s` easyborrow_volumes, ```%s```' % (log_id, easyborrow_volumes) )
     if easyborrow_volumes != '':
         bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
-        log.debug( 'initial bib_dct, ```%s```' % pprint.pformat(bib_dct) )
         bib_dct['easyborrow_volumes'] = easyborrow_volumes
-        log.debug( 'updated bib_dct, ```%s```' % pprint.pformat(bib_dct) )
-        request.session['bib_dct_json'] = json.dumps( bib_dct )
+        request.session['bib_dct_json'] = json.dumps( bib_dct ).decode( 'utf-8' )
     bib_dct_json = request.session['bib_dct_json']
 
     ## get other info from session
@@ -159,60 +156,6 @@ def shib_login( request ):
         querystring = shib_login_helper.build_shib_sp_querystring( bib_dct_json, last_querystring, shortlink_url, log_id )
         redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
     return HttpResponseRedirect( redirect_url )
-
-
-# def shib_login( request ):
-#     """ Tries an sp login, which returns to the login_handler() url.
-#         Called when views.availability() returns a Request button that's clicked.
-#         Session cleared and info put in url due to revproxy resetting session. """
-#     log_id = request.session.get( 'log_id', '' )
-#     log.debug( '`{id}` starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-#     log.debug( 'request.POST, ```%s```' % pprint.pformat(request.POST) )
-
-#     ## update bib_dct_json if user has submitted volume-notes
-#     easyborrow_volumes = request.POST.get( 'volumes', '' ).strip()
-#     log.debug( '`%s` easyborrow_volumes, ```%s```' % (log_id, easyborrow_volumes) )
-#     if easyborrow_volumes != '':
-#         bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
-#         log.debug( 'initial bib_dct, ```%s```' % pprint.pformat(bib_dct) )
-#         bib_dct['easyborrow_volumes'] = easyborrow_volumes
-#         log.debug( 'updated bib_dct, ```%s```' % pprint.pformat(bib_dct) )
-#         request.session['bib_dct_json'] = json.dumps( bib_dct )
-#     bib_dct_json = request.session['bib_dct_json']
-
-#     ## get other info from session
-#     last_querystring = request.session['last_querystring']
-#     permalink_url = request.session['permalink_url']
-
-#     ## clear session so we know that regular-processing happens same way as revproxy-processing
-#     for key in request.session.keys():
-#         del request.session[key]
-#     log.debug( '`{id}` session.items() after deletion, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
-#     ## build login_handler url
-#     # login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}'.format(
-#     #     bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url) )
-#     login_handler_querystring = 'bib_dct_json={bdj}&last_querystring={lq}&permalink_url={pml}&ezlogid={id}'.format(
-#         bdj=urlquote(bib_dct_json), lq=urlquote(last_querystring), pml=urlquote(permalink_url), id=log_id )
-#     log.debug( '`{id}` len(login_handler_querystring), ```{val}```'.format(id=log_id, val=len(login_handler_querystring)) )
-
-#     login_handler_url = '{scheme}://{host}{login_handler_url}?{querystring}'.format(
-#         scheme=request.scheme, host=request.get_host(), login_handler_url=reverse('delivery:login_handler_url'), querystring=login_handler_querystring )
-#     log.debug( 'pre-encoded login_handler_url, ```{}```'.format(login_handler_url) )
-
-#     localdev_check = False
-#     if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
-#         localdev_check = True
-
-#     if localdev_check is True:
-#         log.debug( 'localdev_check is True, redirecting right to pre-encoded login_handler' )
-#         return HttpResponseRedirect( login_handler_url )
-#     else:
-#         encoded_login_handler_url = urlquote( login_handler_url )
-#         redirect_url = '{shib_login}?target={encoded_login_handler_url}'.format(
-#             shib_login=app_settings.SHIB_LOGIN_URL, encoded_login_handler_url=encoded_login_handler_url )
-#         log.debug( 'redirect_url to shib-sp-login, ```{}```'.format(redirect_url) )
-#         return HttpResponseRedirect( redirect_url )
 
 
 def login_handler( request ):
