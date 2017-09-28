@@ -261,7 +261,7 @@ def illiad_handler( request ):
 
 
 def shib_logout( request ):
-    """ Builds SP shib-logout url, with target of 'article_request/message/'; redirects. """
+    """ Builds IDP shib-logout url, with target of 'article_request/message/'; redirects. """
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request shib_logout() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     redirect_url = reverse( 'article_request:message_url' )
