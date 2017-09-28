@@ -291,23 +291,6 @@ def shib_logout( request ):
     return HttpResponseRedirect( redirect_url )
 
 
-# def shib_logout( request ):
-#     """ Clears session; builds SP shib-logout url, with target of 'borrow/message/'; redirects. """
-#     log_id = request.session.get( 'log_id', '' )
-#     message = request.session.get( 'message', '' )
-#     permalink_url = request.session.get( 'permalink_url', '' )
-#     last_querystring = request.session.get( 'last_querystring', '' )
-#     logout( request )  # from django.contrib.auth import logout
-#     request.session['log_id'] = log_id
-#     request.session['message'] = message
-#     request.session['permalink_url'] = permalink_url
-#     request.session['last_querystring'] = last_querystring
-#     process_view_helper = ProcessViewHelper( log_id )
-#     redirect_url = process_view_helper.build_shiblogout_redirect_url( request )
-#     log.debug( '`{id}` redirect_url, `{val}`'.format(id=log_id, val=redirect_url) )
-#     return HttpResponseRedirect( redirect_url )
-
-
 def message( request ):
     """ Handles successful confirmation messages and problem messages. """
     log_id = request.session.get( 'log_id', '' )
