@@ -172,6 +172,8 @@ LOGIN_REDIRECT_URL = os.environ['EZACS__LOGIN_REDIRECT_URL']
 
 ALLOWED_HOSTS = json.loads( os.environ['EZACS__ALLOWED_HOSTS_JSON'] )
 
+CSRF_TRUSTED_ORIGINS = json.loads( os.environ['EZACS__CSRF_TRUSTED_ORIGINS_JSON'] )
+
 ## end of project-level settings
 
 
