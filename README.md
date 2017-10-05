@@ -15,7 +15,9 @@ This repository contains code for a project of the [Brown University Library](ht
 
 It contains code for the web pages users see when they click links for articles and books which contain an [OpenUrl](https://en.wikipedia.org/wiki/OpenURL).
 
-It also contains code for the handling of article-delivery (easyArticle); for books it hands off to an [easyBorrow](https://github.com/birkin/easyborrow_controller) project.
+It also contains code for the handling of article-delivery (easyArticle); for books easyAccess (invisibly to the user) hands off to an [easyBorrow](https://github.com/birkin/easyborrow_controller) project.
+
+easyAccess is, essentially, the Library's OpenUrl link-resolver, using, behind-the-scenes, the [SerialsSolutions 360Link api](http://www.proquest.com/products-services/discovery-services/360-Link.html).
 
 ---
 
@@ -23,21 +25,18 @@ It also contains code for the handling of article-delivery (easyArticle); for bo
 
 - from information in the openurl, the item is determined to be an article, and all subsequent pages the user sees will be branded 'easyArticle'
 
-- if the referrer is not on a 'skip summon check' list, and if there is a doi or pmid identifier, the [summon api](https://api.summon.serialssolutions.com/help/api/) is checked
+- a check is made on the openurl to see if the item is specifically for a journal (as opposed to an article). This is rarely the case, but if so, the openurl request is redirected to Brown's 'search.serialssolutions.com' url. This is old inherited logic; we could likely improve this.
 
-- if summon is checked...
-    - if the results contain a direct link the user is taken to the 'brown.summon.serialssolutions.com' full link to the article text (which triggers a shib login)
-
-- if still in flow, a check is made on the openurl to see if the item is specifically for a journal. If so, the openurl request is redirected to Brown's 'search.serialssolutions.com' url
-
-- if still in flow, a check is made on a Brown's [360Link](http://www.proquest.com/libraries/academic/discovery-services/360-Link.html) 'openurl.xml.serialssolutions.com' api
+- if still in flow (almost always the case), a check is made on a Brown's 360Link 'openurl.xml.serialssolutions.com' api
     - if a direct link to full-text is found, easyAccess used to take the user right to that url, but a decision was made to instead have the user land at an easyArticle page showing all links to full text
+        - there is some logic that affects the order links are shown, based on librarians defining which sources are better than others
         - note: all serialsolutions online links begin with `https://login.revproxy.brown.edu/login?url=the_destination_url` which triggers shib login
+        - if the user has clicked a link from new-josiah to get to easyAccess, that openurl may contain an EDS full-text link. If so, that link is also listed after the other full-text links.
     - if a direct link to full-text is not found, but the 360link api indicates we have electronic access to that issue of the journal, the user lands at a page with a link to the journal and a note that the article _is_ available online, but that the link is not directly to the article, and some additional searching will be required on the publisher's website
     - if the 360link api lookup shows that we have the article in print, that information will appear on the landing page, whether or not there are also online links
     - if the 360link api has no online link information about the item, and no print information about the item, the user lands at a page with a link to 'Request from another library'
 
-- if still in flow, and the user clicks the 'Request from another library' link, a confirmation 'Submit' button appears; if clicked, the request is submitted to [ILLiad](https://www.atlas-sys.com/illiad/) (our interlibary-loan service) on behalf of the user.
+- if still in flow, and the user clicks the 'Request from another library' link, a confirmation 'Submit' button appears; if clicked, the request is submitted to [ILLiad](https://www.atlas-sys.com/illiad/) (our interlibary-loan service) on behalf of the user, and the user receives a confirmation email with tracking info.
 
 - see 'Article Examples' on the [easyAccess home page](https://library.brown.edu/easyaccess/find/)
 
