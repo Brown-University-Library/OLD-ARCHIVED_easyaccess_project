@@ -30,7 +30,7 @@ class PermalinkHelperTest( TestCase ):
         self.qdct.update( qdct )
         data_dct = self.helper.make_permalink( referrer=qdct.get('rfr_id',''), qstring=qstring, scheme='https', host='the_host', path='/easyaccess/find/' )
         self.assertEqual(
-            'https://the_host/easyaccess/find/permalink/B/', data_dct['permalink'] )
+            '/find/permalink/B/', data_dct['permalink'] )
         self.assertEqual(
             'info:sid/firstsearch.oclc.org:WorldCat', data_dct['referrer'] )
         self.assertEqual(
@@ -57,7 +57,7 @@ class PermalinkHelperTest( TestCase ):
         rsc2.save()
         data_dct = self.helper.make_permalink( referrer=good_referrer, qstring=good_qstring, scheme='https', host='the_host', path='/easyaccess/find/' )
         self.assertEqual(
-            'https://the_host/easyaccess/find/permalink/pnfq/', data_dct['permalink'] )
+            '/find/permalink/pnfq/', data_dct['permalink'] )
         self.assertEqual(
             'info:sid/firstsearch.oclc.org:WorldCat', data_dct['referrer'] )
         self.assertEqual(
