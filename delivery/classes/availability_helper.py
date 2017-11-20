@@ -76,6 +76,7 @@ class JosiahAvailabilityChecker(object):
                 log.debug( 'oclc_jdct, ```{}```'.format(pprint.pformat(oclc_jdct)) )
             except Exception as e:
                 log.warning( 'oclc-availability-check may have timed out, error, ```{}```'.format(unicode(repr(e))) )
+                oclc_jdct = None
             bib_num = oclc_jdct.get( 'id', None )
             if bib_num:
                 self.bib_num = bib_num
