@@ -38,7 +38,7 @@ class AvailabilityViewHelperTest(TestCase):
         self.assertEqual( ['_openurl', '_rfr', 'author', 'identifier', 'place_of_publication', 'publisher', 'title', 'type', 'year'], sorted(bib_dct.keys()) )
         self.assertEqual( 'T\u014dichi', bib_dct['author'][0]['firstname'] )
 
-    # end AvailabilityViewHelperTest()
+    ## end AvailabilityViewHelperTest()
 
 
 class AvailabilityCheckerTest(TestCase):
@@ -51,35 +51,48 @@ class AvailabilityCheckerTest(TestCase):
         """ Should return holdings for both isbn check and oclc check. """
         isbn = ''
         oclc_num = '673595'
-        result_lst = self.checker.check_josiah_availability( isbn, oclc_num )
-        result_check = False
-        for entry in result_lst:
-            if entry['status'] == 'AVAILABLE' and 'CT275.P648 A33' in entry['callnumber'] and entry['location'] == 'ROCK':  # not checking full entry-dct because the available callnumber-copy changes.
-                result_check = True
-        self.assertEqual(
-            False, result_check
+        availabile_holdings = self.checker.check_josiah_availability( isbn, oclc_num )
+        self.assertEqual( list, type(availabile_holdings) )
+        if len( availabile_holdings ) > 0:
+            self.assertEqual(
+                sorted(availabile_holdings[0].keys()),
+                [u'callnumber', u'location', u'status']
+            )
+            self.assertEqual(
+                availabile_holdings[0]['status'],
+                'AVAILABLE'
             )
 
     def test_check_josiah_availability__no_oclcnum(self):
         """ Should return holdings for both isbn check and oclc check. """
         isbn = '9788934900894'
         oclc_num = ''
-        self.assertEqual(
-            [],
-            self.checker.check_josiah_availability( isbn, oclc_num )
+        availabile_holdings = self.checker.check_josiah_availability( isbn, oclc_num )
+        self.assertEqual( list, type(availabile_holdings) )
+        if len( availabile_holdings ) > 0:
+            self.assertEqual(
+                sorted(availabile_holdings[0].keys()),
+                [u'callnumber', u'location', u'status']
+            )
+            self.assertEqual(
+                availabile_holdings[0]['status'],
+                'AVAILABLE'
             )
 
     def test_check_josiah_availability__holdings_returned(self):
         """ Should return holdings for both isbn check and oclc check. """
         isbn = '9780688002305'
         oclc_num = '673595'
-        result_lst = self.checker.check_josiah_availability( isbn, oclc_num )
-        result_check = False
-        for entry in result_lst:
-            if entry['status'] == 'AVAILABLE' and 'CT275.P648 A33' in entry['callnumber'] and entry['location'] == 'ROCK':  # not checking full entry-dct because the available callnumber-copy changes.
-                result_check = True
-        self.assertEqual(
-            True, result_check
+        availabile_holdings = self.checker.check_josiah_availability( isbn, oclc_num )
+        self.assertEqual( list, type(availabile_holdings) )
+        if len( availabile_holdings ) > 0:
+            self.assertEqual(
+                sorted(availabile_holdings[0].keys()),
+                [u'callnumber', u'location', u'status']
+            )
+            self.assertEqual(
+                availabile_holdings[0]['status'],
+                'AVAILABLE'
             )
 
     ## end AvailabilityCheckerTest()
