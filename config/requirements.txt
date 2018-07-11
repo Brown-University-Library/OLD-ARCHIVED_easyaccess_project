@@ -23,4 +23,4 @@ git+https://github.com/birkin/bibjsontools_bul.git@v0.4e
 #git+https://github.com/birkin/django-bul-link.git
 
 ## ILLiad
-git+https://github.com/Brown-University-Library/illiad-client.git@v0.8
+git+https://github.com/Brown-University-Library/illiad-client.git@v0.81
