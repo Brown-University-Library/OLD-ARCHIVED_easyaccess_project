@@ -104,51 +104,105 @@ function getBookLocation() {
         });
 }
 
-function locate(location, call_number, spot) {
-       console.log( "in findit/static/js/helpers.js locate()" );
-       //locate the found journal
-       var book_locator_url = '//library.brown.edu/services/book_locator/';
-       var title = $('.source').text();
-       var status = '';
-       //book locator wants lower case strings for locations.
-       var location = location.toLowerCase();
-       //shorten sciences.
-       if (location == 'sciences') {
-           location = 'sci';
-       }
-       //logit('locating ' + call_number);
-       var locate_request = {
-           'callnumber': call_number,
-           'location': location,
-           'title': title,
-           'status': status
-       };
-       var base_request_url = book_locator_url + '?' + $.param(locate_request);
-       var json_url =  base_request_url + '&callback=?';
-       var map_url = base_request_url + '&public=true';
-       var location_spot = spot
-       var location_label = location.toUpperCase();
-       i = 0;
 
-       //logit(oclc_number);
-       var jqxhr = $.getJSON(json_url, function(bl){
-               var bl = bl[location + '-' + call_number]
-               if (bl['located'] == true) {
-                   var locator_info = "{4} -- {3} -- Level {0}, Aisle {1}{2}".format(
-                                                            bl['floor'],
-                                                            bl['aisle'],
-                                                            bl['side'],
-                                                            location_label,
-                                                            call_number
-                                                            );
-                   //$(location_spot).append(locator_info);
-                   var locate_link = '<a class="book_locator_map iframe" href="{1}">view map</a>'.format(call_number, map_url, location);
-                   var locate_link = locator_info + locate_link;
-                   $(location_spot).html(locate_link);
-                   $("a.book_locator_map").fancybox({'width':750,'height': 600});
-                   i = i +1;
-               }
-       })
+// function locate(location, call_number, spot) {
+//        console.log( "in findit/static/js/helpers.js locate()" );
+//        //locate the found journal
+//        var book_locator_url = '//library.brown.edu/services/book_locator/';
+//        var title = $('.source').text();
+//        var status = '';
+//        //book locator wants lower case strings for locations.
+//        var location = location.toLowerCase();
+//        //shorten sciences.
+//        if (location == 'sciences') {
+//            location = 'sci';
+//        }
+//        //logit('locating ' + call_number);
+//        var locate_request = {
+//            'callnumber': call_number,
+//            'location': location,
+//            'title': title,
+//            'status': status
+//        };
+//        var base_request_url = book_locator_url + '?' + $.param(locate_request);
+//        var json_url =  base_request_url + '&callback=?';
+//        var map_url = base_request_url + '&public=true';
+//        var location_spot = spot
+//        var location_label = location.toUpperCase();
+//        i = 0;
+
+//        //logit(oclc_number);
+//        var jqxhr = $.getJSON(json_url, function(bl){
+//                var bl = bl[location + '-' + call_number]
+//                if (bl['located'] == true) {
+//                    var locator_info = "{4} -- {3} -- Level {0}, Aisle {1}{2}".format(
+//                                                             bl['floor'],
+//                                                             bl['aisle'],
+//                                                             bl['side'],
+//                                                             location_label,
+//                                                             call_number
+//                                                             );
+//                    //$(location_spot).append(locator_info);
+//                    var locate_link = '<a class="book_locator_map iframe" href="{1}">view map</a>'.format(call_number, map_url, location);
+//                    var locate_link = locator_info + locate_link;
+//                    $(location_spot).html(locate_link);
+//                    $("a.book_locator_map").fancybox({'width':750,'height': 600});
+//                    i = i +1;
+//                }
+//        })
+// };
+
+
+function locate(location, call_number, spot) {
+   console.log( "in findit/static/js/helpers.js locate()" );
+   //locate the found journal
+   var book_locator_url = '//apps.library.brown.edu/bibutils/map/';
+   var title = $('.source').text();
+   var status = '';
+   //book locator wants lower case strings for locations.
+   var location = location.toLowerCase();
+   //shorten sciences.
+   if (location == 'sciences') {
+       location = 'sci';
+   }
+   //logit('locating ' + call_number);
+   var locate_request = {
+       'call': call_number,
+       'loc': location,
+       'title': title,
+       'status': status
+   };
+   var base_request_url = book_locator_url + '?' + $.param(locate_request);
+   var json_url =  base_request_url + '&callback=?';
+   var map_url = base_request_url + '&public=true';
+   var location_spot = spot
+   var location_label = location.toUpperCase();
+   i = 0;
+
+   //logit(oclc_number);
+   // var jqxhr = $.getJSON(json_url, function(bl){
+   //         var bl = bl[location + '-' + call_number]
+   //         if (bl['located'] == true) {
+   //             // var locator_info = "{4} -- {3} -- Level {0}, Aisle {1}{2}".format(
+   //             //                                          bl['floor'],
+   //             //                                          bl['aisle'],
+   //             //                                          bl['side'],
+   //             //                                          location_label,
+   //             //                                          call_number
+   //             //                                          );
+   //             //$(location_spot).append(locator_info);
+   //             var locate_link = '<a class="book_locator_map iframe" href="' + map_url + '">view map</a>';
+   //             // var locate_link = locator_info + locate_link;
+   //             $(location_spot).html(locate_link);
+   //             $("a.book_locator_map").fancybox({'width':750,'height': 600});
+   //             i = i +1;
+   //         }
+   // })
+   var locate_link = '<a class="book_locator_map iframe" href="' + map_url + '">view map</a>';
+   // var locate_link = locator_info + locate_link;
+   $(location_spot).html(locate_link);
+   $("a.book_locator_map").fancybox({'width':750,'height': 600});
+
 };
 
 
