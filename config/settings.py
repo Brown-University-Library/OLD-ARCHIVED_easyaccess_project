@@ -9,6 +9,8 @@ import dj_database_url
 ## standard project-level settings
 ## ============================================================================
 
+BASE_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
+
 SECRET_KEY = os.environ['EZACS__SECRET_KEY']
 
 DEBUG = json.loads( os.environ['EZACS__DEBUG_JSON'] )  # will be True or False

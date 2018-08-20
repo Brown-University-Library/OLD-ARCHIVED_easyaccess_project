@@ -19,6 +19,8 @@ urlpatterns = patterns(
 
     url( r'^my_info/$', 'findit.views.shib_info', name='shib_info_url' ),
 
+    url( r'^info/$', 'findit.views.info', name='info_url' ),
+
     url( r'^$', 'findit.views.findit_base_resolver', name=u'findit_base_resolver_url' ),
 
 )
