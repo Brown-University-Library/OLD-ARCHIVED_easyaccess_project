@@ -91,9 +91,16 @@ Note: to see the imported modules' loggers, add somewhere:
     (from <https://bytes.com/topic/python/answers/830042-dynamically-getting-loggers>)
 """
 
+# import logging
+# existing_logger_names = logging.getLogger().manager.loggerDict.keys()
+# print( '- EXISTING_LOGGER_NAMES, `%s`' % existing_logger_names )
+
 ## disabling module loggers
+logging.getLogger('beautifulsoup4').setLevel( logging.WARNING )
+logging.getLogger('bs4').setLevel( logging.WARNING )
 logging.getLogger('bibjsontools').setLevel( logging.WARNING )
 logging.getLogger('illiad').setLevel( logging.WARNING )
+logging.getLogger('illiad.account').setLevel( logging.WARNING )
 logging.getLogger('link360').setLevel( logging.WARNING )
 logging.getLogger('py360link2').setLevel( logging.WARNING )
 logging.getLogger('requests').setLevel( logging.WARNING )
@@ -116,11 +123,11 @@ LOGGING = {
         #     'level':'DEBUG',
         #     'class':'django.utils.log.NullHandler',
         # },
-        'console':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
+        # 'console':{
+        #     'level': 'DEBUG',
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'simple'
+        # },
         'illiad_log_file':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
