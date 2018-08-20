@@ -92,9 +92,12 @@ Note: to see the imported modules' loggers, add somewhere:
 """
 
 ## disabling module loggers
-# logging.getLogger('bibjsontools').setLevel( logging.WARNING )
-logging.getLogger('bibjsontools').setLevel( logging.DEBUG )
+logging.getLogger('bibjsontools').setLevel( logging.WARNING )
+logging.getLogger('illiad').setLevel( logging.WARNING )
+logging.getLogger('link360').setLevel( logging.WARNING )
+logging.getLogger('py360link2').setLevel( logging.WARNING )
 logging.getLogger('requests').setLevel( logging.WARNING )
+
 
 LOGGING = {
     'version': 1,
