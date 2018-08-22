@@ -84,13 +84,13 @@ class IndexPageLinksTest( TestCase ):
         print_title.save()
         response = self.client.get( '/find/?genre=article&issn=00377686&title=Social+Compass&volume=14&issue=5/6&date=19670901&atitle=Religious+knowledge+and+attitudes+in+Mexico+City.&spage=469&pages=469-482&sid=EBSCO:Academic+Search+Premier&aulast=Stryckman,+Paul' )
         content = response.content.decode( 'utf-8' )
-        # log.debug( 'response.content, ```%s```' % response.content.decode('utf-8') )
+        # log.debug( 'content, ```%s```' % content.decode('utf-8') )
         self.assertEqual( 200, response.status_code )
         self.assertEqual( True, '<title>easyArticle - Brown University Library</title>' in content )
         self.assertEqual( True, '<h3>easyArticle</h3>' in content )
         self.assertEqual( True, '<h3>Available at the library</h3>' in content )
-        self.assertEqual( True, '<span class="print-location">Annex</span>' in content )
-        self.assertEqual( True, '<span class="print-callnumber">BL60.A2 S65</span>' in content )
+        self.assertEqual( True, 'Request for delivery via Josiah' in content )
+        self.assertEqual( True, 'BL60.A2 S65 -- ANNEX' in content )
 
     ## end class IndexPageLinksTest
 
@@ -103,16 +103,17 @@ class PmidResolverTest(TestCase):
             Should show W.H.O. link, and local Annex holding. """
         from findit.models import PrintTitle
         print_title = PrintTitle(
-            key='051230541950', issn='0512-3054', start='1950', end='2015', location='AnnexFoo', call_number='RA8 .A27Foo' )
+            key='051230541950', issn='0512-3054', start='1950', end='2015', location='Annex', call_number='RA8 .A27' )
         print_title.save()
         url = '/find/?pmid=11234459'
         c = Client()
         response = c.get( url )
         html = response.content
+        # log.debug( 'html, ```%s```' % html )
         self.assertEqual( True, '<h3>Available online</h3>' in html )
         self.assertEqual( True, 'https://login.revproxy.brown.edu/login?url=http://search.who.int/search?' in html )
-        self.assertEqual( True, '<span class="print-location">AnnexFoo</span>' in html )
-        self.assertEqual( True, '<span class="print-callnumber">RA8 .A27Foo</span>' in html )
+        self.assertEqual( True, 'Request for delivery via Josiah' in html )
+        self.assertEqual( True, 'RA8 .A27 -- ANNEX' in html )
 
     # end class PmidResolverTest
 
