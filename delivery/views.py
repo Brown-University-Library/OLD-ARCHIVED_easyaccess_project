@@ -50,7 +50,6 @@ def availability( request ):
     valid = False
     if 'book' not in request.get_full_path():
         log.warning( 'why here since `book` not in request.full_path, ```{}```?'.format(request.get_full_path()) )
-    # if request.session.get( 'last_path', '' ) == '/easyaccess/find/':
     if request.session.get( 'last_path', '' ) == reverse( 'findit:findit_base_resolver_url' ):
         if request.session.get( 'last_querystring' ) == querystring:
             valid = True

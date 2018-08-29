@@ -10,6 +10,7 @@ from .classes.illiad_helper import NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
 from django.utils.module_loading import import_module
 
@@ -272,7 +273,7 @@ class LoginHelper_Test( TestCase ):
     #     # session['findit_illiad_check_flag'] = 'good'
     #     # session['findit_illiad_check_enhanced_querystring'] = 'querystring_a'
     #     # meta_dict = { 'QUERY_STRING': 'querystring_a' }
-    #     session['last_path'] = '/easyaccess/find/'
+    #     session['last_path'] = reverse( 'findit:findit_base_resolver_url' )
     #     session['last_querystring'] = 'isbn=123'
     #     self.assertEqual(
     #         ( True, '' ),  # ( referrer_ok, redirect_url )
