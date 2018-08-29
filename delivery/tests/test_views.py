@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import json, logging, pprint, urlparse
 from delivery import views
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.http import urlquote
@@ -47,7 +48,8 @@ class AvailabilityViewTest(TestCase):
     def test_availability_from_findit(self):
         """ Good hit should return response. """
         session = self.session_hack.session
-        session['last_path'] = '/easyaccess/find/'
+        # session['last_path'] = '/easyaccess/find/'
+        session['last_path'] = reverse( 'findit:findit_base_resolver_url' )
         session['last_querystring'] = 'isbn=123'
         session.save()
         response = self.client.get( '/borrow/availability/?isbn=123' )
@@ -57,7 +59,8 @@ class AvailabilityViewTest(TestCase):
     def test_availability_w_ebook(self):
         """ Good hit should return response. """
         session = self.session_hack.session
-        session['last_path'] = '/easyaccess/find/'
+        # session['last_path'] = '/easyaccess/find/'
+        session['last_path'] = reverse( 'findit:findit_base_resolver_url' )
         session['last_querystring'] = 'isbn=123'
         session['ebook_json'] = json.dumps( {'ebook_label': 'label_foo', 'ebook_url': 'http://test_url'} )
         session.save()

@@ -193,7 +193,8 @@ class FinditResolver( object ):
             # self.borrow_link = reverse( 'delivery:resolve' ) + '?%s' % querystring  # keep for now
             self.borrow_link = reverse( 'delivery:availability_url' ) + '?%s' % querystring
             log.debug( 'self.borrow_link, `%s`' % self.borrow_link )
-            request.session['last_path'] = request.path
+            # request.session['last_path'] = request.path
+            request.session['last_path'] = reverse( 'findit:findit_base_resolver_url' )
             request.session['last_querystring'] = querystring
         # log.debug( 'is_book, `%s`' % is_book )
         log.debug( '`{id}` is_book, `{val}`'.format(id=self.log_id, val=is_book) )
