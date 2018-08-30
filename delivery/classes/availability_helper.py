@@ -62,7 +62,7 @@ class JosiahAvailabilityChecker(object):
             return
         api_isbn_url = '%s/isbn/%s' % ( app_settings.AVAILABILITY_URL_ROOT, isbn ); log.debug( 'api_isbn_url, ```%s```' % api_isbn_url )
         try:
-            r = requests.get( isbn_url, timeout=10 )
+            r = requests.get( api_isbn_url, timeout=10 )
             api_jdct = json.loads( r.content.decode('utf-8') ); log.debug( 'isbn-jdct, ```%s```' % pprint.pformat(api_jdct) )
             self.store_available_bibs( api_jdct )
             self.store_available_holdings( api_jdct )
