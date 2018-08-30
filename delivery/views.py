@@ -80,7 +80,7 @@ def availability( request ):
     ## run josiah availability check
     availability_checker = JosiahAvailabilityChecker()
     available_holdings = availability_checker.check_josiah_availability( isbn, oclc_num )
-    bib_num = availability_checker.bib_num
+    # bib_num = availability_checker.bib_num
 
     ## set available flag
     available_locally = False
@@ -99,7 +99,8 @@ def availability( request ):
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
         'available_locally': available_locally,
-        'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
+        # 'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
+        'catalog_links': availability_checker.available_bibs,
         'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
         'openurl': querystring,  # for export to refworks
         'ebook_dct': ebook_dct,
