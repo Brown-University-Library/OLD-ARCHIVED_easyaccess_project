@@ -102,11 +102,11 @@
     {% include "delivery/bib_view.html" %}
 
     {% if available_locally %}
-    <div class="detail-link">
         {% for item in catalog_links %}
-        <a href="{{ item.url }}">View more details.</a>
+        <div class="detail-link">
+            <a href="{{ item.url }}">View more details.</a>
+        </div>
         {% endfor %}
-    </div>
     {% endif %}
 
     {% if errors %}
@@ -178,9 +178,9 @@
 
             {% for holding in exact_available_holdings %}
             <tr class="held-item">
-                <td class="location"> {{ holding.location }} </td>
-                <td class="callnumber"> {{ holding.callnumber }} </td>
-                <td class="status"> {{ holding.status }} </td>
+                <td class="location"> {{ holding.localLocation }} </td>
+                <td class="callnumber"> {{ holding.callNumber }} </td>
+                <td class="status"> {{ holding.publicNote }} </td>
                 <td class="is-available hidden">false</td>
             </tr>
             {% endfor %}
