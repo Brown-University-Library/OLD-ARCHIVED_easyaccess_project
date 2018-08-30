@@ -103,8 +103,8 @@
 
     {% if available_locally %}
     <div class="detail-link">
-        {% for link in catalog_links %}
-        <a href="{{ link }}">View more details.</a>
+        {% for item in catalog_links %}
+        <a href="{{ item.url }}">View more details.</a>
         {% endfor %}
     </div>
     {% endif %}
