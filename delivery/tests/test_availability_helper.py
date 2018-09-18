@@ -56,10 +56,10 @@ class AvailabilityCheckerTest(TestCase):
         if len( availabile_holdings ) > 0:
             self.assertEqual(
                 sorted(availabile_holdings[0].keys()),
-                [u'callnumber', u'location', u'status']
+                ['callNumber', 'localLocation', 'publicNote']
             )
             self.assertEqual(
-                availabile_holdings[0]['status'],
+                availabile_holdings[0]['publicNote'],
                 'AVAILABLE'
             )
 
@@ -72,10 +72,10 @@ class AvailabilityCheckerTest(TestCase):
         if len( availabile_holdings ) > 0:
             self.assertEqual(
                 sorted(availabile_holdings[0].keys()),
-                [u'callnumber', u'location', u'status']
+                ['callNumber', 'localLocation', 'publicNote']
             )
             self.assertEqual(
-                availabile_holdings[0]['status'],
+                availabile_holdings[0]['publicNote'],
                 'AVAILABLE'
             )
 
@@ -88,11 +88,18 @@ class AvailabilityCheckerTest(TestCase):
         if len( availabile_holdings ) > 0:
             self.assertEqual(
                 sorted(availabile_holdings[0].keys()),
-                [u'callnumber', u'location', u'status']
+                ['callNumber', 'localLocation', 'publicNote']
             )
             self.assertEqual(
-                availabile_holdings[0]['status'],
+                availabile_holdings[0]['publicNote'],
                 'AVAILABLE'
             )
+
+    def test_check_josiah_availability__online_holdings(self):
+        """ Should return online_holdings. """
+        isbn = '9781587299803'
+        oclc_num = ''
+        self.checker.check_josiah_availability( isbn, oclc_num )
+        self.assertEqual( 1, len(self.checker.online_holdings) )
 
     ## end AvailabilityCheckerTest()
