@@ -45,6 +45,7 @@ class JosiahAvailabilityChecker(object):
     def __init__( self ):
         self.available_bibs = []
         self.available_holdings = []
+        self.online_holdings = []
 
     def check_josiah_availability( self, isbn, oclc_num ):
         """ Checks josiah availability, updates self.bibs, returns holdings data.
@@ -66,6 +67,7 @@ class JosiahAvailabilityChecker(object):
             api_jdct = json.loads( r.content.decode('utf-8') ); log.debug( 'isbn-jdct, ```%s```' % pprint.pformat(api_jdct) )
             self.store_available_bibs( api_jdct )
             self.store_available_holdings( api_jdct )
+            self.store_online_holdings( api_jdct )
             log.debug( 'run_isbn_search() complete' )
         except Exception as e:
             log.warning( 'isbn-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
@@ -81,6 +83,7 @@ class JosiahAvailabilityChecker(object):
             api_jdct = json.loads( r.content.decode('utf-8') ); log.debug( 'oclc-jdct, ```%s```' % pprint.pformat(api_jdct) )
             self.store_available_bibs( api_jdct )
             self.store_available_holdings( api_jdct )
+            self.store_online_holdings( api_jdct )
             log.debug( 'run_oclc_search() complete' )
         except Exception as e:
             log.warning( 'oclc-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
@@ -103,6 +106,16 @@ class JosiahAvailabilityChecker(object):
             if holding not in self.available_holdings:
                 self.available_holdings.append( holding )
         log.debug( 'self.available_holdings, ```%s```' % self.available_holdings )
+        return
+
+    def store_online_holdings( self, api_jdct ):
+        """ Updates self.online_holdings
+            Called by run_isbn_search() and run_oclc_search() """
+        api_online_holdings = api_jdct['response']['basics']['online_holdings']
+        for holding in api_online_holdings:
+            if holding not in self.online_holdings:
+                self.online_holdings.append( holding )
+        log.debug( 'self.online_holdings, ```%s```' % self.online_holdings )
         return
 
     ## end class JosiahAvailabilityChecker()
