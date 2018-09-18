@@ -88,11 +88,26 @@ def availability( request ):
         available_locally = True
 
     ## build context
-    ebook_dct = None
+    # ebook_dct = None
+    # ebook_json = request.session.get( 'ebook_json', None )
+    # log.debug( 'ebook_json, ```{}```'.format(ebook_json) )
+    # if ebook_json:
+    #     ebook_dct = json.loads( ebook_json )
+    ebook_dct = {}
     ebook_json = request.session.get( 'ebook_json', None )
     log.debug( 'ebook_json, ```{}```'.format(ebook_json) )
     if ebook_json:
         ebook_dct = json.loads( ebook_json )
+    ebook_lst = []
+    if ebook_dct:
+        ebook_lst.append( ebook_dct )
+    for o_holding in availability_checker.online_holdings:
+        entry_dct = {
+            'ebook_label': 'online catalog entry',
+            'ebook_url': o_holding['url'] }
+        ebook_lst.append( entry_dct )
+
+    #
     permalink = request.session.get( 'permalink_url', '' )
     context = {
         'permalink_url': permalink,
@@ -104,10 +119,11 @@ def availability( request ):
         'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
         'openurl': querystring,  # for export to refworks
         'ebook_dct': ebook_dct,
+        'ebook_lst': ebook_lst,
         'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
         }
     log.debug( '`{id}` availability() ending session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
-
+    log.debug( '`%s` availability() context, ```%s```' % (log_id, pprint.pformat(context)) )
     ## display landing page
     # resp = render( request, 'delivery/availability.html', context )
     if request.GET.get('output', '') == 'json':
