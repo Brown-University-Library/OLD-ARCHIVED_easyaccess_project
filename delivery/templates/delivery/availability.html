@@ -90,6 +90,10 @@
         background-color: white;
     }
 
+    h5 {
+        margin-top: 1.75em;
+    }
+
 </style>
 
 {% endblock %}
@@ -194,11 +198,11 @@
     {% if ebook_lst %}
     <div id="full-text">
         <h5>Available online</h5>
-        {% for e_holding_dct in ebook_lst %}
         <ul>
+        {% for e_holding_dct in ebook_lst %}
             <li> <a href="{{ e_holding_dct.ebook_url }}" class="ebook_url">{{ e_holding_dct.ebook_label }}</a></li>
-        </ul>
         {% endfor %}
+        </ul>
    </div>
     {% endif %}
 
