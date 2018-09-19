@@ -88,11 +88,6 @@ def availability( request ):
         available_locally = True
 
     ## build context
-    # ebook_dct = None
-    # ebook_json = request.session.get( 'ebook_json', None )
-    # log.debug( 'ebook_json, ```{}```'.format(ebook_json) )
-    # if ebook_json:
-    #     ebook_dct = json.loads( ebook_json )
     ebook_dct = {}
     ebook_json = request.session.get( 'ebook_json', None )
     log.debug( 'ebook_json, ```{}```'.format(ebook_json) )
@@ -102,11 +97,13 @@ def availability( request ):
     if ebook_dct:
         ebook_lst.append( ebook_dct )
     for o_holding in availability_checker.online_holdings:
+        bib = o_holding['url'].split('/')[-1]
         entry_dct = {
-            'ebook_label': 'online catalog entry',
-            'ebook_url': o_holding['url'] }
+            # 'ebook_label': 'online catalog entry',
+            'ebook_label': 'View e-resource details for item %s.' % bib,
+            'ebook_url': o_holding['url']
+            }
         ebook_lst.append( entry_dct )
-
     #
     permalink = request.session.get( 'permalink_url', '' )
     context = {
@@ -118,7 +115,6 @@ def availability( request ):
         'catalog_links': availability_checker.available_bibs,
         'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
         'openurl': querystring,  # for export to refworks
-        'ebook_dct': ebook_dct,
         'ebook_lst': ebook_lst,
         'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
         }
