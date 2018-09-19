@@ -191,19 +191,6 @@
     {% endif %}  {# end of `if not available_locally` #}
 
 
-    {% if ebook_lst %}
-    <div id="full-text">
-        <h5>Available online</h5>
-        {% for e_holding_dct in ebook_lst %}
-        <ul>
-            <li> <a href="{{ e_holding_dct.ebook_url }}" class="ebook_url">{{ e_holding_dct.ebook_label }}</a></li>
-        </ul>
-        {% endfor %}
-   </div>
-    {% endif %}
-
-
-    {% comment %}
     {% if ebook_dct %}
        <div id="full-text">
         <h5>Available online</h5>
@@ -212,7 +199,6 @@
             </ul>
        </div>
     {% endif %}
-    {% endcomment %}
 
 
     {% if attempted_request %}
