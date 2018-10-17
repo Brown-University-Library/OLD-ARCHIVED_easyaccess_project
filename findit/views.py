@@ -260,3 +260,11 @@ def info( request ):
     context_dct = view_info_helper.make_context( request, rq_now, info_txt, taken )
     output = json.dumps( context_dct, sort_keys=True, indent=2 )
     return HttpResponse( output, content_type='application/json; charset=utf-8' )
+
+
+def bul_search( request ):
+    """ Triggered by user entering search term into banner-search-field.
+        Redirects query to search.library.brown.edu """
+    log.debug( 'request.__dict__, ```%s```' % pprint.pformat(request.__dict__) )
+    redirect_url = 'https://search.library.brown.edu?%s' % request.META['QUERY_STRING']
+    return HttpResponseRedirect( redirect_url )

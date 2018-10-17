@@ -1,27 +1,20 @@
 {% load staticfiles %}
 
-<!DOCTYPE HTML>
-
-<html>
-
+<html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>{{ easyWhat }} - Brown University Library</title>
-
     <link href="{% static 'css/all_search_css_pretty-print.css' %}" rel="stylesheet" type="text/css"/>
     <script src="{% static 'js/jquery_3-3-1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap_3-3-7.min.js' %}"></script>
-
-    {% block extra_css %}{% endblock %}
+    {% block extra_css %}
+    {% endblock %}
 
     <style type="text/css">
         div.container span#hide {
-            /*visibility: hidden;*/
             display: none;
         }
         div#content_wrapper {
@@ -39,6 +32,70 @@
 
 
 <body>
+
+    <!-- BANNER start... -->
+
+    <div id="topmost-nav-links">
+        <ul>
+            <li><a href="https://library.brown.edu/borrowing/">Find &amp; Borrow</a></li>
+            <li><a href="https://library.brown.edu/info/ajdb">Articles, Journals, &amp; Databases</a></li>
+            <li><a href="https://library.brown.edu/about/specialists.php">Research Help</a></li>
+            <li><a href="https://library.brown.edu/libweb/hours.php">Hours, Locations, &amp; Events</a></li>
+            <li><a href="https://library.brown.edu/libweb/askalib.php">Ask a Question Now</a></li>
+            <li><a href="https://library.brown.edu/libweb/proxy.php">Off-Campus Access</a></li>
+            <li><a href="https://josiah.brown.edu/patroninfo">My Library Account</a>
+        </ul>
+    </div>
+
+    <div id="header-navbar" class="navbar navbar-inverse navbar-static-top" role="navigation">
+
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#user-util-collapse">
+                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
+                    <span class="icon-bar"></span> <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="//library.brown.edu" title="link to library.brown.edu"><span id="hide">library.brown.edu</span></a>
+            </div>
+        </div>
+
+        <div id="search-navbar" class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container">
+                <!-- <form accept-charset="UTF-8" action="/bul_search" class="search-query-form form-inline clearfix navbar-form" method="get"> -->
+                <form accept-charset="UTF-8" action="{% url 'bul_search_url' %}" class="search-query-form form-inline clearfix navbar-form" method="get">
+                    <div style="display:none">
+                        <input name="utf8" type="hidden" value="&#x2713;" />
+                    </div>
+                    <div class="input-group col-md-9 col-md-offset-1">
+                        <label for="q" class="sr-only">Enter keywords to search library resources</label>
+                        <input class="search_q q form-control" id="q" name="q" placeholder="Enter keywords to search library resources" type="text" value="" />
+                        <span class="input-group-btn"> <button type="submit" class="btn btn-primary search-btn" id="search"> <span class="submit-search-text">Search</span> <span class="glyphicon glyphicon-search"></span> </button> </span>
+                    </div>
+                    <span class="start-over"><a href="/">Start over</a></span>
+                </form>
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="user-util-collapse">
+            <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                    {% if username %}
+                    <li> <a href="{{ logout_url }}" rel="tooltip" title="displays name and logout-link">Welcome {{ username }} &mdash; (Logout)</a> </li>
+                    {% endif %}
+                    <li> <a href="{% url 'info_url' %}" rel="tooltip" title="about this webapp">Info</a> </li>
+                    <li> <a href="https://github.com/brown-University-Library" rel="tooltip" title="github-brown">GitHub-Brown</a> </li>
+                    <li> <a href="https://bitbucket.org/bul/" rel="tooltip" title="bitbucket-brown">BitBucket-Brown</a> </li>
+                    <li> <a href="https://github.com/birkin/bul_cbp_project/issues" rel="tooltip" title="issues">Feedback</a> </li>
+                    <li> <a href="https://github.com/birkin/bul_cbp_project" rel="tooltip" title="code">Code</a> </li>
+                    <!-- <li> <a href="{% url 'login_url' %}" rel="tooltip" title="admin" target="_blank">Admin</a> </li> -->
+                    <li> <a href="{{ admin_url }}" rel="tooltip" title="admin">Admin</a> </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>  <!-- end <div id="header-navbar"...  -->
+
+    <!-- ...BANNER end -->
 
 
 <div id="wrapper">
