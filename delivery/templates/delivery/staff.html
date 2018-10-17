@@ -1,6 +1,6 @@
 
 
-{% extends "findit/base.html" %}
+{% extends "delivery/base.html" %}
 
 {% block javascripts %}
 <link rel="exhibit/data" href="./?exhibit=true" type="application/json"/>
@@ -10,13 +10,13 @@
    Exhibit.Functions["month"] = {
    f: function(args) {
        var set = new Exhibit.Set();
-      
+
        args[0].forEachValue(function(v) {
            var d = SimileAjax.DateTime.parseIso8601DateTime(v);
            var m = d.getMonth();
            set.add(monthNames[m]);
        });
-      
+
        return new Exhibit.Expression._Collection(set, "text");
            }
        };
@@ -41,7 +41,7 @@
                      ex:showAll="true"
                      ex:orders=".date"
                      ex:showToolbox="false"
-                     class="exhibit-body" >              
+                     class="exhibit-body" >
 
     </div>
 
@@ -49,6 +49,6 @@
         <a ex:href-content=".permalink" class="resource_link"><span ex:content=".title"></span></a>
     </div>
 
-    
+
 
 {% endblock %}
