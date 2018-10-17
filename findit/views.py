@@ -66,12 +66,12 @@ def findit_base_resolver( request ):
     alog.info( '`{}` session cleared'.format(log_id) )
     request.session['log_id'] = log_id
 
-    ## if index-page call
-    if fresolver.check_index_page( request.GET ):
-        context = fresolver.make_index_context( request.GET )
-        resp = fresolver.make_index_response( request, context )
-        alog.info( '`{}`returning index page'.format(log_id) )
-        return resp
+    # ## if index-page call
+    # if fresolver.check_index_page( request.GET ):
+    #     context = fresolver.make_index_context( request.GET )
+    #     resp = fresolver.make_index_response( request, context )
+    #     alog.info( '`{}`returning index page'.format(log_id) )
+    #     return resp
 
     ## temp fix for testing from in-production redirects
     if fresolver.check_double_encoded_querystring( unicode(request.META.get('QUERY_STRING', '')) ):
@@ -85,6 +85,14 @@ def findit_base_resolver( request ):
     )['permalink']
     request.session['permalink_url'] = permalink_url
     alog.info( '`{id}` permalink made, ```{url}```'.format(id=log_id, url=permalink_url) )
+
+    ## if index-page call
+    if fresolver.check_index_page( request.GET ):
+        ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+        context = fresolver.make_index_context( request.GET, request.scheme, request.get_host(), permalink_url, ip )
+        resp = fresolver.make_index_response( request, context )
+        alog.info( '`{}`returning index page'.format(log_id) )
+        return resp
 
     # ## if summon returns an enhanced link, go to it
     # if fresolver.check_summon( request.GET ):
@@ -193,9 +201,19 @@ def permalink( request, permalink_str ):
     openurl = permalink_helper.get_openurl( permalink_str )
     if openurl:
         redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
-        return HttpResponsePermanentRedirect( redirect_url )
     else:
-        return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
+        redirect_url = '%s://%s%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url') )
+    alog.debug( 'permalink redirect url, ```%s```' % redirect_url )
+    return HttpResponsePermanentRedirect( redirect_url )
+
+# def permalink( request, permalink_str ):
+#     """ Handles expansion and redirection back to '/find/?...' """
+#     openurl = permalink_helper.get_openurl( permalink_str )
+#     if openurl:
+#         redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('findit:findit_base_resolver_url'), openurl )
+#         return HttpResponsePermanentRedirect( redirect_url )
+#     else:
+#         return HttpResponse( "<p>Sorry, couldn't find a full url for that permalink.<p>" )
 
 
 def ris_citation( request ):
