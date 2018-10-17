@@ -72,11 +72,24 @@ class FinditResolver( object ):
         log.debug( '`{id}` return_val, `{val}`'.format(id=self.log_id, val=return_val) )
         return return_val
 
-    def make_index_context( self, querydict ):
+    def make_index_context( self, querydict, scheme, host, permalink, ip ):
         """ Builds context for index page.
             Called by views.findit_base_resolver() """
-        context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
+        # full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
+        full_permalink = '%s://%s%s' % ( scheme, host, permalink )
+        log.debug( 'full_permalink, ```%s```' % full_permalink )
+        context = {
+            'SS_KEY': settings.BUL_LINK_SERSOL_KEY,
+            'easyWhat': 'easyAccess',
+            'feedback_link': app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+        }
         return context
+
+    # def make_index_context( self, querydict ):
+    #     """ Builds context for index page.
+    #         Called by views.findit_base_resolver() """
+    #     context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
+    #     return context
 
     def make_index_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.
