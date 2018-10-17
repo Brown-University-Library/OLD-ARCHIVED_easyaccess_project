@@ -1,0 +1,146 @@
+{% extends "findit/base.html" %}
+{% block extra_css %}
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
+{% endblock%}
+{% block javascripts%}
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
+	<script type="text/javascript" src="{{ MEDIA_URL }}js/helpers.js"></script>
+{% endblock %}
+
+{% block content %}
+
+
+<div id="findit-core">
+	<div id="not-found-info">
+		<h3>{{ message }}</h3>
+		<ul>
+			<li><a href="{{ refiner_url }}">Try adding more information about the article.</a></li>
+			<li><a href="{{ ill_url }}">Request from another library.</a></li>
+			{% if mendeley_url %}
+				<li id="mendeley-url">Find more information about the resource on <a href="{{ mendeley_url }}">Mendeley</a>.</li>
+			{% endif %}
+			<li>Ask a librarian.</li>
+		</ul>
+	</div>
+	<div id="cover">
+	<!--<img src="{{ settings_app.MEDIA_URL }}/images/jcover/{{ cover_key }}.gif"/>-->
+	</div>
+	<h5>Your search: </h5>
+	<div id="citation">
+		<div class="title"> {{ citation.title }}</div>
+		<div class="creator"> {{ creator }} </div>
+		<div class="source"> {{ citation.source }}</div>
+		<div class="source-details">
+			{% if citation.volume %}
+			 	<span class="vol">Vol. {{ citation.volume }}. </span>
+			{% endif %}
+			{% if citation.issue %}
+				<span class="issue">Issue {{ citation.issue }}.</span>
+			{% endif %}
+			{% if citation.spage %}
+				<span class="page">Page {{ citation.spage }}.  </span>
+			{% endif %}
+			{% if citation.date %}
+				<span class="date">{{ citation.date }}</span>
+			{% endif %}
+		</div>
+		<div class="source-ids">
+			{% if citation.issn %}
+				ISSNs:
+				{% for type, issn in citation.issn.items %}
+					<span class="issn">{{ issn }}</span>
+				{% endfor %}
+			{% endif %}
+			{% if citation.pmid %}
+				<span id="pmid">Pubmed ID: {{ citation.pmid }}</span>
+			{% endif %}
+			{% if citation.doi %}
+				<span id="doi">DOI: {{ citation.doi }}</span>
+			{% endif %}
+		</div>
+	</div>
+	
+	{% comment %}
+	<!-- exports/email -->
+	<span class="SSALItemEmail"> 
+        <a onclick="exportArrowLinkSet(this.id); return false;" href="about:blank" class="SSALExportLink" id="emailCitation">Email <img alt="Show options" class="SSALArrowLinkImage" src="{{ MEDIA_URL }}/images/down_arrow.gif" /> 
+            <img style="display: none" alt="Show options" class="SSALArrowLinkImage" src="{{ MEDIA_URL }}/images/up_arrow.gif" /> 
+		</a> 
+    </span>
+    <span class="SSALItemExport"> 
+        <a onclick="exportArrowLinkSet(this.id); return false;" href="about:blank" class="SSALExportLink" id="exportCitation">Export/Save <img alt="Show options" class="SSALArrowLinkImage" src="{{ MEDIA_URL }}/images/down_arrow.gif" /> 
+              <img style="display: none" alt="Show options" class="SSALArrowLinkImage" src="{{ MEDIA_URL }}/images/up_arrow.gif" /> 
+    	</a> 
+    </span> 
+    {% endcomment %}
+	
+	
+</div>
+
+
+<h5 class="abstract results">Abstract</h5>
+<div id="abstract">
+</div>
+
+<h5 class="related results">Related research</h5>
+<div id="related" class="related">
+<ul>
+</ul>
+<p class="note">Related research data from Mendeley</p>
+</div>
+
+<div id="feed">
+<h5 class="feed results">Recent articles from this publication</h5>
+<ul>
+</ul>
+</div>
+
+
+
+<div id="query-time">Query time: {{ query_time }}</div>
+{% if data_source %}
+	<div id="data-sources">
+		Data provided by: 
+		<ul class="data-sources">
+		{% for source in data_source %}
+			<li>{{ source }}</li>
+		{% endfor %}
+		</ul>
+	</div>
+	
+{% endif %}
+{% if TEST_ENV %}
+<h5 class="results">Debug</h5>
+<br/>
+<div id="debug">
+<ul>
+</ul>
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block footer_javascripts %}
+<script>
+	$(document).ready(function() {
+		var base_url = "{{ BASE_URL }}";
+		var cover_url = base_url + 'images/';
+		//get_print(base_url);
+		//get_local_print(base_url);
+		//function to show and hide holding details based on article match
+		holding_details();
+		cover_runner(cover_url);
+		extras_runner(base_url, debug);
+		//Call to find print if etext not available.
+		{% if search_print %}
+		print_runner(base_url, debug);
+		{% endif %}
+		//var url_spot = $('#direct_article_url');
+		//if (url_spot) {
+		//	alert($('#direct_article_url').text());
+		//};
+	});
+</script>
+{% endblock %}

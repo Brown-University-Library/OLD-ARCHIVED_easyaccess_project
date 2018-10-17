@@ -1,0 +1,212 @@
+{% extends "findit/base.html" %}
+{% load findit_tags %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
+{% endblock%}
+{% block javascripts%}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.fancybox-1.3.4.pack.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/helpers.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="cover"></div>
+    <div class="citation">
+        <span id="requestedCitationContainer"></span>
+	    {% if not resolved %}
+	        {% if error %}
+	            <p class="error">{{ error_message }}
+                </p>
+	        {% else %}
+               {% comment %}
+	            <div class="error">
+	                <p>Due to a power outage, the article requesting service
+	                    is temporarily unavailable.  If you <a id="problem-link" style="color: blue;" href="{{ problem_link }}&entry_2={{user.email}}&entry_1=Please%20notify%20me%20when%20the%20article%20requesting%20service%20is%20back%20online.">leave us a brief message</a>,
+	                    we will notify you when the service is back online.  Thank you for your patience.</p>
+	            </div>
+                {% endcomment %}
+	            <div id="request-message" class="notice">
+	                <h3>This article couldn't be located in the library's collections.</h3>
+	                <ul>
+                    {% url 'article_request:shib_login_url' as login_url %}
+                    <li class="request-link"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request from another library</a></li>
+                    {% if gscholar %}
+                    <li><a href="{{ gscholar }}">Search Google Scholar</a></li>
+                    {% endif %}
+	                    <li><a href="http://library.brown.edu/libweb/askalib.php">Ask a librarian.</a></li>
+	                </ul>
+	            </div>
+	         {% endif %}
+	    {% endif %}
+
+	    {% citation_display citation format direct_link %}
+        <div id="coin">
+           <span class="Z3988" title="{{ coin }}"></span>
+        </div>
+        <div id="openurl" class="hidden">{{ openurl }}</div>
+
+        <div id="resolved" class="hidden">{{ resolved }}</div>
+	</div>
+
+	{% if item_request %}
+    	<div class="notice">
+    		<h3>Your request for this this item was processed on {{ item_request.date_created }}.</h3>
+		</div>
+	{% endif %}
+
+	{% if print or online %}
+    	<div class="holdings">
+
+        	{# If we have a direct link - hyperlinked from title - and no other online holdings to display, pass.  Else, print each with the helper messages as necessary.#}
+            {% if online|length > 0 %}
+                <h3>Available online</h3>
+                <ul class="online-holdings">
+                    {% for provider in online %}
+                        <li class="source"><a href="{{ provider.link }}" title="Full text from {{ provider.name }}">{{ provider.name }}</a>
+                            {# Put an asterik up as a warning about journal or issue level links #}
+                            {% if provider.type != "direct" %}<span class="asterisk">&#8727;</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {# Do print #}
+            {% if print %}
+                <h3>Available at the library</h3>
+                <ul class="print-holdings">
+
+                    {% for held in print %}
+                        <li>
+                            {% comment %}
+                            Put the loc and callnum in a separate span that will be replaced
+                            by the book locator for Sci and Rock items.
+                            {% endcomment %}
+                            <span class="loc-callnum">
+                                {{ held.call_number }} -- {{ held.location | upper }}
+                                {% if held.location != 'Annex' %}
+                                <a class="book_locator_map iframe" href="https://apps.library.brown.edu/bibutils/map/?loc={{ held.location | lower }}&call={{ held.call_number }}&title={{ citation.source }} | {{ citation.title }}">
+                                    (view map)
+                                </a>
+                                {% endif %}
+                            </span>
+                            {% comment %}
+                             Faculty can request any print item.
+                             Non-faculty can request annex items.
+                            {% endcomment %}
+                            {% ifequal held.location "Annex" %}
+                                <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}">Request for delivery via Josiah</a></span>
+                            {% else %}
+                                {% if can_request_print %}
+                                    <span class="request-link"><a href="{% url 'findit:request-view' resource=resource.id %}">Request for delivery</a></span>
+                                {% endif %}
+                            {% endifequal %}
+                       </li>
+                    {% endfor %}
+
+                </ul>
+            {% endif %}
+
+            {% if prompt_login %}
+                <div id="login-prompt" class="alert-box">
+                    <em><a href="{{ login_link }}">Login</a></em> for full services.
+                </div>
+            {% endif %}
+
+
+            {# Handle vague links with a notice #}
+            {% if has_vague_links %}
+                <div class="notice" id="not-direct-link">
+                    <p><span class="asterisk">&#8727;</span>This is not a direct link to the article. You will need to search for the title or locate the date, volume, and issue on the publisher's website. If you don't find what you are looking for, please <a href="{{ problem_link }}">let us know.</a>
+                </div>
+            {% endif %}
+
+        </div>  <!-- end of div class="holdings"-->
+    {% endif %}  {# end of {% if print or online %} #}
+
+    {% if terminal %}
+        <div id="logout-prompt" class="alert-box">
+            You are using a public machine.  Please <em><a href="{{ logout_link }}">logout</a></em> when finished.
+        </div>
+    {% endif %}
+
+    {% comment %}
+    jQuery templates to pull in abstract.
+    {% endcomment %}
+    <div class="extra">
+		<span id="abstractContainer"></span>
+		<span id="relatedResearchContainer"></span>
+    </div>
+
+{% endblock %}
+
+{% block tool_list %}
+<div class="toolbox">
+    <h3>Tools</h3>
+    <hr/>
+    <ul class="tools">
+     {% if not plink_view %}
+        <li><a href="{{ permalink }}">Permalink</a></li>
+     {% endif %}
+     <li><a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}">Export to Refworks</a></li>
+
+     <li><a href="{{ ris_url }}">Export to EndNote</a></li>
+
+     <li><a href="{% url 'findit:citation_form_url' %}?{{ enhanced_querystring }}">Update this citation</a></li>
+     <li><a href="http://library.brown.edu/libweb/askalib.php">Ask a librarian</a></li>
+     <li><a id="problem-link" href="{{ problem_link }}">Report a problem</a></li>
+     {% if not resolved %}
+     <li><a href="http://library.brown.edu/">Search the Library</a></li>
+     <li><a href="http://librarycat.risd.edu">Search RISD</a></li>
+     {% endif %}
+    </ul>
+</div>
+
+<span id="masExtrasContainer"></span>
+<span id="mendeleyExtrasContainer"></span>
+<span id="extrasContainer"></span>
+
+{% if debug_mode %}
+<div class="toolbox">
+    <h3>Debug <span style="font-size: 9px; font-weight: normal;">(this won't appear on live server)</span></h3>
+    <hr/>
+    <ul class="tools">
+        <li><a href="{% url 'findit:resolver-view' %}">Easy Article home</a></li>
+        <li><a href="{{ illiad_url }}">Illiad URL</a></li>
+        <li><a href="{% url 'findit:jstor-view' %}?{{ openurl }}">Jstor</a></li>
+        <li class="hidden"><span id="debug" class="hidden">true</span></li>
+        <li><a href="{% url 'findit:resolver-view' %}?{{ openurl }}">Full OpenUrl</a></li>
+        <li><a href="{% url 'findit:request-view' resource=resource.id %}">Request link</a></li>
+        <li><a href="http://{{ SS_KEY }}.search.serialssolutions.com/?{{ openurl }}">360Link</a></li>
+    </ul>
+</div>
+{% endif %}
+
+{% block extra_content %}
+ <li id="gScholarContainer" class="hidden"></li>
+{% endblock %}
+
+{% endblock %}
+
+
+
+
+
+
+
+{% block footer_javascripts %}
+<script>
+    $(document).ready(function() {
+        setupWindow();
+        //setupTemplates();
+        //getExtras();
+        //getAbstract();
+        getBookLocation();
+    });
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "findit/base.html" %}
+{% load findit_tags %}
+{% block extra_css %}
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
+{% endblock%}
+
+{% block content %}
+
+<div id="user-info">
+   <ul>
+	<li>{{ user.first_name}} {{ user.last_name }}</li>
+	<li>{{ user.username }}</li>
+	<li>{{ user.email }} </li>
+	<ul>
+	{% for aff in user_info.affiliation.all %}
+	    <li> {{ aff.name }} </li>
+	{% endfor %}
+   </ul>
+   
+</div>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "findit/base.html" %}
+{% load findit_tags %}
+
+{% block javascripts%}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tmpl.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/helpers.js"></script>
+{% endblock %}
+
+{% block content %}
+    {% comment %}
+    UI modified from
+    http://msdn.microsoft.com/en-us/scriptjunkie/hh127352
+    {% endcomment %}
+<div id="request" class="findit-core">
+    {% if existing_request %}
+        <p class="info">You placed a request for this item on {{ existing_request.date_created|date:"M. d Y" }}.  Please 
+            refer to your email for delivery confirmation.</p>
+    {% else %}
+        <div id="spinner">
+           <img src="https://library.brown.edu/find/interface/themes/brown/images/ajax_loading.gif" alt="Initially hidden spinner" />
+         </div>
+         <div>
+             <p class="info">This resource will be requested and delivered to you.
+                 You will receive an email with access information after your
+                 request is processed.<br/> <br/>Please click submit to confirm.</p>
+              <!-- Our submit form -->
+            <form>
+                <span id="token">{% csrf_token %}</span>
+                <input type="hidden" name="resource" value="{{ resource.id }}"/>
+                <input type="hidden" name="ill_openurl" value="{{ ill_openurl }}"/>
+                <input type="submit" id="btnRequest" value="Submit"/>
+            </form>
+            <p class="error hidden"></p>
+            <p class="success hidden"></p>
+         </div>  
+     {% endif %}
+      {% citation_display citation format direct_link %}
+      
+      {% if debug_mode %}
+        <a href="{{ illiad_url }}">Illiad url - debugging</a>
+        <span id="debug" class="hidden">true</span>
+      {% endif %}
+      
+      {% if terminal %}
+        <div id="logout-prompt" class="alert-box">
+            You are using a public machine.  Please <em><a href="{{ logout_link }}">logout</a></em> when finished.
+        </div>
+      {% endif %}
+</div>   
+
+{% endblock %}
+
+{% block footer_javascripts %}
+<script>
+
+$(document).ready(function() {
+    setupWindow();
+    //set url for posts
+    var u = document.URL;
+    //console.debug(u);
+    requestResource(u);
+});
+
+
+
+</script>
+{% endblock %}
+</body>
+</html>
