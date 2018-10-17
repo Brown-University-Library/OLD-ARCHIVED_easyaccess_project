@@ -3,33 +3,36 @@
 <html lang="en">
 
 <head>
+
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ easyWhat }} - Brown University Library</title>
+    <title>
+        {% block page_title %}
+        easyAccess
+        {% endblock page_title %}
+    </title>
     <link href="{% static 'css/all_search_css_pretty-print.css' %}" rel="stylesheet" type="text/css"/>
     <script src="{% static 'js/jquery_3-3-1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap_3-3-7.min.js' %}"></script>
+
     {% block extra_css %}
     {% endblock %}
 
     <style type="text/css">
         div.container span#hide {
-            display: none;
-        }
+            display: none; }
         div#content_wrapper {
             margin:0 auto;
-            width: 80%;
-        }
+            width: 80%; }
         div#footer {
-            padding-top: 1em;
-        }
+            padding-top: 1em; }
     </style>
 
-    {% block javascripts %}{% endblock %}
+    {% block javascripts %}
+    {% endblock %}
 
 </head>
-
 
 <body>
 

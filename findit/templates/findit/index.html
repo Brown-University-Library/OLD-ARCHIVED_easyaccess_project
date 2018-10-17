@@ -1,18 +1,13 @@
 {% extends "findit/base.html" %}
-{% block extra_css %}
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css">
-    <style>
-        li {
-            margin-bottom: .5em;
-            }
-    </style>
-{% endblock%}
+
 {% block javascripts%}
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
 {% endblock %}
 
 {% block content %}
+
+<h1>easyAccess &mdash; info</h1>
 
 <div style="margin:2em;">
 
@@ -22,26 +17,26 @@
             &lsquo;easyAccess&rsquo; is a service of the <a href="https://library.brown.edu/">Brown University Library</a> that makes it easier to get books and articles.
         </p>
         <p>
-            In many Library, and Article, and Book websites, a link to an article or book may take you to this easyAccess service. Included in that link is a very long string (called an <a href="https://en.wikipedia.org/wiki/OpenURL">openurl</a>) which contains information about the item you want.
+            In many Library, and Article, and Book websites, a link to an article or book may take you to this easyAccess service. Included in that link is a very long string (called an <a href="https://en.wikipedia.org/wiki/OpenURL">openURL</a>) which contains information about the item you want.
         </p>
         <p>
             This easyAccess service will inspect that item-information, and do a bunch of lookups on services the Brown University Library subscribes to, and has built, to try to get you right to the item you want.
         </p>
-        <h5>Books</h5>
+        <h2>Books</h2>
         <p>
             If it&rsquo;s a book you&rsquo;re looking for, and we have it in the Library, and it&rsquo;s available, you&rsquo;ll be told that so you can come and get it.
         </p>
         <p>
-            If we don&rsquo;t have the book, or it&rsquo;s not easily available, you&rsquo;ll be able to (with a simple button-click and log-in) request the book, and our easyBorrow service will find it, and borrow it for you. You&rsquo;ll get an initial email with information that it&rsquo;s in-process, and then another email when the book arrives at the Rock for you to pick up.
+            If we don&rsquo;t have the book, or it&rsquo;s not easily available, you&rsquo;ll be able to (with a simple button-click and log-in) request the book, and our <b>easyBorrow</b> service will find it, and borrow it for you. You&rsquo;ll get an initial email with information that it&rsquo;s in-process, and then another email when the book arrives at the Rock for you to pick up.
         </p>
-        <h5>Articles</h5>
+        <h2>Articles</h2>
         <p>
             If you&rsquo;re looking for an article, behind the scenes we&rsquo;ll search services we subscribe to and have built, to see if we get you directly to the full-text for the article.
         </p>
         <p>
-            If we can&rsquo;t get you immediately to the full-text of the article, our easyArticle service makes it a simple one-click &amp; log-in process to order it. You&rsquo;ll get an initial email with information that it&rsquo;s in-process, and then another email when a link to the article is ready.
+            If we can&rsquo;t get you immediately to the full-text of the article, our <b>easyArticle</b> service makes it a simple one-click &amp; log-in process to order it. You&rsquo;ll get an initial email with information that it&rsquo;s in-process, and then another email when a link to the article is ready.
         </p>
-        <h5>Examples</h5>
+        <h2>Examples</h2>
         <p>
             Below are examples of book and article links to this easyAccess service.
         </p>
@@ -53,7 +48,7 @@
         </p>
     </div>
 
-    <h5 class="intro">Article Examples</h5>
+    <h3 class="intro">Article Examples</h3>
     <ul>
     <li><a href="{{ BASE_URL }}?sid=google&auinit=T&aulast=SOTA&atitle=Phylogeny+and+divergence+time+of+island+tiger+beetles+of+the+genus+Cylindera+(Coleoptera:+Cicindelidae)+in+East+Asia&id=doi:10.1111/j.1095-8312.2011.01617.x&title=Biological+journal+of+the+Linnean+Society&volume=102&issue=4&date=2011&spage=715&issn=0024-4066">
         Held electronically only.</a> (should show landing page with multiple full-text links)</li>
@@ -84,7 +79,7 @@
         Not enough metadata supplied.</a> (should redirect to citation-form)</li>
     </ul>
 
-    <h5 class="intro">Book Examples</h5>
+    <h3 class="intro">Book Examples</h3>
     <ul>
     <li><a href="{{ BASE_URL }}?sid=FirstSearch:WorldCat&genre=book&isbn=9780439339117&title=Zen+shorts&date=2005&aulast=Muth&aufirst=Jon&auinitm=J&id=doi:&pid=53084041&url_ver=Z39.88-2004&rfr_id=info:sid/firstsearch.oclc.org:WorldCat&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.genre=book&rfe_dat=<accessionnumber>53084041</accessionnumber>&rft_id=info:oclcnum/53084041&rft_id=urn:ISBN:9780439339117&rft.aulast=Muth&rft.aufirst=Jon&rft.auinitm=J&rft.btitle=Zen+shorts&rft.date=2005&rft.isbn=9780439339117&rft.place=New+York&rft.pub=Scholastic+Press&rft.edition=1st+ed.">
         Requestable -- no alternate versions.</a> (should redirect to easyBorrow landing page; should show 'Request' button)</li>
@@ -121,34 +116,5 @@
 
 </div>
 
-
-{% endblock %}
-
-{% block footer_javascripts %}
-<script>
-$("form").submit(function() {
-    console.debug($('input'));
-    var qtype = $('select').val();
-    var q = $("input:first").val();
-    var base = window.location.href;
-    if (qtype == 'query') {
-
-        var url = window.location.href + '?' + q;
-
-    }
-    else if (qtype == 'pmid') {
-        var url = '?pmid=' + q;
-    }
-    else if (qtype == 'doi') {
-        var url = '?doi=' + q;
-    };
-    window.location.href = url;
-    return false;
-    //var q = $("input:first").val();
-    //var url = window.location.href + '?' + q;
-    //window.location.href = url;
-    //return false;
-});
-</script>
 
 {% endblock %}
