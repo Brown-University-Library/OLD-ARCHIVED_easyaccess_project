@@ -1,0 +1,120 @@
+{% load staticfiles %}
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        {% block page_title %}
+        easyAccess
+        {% endblock page_title %}
+    </title>
+    <link href="{% static 'css/all_search_css_pretty-print.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static 'js/jquery_3-3-1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap_3-3-7.min.js' %}"></script>
+
+    {% block extra_css %}
+    {% endblock %}
+
+    <style type="text/css">
+        div.container span#hide {
+            display: none; }
+        div#content_wrapper {
+            margin:0 auto;
+            width: 80%; }
+        div#footer {
+            padding-top: 1em; }
+    </style>
+
+    {% block javascripts %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- BANNER start... -->
+
+    <div id="topmost-nav-links">
+        <ul>
+            <li><a href="https://library.brown.edu/borrowing/">Find &amp; Borrow</a></li>
+            <li><a href="https://library.brown.edu/info/ajdb">Articles, Journals, &amp; Databases</a></li>
+            <li><a href="https://library.brown.edu/about/specialists.php">Research Help</a></li>
+            <li><a href="https://library.brown.edu/libweb/hours.php">Hours, Locations, &amp; Events</a></li>
+            <li><a href="https://library.brown.edu/libweb/askalib.php">Ask a Question Now</a></li>
+            <li><a href="https://library.brown.edu/libweb/proxy.php">Off-Campus Access</a></li>
+            <li><a href="https://josiah.brown.edu/patroninfo">My Library Account</a>
+        </ul>
+    </div>
+
+    <div id="header-navbar" class="navbar navbar-inverse navbar-static-top" role="navigation">
+
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#user-util-collapse">
+                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
+                    <span class="icon-bar"></span> <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="//library.brown.edu" title="link to library.brown.edu"><span id="hide">library.brown.edu</span></a>
+            </div>
+        </div>
+
+        <div id="search-navbar" class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container">
+                <!-- <form accept-charset="UTF-8" action="/bul_search" class="search-query-form form-inline clearfix navbar-form" method="get"> -->
+                <form accept-charset="UTF-8" action="{% url 'bul_search_url' %}" class="search-query-form form-inline clearfix navbar-form" method="get">
+                    <div style="display:none">
+                        <input name="utf8" type="hidden" value="&#x2713;" />
+                    </div>
+                    <div class="input-group col-md-9 col-md-offset-1">
+                        <label for="q" class="sr-only">Enter keywords to search library resources</label>
+                        <input class="search_q q form-control" id="q" name="q" placeholder="Enter keywords to search library resources" type="text" value="" />
+                        <span class="input-group-btn"> <button type="submit" class="btn btn-primary search-btn" id="search"> <span class="submit-search-text">Search</span> <span class="glyphicon glyphicon-search"></span> </button> </span>
+                    </div>
+                    <span class="start-over"><a href="/">Start over</a></span>
+                </form>
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="user-util-collapse">
+            <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="about this webapp">Info</a> </li>
+                    <li> <a href="{{ feedback_link }}" rel="tooltip" title="issues">Feedback</a> </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>  <!-- end <div id="header-navbar"...  -->
+
+    <!-- ...BANNER end -->
+
+    <div id="content_wrapper">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <div id="footer">
+        <hr/>
+    </div>
+
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-3203647-3']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+{% block footer_javascripts %}
+{% endblock footer_javascripts %}
+
+</body>
+
+</html>
