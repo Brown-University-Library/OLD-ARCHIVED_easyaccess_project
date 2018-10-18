@@ -34,8 +34,8 @@
             {% endcomment %}
     </div>
 
-        <!-- <div id="article-form" class="hidden"> -->
-        <div id="article-form" >
+        <div id="article-form" class="hidden">
+        <!-- <div id="article-form" > -->
             <form action="{% url 'findit:findit_base_resolver_url' %}" method="get">{% csrf_token %}
 
                 <fieldset>
@@ -48,8 +48,8 @@
             </form>
         </div>
 
-        <!-- <div id="book-form" class="hidden"> -->
-        <div id="book-form">
+        <div id="book-form" class="hidden">
+        <!-- <div id="book-form"> -->
             <form action="{% url 'findit:findit_base_resolver_url' %}" method="get">{% csrf_token %}
                 <fieldset>
                 {% for field in book_form %}
