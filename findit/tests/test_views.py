@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import json, logging, pprint
+from bs4 import BeautifulSoup  # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 from django.conf import settings
 from django.test import Client, TestCase
 from django.test.client import RequestFactory
@@ -53,13 +54,25 @@ class IndexPageLinksTest( TestCase ):
     def setUp(self):
         self.client = Client()
 
+    # def test_index(self):
+    #     """ Checks main index page. """
+    #     response = self.client.get( '/find/' )  # project root part of url is assumed
+    #     self.assertEqual( 200, response.status_code )
+    #     self.assertEqual( True, '<title>easyAccess</title>' in response.content.decode('utf-8') )
+    #     self.assertEqual( True, '<h3>easyAccess</h3>' in response.content.decode('utf-8') )
+    #     self.assertEqual( True, 'class="intro">Article Examples' in response.content.decode('utf-8') )
+
     def test_index(self):
         """ Checks main index page. """
         response = self.client.get( '/find/' )  # project root part of url is assumed
+        html = response.content.decode('utf-8')
+        soup = BeautifulSoup( html, 'html.parser' )
         self.assertEqual( 200, response.status_code )
-        self.assertEqual( True, '<title>easyAccess - Brown University Library</title>' in response.content.decode('utf-8') )
-        self.assertEqual( True, '<h3>easyAccess</h3>' in response.content.decode('utf-8') )
-        self.assertEqual( True, 'class="intro">Article Examples' in response.content.decode('utf-8') )
+        tab_title = soup.find( 'title' )
+        self.assertEqual( 'easyAccess', tab_title.string.strip() )
+        info_title = soup.find( 'h1' )
+        self.assertEqual( True, '<h3>easyAccess</h3>' in html )
+        self.assertEqual( True, 'class="intro">Article Examples' in html )
 
     def test_article_held_electronically(self):
         """ Checks the `Article held electronically.` link.
