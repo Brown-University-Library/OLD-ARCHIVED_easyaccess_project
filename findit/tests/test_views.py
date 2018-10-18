@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 import json, logging, pprint
-from bs4 import BeautifulSoup  # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+# from bs4 import BeautifulSoup  # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 from django.conf import settings
 from django.test import Client, TestCase
 from django.test.client import RequestFactory
@@ -66,13 +66,10 @@ class IndexPageLinksTest( TestCase ):
         """ Checks main index page. """
         response = self.client.get( '/find/' )  # project root part of url is assumed
         html = response.content.decode('utf-8')
-        soup = BeautifulSoup( html, 'html.parser' )
         self.assertEqual( 200, response.status_code )
-        tab_title = soup.find( 'title' )
-        self.assertEqual( 'easyAccess', tab_title.string.strip() )
-        info_title = soup.find( 'h1' )
-        self.assertEqual( True, '<h3>easyAccess</h3>' in html )
-        self.assertEqual( True, 'class="intro">Article Examples' in html )
+        self.assertInHTML( '<title>easyAccess</title>', html )
+        self.assertInHTML( '<h1>easyAccess &mdash; info</h1>', html )
+        self.assertInHTML( '<h3 class="intro">Article Examples</h3>', html )
 
     def test_article_held_electronically(self):
         """ Checks the `Article held electronically.` link.
