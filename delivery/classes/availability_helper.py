@@ -56,22 +56,6 @@ class JosiahAvailabilityChecker(object):
         log.debug( 'checks done; available_holdings, ```%s```' % pprint.pformat(self.available_holdings) )
         return self.available_holdings
 
-    # def run_isbn_search( self, isbn ):
-    #     """ Runs availability-api isbn search.
-    #         Called by check_josiah_availability() """
-    #     if isbn is None:
-    #         return
-    #     api_isbn_url = '%s/isbn/%s' % ( app_settings.AVAILABILITY_URL_ROOT, isbn ); log.debug( 'api_isbn_url, ```%s```' % api_isbn_url )
-    #     try:
-    #         r = requests.get( api_isbn_url, timeout=10 )
-    #         api_jdct = json.loads( r.content.decode('utf-8') ); log.debug( 'isbn-jdct, ```%s```' % pprint.pformat(api_jdct) )
-    #         self.store_available_bibs( api_jdct )
-    #         self.store_available_holdings( api_jdct )
-    #         self.store_online_holdings( api_jdct )
-    #         log.debug( 'run_isbn_search() complete' )
-    #     except Exception as e:
-    #         log.warning( 'isbn-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
-
     def run_isbn_search( self, isbn ):
         """ Runs availability-api isbn search.
             Called by check_josiah_availability() """
@@ -109,22 +93,6 @@ class JosiahAvailabilityChecker(object):
             log.debug( 'run_oclc_search() complete' )
         except Exception as e:
             log.warning( 'oclc-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
-
-    # def run_oclc_search( self, oclc_num ):
-    #     """ Runs availability-api oclcl search.
-    #         Called by check_josiah_availability() """
-    #     if oclc_num is None:
-    #         return
-    #     api_oclc_url = '%s/oclc/%s' % ( app_settings.AVAILABILITY_URL_ROOT, oclc_num ); log.debug( 'api_oclc_url, ```%s```' % api_oclc_url )
-    #     try:
-    #         r = requests.get( api_oclc_url, timeout=10 )
-    #         api_jdct = json.loads( r.content.decode('utf-8') ); log.debug( 'oclc-jdct, ```%s```' % pprint.pformat(api_jdct) )
-    #         self.store_available_bibs( api_jdct )
-    #         self.store_available_holdings( api_jdct )
-    #         self.store_online_holdings( api_jdct )
-    #         log.debug( 'run_oclc_search() complete' )
-    #     except Exception as e:
-    #         log.warning( 'oclc-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
 
     def store_available_bibs( self, api_jdct ):
         """ Updates self.available_bibs
