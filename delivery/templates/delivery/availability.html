@@ -40,8 +40,8 @@
         height: 98%;
     }
 
-    #request-button {
-    }
+    /*#request-button {
+    }*/
 
     #relatedBookHoldingsContainer{
         margin-top: 1.5em;
@@ -155,7 +155,7 @@
     <span id="transaction-number" class="hidden">{{ confirmation }}</span>
 
 
-    {% if not available_locally %}
+    {% if not available_locally %}  {# meaning SHOW the request-button #}
     <div id="request">
         <form method="post" name="request" action="{% url 'delivery:shib_login_url' %}">{% csrf_token %}
             <div id="multi-volume">
@@ -173,6 +173,8 @@
         </form>
         <br/><br/>
     </div>
+
+    <hr/>
 
         {% if other_holdings %}
         <h5>At the library</h5>
@@ -202,7 +204,9 @@
         {% endif %}  {# end of `if other_holdings` #}
 
 
-    {% else %}
+    {% else %}  {# part of `if not available_locally` -- meaning do NOT show the request-button #}
+
+    <hr/>
 
     <h5>At the library</h5>
     <table>
@@ -211,7 +215,7 @@
                 <th>Location</th>
                 <th>Call #</th>
                 <th>Status</th>
-                <th class="hidden">Is Available</th>
+                <!-- <th class="hidden">Is Available</th> -->
             </tr>
         </thead>
         <tbody>
@@ -221,7 +225,7 @@
                 <td class="location"> {{ holding.localLocation }} </td>
                 <td class="callnumber"> {{ holding.callNumber }} </td>
                 <td class="status"> {{ holding.publicNote }} </td>
-                <td class="is-available hidden">false</td>
+                <!-- <td class="is-available hidden">false</td> -->
             </tr>
             {% endfor %}
 
@@ -258,6 +262,7 @@
 
 
     {% if ebook_lst %}
+    <hr/>
     <div id="full-text">
         <h5>Available online</h5>
         <ul>
@@ -347,62 +352,6 @@
     </div>
     {# end holdings section #}
 
-    {# debug section #}
-    {% if debug_mode %}
-    <div id="debug">
-        <hr/>
-        <h4>Debug mode</h4>
-        <p>
-            return to <a id="index-url" href="{% url 'delivery:resolve' %}">index page</a>
-        </p>
-        <h5>Format: {{ bib.type }}</h5>
-        <p>
-            <a href="{{illiad}}">Illiad URL</a>
-        </p>
-        <div class="row">
-            <form name="ourl" id="test-form" action="{% url 'delivery:resolve' %}" method="GET">
-                <fieldset>
-                    <select name="qtype">
-                        <option value="query">OpenURL</option>
-                        <option value="pmid">PubmedID</option>
-                        <option value="doi">DOI</option>
-                    </select>
-                    <input type="text" size="75"/>
-                    <input type="submit" value="Go"/>
-                    <p>
-                        Paste an OpenURL, Pubmed ID, or DOI into the box and click Go.
-                    </p>
-                </fieldset>
-            </form>
-        </div>
-        <h5>Holdings searches</h5>
-        <div id="holdings-debug"></div>
-        <div class="row">
-            <div class="six columns">
-                <h5>OpenURL</h5>
-                {% for name, value in cite.items %}
-                {% if value %}
-                {{ name }} => {{ value }}
-                <br/>
-                {% endif %}
-                {% endfor %}
-            </div>
-            <!-- end .six columns -->
-            <div class="six columns">
-                <h5>BibJSON key, value</h5>
-                {% for name, value in bib.items %}
-                {% if value %}
-                {{ name }} => {{ value }}
-                <br/>
-                {% endif %}
-                {% endfor %}
-            </div>
-            <!-- end six columns -->
-        </div>
-    </div>
-
-    {% endif %}
-
 </div>
 {% endblock %}
 
@@ -429,206 +378,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}delivery/js/json2.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.fancybox-1.3.4.pack.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tmpl.min.js"></script>
-    <!-- <script type="text/javascript" src="{{ STATIC_URL }}js/helpers.js"></script> -->
-    <!-- <script type="text/javascript" src="{{ STATIC_URL }}delivery/js/easy.js"></script> -->
-
-    <!--
-    <script>
-        var available_text = ['AVAILABLE',
-                              'NEW BOOKS',
-                              'USE IN LIBRARY',
-                              'IN TRANSIT',
-                              'ASK AT CIRC'];
-        {% comment %} var base_url = "{% url 'delivery:resolve' %}"; {% endcomment %}
-        $(document).ready(function() {
-            window.bib = {{bibjson|safe}};
-            //console.debug(base_url);
-            //determine if we are in debug mode
-            //if  ($('#debug').length > 0) {
-            //    console.debug('debug mode');
-            //    console.debug(window.bib);
-            //    window.debug = true;
-            //};
-
-            window.token = $('input[name="csrfmiddlewaretoken"]').attr('value');
-            bindForm();
-            $('#spinner').show();
-            //setupWindow();
-            window.local_print = false;
-            window.available = false;
-            window.requested = false;
-
-            //This kicks off the process.
-            //1 - see if the item has been requested within the last 30 days.
-            //2 - if yes, display message.
-            //3 - if no, check local print holdings and online holdings for item.
-            //4 - provide information on how to get the item or a button to place
-            //    a request.
-            fetchResources();
-            //abstracts and such not implemented yet.
-            //getExtras();
-            $('#spinner').ajaxStart(function() {
-                //if (window.debug) {
-                //    console.debug('ajax started');
-                //};
-            });
-            //wait for ajax calls to finish - then do this
-            $("#spinner").ajaxStop(function(){
-              $(this).hide();
-              //console.debug('ajax stopped')
-              //call logic
-              lookupsFinished();
-            });
-        });
-    </script>
-    -->
-
-    {% raw %}
-
-    <!--
-
-    <script id="onlineWrapperTemplate" type="text/x-jQuery-tmpl">
-        <div class="holdings">
-            <h5>Available online</h5>
-            <ul class="online-holdings">
-                </ul>
-        </div>
-    </script>
-
-    <script id="onlineJournalsTemplate" type="text/x-jQuery-tmpl">
-           <li class="not-direct"><a href="${url}">${anchor}</a><span class="asterisk">&#8727;</span></li>
-    </script>
-
-    <script id="onlineBookTemplate" type="text/x-jQuery-tmpl">
-           <li><a href="${url}">${anchor}</a></li>
-    </script>
-
-    <script id="directOnlineTemplate" type="text/x-jQuery-tmpl">
-        <li class="direct"><a href="${url}">${anchor}</a></li>
-    </script>
-
-    <script id="josiahHoldingsTemplate" type="text/x-jQuery-tmpl">
-    <tr class="held-item">
-        <td class="location">${location}</td>
-        <td class="callnumber">${callnumber}</td>
-        <td class="status">
-            {{ if availability == 'By request' }}
-                <a href="${request_link}">${availability}</a>
-            {{ else }}
-                ${availability}
-            {{ /if }}
-       </td>
-        <td class="is-available hidden">${is_available}</td>
-    </tr>
-    </script>
-
-    <script id="relatedJosiahHoldingsTemplate" type="text/x-jQuery-tmpl">
-    <tr class="held-item">
-        <td class="edition"><a href="http://library.brown.edu/find/Record/${bib}">${edition}</a></td>
-        <td class="location">${location}</td>
-        <td class="callnumber">${callnumber}</td>
-        <td class="status">${availability}</td>
-    </tr>
-    </script>
-
-    <script id="bookLocatorTemplate" type="text/x-jQuery-tmpl">
-        <div id="myModal" class="reveal-modal book-locator-wrapper" >
-            <a class="close-reveal-modal">x</a>
-            <iframe class="map" src="${map}"></iframe>
-        </div>
-        <a data-reveal-id="myModal" href="${map}">${location} -- Level ${floor}, Aisle ${aisle}${side}</a>
-    </script>
-
-    <script id="easyRequestTemplate" type="text/x-jQuery-tmpl">
-        <form id="book-request">
-            <input type="submit" class="medium white radius button" value="REQUEST THIS ITEM"/>
-            <br/>
-        </form>
-        <div class="alert-box" id="not-found-note">This item isn't available.  It will be requested
-            from another library.  You will receive an email with access information after your request is processed.
-        </div>
-    </script>
-
-    <script id="loginTemplate" type="text/x-jQuery-tmpl">
-        <div>
-        <h6><a href="${login_link}">Login to request this</a></h6>
-        </div>
-    </script>
-
-    <script id="confirmationTemplate" type="text/x-jQuery-tmpl">
-        <div class="alert-box">
-            <h6>Request received</h6>
-            You will receive an email shortly with further details.  If you have questions
-            please contact the Interlibrary Loan office at Interlibrary_loan@brown.edu
-            or 863-2169 with the Transaction Number ${transaction_number}.
-        </div>
-    </script>
-
-    <script id="existingRequestTemplate" type="text/x-jQuery-tmpl">
-        <div class="alert-box">
-            <h6>Existing request</h6>
-            You requested this item on ${date}.  Please refer to your email for access information.
-            If you have questions contact the Interlibrary Loan office at Interlibrary_loan@brown.edu
-            or 863-2169 with the Transaction Number ${transaction_number}.
-        </div>
-    </script>
-
-    <script id="bibTemplate" type="text/x-jQuery-tmpl">
-        <ul class="citation">
-            <li><h5>${title}</h5></li>
-            <li>${journal.name}</li>
-            <li>
-                {{if volume}}
-                    Volume: ${volume},
-                {{/if}}
-                {{if issue}}
-                    Issue: ${issue}
-                {{/if}}
-                {{if year}}
-                    ${year}
-                {{/if}}
-            </li>
-            {{ each author }}
-            <li> ${$value.name}</li>
-            {{/each}}
-            {{if pmid}}
-            <li>PMID: ${pmid}</li>
-            {{/if}}
-        </ul>
-    </script>
-    <script id="multiVolumeTemplate" type="text/x-jQuery-tmpl">
-            <div id="multi-volume">
-                <input type="checkbox" onclick="$('#hideablearea').toggle();">
-                Check here <strong>IF</strong> this is a MULTI-VOLUME work.<br><br>
-                <div id="hideablearea" class="hidden">
-                            <p>Volumes needed (if applicable):
-                                <input type="text" name="volumes" id="volume-note">
-                            </p>
-                </div>
-            </div>
-    </script>
-
-    <script id="articleUpdateTemplate" type="text/x-jQuery-tmpl">
-            <div id="article-update">
-                {{ if ! title }}
-                Title<input type="text" name="title" value="${title}"/><br/>
-                {{/if}}
-                {{ if ! journal.name }}
-                Journal<input type="text" name="journal" value="${journal.name}"/><br/>
-                {{/if}}
-                {{ if ! year}}
-                Year<input type="text" name="year" value="${year}"/><br/>
-                {{/if}}
-                {{ if ! start_page}}
-                Start page<input type="text" name="start_page" value="${start_page}"><br/>
-                {{/if}}
-            </div>
-    </script>
-
-    -->
-
-    {% endraw %}
-
     <script type="text/javascript" src="{{ STATIC_URL }}delivery/js/gbsclasses.js"></script>
 
 {% endblock %} {# end of `{% block footer_javascripts %}` #}
