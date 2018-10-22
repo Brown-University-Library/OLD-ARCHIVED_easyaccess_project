@@ -94,13 +94,6 @@
         margin-top: 1.75em;
     }
 
-    p#also_other {
-        margin-bottom: .5em;
-    }
-    td.other_holding_url {
-        background-color: white;
-    }
-
 </style>
 
 {% endblock %}
@@ -198,34 +191,6 @@
 
         </tbody>
     </table>
-
-    {% if other_holdings %}
-    <p id="also_other">(Also available, but can <u><b>only</b></u> be used in the <i>Hay Library Special-Collections Reading-Room</i>)</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Location</th>
-                <th>Call #</th>
-                <th>Status</th>
-                <th></th>
-                <!-- <th class="hidden">Is Available</th> -->
-            </tr>
-        </thead>
-        <tbody>
-
-            {% for holding in other_holdings %}
-            <tr class="held-item">
-                <td class="location"> {{ holding.localLocation }} </td>
-                <td class="callnumber"> {{ holding.callNumber }} </td>
-                <td class="status"> {{ holding.publicNote }} </td>
-                <td class="other_holding_url"><a href="{{ holding.url }}">(more details)</a></td>
-                <!-- <td class="is-available hidden">false</td> -->
-            </tr>
-            {% endfor %}
-
-        </tbody>
-    </table>
-    {% endif %}
 
     {% endif %}  {# end of `if not available_locally` #}
 
