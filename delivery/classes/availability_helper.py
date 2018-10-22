@@ -46,6 +46,7 @@ class JosiahAvailabilityChecker(object):
         self.available_bibs = []
         self.available_holdings = []
         self.online_holdings = []
+        self.other_holdings = []  # Hay special-collections holdings
 
     def check_josiah_availability( self, isbn, oclc_num ):
         """ Checks josiah availability, updates self.bibs, returns holdings data.
@@ -90,6 +91,7 @@ class JosiahAvailabilityChecker(object):
             self.store_available_bibs( api_jdct )
             self.store_available_holdings( api_jdct )
             self.store_online_holdings( api_jdct )
+            self.store_other_holdings( api_jdct )
             log.debug( 'run_oclc_search() complete' )
         except Exception as e:
             log.warning( 'oclc-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
@@ -122,6 +124,16 @@ class JosiahAvailabilityChecker(object):
             if holding not in self.online_holdings:
                 self.online_holdings.append( holding )
         log.debug( 'self.online_holdings, ```%s```' % self.online_holdings )
+        return
+
+    def store_other_holdings( self, api_jdct ):
+        """ Updates self.other_holdings
+            Called by run_isbn_search() and run_oclc_search() """
+        api_other_holdings = api_jdct['response']['basics']['ezb_other_holdings']
+        for holding in api_other_holdings:
+            if holding not in self.other_holdings:
+                self.other_holdings.append( holding )
+        log.debug( 'self.other_holdings, ```%s```' % self.other_holdings )
         return
 
     ## end class JosiahAvailabilityChecker()
