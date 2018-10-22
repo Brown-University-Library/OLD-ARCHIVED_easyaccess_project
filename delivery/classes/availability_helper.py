@@ -69,9 +69,11 @@ class JosiahAvailabilityChecker(object):
             rqst_headers.update( {'User-Agent': '%s__%s' % ('bul_easyaccess', default_agent)} )
             r = requests.get( api_isbn_url, headers=rqst_headers, timeout=10 )
             api_jdct = json.loads( r.content.decode('utf-8') ); log.debug( 'isbn-jdct, ```%s```' % pprint.pformat(api_jdct) )
+            # log.debug( 'isbn-availability-api result, ```%s```' % pprint.pformat(api_jdct) )
             self.store_available_bibs( api_jdct )
             self.store_available_holdings( api_jdct )
             self.store_online_holdings( api_jdct )
+            self.store_other_holdings( api_jdct )
             log.debug( 'run_isbn_search() complete' )
         except Exception as e:
             log.warning( 'isbn-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )

@@ -106,12 +106,24 @@ def availability( request ):
         ebook_lst.append( entry_dct )
     #
     permalink = request.session.get( 'permalink_url', '' )
+    # context = {
+    #     'permalink_url': permalink,
+    #     'bib': bib_dct,
+    #     'exact_available_holdings': available_holdings,
+    #     'available_locally': available_locally,
+    #     # 'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
+    #     'catalog_links': availability_checker.available_bibs,
+    #     'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
+    #     'openurl': querystring,  # for export to refworks
+    #     'ebook_lst': ebook_lst,
+    #     'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
+    #     }
     context = {
         'permalink_url': permalink,
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
+        'other_holdings': availability_checker.other_holdings,
         'available_locally': available_locally,
-        # 'catalog_link': 'https://search.library.brown.edu/catalog/{}'.format( bib_num ),
         'catalog_links': availability_checker.available_bibs,
         'report_problem_url': availability_view_helper.build_problem_report_url( permalink, request.META.get('REMOTE_ADDR', 'ip_not_available') ),
         'openurl': querystring,  # for export to refworks
