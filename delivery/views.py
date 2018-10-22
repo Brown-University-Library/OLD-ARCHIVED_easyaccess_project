@@ -96,12 +96,12 @@ def availability( request ):
     ebook_lst = []
     if ebook_dct:
         ebook_lst.append( ebook_dct )
-    for o_holding in availability_checker.online_holdings:
-        bib = o_holding['url'].split('/')[-1]
+    for online_holding in availability_checker.online_holdings:
+        bib = online_holding['url'].split('/')[-1]
         entry_dct = {
             # 'ebook_label': 'online catalog entry',
             'ebook_label': 'View e-resource details for item %s.' % bib,
-            'ebook_url': o_holding['url']
+            'ebook_url': online_holding['url']
             }
         ebook_lst.append( entry_dct )
     #
