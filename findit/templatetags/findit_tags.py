@@ -47,6 +47,9 @@ def citation_display(context, citation, format, direct_link):
 
 
 register.inclusion_tag(
+    'snippets/citation_display_josiah.html',
+    takes_context=True )(citation_display)
+register.inclusion_tag(
     'snippets/citation_display.html',
     takes_context=True )(citation_display)
 
