@@ -44,14 +44,35 @@ def citation_display(context, citation, format, direct_link):
     return {'citation': citation,
             'format': format,
             'direct_link': direct_link}
+def citation_display_josiah(context, citation, format, direct_link):
+    """
+    Make a template tag for display citations on the various pages.
+    """
+    log.debug( 'citation_display context, ```%s```' % pprint.pformat(context) )
+    log.debug( 'citation_display citation, ```%s```' % citation )
+    log.debug( 'citation_display format, ```%s```' % format )
 
+    ## Clean up print citations.
+    ## Take the first ISSN we can find,
+    try:
+        issn = citation.get('issn', {}).values()[0]
+    except (IndexError, AttributeError):
+        issn = citation.get('issn', '')
+    try:
+        del citation['issn']
+    except KeyError:
+        pass
+    citation['issn'] = issn
+    return {'citation': citation,
+            'format': format,
+            'direct_link': direct_link}
 
-register.inclusion_tag(
-    'snippets/citation_display_josiah.html',
-    takes_context=True )(citation_display)
 register.inclusion_tag(
     'snippets/citation_display.html',
     takes_context=True )(citation_display)
+register.inclusion_tag(
+    'snippets/citation_display_josiah.html',
+    takes_context=True )(citation_display_josiah)
 
 
 def request_link(context):
