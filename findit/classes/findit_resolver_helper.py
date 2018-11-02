@@ -412,7 +412,7 @@ class FinditResolver( object ):
         context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
         ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
         full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
-        context['problem_link'] = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+        context['feedback_link'] = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
