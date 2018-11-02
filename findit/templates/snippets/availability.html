@@ -46,7 +46,7 @@
                          Non-faculty can request annex items.
                         {% endcomment %}
                         {% ifequal held.location "Annex" %}
-                            <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}"> -- request for delivery via Josiah</a></span>
+                            &nbsp;-- <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}">request for delivery via Josiah</a></span>
                         {% endifequal %}
                    </li>
                 {% endfor %}
