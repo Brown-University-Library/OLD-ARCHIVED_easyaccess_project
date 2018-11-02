@@ -36,6 +36,15 @@
 {% endblock %}
 
 
+{% block extra_tools %}
+<li> <a href="{{ permalink }}" rel="tooltip" title="shortlink-url; right-click to copy">Shortlink</a> </li>
+<li> <a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}" rel="tooltip" title="export-to-refworks-url">Refworks</a> </li>
+<li> <a href="{{ ris_url }}" rel="tooltip" title="export-to-endnote-url">EndNote</a> </li>
+<li> <a href="{% url 'findit:citation_form_url' %}?{{ enhanced_querystring }}" rel="tooltip" title="citation-form-url">Update</a> </li>
+<li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="librarian-chat-url">Lib-Help</a> </li>
+{% endblock %}
+
+
 {% block content %}
     <h4 class="easy_what">{{ easyWhat }}</h4>
 
@@ -48,39 +57,10 @@
     <div class="availability_info">
         {% include "snippets/availability.html" %}
     </div>
-
-    <hr/>
-
-    {% block tool_list %}
-    <div class="toolbox">
-        <h3>Tools</h3>
-        <ul class="tools">
-         {% if not plink_view %}
-            <li><a href="{{ permalink }}">Permalink</a></li>
-         {% endif %}
-         <li><a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}">Export to Refworks</a></li>
-
-         <li><a href="{{ ris_url }}">Export to EndNote</a></li>
-
-         <li><a href="{% url 'findit:citation_form_url' %}?{{ enhanced_querystring }}">Update this citation</a></li>
-         <li><a href="http://library.brown.edu/libweb/askalib.php">Ask a librarian</a></li>
-         <li><a id="problem-link" href="{{ problem_link }}">Report a problem</a></li>
-         {% if not resolved %}
-         <li><a href="http://library.brown.edu/">Search the Library</a></li>
-         <li><a href="http://librarycat.risd.edu">Search RISD</a></li>
-         {% endif %}
-        </ul>
-    </div>
-    {% endblock tool_list %}
-
 {% endblock content %}
 
 
-
-
-
-
-
+{% comment %}
 {% block footer_javascripts %}
 <script>
     $(document).ready(function() {
@@ -93,3 +73,4 @@
 
 </script>
 {% endblock %}
+{% endcomment %}

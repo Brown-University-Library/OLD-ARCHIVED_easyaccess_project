@@ -81,6 +81,8 @@
         <div class="collapse navbar-collapse" id="user-util-collapse">
             <div class="navbar-right">
                 <ul class="nav navbar-nav">
+                    {% block extra_tools %}
+                    {% endblock %}
                     <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="about this webapp">Info</a> </li>
                     <li> <a href="{{ feedback_link }}" rel="tooltip" title="issues">Feedback</a> </li>
                 </ul>
