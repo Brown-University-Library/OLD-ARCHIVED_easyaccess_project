@@ -402,6 +402,7 @@ class FinditResolver( object ):
         """ Preps the template view.
             Called by views.findit_base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
+        context = self.check_citation_issn( context )
         ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         if context.get( 'enhanced_querystring', '' ) == '':
             context['enhanced_querystring'] = querystring
@@ -410,9 +411,7 @@ class FinditResolver( object ):
         context['permalink'] = permalink
         context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
         ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-        # context['problem_link'] = app_settings.PROBLEM_URL % ( permalink, ip )  # settings contains string-substitution for permalink & ip
         full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
-        log.debug( 'full_permalink, ```%s```' % full_permalink )
         context['problem_link'] = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
@@ -480,6 +479,19 @@ class FinditResolver( object ):
             log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
             context['citation'] = {}
         log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
+        return context
+
+    def check_citation_issn( self, context ):
+        """ Creates `citation_display` for template use.
+            Called by: make_resolve_context() """
+        citation = context.get( 'citation', None )
+        if citation:
+            try:
+                issn = citation.get('issn', {}).values()[0]
+            except ( IndexError, AttributeError ):
+                issn = citation.get('issn', '')
+            citation['issn_display'] = issn
+        log.debug( 'context after citation update, ```%s```' % citation )
         return context
 
     def _check_genre( self, context ):

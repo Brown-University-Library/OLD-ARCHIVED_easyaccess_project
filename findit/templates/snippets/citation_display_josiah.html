@@ -14,8 +14,8 @@
     {% ifequal format "journal" %}
        <li>
            <span class="source">{{ citation.source }}</span>
-           {% if citation.issn %}
-                &nbsp;{{ citation.issn }}
+           {% if citation.issn_display %}
+                &nbsp;{{ citation.issn_display }}
            {% endif %}
            {% if citation.eissn %}
                 &nbsp;{{ citation.eissn }}
