@@ -8,7 +8,14 @@
                 {% for provider in online %}
                     <li class="source"><a href="{{ provider.link }}" title="Full text from {{ provider.name }}">{{ provider.name }}</a>
                         {# Put an asterik up as a warning about journal or issue level links #}
-                        {% if provider.type != "direct" %}<span class="asterisk">&#8727;</span>
+                        {% if provider.type != "direct" %}
+                        <div class="notice" id="not-direct-link">
+                            <ul class="asterisk">
+                                <li>This is <b>not</b> a direct link to the article.</li>
+                                <li>You will need to search for the title or locate the date, volume, and issue on the publisher's website.</li>
+                                <li>If you don't find what you are looking for, please <a href="http://library.brown.edu/libweb/askalib.php">ask a Librarian</a>.</li>
+                            </ul>
+                        </div>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -51,19 +58,6 @@
             </ul>
         {% endif %}
 
-        {% if prompt_login %}
-            <div id="login-prompt" class="alert-box">
-                <em><a href="{{ login_link }}">Login</a></em> for full services.
-            </div>
-        {% endif %}
-
-
-        {# Handle vague links with a notice #}
-        {% if has_vague_links %}
-            <div class="notice" id="not-direct-link">
-                <p><span class="asterisk">&#8727;</span>This is not a direct link to the article. You will need to search for the title or locate the date, volume, and issue on the publisher's website. If you don't find what you are looking for, please <a href="{{ problem_link }}">let us know.</a>
-            </div>
-        {% endif %}
 
     </div>  <!-- end of div class="holdings"-->
 {% endif %}  {# end of {% if print or online %} #}
@@ -71,7 +65,7 @@
 
 {% if not resolved %}
     <div id="request-message" class="notice">
-        <h3>This article couldn't be located in the library&#8217;s collections.</h3>
+        <h3>This article couldn&#8217;t be located in the library&#8217;s collections.</h3>
         <ul>
             {% url 'article_request:shib_login_url' as login_url %}
             <li class="request-link"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request from another library</a></li>
