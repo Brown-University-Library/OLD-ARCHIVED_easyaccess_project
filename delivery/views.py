@@ -172,7 +172,7 @@ def shib_login( request ):
     log.debug( '`{id}` session.items() after deletion, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## build login_handler url
-    if request.get_host() == '127.0.0.1' and settings.DEBUG2 is True:  # eases local development
+    if '127.0.0.1' in request.get_host() and settings.DEBUG2 is True:  # eases local development
         log.debug( 'localdev, so redirecting right to login_handler' )
         querystring = shib_login_helper.build_localdev_querystring( bib_dct_json, last_querystring, shortlink_url, log_id )
         redirect_url = '%s?%s' % ( reverse('delivery:login_handler_url'), querystring )
@@ -221,7 +221,7 @@ def login_handler( request ):
 
     ## update user/profile objects
     localdev_check = False
-    if request.get_host() == '127.0.0.1' and settings.DEBUG2 == True:  # eases local development
+    if '127.0.0.1' in request.get_host() and settings.DEBUG2 is True:  # eases local development
         localdev_check = True
     log.debug( 'localdev_check, `{}`'.format(localdev_check) )
     shib_dct = login_view_helper.update_user( localdev_check, request.META, request.get_host() )  # will eventually return user object
@@ -307,7 +307,7 @@ def shib_logout( request ):
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` delivery shib_logout() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     redirect_url = reverse( 'delivery:message_url' )
-    if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
+    if not ( '127.0.0.1' in request.get_host() and settings.DEBUG2 is True ):  # eases local development
         return_url = settings_app.SHIB_LOGOUT_URL_RETURN_ROOT
         encoded_return_url = urlquote( return_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_return_url )

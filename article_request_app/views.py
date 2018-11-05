@@ -42,7 +42,7 @@ def shib_login( request ):
         del request.session[key]
 
     ## check if localdev
-    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True:  # eases local development
+    if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
         log.debug( 'localdev, so redirecting right to login_handler' )
         querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
         redirect_url = '%s?%s' % ( reverse('article_request:login_handler_url'), querystring )
@@ -89,7 +89,7 @@ def login_handler( request ):
     ## get user info
     # shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info
     localdev_check = False
-    if request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True:  # eases local development
+    if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
         localdev_check = True
     shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
 
@@ -265,8 +265,7 @@ def shib_logout( request ):
     log_id = request.session.get( 'log_id', '' )
     log.debug( '`{id}` article_request shib_logout() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
     redirect_url = reverse( 'article_request:message_url' )
-    if not ( request.get_host() == '127.0.0.1' and project_settings.DEBUG2 is True ):  # eases local development
-        # return_url = 'https://{host}{message_url}'.format( host=request.get_host(), message_url=reverse('article_request:message_url') )
+    if not ( '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True ):  # eases local development
         return_url = settings_app.SHIB_LOGOUT_URL_RETURN_ROOT
         encoded_return_url = urlquote( return_url )  # django's urlquote()
         redirect_url = '%s?return=%s' % ( settings_app.SHIB_LOGOUT_URL_ROOT, encoded_return_url )
