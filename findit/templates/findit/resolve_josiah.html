@@ -27,13 +27,13 @@
         list-style-position: outside;
         margin-left: 0;
     }
-    div.citation ul li.title h1.citation_title {  {# findit/templates/snippets/citation_display.html #}
+    div.citation ul li.title h1.citation_title {  {# findit/templates/findit_snippets/citation_display_josiah.html #}
         font-weight: bold;
         font-size: 1.5em;
         /*color: none;*/
         line-height: 1.42857143;
     }
-    div.citation ul li.creator {  {# findit/templates/snippets/citation_display.html #}
+    div.citation ul li.creator {  {# findit/templates/findit_snippets/citation_display_josiah.html #}
         list-style-type: none;
         list-style-position: outside;
         /*font-style: italic;*/
@@ -62,13 +62,13 @@
     <h4 class="easy_what">{{ easyWhat }}</h4>
 
     <div class="citation">
-        {% include "snippets/citation_display_josiah.html" %}
+        {% include "findit_snippets/citation_display_josiah.html" %}
     </div>
 
     <hr/>
 
     <div class="availability_info">
-        {% include "snippets/availability.html" %}
+        {% include "findit_snippets/availability.html" %}
     </div>
 {% endblock content %}
 

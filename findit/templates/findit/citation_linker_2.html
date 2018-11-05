@@ -42,7 +42,7 @@
 
                 <fieldset>
                 {% for field in article_form %}
-                    {% include 'snippets/citation_form_2.html' %}
+                    {% include 'findit_snippets/citation_form_2.html' %}
                 {% endfor %}
                 </fieldset>
                 <div><input class="submit" type="submit" value="Submit" class="submit"/></div>
@@ -55,7 +55,7 @@
             <form action="{% url 'findit:findit_base_resolver_url' %}" method="get">{% csrf_token %}
                 <fieldset>
                 {% for field in book_form %}
-                    {% include 'snippets/citation_form_2.html' %}
+                    {% include 'findit_snippets/citation_form_2.html' %}
                 {% endfor %}
                 </fieldset>
                 <div><input class="submit" type="submit" value="Submit" class="submit"/></div>
