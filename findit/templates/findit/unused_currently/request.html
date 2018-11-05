@@ -1,5 +1,5 @@
 {% extends "findit/base.html" %}
-{% load findit_tags %}
+
 
 {% block javascripts%}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
@@ -14,7 +14,7 @@
     {% endcomment %}
 <div id="request" class="findit-core">
     {% if existing_request %}
-        <p class="info">You placed a request for this item on {{ existing_request.date_created|date:"M. d Y" }}.  Please 
+        <p class="info">You placed a request for this item on {{ existing_request.date_created|date:"M. d Y" }}.  Please
             refer to your email for delivery confirmation.</p>
     {% else %}
         <div id="spinner">
@@ -33,21 +33,21 @@
             </form>
             <p class="error hidden"></p>
             <p class="success hidden"></p>
-         </div>  
+         </div>
      {% endif %}
       {% citation_display citation format direct_link %}
-      
+
       {% if debug_mode %}
         <a href="{{ illiad_url }}">Illiad url - debugging</a>
         <span id="debug" class="hidden">true</span>
       {% endif %}
-      
+
       {% if terminal %}
         <div id="logout-prompt" class="alert-box">
             You are using a public machine.  Please <em><a href="{{ logout_link }}">logout</a></em> when finished.
         </div>
       {% endif %}
-</div>   
+</div>
 
 {% endblock %}
 
