@@ -86,7 +86,7 @@ class IndexPageLinksTest( TestCase ):
             content = response.content.decode( 'utf-8' )
             # log.debug( 'content, ```%s```' % content )
             self.assertEqual( 200, response.status_code )
-            self.assertTrue( 'easyAccess &#x2192 easyArticle' in content )
+            self.assertTrue( 'easyAccess &rarr; easyArticle' in content )
 
     def test_article_chapter_held_at_annex(self):
         """ Checks the `Article/Chapter held at Annex.` link """
@@ -98,9 +98,10 @@ class IndexPageLinksTest( TestCase ):
         content = response.content.decode( 'utf-8' )
         # log.debug( 'content, ```%s```' % content.decode('utf-8') )
         self.assertEqual( 200, response.status_code )
-        self.assertInHTML( '<title>easyAccess &#x2192 easyArticle</title>', content )
+        self.assertInHTML( '<title>easyAccess &rarr; easyArticle</title>', content )
         self.assertInHTML( '<h4 class="easy_what">easyArticle</h4>', content )
-        self.assertEqual( True, '<h3>Available at the library</h3>' in content )
+        # self.assertEqual( True, '<h2>Available at the library</h2>' in content )
+        self.assertInHTML( '<h2>Available at the library</h2>', content )
         self.assertEqual( True, 'request for delivery via josiah' in content.lower() )
         self.assertEqual( True, 'BL60.A2 S65 -- ANNEX' in content )
 
