@@ -3,7 +3,8 @@
 
         {# If we have a direct link - hyperlinked from title - and no other online holdings to display, pass.  Else, print each with the helper messages as necessary.#}
         {% if online|length > 0 %}
-            <h3>Available online</h3>
+            <!-- <h3>Available online</h3> -->
+            <h2>Available online</h2>
             <ul class="online-holdings">
                 {% for provider in online %}
                     <li class="source"><a href="{{ provider.link }}" title="Full text from {{ provider.name }}">{{ provider.name }}</a>
@@ -24,7 +25,7 @@
 
         {# Do print #}
         {% if print %}
-            <h3>Available at the library</h3>
+            <h2>Available at the library</h2>
             <ul class="print-holdings">
 
                 {% for held in print %}
@@ -61,7 +62,7 @@
 
 {% if not resolved %}
     <div id="request-message" class="notice">
-        <h3>This article couldn&#8217;t be located in the library&#8217;s collections.</h3>
+        <h2>This article couldn&#8217;t be located in the library&#8217;s collections.</h2>
         <ul>
             {% url 'article_request:shib_login_url' as login_url %}
             <li class="request-link"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request from another library</a></li>
