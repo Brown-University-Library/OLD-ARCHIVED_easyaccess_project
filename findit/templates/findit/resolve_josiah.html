@@ -1,6 +1,13 @@
 {% extends "findit/base_josiah.html" %}
 
 
+{% block page_title %}
+    {% autoescape off %}
+        easyAccess &#x2192 {{ easyWhat }}
+    {% endautoescape %}
+{% endblock page_title %}
+
+
 {% block extra_css %}
 <style type="text/css">
     h4.easy_what {
