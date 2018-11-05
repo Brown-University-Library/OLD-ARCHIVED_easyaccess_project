@@ -120,9 +120,9 @@ class PmidResolverTest(TestCase):
         response = c.get( url )
         html = response.content
         # log.debug( 'html, ```%s```' % html )
-        self.assertEqual( True, '<h3>Available online</h3>' in html )
+        self.assertEqual( True, 'available online' in html.lower() )
         self.assertEqual( True, 'https://login.revproxy.brown.edu/login?url=http://search.who.int/search?' in html )
-        self.assertEqual( True, 'Request for delivery via Josiah' in html )
+        self.assertEqual( True, 'request for delivery via josiah' in html.lower() )
         self.assertEqual( True, 'RA8 .A27 -- ANNEX' in html )
 
     # end class PmidResolverTest
