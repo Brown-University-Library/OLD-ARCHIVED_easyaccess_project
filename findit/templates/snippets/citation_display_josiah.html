@@ -2,9 +2,9 @@
     <ul>
     <li class="title">
         {% ifequal format "journal" %}
-	    {{ citation.title }}
+	       <h1 class="citation_title">{{ citation.title }}</h1>
         {% else %}
-            {{ citation.source }}
+            <h1 class="citation_title">{{ citation.source }}</h1>
         {% endifequal %}
     </li>
     {% if citation.creator %}
