@@ -82,13 +82,27 @@ If you believe you should be permitted to use interlibrary-loan services, please
         log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
         return patron_dct
 
+    # def _make_item_dct( self, bib_dct, querystring ):
+    #     """ Maps item info to db info.
+    #         Called by save_to_easyborrow() """
+    #     try: oclc_num = int( bib_dct.get('oclc_num', '') )
+    #     except: oclc_num = 0
+    #     item_dct = {
+    #         'title': bib_dct.get( 'title', '' ),
+    #         'isbn': bib_dct.get( 'isbn', '').replace( '-', '' ),
+    #         'wc_accession': oclc_num,
+    #         'sfxurl': 'http://{ss_key}.search.serialssolutions.com/?{querystring}'.format( ss_key=app_settings.SERSOL_KEY, querystring=querystring ),
+    #         'volumes': bib_dct.get( 'easyborrow_volumes', '' ) }
+    #     log.debug( 'item_dct, ```{}```'.format(pprint.pformat(item_dct)) )
+    #     return item_dct
+
     def _make_item_dct( self, bib_dct, querystring ):
         """ Maps item info to db info.
             Called by save_to_easyborrow() """
         try: oclc_num = int( bib_dct.get('oclc_num', '') )
         except: oclc_num = 0
         item_dct = {
-            'title': bib_dct.get( 'title', '' ),
+            'title': bib_dct.get( 'title', '' )[0:254],
             'isbn': bib_dct.get( 'isbn', '').replace( '-', '' ),
             'wc_accession': oclc_num,
             'sfxurl': 'http://{ss_key}.search.serialssolutions.com/?{querystring}'.format( ss_key=app_settings.SERSOL_KEY, querystring=querystring ),
