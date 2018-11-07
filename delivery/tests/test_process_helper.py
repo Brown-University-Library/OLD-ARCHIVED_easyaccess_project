@@ -69,4 +69,12 @@ class ProcessHelperTest(TestCase):
         self.assertEqual(
             expected, self.helper._make_item_dct(bib_dct,querystring) )
 
+    def test_make_item_dct_long_title(self):
+        """ Checks that too-long title is truncated. """
+        bib_dct = { u'title': u'z' * 256, u'isbn': u'978-1-4398-6797-6'}
+        querystring = u'id=doi:10.1201/b12738-10&sid=crc&iuid=2210&date=2012&pub=Chapman+and+Hall/CRC&aulast=Der&atitle=Logistic+Regression&genre=book&isbn=978-1-4398-6797-6&title=Applied+Medical+Statistics+Using+SAS&btitle=Applied+Medical+Statistics+Using+SAS'
+        rslt_dct = self.helper._make_item_dct(bib_dct,querystring)
+        self.assertEqual(
+            254, len(rslt_dct['title']) )
+
     # end ProcessHelperTest()
