@@ -4,11 +4,14 @@ from __future__ import unicode_literals
 
 import logging, pprint
 import bibjsontools
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
-from findit import forms
+from findit import app_settings, forms
+from findit.classes.permalink_helper import Permalink
 
 
 log = logging.getLogger('access')
+shortlink_helper = Permalink()
 
 
 class CitationFormDctMaker( object ):
@@ -228,15 +231,42 @@ class CitationFormHelper( object ):
         form_dct_maker = CitationFormDctMaker()
         citation_form_dct = form_dct_maker.make_form_dct( request.GET )
         log.info( '`{id}` citation_form_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(citation_form_dct)) )
+        querystring = request.META.get('QUERY_STRING', '')
+
+        shortlink_path = shortlink_helper.make_permalink(
+            referrer=request.GET.get('rfr_id', ''), qstring=request.META.get('QUERY_STRING', ''), scheme=request.scheme, host=request.get_host(), path=reverse('findit:citation_form_url')
+        )['permalink']
+        log.debug( 'shortlink_path, ```%s```' % shortlink_path )
+        full_shortlink_url = '%s://%s%s' % ( request.scheme, request.get_host(), shortlink_path )
+        log.debug( 'full_shortlink_url, ```%s```' % full_shortlink_url )
+
         context = {
             u'article_form': forms.ArticleForm(citation_form_dct),
             u'book_form': forms.BookForm(citation_form_dct),
             u'form_type': self.make_form_type( citation_form_dct ),
-            u'problem_link': 'https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dEhXOXNEMnI0T0pHaTA3WFFCQkJ1ZHc6MQ&entry_3=http://127.0.0.1/citation-form/&entry_4=127.0.0.1',
+            u'problem_link': app_settings.PROBLEM_URL % ( full_shortlink_url, request.META.get('REMOTE_ADDR', 'unknown') ),
         }
-        # log.debug( 'context, `%s`' % context )
-        log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
+        # log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
+        log.debug( '`%s` context, ```%s```' % (self.log_id, pprint.pformat(context)) )
         return context
+
+    # def build_context_from_url( self, request ):
+    #     """ Populates form from url.
+    #         Called by views.citation_form() """
+    #     # log.debug( 'request.__dict__, ```%s```' % pprint.pformat(request.__dict__) )
+    #     log.debug( '`{id}` request.__dict__, ```{val}```'.format(id=self.log_id, val=pprint.pformat(request.__dict__)) )
+    #     form_dct_maker = CitationFormDctMaker()
+    #     citation_form_dct = form_dct_maker.make_form_dct( request.GET )
+    #     log.info( '`{id}` citation_form_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(citation_form_dct)) )
+    #     context = {
+    #         u'article_form': forms.ArticleForm(citation_form_dct),
+    #         u'book_form': forms.BookForm(citation_form_dct),
+    #         u'form_type': self.make_form_type( citation_form_dct ),
+    #         u'problem_link': 'https://docs.google.com/a/brown.edu/spreadsheet/viewform?formkey=dEhXOXNEMnI0T0pHaTA3WFFCQkJ1ZHc6MQ&entry_3=http://127.0.0.1/citation-form/&entry_4=127.0.0.1',
+    #     }
+    #     # log.debug( 'context, `%s`' % context )
+    #     log.debug( '`{id}` context, ```{val}```'.format(id=self.log_id, val=pprint.pformat(context)) )
+    #     return context
 
     def build_get_response( self, request, context ):
         """ Prepares GET response
