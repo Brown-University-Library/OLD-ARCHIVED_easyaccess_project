@@ -36,7 +36,7 @@
 
 </head>
 
-<body>
+<body class="blacklight-catalog blacklight-catalog-show">
 
     <!-- BANNER start... -->
 
@@ -95,10 +95,73 @@
 
     <!-- ...BANNER end -->
 
-    <div id="content_wrapper">
+
+
+
+    <div id="main-container" class="container">
+
+
+    <div class="row">
+
+
+
+        <div id="content" class="col-md-9 show-document">
+
+    <!-- <div id="content_wrapper"> -->
+
         {% block content %}
         {% endblock content %}
+
+    <!-- </div> -->
+
+    </div> <!-- end of: <div id="content" class="col-md-9 show-document"> -->
+
+
+
+    <!-- TOOLS start... -->
+
+    <div id="sidebar" class="col-md-3">
+        <div class="panel panel-default show-tools">
+            <div class="panel-heading">
+                Tools
+            </div>
+
+            <div class="panel-body">
+                <ul class="nav">
+                    <li class="endnote">
+                      <a id="endnoteLink" href="/catalog/b1635985.endnote">Export to EndNote</a>
+                    </li>
+                    <li class="email">
+                      <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Email this</a>
+                    </li>
+                    <li class="sms">
+                      <a id="smsLink" data-ajax-modal="trigger" href="/catalog/sms?id=b1635985">Text this</a>
+                    </li>
+                    <li class="citation">
+                      <a id="citationLink" data-ajax-modal="trigger" href="/catalog/citation?id=b1635985">Cite</a>
+                    </li>
+                    <li class="librarian_view">
+                      <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Librarian View</a>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
+
+    <!-- ...TOOLS end -->
+
+
+
+
+
+    </div> <!-- end of: <div class="row"> -->
+
+
+    </div> <!-- end of: <div id="main-container"> -->
+
+
+
 
     <div id="footer">
         <hr/>
