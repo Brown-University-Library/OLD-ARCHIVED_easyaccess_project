@@ -85,8 +85,9 @@
                 <ul class="nav navbar-nav">
                     {% block extra_tools %}
                     {% endblock %}
-                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="about this webapp">Info</a> </li>
-                    <li> <a href="{{ feedback_link }}" rel="tooltip" title="issues">Feedback</a> </li>
+                    <li> <a href="{{ feedback_link }}" rel="tooltip" title="Offer suggestions or report a problem.">Feedback</a> </li>
+                    <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="Contact a librarian.">Help</a> </li>
+                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="About easyBorrow and easyArticle.">About</a> </li>
                 </ul>
             </div>
         </div>
@@ -129,20 +130,22 @@
             <div class="panel-body">
                 <ul class="nav">
                     <li class="endnote">
-                      <a id="endnoteLink" href="/catalog/b1635985.endnote">Export to EndNote</a>
+                      <a id="endnoteLink" href="/catalog/b1635985.endnote">Shortlink</a>
                     </li>
                     <li class="email">
-                      <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Email this</a>
+                      <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Export to Refworks</a>
                     </li>
                     <li class="sms">
-                      <a id="smsLink" data-ajax-modal="trigger" href="/catalog/sms?id=b1635985">Text this</a>
+                      <a id="smsLink" data-ajax-modal="trigger" href="/catalog/sms?id=b1635985">Export to EndNote</a>
                     </li>
                     <li class="citation">
-                      <a id="citationLink" data-ajax-modal="trigger" href="/catalog/citation?id=b1635985">Cite</a>
+                      <a id="citationLink" data-ajax-modal="trigger" href="/catalog/citation?id=b1635985">Update this citation</a>
                     </li>
                     <li class="librarian_view">
-                      <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Librarian View</a>
-
+                      <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Ask a librarian</a>
+                    </li>
+                    <li class="librarian_view">
+                      <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Report a problem</a>
                     </li>
                 </ul>
             </div>
