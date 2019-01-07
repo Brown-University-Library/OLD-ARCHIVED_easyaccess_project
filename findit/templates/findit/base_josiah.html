@@ -31,6 +31,10 @@
             padding-top: 1em; }
         [is_index_page~="True"] {
             text-decoration: underline; }
+        .right-click {
+            font-size: 80%;
+        }
+
     </style>
 
     {% block javascripts %}
@@ -132,7 +136,7 @@
             <div class="panel-body">
                 <ul class="nav">
                     <li class="endnote">
-                      <a id="endnoteLink" href="/catalog/b1635985.endnote">Shortlink</a>
+                      <a id="endnoteLink" href="/catalog/b1635985.endnote">Shortlink <span class="right-click">(right-click to copy)</span></a>
                     </li>
                     <li class="email">
                       <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Export to Refworks</a>
