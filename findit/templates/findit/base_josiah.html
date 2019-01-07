@@ -92,7 +92,7 @@
                     {% block extra_tools %}
                     {% endblock %}
                     <li> <a href="{{ feedback_link }}" rel="tooltip" title="Offer suggestions or report a problem.">Feedback</a> </li>
-                    <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="Contact a librarian.">Help</a> </li>
+                    <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="Ask a librarian.">Help</a> </li>
                     <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="About easyBorrow and easyArticle."><span is_index_page="{{ is_index_page }}">About</span></a> </li>
                 </ul>
             </div>
@@ -107,11 +107,17 @@
     <div id="main-container" class="container">
         <div class="row">
 
+            {% if not is_index_page %}
             <div id="content" class="col-md-9 show-document">
+            {% endif %}
                 {% block content %}
                 {% endblock content %}
+            {% if not is_index_page %}
             </div>
+            {% endif %}
 
+
+            {% if not is_index_page %}
             <!-- TOOLS start... -->
             <div id="sidebar" class="col-md-3">
                 <div class="panel panel-default show-tools">
@@ -120,29 +126,67 @@
                     </div>
                     <div class="panel-body">
                         <ul class="nav">
+
+                            <!--
                             <li class="endnote">
                               <a id="endnoteLink" href="/catalog/b1635985.endnote">Shortlink <span class="right-click">(right-click to copy)</span></a>
                             </li>
+                            -->
+                            <li>
+                                <a href="{{ permalink }}" rel="tooltip" title="shortlink-url">Shortlink <span class="right-click">(right-click to copy)</span></a>
+                            </li>
+
+                            <!--
                             <li class="email">
                               <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Export to Refworks</a>
                             </li>
+                            -->
+                            <li>
+                                <a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}" rel="tooltip" title="export-to-refworks-url">Export to Refworks</a>
+                            </li>
+
+                            <!--
                             <li class="sms">
                               <a id="smsLink" data-ajax-modal="trigger" href="/catalog/sms?id=b1635985">Export to EndNote</a>
                             </li>
+                            -->
+                            <li>
+                                <a href="{{ ris_url }}" rel="tooltip" title="export-to-endnote-url">Export to EndNote</a>
+                            </li>
+
+                            <!--
                             <li class="citation">
                               <a id="citationLink" data-ajax-modal="trigger" href="/catalog/citation?id=b1635985">Update this citation</a>
                             </li>
+                            -->
+                            <li>
+                                <a href="{% url 'findit:citation_form_url' %}?{{ enhanced_querystring }}" rel="tooltip" title="citation-form-url">Update this citation</a> </li>
+                            </li>
+
+                            <!--
                             <li class="librarian_view">
                               <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Ask a librarian</a>
                             </li>
+                            -->
+                            <li>
+                                <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="librarian contact-information.">Ask a librarian</a>
+                            </li>
+
+                            <!--
                             <li class="librarian_view">
                               <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Report a problem</a>
                             </li>
+                            -->
+                            <li>
+                                <a href="{{ feedback_link }}" rel="tooltip" title="problem-report url">Report a problem</a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
             </div>  <!-- end of: <div id="sidebar"... -->
             <!-- ...TOOLS end -->
+            {% endif %}
 
         </div> <!-- end of: <div class="row"> -->
     </div> <!-- end of: <div id="main-container... -->
