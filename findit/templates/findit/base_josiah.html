@@ -98,79 +98,56 @@
             </div>
         </div>
 
-    </div>  <!-- end <div id="header-navbar"...  -->
+    </div>  <!-- end of: <div id="header-navbar"...  -->
 
     <!-- ...BANNER end -->
 
-
-
+    <!-- CONTENT start... -->
 
     <div id="main-container" class="container">
+        <div class="row">
 
-
-    <div class="row">
-
-
-
-        <div id="content" class="col-md-9 show-document">
-
-    <!-- <div id="content_wrapper"> -->
-
-        {% block content %}
-        {% endblock content %}
-
-    <!-- </div> -->
-
-    </div> <!-- end of: <div id="content" class="col-md-9 show-document"> -->
-
-
-
-    <!-- TOOLS start... -->
-
-    <div id="sidebar" class="col-md-3">
-        <div class="panel panel-default show-tools">
-            <div class="panel-heading">
-                Tools
+            <div id="content" class="col-md-9 show-document">
+                {% block content %}
+                {% endblock content %}
             </div>
 
-            <div class="panel-body">
-                <ul class="nav">
-                    <li class="endnote">
-                      <a id="endnoteLink" href="/catalog/b1635985.endnote">Shortlink <span class="right-click">(right-click to copy)</span></a>
-                    </li>
-                    <li class="email">
-                      <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Export to Refworks</a>
-                    </li>
-                    <li class="sms">
-                      <a id="smsLink" data-ajax-modal="trigger" href="/catalog/sms?id=b1635985">Export to EndNote</a>
-                    </li>
-                    <li class="citation">
-                      <a id="citationLink" data-ajax-modal="trigger" href="/catalog/citation?id=b1635985">Update this citation</a>
-                    </li>
-                    <li class="librarian_view">
-                      <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Ask a librarian</a>
-                    </li>
-                    <li class="librarian_view">
-                      <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Report a problem</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+            <!-- TOOLS start... -->
+            <div id="sidebar" class="col-md-3">
+                <div class="panel panel-default show-tools">
+                    <div class="panel-heading">
+                        Tools
+                    </div>
+                    <div class="panel-body">
+                        <ul class="nav">
+                            <li class="endnote">
+                              <a id="endnoteLink" href="/catalog/b1635985.endnote">Shortlink <span class="right-click">(right-click to copy)</span></a>
+                            </li>
+                            <li class="email">
+                              <a id="emailLink" data-ajax-modal="trigger" href="/catalog/email?id=b1635985">Export to Refworks</a>
+                            </li>
+                            <li class="sms">
+                              <a id="smsLink" data-ajax-modal="trigger" href="/catalog/sms?id=b1635985">Export to EndNote</a>
+                            </li>
+                            <li class="citation">
+                              <a id="citationLink" data-ajax-modal="trigger" href="/catalog/citation?id=b1635985">Update this citation</a>
+                            </li>
+                            <li class="librarian_view">
+                              <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Ask a librarian</a>
+                            </li>
+                            <li class="librarian_view">
+                              <a id="librarian_viewLink" data-ajax-modal="trigger" href="/catalog/b1635985/librarian_view">Report a problem</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>  <!-- end of: <div id="sidebar"... -->
+            <!-- ...TOOLS end -->
 
-    <!-- ...TOOLS end -->
+        </div> <!-- end of: <div class="row"> -->
+    </div> <!-- end of: <div id="main-container... -->
 
-
-
-
-
-    </div> <!-- end of: <div class="row"> -->
-
-
-    </div> <!-- end of: <div id="main-container"> -->
-
-
-
+    <!-- ...CONTENT end -->
 
     <div id="footer">
         <hr/>
