@@ -79,17 +79,12 @@ class FinditResolver( object ):
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
         log.debug( 'full_permalink, ```%s```' % full_permalink )
         context = {
+            'is_index_page': True,  # enables css to apply underline
             'SS_KEY': settings.BUL_LINK_SERSOL_KEY,
             'easyWhat': 'easyAccess',
             'feedback_link': app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
         }
         return context
-
-    # def make_index_context( self, querydict ):
-    #     """ Builds context for index page.
-    #         Called by views.findit_base_resolver() """
-    #     context = { 'SS_KEY': settings.BUL_LINK_SERSOL_KEY, 'easyWhat': 'easyAccess' }
-    #     return context
 
     def make_index_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.

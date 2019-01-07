@@ -29,6 +29,8 @@
             width: 80%; }
         div#footer {
             padding-top: 1em; }
+        [is_index_page~="True"] {
+            text-decoration: underline; }
     </style>
 
     {% block javascripts %}
@@ -87,7 +89,7 @@
                     {% endblock %}
                     <li> <a href="{{ feedback_link }}" rel="tooltip" title="Offer suggestions or report a problem.">Feedback</a> </li>
                     <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="Contact a librarian.">Help</a> </li>
-                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="About easyBorrow and easyArticle.">About</a> </li>
+                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="About easyBorrow and easyArticle."><span is_index_page="{{ is_index_page }}">About</span></a> </li>
                 </ul>
             </div>
         </div>
