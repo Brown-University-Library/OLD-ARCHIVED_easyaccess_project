@@ -91,9 +91,9 @@
                 <ul class="nav navbar-nav">
                     {% block extra_tools %}
                     {% endblock %}
-                    <li> <a href="{{ feedback_link }}" rel="tooltip" title="Offer suggestions or report a problem.">Feedback</a> </li>
-                    <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="Ask a librarian.">Help</a> </li>
-                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="About easyBorrow and easyArticle."><span is_index_page="{{ is_index_page }}">About</span></a> </li>
+                    <li> <a href="{{ feedback_link }}" rel="tooltip" title="link to form for suggestions or reporting a problem">Feedback</a> </li>
+                    <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="link to contact-librarian information">Help</a> </li>
+                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="about easyBorrow and easyArticle"><span is_index_page="{{ is_index_page }}">About</span></a> </li>
                 </ul>
             </div>
         </div>
@@ -133,7 +133,7 @@
                             </li>
                             -->
                             <li>
-                                <a href="{{ permalink }}" rel="tooltip" title="shortlink-url">Shortlink <span class="right-click">(right-click to copy)</span></a>
+                                <a href="{{ permalink }}" rel="tooltip" title="right-click to copy shortlink">Shortlink <span class="right-click">(right-click to copy)</span></a>
                             </li>
 
                             <!--
@@ -142,7 +142,7 @@
                             </li>
                             -->
                             <li>
-                                <a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}" rel="tooltip" title="export-to-refworks-url">Export to Refworks</a>
+                                <a href="http://www.refworks.com/express/expressimport.asp?{{ querystring }}" rel="tooltip" title="export citation to Refworks">Export to Refworks</a>
                             </li>
 
                             <!--
@@ -151,7 +151,7 @@
                             </li>
                             -->
                             <li>
-                                <a href="{{ ris_url }}" rel="tooltip" title="export-to-endnote-url">Export to EndNote</a>
+                                <a href="{{ ris_url }}" rel="tooltip" title="export citation to EndNote">Export to EndNote</a>
                             </li>
 
                             <!--
@@ -160,7 +160,7 @@
                             </li>
                             -->
                             <li>
-                                <a href="{% url 'findit:citation_form_url' %}?{{ enhanced_querystring }}" rel="tooltip" title="citation-form-url">Update this citation</a> </li>
+                                <a href="{% url 'findit:citation_form_url' %}?{{ enhanced_querystring }}" rel="tooltip" title="link to citation-form">Update this citation</a> </li>
                             </li>
 
                             <!--
@@ -169,7 +169,7 @@
                             </li>
                             -->
                             <li>
-                                <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="librarian contact-information.">Ask a librarian</a>
+                                <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="link to contact-librarian information">Ask a librarian</a>
                             </li>
 
                             <!--
@@ -178,7 +178,7 @@
                             </li>
                             -->
                             <li>
-                                <a href="{{ feedback_link }}" rel="tooltip" title="problem-report url">Report a problem</a>
+                                <a href="{{ feedback_link }}" rel="tooltip" title="link to problem-form">Report a problem</a>
                             </li>
 
                         </ul>
