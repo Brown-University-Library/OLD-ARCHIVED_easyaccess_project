@@ -96,7 +96,7 @@ class IndexPageLinksTest( TestCase ):
         print_title.save()
         response = self.client.get( '/find/?genre=article&issn=00377686&title=Social+Compass&volume=14&issue=5/6&date=19670901&atitle=Religious+knowledge+and+attitudes+in+Mexico+City.&spage=469&pages=469-482&sid=EBSCO:Academic+Search+Premier&aulast=Stryckman,+Paul' )
         content = response.content.decode( 'utf-8' )
-        log.debug( 'content, ```%s```' % content.decode('utf-8') )
+        # log.debug( 'content, ```%s```' % content.decode('utf-8') )
         self.assertEqual( 200, response.status_code )
         self.assertInHTML( '<title>easyAccess &rarr; easyArticle</title>', content )
         self.assertInHTML( '<h4 class="easy_what">easyArticle</h4>', content )
