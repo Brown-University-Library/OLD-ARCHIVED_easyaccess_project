@@ -18,6 +18,10 @@ PROBLEM_FORM_URL_ROOT = os.environ['EZACS__BORROW_PROBLEM_FORM_URL_ROOT']
 PROBLEM_FORM_KEY = os.environ['EZACS__BORROW_PROBLEM_FORM_KEY']
 
 
+# ===========================
+# illiad remote-auth settings
+# ===========================
+
 ILLIAD_KEY = getattr(settings, 'FINDIT_ILLIAD_KEY', None)
 
 ILLIAD_REMOTE_AUTH_URL = getattr(settings, 'FINDIT_ILLIAD_REMOTE_AUTH_URL', None)
@@ -36,6 +40,14 @@ ILLIAD_URL = getattr(settings, 'FINDIT_ILLIAD_URL', None)
 if ILLIAD_URL is None:
     raise ImproperlyConfigured("""Illiad URL required.  Add to settings as FIDIT_ILLIAD_URL as
     http://your.school.edu/illiad.dll/OpenURL?%s""")
+
+# ===========================
+
+
+## illiad-api (eventually all illiad calls will be to the API)
+ILLIAD_API_URL = os.environ['EZACS__COMMON_ILLIAD_API_URL_ROOT']
+ILLIAD_API_KEY = os.environ['EZACS__COMMON_ILLIAD_API_KEY']
+
 
 #Check to see if a user can request items.
 SERVICE_CHECK_STRING = getattr(settings, 'DELIVERY_SERVICE_CHECK_STRING', None)
