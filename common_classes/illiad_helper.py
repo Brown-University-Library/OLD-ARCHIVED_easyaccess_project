@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import datetime, json, logging, os, pprint, random
+import requests
 from common_classes import settings_common_tests as settings_app
 from illiad.account import IlliadSession
 
@@ -17,6 +18,22 @@ class IlliadHelper( object ):
     def __init__(self):
         pass
 
+    # def check_illiad( self, user_dct ):
+    #     """ Logs user into illiad to check for, and handle, 'newuser' status.
+    #         Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
+    #         Called by delivery.views.process_request() """
+    #     ( illiad_session_instance, connect_ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
+    #     if connect_ok is False: return False
+    #     ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
+    #     if login_ok is False: return False
+    #     if illiad_session_instance.registered is True:
+    #         log.info( 'not a new-user' )
+    #         check_ok = True  # the check succeeded, nothing needs done (other than logout)
+    #     else:
+    #         check_ok = self.register_new_user( illiad_session_instance, user_dct )  # registers new user and returns True on success
+    #     self.logout_user( illiad_session_instance )
+    #     return check_ok
+
     def check_illiad( self, user_dct ):
         """ Logs user into illiad to check for, and handle, 'newuser' status.
             Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
@@ -26,12 +43,32 @@ class IlliadHelper( object ):
         ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
         if login_ok is False: return False
         if illiad_session_instance.registered is True:
-            log.info( 'not a new-user' )
+            self.check_status( username=user_dct['eppn'].split('@')[0], brown_status=user_dct['brown_status'] )  # comes from shib_dct['edu_person_primary_affiliation']
             check_ok = True  # the check succeeded, nothing needs done (other than logout)
         else:
             check_ok = self.register_new_user( illiad_session_instance, user_dct )  # registers new user and returns True on success
         self.logout_user( illiad_session_instance )
         return check_ok
+
+
+
+    def check_status( self, username, brown_status ):
+        """ Hits api to update status if needed.
+            Called by check_illiad() """
+        url = '%s%s' % ( settings_app.ILLIAD_API_URL, 'update_status/' )
+        params = {
+            'auth_key': settings_app.ILLIAD_API_KEY,
+            'user':username,
+            'requested_status': brown_status
+            }
+        try:
+            r = requests.post( url, data=params, verify=True, timeout=10 )
+            log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
+        except Exception as e:
+            log.error( 'error on status check/update, ```%s```' % repr(e) )
+        return
+
+
 
     def connect( self, ill_username ):
         """ Initializes illiad-session instance -- does not yet contact ILLiad.
