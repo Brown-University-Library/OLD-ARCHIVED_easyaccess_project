@@ -31,7 +31,6 @@ If you believe you should be permitted to use interlibrary-loan services, please
         log.debug( 'meta_dct before referrer_check, ```{}```'.format(pprint.pformat(meta_dct)) )
         log.debug( 'session_dct.items() before referrer_check, ```{}```'.format(pprint.pformat(session_dct.items())) )
         ( referrer_check, redirect_url, last_path ) = ( False, '', session_dct.get('last_path', '') )
-        # if last_path == '/easyaccess/borrow/login_handler/':
         if '/borrow/login_handler/' in last_path:
             referrer_check = True
         if referrer_check is False:
