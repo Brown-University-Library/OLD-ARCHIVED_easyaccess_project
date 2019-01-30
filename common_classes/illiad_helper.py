@@ -43,7 +43,7 @@ class IlliadHelper( object ):
         ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
         if login_ok is False: return False
         if illiad_session_instance.registered is True:
-            self.check_status( username=user_dct['eppn'].split('@')[0], brown_status=user_dct['brown_status'] )  # comes from shib_dct['edu_person_primary_affiliation']
+            self.check_status( username=user_dct['eppn'].split('@')[0], brown_type=user_dct['brown_type'] )  # comes from shib_dct['edu_person_primary_affiliation']
             check_ok = True  # the check succeeded, nothing needs done (other than logout)
         else:
             check_ok = self.register_new_user( illiad_session_instance, user_dct )  # registers new user and returns True on success
@@ -52,14 +52,14 @@ class IlliadHelper( object ):
 
 
 
-    def check_status( self, username, brown_status ):
+    def check_status( self, username, brown_type ):
         """ Hits api to update status if needed.
             Called by check_illiad() """
         url = '%s%s' % ( settings_app.ILLIAD_API_URL, 'update_status/' )
         params = {
             'auth_key': settings_app.ILLIAD_API_KEY,
             'user':username,
-            'requested_status': brown_status
+            'requested_status': brown_type
             }
         try:
             r = requests.post( url, data=params, verify=True, timeout=10 )
