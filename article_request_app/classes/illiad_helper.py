@@ -66,6 +66,7 @@ Apologies for the inconvenience.
             - Returns 'problem_message' if necessary.
             - If user is ok, checks and updates, if necessary, status.
             Called by views.login_handler() """
+        log.debug( 'in article_request_app.classes.illiad_helper; user_dct, ```%s```' % pprint.pformat(user_dct) )
         ( return_dct, connect_result_dct ) = ( {'illiad_session_instance': None, 'error_message': None, 'success': False}, self._connect(ill_username=user_dct['eppn'].split('@')[0]) )
         return_dct['illiad_session_instance'] = connect_result_dct['illiad_session_instance']
         if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True or connect_result_dct['error_message'] is not None:

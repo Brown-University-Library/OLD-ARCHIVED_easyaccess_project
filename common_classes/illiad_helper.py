@@ -21,7 +21,9 @@ class IlliadHelper( object ):
     def check_illiad( self, user_dct ):
         """ Logs user into illiad to check for, and handle, 'newuser' status.
             Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
-            Called by delivery.views.process_request() """
+            Called by delivery.views.process_request()
+               and by article_request_app.classes.illiad_helper.NewIlliadHelper.login_user() """
+        log.debug( 'user_dct, ```%s```' % pprint.pformat(user_dct) )
         ( illiad_session_instance, connect_ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
         if connect_ok is False: return False
         ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
@@ -37,6 +39,7 @@ class IlliadHelper( object ):
     def check_status( self, username, brown_type ):
         """ Hits api to update status if needed.
             Called by check_illiad() """
+        log.debug( 'username, `%s`; brown_type, `%s`' % (username, brown_type) )
         url = '%s%s' % ( settings_app.ILLIAD_API_URL, 'update_status/' )
         params = {
             'auth_key': settings_app.ILLIAD_API_KEY,
