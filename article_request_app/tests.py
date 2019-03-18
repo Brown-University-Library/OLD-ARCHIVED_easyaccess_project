@@ -173,7 +173,7 @@ class NewIlliadHelperTest( TestCase ):
 
     def test_login_user__good(self):
         """ Known good user should return success as True. """
-        user_dct = { 'eppn': '{}@brown.edu'.format(settings_app.TEST_ILLIAD_GOOD_USERNAME) }
+        user_dct = { 'eppn': '%s@brown.edu' % settings_app.TEST_ILLIAD_GOOD_USERNAME, 'brown_type': 'Staff' }
         title = 'a_title'  # needed for error-message preparation
         result_dct = self.helper.login_user( user_dct, title )
         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
