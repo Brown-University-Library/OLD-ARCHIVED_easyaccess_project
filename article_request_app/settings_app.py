@@ -21,7 +21,12 @@ PERMISSION_DENIED_PHONE = unicode( os.environ['EZACS__BORROW_PERMISSION_DENIED_P
 PERMISSION_DENIED_EMAIL = unicode( os.environ['EZACS__BORROW_PERMISSION_DENIED_EMAIL'] )
 
 ILLIAD_API_URL_ROOT = unicode( os.environ['EZACS__COMMON_ILLIAD_API_URL_ROOT'] )  # internal brown illiad-api web-service
-ILLIAD_API_KEY = unicode( os.environ['EZACS__COMMON_ILLIAD_API_KEY'] )
+ILLIAD_API_KEY = unicode( os.environ['EZACS__COMMON_ILLIAD_API_KEY'] )  # for posts
+
+ILLIAD_API_BASIC_AUTH_USER = os.environ['EZACS__COMMON_ILLIAD_API_BASIC_AUTH_USER']  # for gets
+ILLIAD_API_BASIC_AUTH_PASSWORD = os.environ['EZACS__COMMON_ILLIAD_API_BASIC_AUTH_PASSWORD']
+
+
 
 
 ## for tests ##
