@@ -114,7 +114,7 @@ def login_handler( request ):
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
 
     ## illiad logout
-    new_ill_helper.logout_user( login_result_dct['illiad_session_instance'] )
+    # new_ill_helper.logout_user( login_result_dct['illiad_session_instance'] )
 
     ## build redirect to illiad-landing-page for submit
     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
