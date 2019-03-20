@@ -50,7 +50,7 @@ class IlliadHelper( object ):
             r = requests.post( url, data=params, verify=True, timeout=10 )
             log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
         except Exception as e:
-            log.error( 'error on status check/update, ```%s```' % repr(e) )
+            log.error( 'error on user-type check/update, ```%s```' % repr(e) )
         return
 
     def connect( self, ill_username ):
