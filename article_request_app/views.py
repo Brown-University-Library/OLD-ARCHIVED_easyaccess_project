@@ -100,13 +100,15 @@ def login_handler( request ):
         request.session['message'] = message
         return HttpResponseRedirect( redirect_url )
 
-    ## log user into illiad
+    ## prep title -- so if next illiad-step has a problem, a message with the title can be generated
     citation_json = request.session.get( 'citation_json', '{}' )
     citation_dct = json.loads( citation_json )
     if citation_dct.get( 'title', '' ) != '':
         title = citation_dct['title']
     else:
         title = citation_dct.get('source', 'title_unavailable')
+
+    ## log user into illiad
     login_result_dct = new_ill_helper.login_user( shib_dct, title )
     if login_result_dct['success'] is not True:
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
