@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 import json, logging, pprint
 import markdown
-from .classes.illiad_helper import NewIlliadHelper
+# from .classes.illiad_helper import NewIlliadHelper
+from .classes.illiad_helper import IlliadApiHelper, NewIlliadHelper
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from article_request_app import settings_app
@@ -20,6 +21,7 @@ from illiad.account import IlliadSession
 
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
+illiad_api_helper = IlliadApiHelper()
 new_ill_helper = NewIlliadHelper()
 shib_login_helper = ShibLoginHelper()
 
@@ -109,9 +111,12 @@ def login_handler( request ):
         title = citation_dct.get('source', 'title_unavailable')
 
     ## log user into illiad
-    login_result_dct = new_ill_helper.login_user( shib_dct, title )
-    if login_result_dct['success'] is not True:
+    illiad_user_check_dct = illiad_api_helper.manage_illiad_user_check( shib_dct, title )
+    if illiad_user_check_dct['success'] is not True:
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
+    # login_result_dct = new_ill_helper.login_user( shib_dct, title )
+    # if login_result_dct['success'] is not True:
+    #     return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
 
     ## illiad logout
     # new_ill_helper.logout_user( login_result_dct['illiad_session_instance'] )
