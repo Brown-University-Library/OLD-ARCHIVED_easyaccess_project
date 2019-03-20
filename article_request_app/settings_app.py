@@ -20,6 +20,9 @@ REQUIRED_GROUPER_GROUP = unicode( os.environ['EZACS__BORROW_REQUIRED_GROUP'] )
 PERMISSION_DENIED_PHONE = unicode( os.environ['EZACS__BORROW_PERMISSION_DENIED_PHONE'] )
 PERMISSION_DENIED_EMAIL = unicode( os.environ['EZACS__BORROW_PERMISSION_DENIED_EMAIL'] )
 
+ILLIAD_API_URL_ROOT = unicode( os.environ['EZACS__COMMON_ILLIAD_API_URL_ROOT'] )  # internal brown illiad-api web-service
+ILLIAD_API_KEY = unicode( os.environ['EZACS__COMMON_ILLIAD_API_KEY'] )
+
 
 ## for tests ##
 
