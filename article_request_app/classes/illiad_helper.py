@@ -8,6 +8,7 @@ from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
 from django.core.urlresolvers import reverse
 from illiad.account import IlliadSession
+# from requests.auth import HTTPBasicAuth
 
 
 log = logging.getLogger('access')
@@ -46,7 +47,7 @@ class IlliadApiHelper( object ):
             'user': auth_id
             }
         try:
-            r = requests.get( url, params=params, verify=True, timeout=10 )
+            r = requests.get( url, params=params, , auth=('user', 'pass'), verify=True, timeout=10 )
             log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
         except Exception as e:
             log.error( 'error on status check, ```%s```' % repr(e) )
