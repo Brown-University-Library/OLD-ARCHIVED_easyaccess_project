@@ -42,24 +42,42 @@ Apologies for the inconvenience.
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
 
+    # def login_user( self, user_dct, title ):
+    #     """ Manager for illiad handling.
+    #         - Logs user into illiad;
+    #         - Checks for and handles 'blocked' and 'newuser' status;
+    #         - Returns 'problem_message' if necessary.
+    #         - If user is ok, checks and updates, if necessary, status.
+    #         Called by views.login_handler() """
+    #     log.debug( 'in article_request_app.classes.illiad_helper; user_dct, ```%s```' % pprint.pformat(user_dct) )
+    #     ( return_dct, connect_result_dct ) = ( {'illiad_session_instance': None, 'error_message': None, 'success': False}, self._connect(ill_username=user_dct['eppn'].split('@')[0]) )
+    #     return_dct['illiad_session_instance'] = connect_result_dct['illiad_session_instance']
+    #     if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True or connect_result_dct['error_message'] is not None:
+    #         return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
+    #     elif connect_result_dct['is_new_user'] is True or connect_result_dct['is_registered'] is False:
+    #         return_dct = self._handle_new_user( connect_result_dct['illiad_session_instance'], user_dct, title, return_dct )
+    #     else:
+    #         return_dct['success'] = True
+    #     common_illiad_helper.check_illiad( user_dct )
+    #     log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
+    #     return return_dct
+
     def login_user( self, user_dct, title ):
         """ Manager for illiad handling.
-            - Logs user into illiad;
-            - Checks for and handles 'blocked' and 'newuser' status;
-            - Returns 'problem_message' if necessary.
-            - If user is ok, checks and updates, if necessary, status.
+            - hits the new illiad-api for the status (`blocked`, `registered`, etc)
+            - if problem, prepares failure message as-is (creating return-dct)
+            - for now, hit common_classes.illiad_helper.IlliadHelper.check_illiad( shib_dct ) (creating return-dct)
+              - this will create a new-user if necessary...
+              - and also check and update a user's type (eg 'Staff', 'Undergraduate') if necessary
             Called by views.login_handler() """
-        log.debug( 'in article_request_app.classes.illiad_helper; user_dct, ```%s```' % pprint.pformat(user_dct) )
-        ( return_dct, connect_result_dct ) = ( {'illiad_session_instance': None, 'error_message': None, 'success': False}, self._connect(ill_username=user_dct['eppn'].split('@')[0]) )
-        return_dct['illiad_session_instance'] = connect_result_dct['illiad_session_instance']
-        if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True or connect_result_dct['error_message'] is not None:
+        log.debug( '(article_request_app) - user_dct, ```%s```' % pprint.pformat(user_dct) )
+        illiad_status_dct = self.check_illiad_status()
+        if illiad_status_dct['response']['blocked'] is True or illiad_status_dct['response']['disavowed'] is True:
             return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
-        elif connect_result_dct['is_new_user'] is True or connect_result_dct['is_registered'] is False:
-            return_dct = self._handle_new_user( connect_result_dct['illiad_session_instance'], user_dct, title, return_dct )
         else:
-            return_dct['success'] = True
-        common_illiad_helper.check_illiad( user_dct )
-        log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
+            common_illiad_helper.check_illiad( user_dct )
+            return_dct = { 'success': True }
+        log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
         return return_dct
 
     def _connect( self, ill_username ):
