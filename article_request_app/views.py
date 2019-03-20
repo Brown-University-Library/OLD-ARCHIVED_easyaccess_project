@@ -129,6 +129,80 @@ def login_handler( request ):
     ## end def login_handler()
 
 
+# def login_handler( request ):
+#     """ Ensures user comes from correct 'findit' url;
+#         then grabs shib info;
+#         then checks illiad for new-user or blocked;
+#         if happy, redirects to `illiad`, otherwise to `message` with error info. """
+
+#     log_id = request.GET.get( 'ezlogid', '' )
+#     login_helper = LoginHelper( log_id )
+
+#     ## check referrer
+#     # ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
+#     # if referrer_ok is not True:
+#     #     request.session['last_path'] = request.path
+#     #     return HttpResponseRedirect( redirect_url )
+#     log.debug( '`{id}` request.GET.keys(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.GET.keys())) )
+#     for key in [ 'citation_json', 'format', 'illiad_url', 'querystring' ]:
+#         if key not in request.GET.keys():
+#             redirect_url = '{main}?{qs}'.format( main=reverse('findit:findit_base_resolver_url'), qs=request.META.get('QUERY_STRING', '') )
+#             log.debug( 'referrer-check failed, redirecting to, ```{}```'.format(redirect_url) )
+#             return HttpResponseRedirect( redirect_url )
+#     request.session['last_path'] = request.path
+#     # request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
+
+#     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+#     request.session['log_id'] = log_id
+#     request.session['citation_json'] = request.GET['citation_json']
+#     request.session['format'] = request.GET['format']
+#     request.session['illiad_url'] = request.GET['illiad_url']
+#     request.session['login_openurl'] = request.GET['querystring']
+#     log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
+
+#     ## get user info
+#     # shib_dct = login_helper.grab_user_info( request, localdev_check, shib_status )  # updates session with user info
+#     localdev_check = False
+#     if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
+#         localdev_check = True
+#     shib_dct = login_helper.grab_user_info( request, localdev_check )  # updates session with user info
+
+#     ## check if authorized
+#     ( is_authorized, redirect_url, message ) = login_helper.check_if_authorized( shib_dct )
+#     if is_authorized is False:
+#         log.info( '`{id}` user, `{val}` not authorized; redirecting to shib-logout-url, then message-url'.format(id=log_id, val=shib_dct.get('eppn', 'no_eppn')) )
+#         request.session['message'] = message
+#         return HttpResponseRedirect( redirect_url )
+
+#     ## prep title -- so if next illiad-step has a problem, a message with the title can be generated
+#     citation_json = request.session.get( 'citation_json', '{}' )
+#     citation_dct = json.loads( citation_json )
+#     if citation_dct.get( 'title', '' ) != '':
+#         title = citation_dct['title']
+#     else:
+#         title = citation_dct.get('source', 'title_unavailable')
+
+#     ## log user into illiad
+#     login_result_dct = new_ill_helper.login_user( shib_dct, title )
+#     if login_result_dct['success'] is not True:
+#         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
+
+#     ## illiad logout
+#     new_ill_helper.logout_user( login_result_dct['illiad_session_instance'] )
+
+#     ## build redirect to illiad-landing-page for submit
+#     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
+#     log.debug( 'illiad_landing_redirect_url, `%s`' % illiad_landing_redirect_url )
+
+#     ## cleanup
+#     login_helper.update_session( request )
+
+#     ## redirect
+#     return HttpResponseRedirect( illiad_landing_redirect_url )
+
+#     ## end def login_handler()
+
+
 def illiad_request( request ):
     """ Gives users chance to confirm their request via clicking 'Submit'."""
 
