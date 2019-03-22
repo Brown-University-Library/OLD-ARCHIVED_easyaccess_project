@@ -32,10 +32,10 @@ class IlliadApiHelper( object ):
             Called by views.login_handler() """
         log.debug( '(article_request_app) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
         illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
-        if illiad_status_dct['response']['blocked'] is True or illiad_status_dct['response']['disavowed'] is True:
+        if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
             return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
         else:
-            common_illiad_helper.check_illiad( user_dct )
+            common_illiad_helper.check_illiad( usr_dct )
             return_dct = { 'success': True }
         log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
         return return_dct
@@ -47,10 +47,12 @@ class IlliadApiHelper( object ):
             }
         try:
             r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
-            log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
+            rspns_dct = r.json()
+            # log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
+            log.debug( 'status_code, `%s`; content-dct, ```%s```' % (r.status_code, pprint.pformat(rspns_dct)) )
         except Exception as e:
             log.error( 'error on status check, ```%s```' % repr(e) )
-        return
+        return rspns_dct
 
 
     ## end class IlliadApiHelper()
