@@ -43,11 +43,10 @@ class IlliadApiHelper( object ):
     def check_illiad_status( self, auth_id ):
         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'check_user/' )
         params = {
-            'auth_key': settings_app.ILLIAD_API_KEY,
             'user': auth_id
             }
         try:
-            r = requests.get( url, params=params, , auth=('user', 'pass'), verify=True, timeout=10 )
+            r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
             log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
         except Exception as e:
             log.error( 'error on status check, ```%s```' % repr(e) )
