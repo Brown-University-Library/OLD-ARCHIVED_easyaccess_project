@@ -50,7 +50,6 @@ class IlliadApiHelper( object ):
         try:
             r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
             rspns_dct = r.json()
-            # log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
             log.debug( 'status_code, `%s`; content-dct, ```%s```' % (r.status_code, pprint.pformat(rspns_dct)) )
         except Exception as e:
             log.error( 'error on status check, ```%s```' % repr(e) )
