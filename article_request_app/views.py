@@ -198,9 +198,11 @@ def illiad_handler( request ):
     log.debug( 'illiad_post_key, ```%s```' % pprint.pformat(illiad_post_key) )
     errors = illiad_post_key.get( 'errors', None )
     if errors:
-        log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
+        # log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
+        log.warning( 'errors during illiad submission for username, `%s`' % ill_username )
         if request.session.get( 'message', '' ) == '':
             request.session['message'] = new_ill_helper.problem_message
+            log.debug( 'session-message now, ```%s```' % request.session['message'] )
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
     else:
