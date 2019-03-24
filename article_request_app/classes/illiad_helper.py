@@ -68,9 +68,7 @@ class IlliadApiHelper( object ):
         """ Hits our internal illiad-api for user's status (`blocked`, `registered`, etc).
             Called by manage_illiad_user_check() """
         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'check_user/' )
-        params = {
-            'user': auth_id
-            }
+        params = { 'user': auth_id }
         try:
             r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
             rspns_dct = r.json()
