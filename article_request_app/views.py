@@ -113,6 +113,8 @@ def login_handler( request ):
     ## log user into illiad
     illiad_user_check_dct = illiad_api_helper.manage_illiad_user_check( shib_dct, title )
     if illiad_user_check_dct['success'] is not True:
+        request.session['message'] = illiad_user_check_dct['error_message']
+        log.debug( 'message put in session, redirecting to message-url' )
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
     # login_result_dct = new_ill_helper.login_user( shib_dct, title )
     # if login_result_dct['success'] is not True:

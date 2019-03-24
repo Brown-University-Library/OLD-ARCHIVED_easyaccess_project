@@ -22,29 +22,9 @@ class IlliadApiHelper( object ):
     def __init__(self):
         pass
 
-    # def manage_illiad_user_check( self, usr_dct, title ):
-    #     """ Manager for illiad handling.
-    #         - hits the new illiad-api for the status (`blocked`, `registered`, etc)
-    #         - NOTE: does _not_ detect all `blocked` statuses! Often, _later_, the request actually has to be initiated,
-    #                 ...and the form-view perceived to detect a 'blocked' status.
-    #         - if problem, prepares failure message as-is (creating return-dct)
-    #         - for now, hit common_classes.illiad_helper.IlliadHelper.check_illiad( shib_dct ) (creating return-dct)
-    #           - this will create a new-user if necessary (currently _NOT_ using the api)...
-    #           - and also check and update a user's type (eg 'Staff', 'Undergraduate') if necessary (using the api)
-    #         Called by views.login_handler() """
-    #     log.debug( '(article_request_app) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
-    #     illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
-    #     if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
-    #         return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
-    #     else:
-    #         common_illiad_helper.check_illiad( usr_dct )
-    #         return_dct = { 'success': True }
-    #     log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
-    #     return return_dct
-
     def manage_illiad_user_check( self, usr_dct, title ):
         """ Manager for illiad handling.
-            - hits our internal illiad-api for user's status (`blocked`, `registered`, etc)
+            - hits the new illiad-api for the status (`blocked`, `registered`, etc)
             - NOTE: does _not_ detect all `blocked` statuses! Often, _later_, the request actually has to be initiated,
                     ...and the form-view perceived to detect a 'blocked' status.
             - if problem, prepares failure message as-is (creating return-dct)
@@ -55,7 +35,7 @@ class IlliadApiHelper( object ):
         log.debug( '(article_request_app) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
         illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
         if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
-            return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
+            return_dct = self.make_illiad_problem_message( usr_dct, title )
         elif illiad_status_dct['response']['status_data']['interpreted_new_user'] is True:
             self.create_new_user( usr_dct )
             return_dct = { 'success': True }
@@ -67,6 +47,8 @@ class IlliadApiHelper( object ):
     def check_illiad_status( self, auth_id ):
         """ Hits our internal illiad-api for user's status (`blocked`, `registered`, etc).
             Called by manage_illiad_user_check() """
+        rspns_dct = { 'response':
+            {'status_data': {'blocked': None, 'disavowed': None}} }
         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'check_user/' )
         params = { 'user': auth_id }
         try:
@@ -82,6 +64,27 @@ class IlliadApiHelper( object ):
             Called by manage_illiad_user_check() """
         1/0
         return
+
+    def make_illiad_problem_message( self, usr_dct, title ):
+        """ Preps illiad blocked message.
+            Called by _check_blocked() """
+        ( firstname, lastname ) = ( usr_dct['name_first'], usr_dct['name_last'] )
+        message = '''
+Greetings %s %s,
+
+Your request for the item, '%s', could not be fulfilled by our easyArticle service. It appears there is a problem with your Interlibrary Loan, ILLiad account.
+
+Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
+
+[end]
+    '''.strip() % (
+        firstname,
+        lastname,
+        title )
+        # log.debug( 'illiad blocked message built, ```%s```' % message )
+        rtrn_dct = { 'error_message': message, 'success': False }
+        log.debug( 'rtrn_dct, ```%s```' % pprint.pformat(rtrn_dct) )
+        return rtrn_dct
 
     ## end class IlliadApiHelper()
 
