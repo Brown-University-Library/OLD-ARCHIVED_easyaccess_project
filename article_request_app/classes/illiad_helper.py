@@ -35,7 +35,7 @@ class IlliadApiHelper( object ):
         log.debug( '(article_request_app) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
         illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
         if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
-            return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
+            return_dct = self.make_illiad_problem_message( usr_dct, title )
         else:
             common_illiad_helper.check_illiad( usr_dct )
             return_dct = { 'success': True }
@@ -71,10 +71,12 @@ class IlliadApiHelper( object ):
         return
 
     def check_illiad_status( self, auth_id ):
+        """ Hits our internal illiad-api for user's status (`blocked`, `registered`, etc).
+            Called by manage_illiad_user_check() """
+        rspns_dct = { 'response':
+            {'status_data': {'blocked': None, 'disavowed': None}} }
         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'check_user/' )
-        params = {
-            'user': auth_id
-            }
+        params = { 'user': auth_id }
         try:
             r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
             rspns_dct = r.json()
@@ -83,6 +85,26 @@ class IlliadApiHelper( object ):
             log.error( 'error on status check, ```%s```' % repr(e) )
         return rspns_dct
 
+    def make_illiad_problem_message( self, usr_dct, title ):
+        """ Preps illiad blocked message.
+            Called by _check_blocked() """
+        ( firstname, lastname ) = ( usr_dct['name_first'], usr_dct['name_last'] )
+        message = '''
+Greetings %s %s,
+
+Your request for the item, '%s', could not be fulfilled by our easyArticle service. It appears there is a problem with your Interlibrary Loan, ILLiad account.
+
+Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
+
+[end]
+    '''.strip() % (
+        firstname,
+        lastname,
+        title )
+        # log.debug( 'illiad blocked message built, ```%s```' % message )
+        rtrn_dct = { 'error_message': message, 'success': False }
+        log.debug( 'rtrn_dct, ```%s```' % pprint.pformat(rtrn_dct) )
+        return rtrn_dct
 
     ## end class IlliadApiHelper()
 
