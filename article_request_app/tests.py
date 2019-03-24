@@ -6,7 +6,7 @@ import logging, urlparse
 from types import NoneType
 
 from . import settings_app
-from .classes.illiad_helper import NewIlliadHelper  # under development
+from .classes.illiad_helper import IlliadApiHelper, NewIlliadHelper  # under development
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from django.conf import settings
@@ -17,6 +17,28 @@ from django.utils.module_loading import import_module
 
 log = logging.getLogger( 'access' )
 TestCase.maxDiff = None
+
+
+class IlliadApiHelperTest( TestCase ):
+    """ Tests helper functions for the internal brown illiad-api. """
+
+    def setUp(self):
+        self.helper = IlliadApiHelper()
+
+    def test_manage_illiad_user_check__good_existing_user(self):
+        """ Checks existing-user response. """
+        usr_dct = settings_app.TEST_GOOD_USRDCT
+        title = 'foo'
+        rspns_dct = self.helper.manage_illiad_user_check( usr_dct, title )
+        self.assertEqual( 2, list(rspns_dct.keys()) )
+
+    # def test_create_new_user__already_exists(self):
+    #     """ Checks response when user already exists. """
+    #     usr_dct = {}
+    #     rspns_dct = self.helper.create_new_user( usr_dct )
+    #     self.assertEqual( ['request', 'response'], list(rspns_dct.keys()) )
+
+    ## end class IlliadApiHelperTest()
 
 
 class ShibLoginHelperTest( TestCase ):
