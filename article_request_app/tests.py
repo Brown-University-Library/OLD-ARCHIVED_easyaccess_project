@@ -30,7 +30,7 @@ class IlliadApiHelperTest( TestCase ):
         usr_dct = settings_app.TEST_GOOD_USRDCT
         title = 'foo'
         rspns_dct = self.helper.manage_illiad_user_check( usr_dct, title )
-        self.assertEqual( 2, list(rspns_dct.keys()) )
+        self.assertEqual( {u'success': True}, rspns_dct )
 
     # def test_create_new_user__already_exists(self):
     #     """ Checks response when user already exists. """
