@@ -80,7 +80,8 @@ class IlliadApiHelper( object ):
         # log.debug( 'illiad_session_instance.__dict__ AFTER registration, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
         # return illiad_session_instance
 
-        illiad_usr_dct = {
+        params = {
+            'auth_key': settings_app.ILLIAD_API_KEY,
             'auth_id': usr_dct['eppn'].split('@')[0],
             'first_name': usr_dct['name_first'],
             'last_name': usr_dct['name_last'],
@@ -89,12 +90,8 @@ class IlliadApiHelper( object ):
             'phone': usr_dct['phone'],
             'department': usr_dct['department'],
             }
-        log.info( 'will register new-user `%s` in illiad with profile, ```%s```' % (illiad_usr_dct['auth_id'], pprint.pformat(illiad_usr_dct)) )
+        log.info( 'will register new-user `%s` in illiad with profile, ```%s```' % (params['auth_id'], pprint.pformat(params)) )
         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'create_user/' )
-        params = {
-            'auth_key': settings_app.ILLIAD_API_KEY,
-            'user_data': illiad_usr_dct
-            }
         try:
             r = requests.post( url, data=params, verify=True, timeout=10 )
             log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
