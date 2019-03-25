@@ -59,11 +59,52 @@ class IlliadApiHelper( object ):
             log.error( 'error on status check, ```%s```' % repr(e) )
         return rspns_dct
 
-    def create_new_user( self, user_dct ):
+
+
+    def create_new_user( self, usr_dct ):
         """ Hits internal api to create new user.
             Called by manage_illiad_user_check() """
-        1/0
-        return
+
+        # """ Registers new user.
+        #     Called by _handle_new_user() """
+        # try:
+        #     illiad_profile = {
+        #         'first_name': user_dct['name_first'], 'last_name': user_dct['name_last'],
+        #         'email': user_dct['email'], 'status': user_dct['brown_type'],
+        #         'phone': user_dct['phone'], 'department': user_dct['department'], }
+        #     log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (illiad_session_instance.username, pprint.pformat(illiad_profile)) )
+        #     reg_response = illiad_session_instance.register_user( illiad_profile )
+        #     log.info( 'illiad registration response for `%s` is `%s`' % (illiad_session_instance.username, reg_response) )
+        # except Exception as e:
+        #     log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
+        # log.debug( 'illiad_session_instance.__dict__ AFTER registration, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
+        # return illiad_session_instance
+
+        illiad_usr_dct = {
+            'auth_id': usr_dct['eppn'].split('@')[0],
+            'first_name': usr_dct['name_first'],
+            'last_name': usr_dct['name_last'],
+            'email': usr_dct['email'],
+            'status': usr_dct['brown_type'],
+            'phone': usr_dct['phone'],
+            'department': usr_dct['department'],
+            }
+        log.info( 'will register new-user `%s` in illiad with profile, ```%s```' % (illiad_usr_dct['auth_id'], pprint.pformat(illiad_usr_dct)) )
+        url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'create_user/' )
+        params = {
+            'auth_key': settings_app.ILLIAD_API_KEY,
+            'user_data': illiad_usr_dct
+            }
+        try:
+            r = requests.post( url, data=params, verify=True, timeout=10 )
+            log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
+            success_check = True
+        except Exception as e:
+            log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
+            success_check = False
+        return success_check
+
+
 
     def make_illiad_problem_message( self, usr_dct, title ):
         """ Preps illiad blocked message.
