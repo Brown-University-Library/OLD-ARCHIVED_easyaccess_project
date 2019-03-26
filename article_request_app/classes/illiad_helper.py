@@ -31,14 +31,15 @@ class IlliadApiHelper( object ):
             - for now, hit common_classes.illiad_helper.IlliadHelper.check_illiad( shib_dct ) (creating return-dct)
               - this will create a new-user if necessary (currently _NOT_ using the api)...
               - and also check and update a user's type (eg 'Staff', 'Undergraduate') if necessary (using the api)
-            Called by views.login_handler() """
+            Called by views.login_handler()...
+              ...which, on any failure, will store the returned crafted error message to the session,
+              ...and redirect to an error page. """
         log.debug( '(article_request_app) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
         illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
         if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
             return_dct = self.make_illiad_problem_message( usr_dct, title )
         elif illiad_status_dct['response']['status_data']['interpreted_new_user'] is True:
-            self.create_new_user( usr_dct )
-            return_dct = { 'success': True }
+            return_dct = self.manage_new_user( usr_dct, title )
         else:
             return_dct = { 'success': True }
         log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
@@ -59,27 +60,34 @@ class IlliadApiHelper( object ):
             log.error( 'error on status check, ```%s```' % repr(e) )
         return rspns_dct
 
-
+    def manage_new_user( self, usr_dct, title ):
+        """ Manages new-user creation and response-assessment.
+            Called by manage_illiad_user_check() """
+        success_check = self.create_new_user( usr_dct )
+        if not success_check == True:
+            return_dct = self.make_illiad_unregistered_message( usr_dct, title )
+        else:
+            return_dct = { 'success': True }
+        log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
 
     def create_new_user( self, usr_dct ):
         """ Hits internal api to create new user.
-            Called by manage_illiad_user_check() """
+            Called by manage_new_user() """
+        ( params, success_check, url ) = self.setup_create_user( usr_dct )
+        try:
+            r = requests.post( url, data=params, verify=True, timeout=10 )
+            log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
+            result = r.json()['response']['status_data']['status'].lower()
+            if result == 'registered':
+                success_check = True
+        except Exception as e:
+            log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )  ## success_check already initialized to False
+        log.debug( 'success_check, `%s`' % success_check )
+        return success_check
 
-        # """ Registers new user.
-        #     Called by _handle_new_user() """
-        # try:
-        #     illiad_profile = {
-        #         'first_name': user_dct['name_first'], 'last_name': user_dct['name_last'],
-        #         'email': user_dct['email'], 'status': user_dct['brown_type'],
-        #         'phone': user_dct['phone'], 'department': user_dct['department'], }
-        #     log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (illiad_session_instance.username, pprint.pformat(illiad_profile)) )
-        #     reg_response = illiad_session_instance.register_user( illiad_profile )
-        #     log.info( 'illiad registration response for `%s` is `%s`' % (illiad_session_instance.username, reg_response) )
-        # except Exception as e:
-        #     log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
-        # log.debug( 'illiad_session_instance.__dict__ AFTER registration, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
-        # return illiad_session_instance
-
+    def setup_create_user( self, usr_dct ):
+        """ Initializes vars.
+            Called by create_new_user() """
         params = {
             'auth_key': settings_app.ILLIAD_API_KEY,
             'auth_id': usr_dct['eppn'].split('@')[0],
@@ -88,20 +96,15 @@ class IlliadApiHelper( object ):
             'email': usr_dct['email'],
             'status': usr_dct['brown_type'],
             'phone': usr_dct['phone'],
-            'department': usr_dct['department'],
-            }
-        log.info( 'will register new-user `%s` in illiad with profile, ```%s```' % (params['auth_id'], pprint.pformat(params)) )
+            'department': usr_dct['department'] }
+        success_check = False
         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'create_user/' )
-        try:
-            r = requests.post( url, data=params, verify=True, timeout=10 )
-            log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
-            success_check = True
-        except Exception as e:
-            log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
-            success_check = False
-        return success_check
+        log.debug( 'params, ```%s```; success_check, `%s`; url, ```%s```' % (pprint.pformat(params), success_check, url) )
+        return ( params, success_check, url )
 
-
+    ## ======================================
+    ## IlliadApiHelper() problem messages (2)
+    ## ======================================
 
     def make_illiad_problem_message( self, usr_dct, title ):
         """ Preps illiad blocked message.
@@ -123,6 +126,28 @@ Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/86
         rtrn_dct = { 'error_message': message, 'success': False }
         log.debug( 'rtrn_dct, ```%s```' % pprint.pformat(rtrn_dct) )
         return rtrn_dct
+        ## end def make_illiad_problem_message()
+
+    def make_illiad_unregistered_message( self, firstname, lastname, title ):
+        """ Preps illiad blocked message.
+            Called by _handle_new_user() """
+        message = '''
+Greetings %s %s,
+
+Your request for the item, '%s', could not be fulfilled by our easyAccess service. There was a problem trying to register you with 'ILLiad', our interlibrary-loan service.
+
+Contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169. The staff will work with you to resolve the problem.
+
+[end]
+    ''' % (
+        firstname,
+        lastname,
+        title )
+        # log.debug( 'illiad unregistered message built, ```%s```' % message )
+        rtrn_dct = { 'error_message': message, 'success': False }
+        log.debug( 'rtrn_dct, ```%s```' % pprint.pformat(rtrn_dct) )
+        return rtrn_dct
+        ## end def make_illiad_unregistered_message()
 
     ## end class IlliadApiHelper()
 
