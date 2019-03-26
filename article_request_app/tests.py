@@ -32,15 +32,16 @@ class IlliadApiHelperTest( TestCase ):
         rspns_dct = self.helper.manage_illiad_user_check( usr_dct, title )
         self.assertEqual( {u'success': True}, rspns_dct )
 
-    def test_create_new_user(self):
-        """ Checks response. """
-        usr_dct = settings_app.TEST_GOOD_USRDCT
-        new_user_auth_id = '%s%s' % ( 'zzzz', random.randint(1111, 9999) )
-        usr_dct['eppn'] = '%s@brown.edu' % new_user_auth_id
-        usr_dct['id_short'] = new_user_auth_id
-        log.debug( 'new usr_dct, ```%s```' % pprint.pformat(usr_dct) )
-        rspns_dct = self.helper.create_new_user( usr_dct )
-        self.assertEqual( ['request', 'response'], list(rspns_dct.keys()) )
+    # def test_create_new_user(self):
+    #     """ Checks response.
+    #         KEEP, but... disabled because this will really create a new user. """
+    #     usr_dct = settings_app.TEST_GOOD_USRDCT
+    #     new_user_auth_id = '%s%s' % ( 'zzzz', random.randint(1111, 9999) )
+    #     usr_dct['eppn'] = '%s@brown.edu' % new_user_auth_id
+    #     usr_dct['id_short'] = new_user_auth_id
+    #     log.debug( 'new usr_dct, ```%s```' % pprint.pformat(usr_dct) )
+    #     success_check = self.helper.create_new_user( usr_dct )
+    #     self.assertEqual( True, success_check )
 
     ## end class IlliadApiHelperTest()
 
