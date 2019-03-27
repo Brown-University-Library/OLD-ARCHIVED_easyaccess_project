@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint, random
+import json, logging, pprint, random
 import requests
 from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
@@ -41,10 +41,39 @@ class IlliadArticleSubmitter( object ):
             'phone': '',
             # 'volumes': '',
         }
-        return_dct = { 'param_dct': param_dct }
-        log.debug( '`%s` - return_dct, ```%s```' % (self.log_id, pprint.pformat(return_dct)) )
-        return return_dct
+        log.debug( '`%s` - param_dct, ```%s```' % (self.log_id, pprint.pformat(param_dct)) )
+        return param_dct
 
+    def submit_request( self, param_dct ):
+        """ Hits api.
+            Called by views.illiad_handler() """
+        try:
+            url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'v2/make_request/' )
+            headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
+            r = requests.post( url, data=param_dct, headers=headers, timeout=60, verify=True )
+            content = r.content.decode('utf-8', 'replace')
+            log.debug( '`%s` - api response text, ```%s```' % (self.log_id, content) )
+            jdct = json.loads( content )
+            return jdct
+        except Exception as e:
+            log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
+            error_dct = { 'error_message': self.prep_submission_problem_message(), 'success': False }
+            log.debug( '`%s` - error_dct, ```%s```' % (self.log_id, pprint.pformat(error_dct)) )
+            return error_dct
+
+    def prep_submission_problem_message( self ):
+        problem_message = """
+Your request was not able to be submitted to ILLiad, our Interlibrary Loan system.
+
+Please try again later. If the problem persists, there may be an issue with your ILLiad account, in which case,
+
+you may contact the Interlibrary Loan office at interlibrary_loan@brown.edu or at 401/863-2169.
+
+The staff will work with you to resolve the problem.
+
+Apologies for the inconvenience.
+"""
+        return problem_message
 
     ## end class IlliadArticleSubmitter()
 
