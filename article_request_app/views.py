@@ -5,7 +5,8 @@ from __future__ import unicode_literals
 import json, logging, pprint
 import markdown
 # from .classes.illiad_helper import NewIlliadHelper
-from .classes.illiad_helper import IlliadApiHelper, NewIlliadHelper
+from .classes.illiad_helper import IlliadApiHelper, IlliadArticleSubmitter
+from .classes.illiad_helper import NewIlliadHelper  # TO REMOVE
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from article_request_app import settings_app
@@ -22,7 +23,7 @@ from illiad.account import IlliadSession
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
 illiad_api_helper = IlliadApiHelper()
-new_ill_helper = NewIlliadHelper()
+new_ill_helper = NewIlliadHelper()  # TO REMOVE
 shib_login_helper = ShibLoginHelper()
 
 
@@ -170,42 +171,36 @@ def illiad_handler( request ):
         Then redirects user (behind-the-scenes) to views.shib_logout() for the SP shib-logout ( which will then direct user to views.message() )
         """
 
+    submitter = IlliadArticleSubmitter()
+
     ## here check
     here_check = 'init'
-    illiad_url = request.session.get( 'illiad_url', '' )
-    log.debug( 'illiad_url, ``{}```'.format(illiad_url) )
+    illiad_url = request.session.get( 'illiad_url', '' )  # this is in the format of: https://illiad.brown.edu/illiad/illiad.dll/OpenURL?key=value,etc...
+    log.debug( '`%s` - illiad_url, ```%s```' % (submitter.log_id, illiad_url) )
+    # log.debug( 'illiad_url, ``{}```'.format(illiad_url) )
     if len( illiad_url ) == 0:
         here_check = 'problem'
     if here_check == 'init':
         shib_dct = json.loads( request.session.get('user_json', '{}') )
         if 'eppn' not in shib_dct.keys():
             here_check = 'problem'
-    if here_check == 'problem':
-        log.warning( 'bad attempt from source-url, ```%s```; ip, `%s`' % (
-            request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-        request.session['message'] = new_ill_helper.problem_message
-        request.session['last_path'] = request.path
-        return HttpResponseRedirect( reverse('article_request:message_url') )
 
-    ## get illiad_instance
-    ill_username = shib_dct['eppn'].split('@')[0]
-    log.debug( 'ill_username, `%s`' % ill_username )
-    illiad_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )
-    log.debug( 'illiad_instance.__dict__, ```%s```' % pprint.pformat(illiad_instance.__dict__) )
-    try:
-        # illiad_session = illiad_instance.login()
-        illiad_instance.login()
-    except Exception as e:
-        log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-        if request.session.get( 'message', '' ) == '':
-            request.session['message'] = new_ill_helper.problem_message
+    if here_check == 'init':
+        openurl = request.session.get( 'illiad_request_openurl', None )  # new illiad-internal-api submission uses this simple key=value openurl-segment, not the 'illiad_url'
+        if openurl is None:
+            here_check = 'problem'
+
+    if here_check == 'problem':
+        log.warning( '`%s` - bad attempt from source-url, ```%s```; ip, `%s`' % (
+            submitter.log_id, request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+        request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
 
 
     ## submit to illiad
-    submission_dct = submitter.prepare_submit_params( request_inst, patron_inst, item_inst )  # prepare parameters
+    submission_dct = submitter.prepare_submit_params( patron_inst, openurl )  # prepare parameters
     submission_result_dct = submitter.submit_request( submission_dct['parameter_dict'] )  # send request to illiad
     if submission_result_dct['success'] is not True:
         request.session['message'] = submission_result_dct['error_message']
@@ -213,37 +208,6 @@ def illiad_handler( request ):
         return HttpResponseRedirect( reverse('article_request:message_url') )  # will display helpful problem-message to user
 
 
-
-    ## from easyBorrow...
-    # prep_result_dct = illiad_api_runner.make_parameters( request_inst, patron_inst, item_inst )  # prepare parameters
-    # send_result_dct = illiad_api_runner.submit_request( prep_result_dct['parameter_dict'] )  # send request to illiad
-    # request_inst = illiad_api_runner.evaluate_response( request_inst, send_result_dct )  # updates request_inst and history note
-
-
-    # ## submit to illiad
-    # illiad_url = request.session['illiad_url']
-    # illiad_post_key = illiad_instance.get_request_key( illiad_url )
-    # log.debug( 'illiad_post_key, ```%s```' % pprint.pformat(illiad_post_key) )
-    # errors = illiad_post_key.get( 'errors', None )
-    # if errors:
-    #     # log.warning( 'errors during illiad submission: username, `%s`; message, ```%s```' % (ill_username, illiad_post_key['message']) )
-    #     log.warning( 'errors during illiad submission for username, `%s`' % ill_username )
-    #     if request.session.get( 'message', '' ) == '':
-    #         request.session['message'] = new_ill_helper.problem_message
-    #         log.debug( 'session-message now, ```%s```' % request.session['message'] )
-    #     request.session['last_path'] = request.path
-    #     return HttpResponseRedirect( reverse('article_request:message_url') )
-    # else:
-    #     submit_status = illiad_instance.make_request( illiad_post_key )
-    #     log.debug( 'submit_status, ```%s```' % pprint.pformat(submit_status) )
-    #     illiad_transaction_number = submit_status['transaction_number']
-
-    # ## illiad logout
-    # try:
-    #     illiad_instance.logout()
-    #     log.debug( 'illiad logout successful' )
-    # except Exception as e:
-    #     log.debug( 'illiad logout exception, ```%s```' % unicode(repr(e)) )
 
     ## update db eventually
 
