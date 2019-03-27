@@ -200,7 +200,7 @@ def illiad_handler( request ):
 
 
     ## submit to illiad
-    submission_dct = submitter.prepare_submit_params( patron_inst, openurl )  # prepare parameters
+    submission_dct = submitter.prepare_submit_params( shib_dct, openurl )  # prepare parameters
     submission_result_dct = submitter.submit_request( submission_dct['parameter_dict'] )  # send request to illiad
     if submission_result_dct['success'] is not True:
         request.session['message'] = submission_result_dct['error_message']
