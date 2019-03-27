@@ -186,7 +186,8 @@ def illiad_handler( request ):
             here_check = 'problem'
 
     if here_check == 'init':
-        openurl = request.session.get( 'illiad_request_openurl', None )  # new illiad-internal-api submission uses this simple key=value openurl-segment, not the 'illiad_url'
+        ## TODO -- the session has access to the original login openurl, this `illiad_request_openurl`, and the full `illiad_url` -- simplify and refactor
+        openurl = request.session.get( 'illiad_request_openurl', None )
         if openurl is None:
             here_check = 'problem'
 
@@ -197,10 +198,9 @@ def illiad_handler( request ):
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
-
-
     ## submit to illiad
-    submission_dct = submitter.prepare_submit_params( shib_dct, openurl )  # prepare parameters
+    # submission_dct = submitter.prepare_submit_params( shib_dct, openurl )  # prepare parameters
+    submission_dct = submitter.prepare_submit_params( shib_dct, illiad_url )  # prepare parameters
     submission_result_dct = submitter.submit_request( submission_dct )  # send request to illiad
     if submission_result_dct['success'] is True:
         illiad_transaction_number = submission_result_dct['transaction_number']
@@ -208,8 +208,6 @@ def illiad_handler( request ):
         request.session['message'] = submission_result_dct['error_message']
         log.debug( 'illiad-submission error-message put in session, redirecting to message-url' )
         return HttpResponseRedirect( reverse('article_request:message_url') )  # will display helpful problem-message to user
-
-
 
     ## update db eventually
 
