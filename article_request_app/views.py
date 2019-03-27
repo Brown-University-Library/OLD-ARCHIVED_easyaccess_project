@@ -202,7 +202,9 @@ def illiad_handler( request ):
     ## submit to illiad
     submission_dct = submitter.prepare_submit_params( shib_dct, openurl )  # prepare parameters
     submission_result_dct = submitter.submit_request( submission_dct )  # send request to illiad
-    if submission_result_dct['success'] is not True:
+    if submission_result_dct['success'] is True:
+        illiad_transaction_number = submission_result_dct['transaction_number']
+    else:
         request.session['message'] = submission_result_dct['error_message']
         log.debug( 'illiad-submission error-message put in session, redirecting to message-url' )
         return HttpResponseRedirect( reverse('article_request:message_url') )  # will display helpful problem-message to user
