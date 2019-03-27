@@ -62,6 +62,8 @@ class IlliadArticleSubmitter( object ):
             return submission_response_dct
 
     def prep_response_dct( self, api_response_text ):
+        """ Assesses api response and prepares data for view.
+            Called by submit_request() """
         jdct = json.loads( api_response_text )
         submission_response_dct = { 'success': False, 'error_message': self.prep_submission_problem_message() }  # just initializing
         if jdct.get( 'status', None ) == 'submission_successful':
