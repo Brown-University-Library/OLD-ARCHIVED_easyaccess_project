@@ -54,7 +54,12 @@ class IlliadArticleSubmitter( object ):
             content = r.content.decode('utf-8', 'replace')
             log.debug( '`%s` - api response text, ```%s```' % (self.log_id, content) )
             jdct = json.loads( content )
-            return jdct
+            submission_response_dct = { 'success': False }
+            if jdct.get( 'status', None ) == 'submission_successful':
+                if jdct.get( 'transaction_number', None ):
+                    submission_response_dct = { 'success': True, 'transaction_number': jdct['transaction_number'] }
+            log.debug( '`%s` - submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+            return submission_response_dct
         except Exception as e:
             log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
             error_dct = { 'error_message': self.prep_submission_problem_message(), 'success': False }
