@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import json, logging, pprint, random
+import json, logging, pprint, random, urllib, urlparse
 import requests
 from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
@@ -21,7 +21,7 @@ class IlliadArticleSubmitter( object ):
     def __init__(self):
         self.log_id = '%s' % random.randint(10000, 99999)  # helps to track processing
 
-    def prepare_submit_params( self, usr_dct, openurl ):
+    def prepare_submit_params( self, usr_dct, illiad_full_url ):
         """ Builds parameter_dict for the internal api hit.
             Called by views.illiad_handler() """
         param_dct = {
@@ -34,7 +34,7 @@ class IlliadArticleSubmitter( object ):
             'email': usr_dct['email'],
             'oclc_number': '',  # easyBorror tries to submit this
             # 'openurl': self.make_openurl_segment( item_inst.knowledgebase_openurl, item_inst.volumes_info, patron_inst.barcode ),
-            'openurl': openurl,  # required
+            'openurl': self.grab_openurl_from_illiad_full_url( illiad_full_url ),  # required
             'patron_barcode': usr_dct['patron_barcode'],
             'patron_department': '',
             'patron_status': '',
@@ -43,6 +43,17 @@ class IlliadArticleSubmitter( object ):
         }
         log.debug( '`%s` - param_dct, ```%s```' % (self.log_id, pprint.pformat(param_dct)) )
         return param_dct
+
+    def grab_openurl_from_illiad_full_url( self, illiad_full_url ):
+        """ Takes the query part of the url, since this was enhanced in the findit app to include useful 'Notes'.
+            Called by prepare_submit_params() """
+        parse_obj = urlparse.urlparse( illiad_full_url )
+        querystring = parse_obj.query
+        log.debug( '`%s` - querystring, ```%s```' % (self.log_id, querystring) )
+        log.debug( 'type(querystring), `%s`' % type(querystring) )
+        decoded_querystring = urllib.unquote( querystring )
+        log.debug( '`%s` - decoded_querystring, ```%s```' % (self.log_id, decoded_querystring) )
+        return decoded_querystring
 
     def submit_request( self, param_dct ):
         """ Hits api.
@@ -71,28 +82,6 @@ class IlliadArticleSubmitter( object ):
                 submission_response_dct = { 'success': True, 'transaction_number': jdct['transaction_number'] }
         log.debug( '`%s` - submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
         return submission_response_dct
-
-    # def submit_request( self, param_dct ):
-    #     """ Hits api.
-    #         Called by views.illiad_handler() """
-    #     try:
-    #         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'v2/make_request/' )
-    #         headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
-    #         r = requests.post( url, data=param_dct, headers=headers, timeout=60, verify=True )
-    #         content = r.content.decode('utf-8', 'replace')
-    #         log.debug( '`%s` - api response text, ```%s```' % (self.log_id, content) )
-    #         jdct = json.loads( content )
-    #         submission_response_dct = { 'success': False }
-    #         if jdct.get( 'status', None ) == 'submission_successful':
-    #             if jdct.get( 'transaction_number', None ):
-    #                 submission_response_dct = { 'success': True, 'transaction_number': jdct['transaction_number'] }
-    #         log.debug( '`%s` - submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
-    #         return submission_response_dct
-    #     except Exception as e:
-    #         log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
-    #         error_dct = { 'error_message': self.prep_submission_problem_message(), 'success': False }
-    #         log.debug( '`%s` - error_dct, ```%s```' % (self.log_id, pprint.pformat(error_dct)) )
-    #         return error_dct
 
     def prep_submission_problem_message( self ):
         problem_message = """
