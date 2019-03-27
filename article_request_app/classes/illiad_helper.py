@@ -25,12 +25,9 @@ class IlliadApiHelper( object ):
     def manage_illiad_user_check( self, usr_dct, title ):
         """ Manager for illiad handling.
             - hits the new illiad-api for the status (`blocked`, `registered`, etc)
-            - NOTE: does _not_ detect all `blocked` statuses! Often, _later_, the request actually has to be initiated,
-                    ...and the form-view perceived to detect a 'blocked' status.
-            - if problem, prepares failure message as-is (creating return-dct)
-            - for now, hit common_classes.illiad_helper.IlliadHelper.check_illiad( shib_dct ) (creating return-dct)
-              - this will create a new-user if necessary (currently _NOT_ using the api)...
-              - and also check and update a user's type (eg 'Staff', 'Undergraduate') if necessary (using the api)
+                - if problem, prepares failure message as-is (creating return-dct)
+                - if new-user, runs manage_new_user() and creates proper success or failure return-dct
+                - if neither problem or new-user, TODO -- incorporate the new update-status api call here
             Called by views.login_handler()...
               ...which, on any failure, will store the returned crafted error message to the session,
               ...and redirect to an error page. """
