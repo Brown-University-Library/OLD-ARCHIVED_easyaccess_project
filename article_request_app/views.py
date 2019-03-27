@@ -202,7 +202,17 @@ def illiad_handler( request ):
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
+
+
     ## submit to illiad
+    submission_dct = submitter.prepare_submit_params( request_inst, patron_inst, item_inst )  # prepare parameters
+    submission_result_dct = submitter.submit_request( submission_dct['parameter_dict'] )  # send request to illiad
+    if submission_result_dct['success'] is not True:
+        request.session['message'] = submission_result_dct['error_message']
+        log.debug( 'illiad-submission error-message put in session, redirecting to message-url' )
+        return HttpResponseRedirect( reverse('article_request:message_url') )  # will display helpful problem-message to user
+
+
 
     ## from easyBorrow...
     # prep_result_dct = illiad_api_runner.make_parameters( request_inst, patron_inst, item_inst )  # prepare parameters
