@@ -15,6 +15,15 @@ log = logging.getLogger('access')
 common_illiad_helper = CommonIlliadHelper()
 
 
+class IlliadArticleSubmitter( object ):
+    """ Contains code for views.illiad_handler() to actually submit the article request to ILLiad. """
+
+    def __init__(self):
+        pass
+
+    ## end class IlliadArticleSubmitter()
+
+
 class IlliadApiHelper( object ):
     """ Contains helpers for views.login_handler() (for now; more later).
         Purpose is to use this to transition away from pip-installed illiad module to illiad-api-webservice calls. """
