@@ -19,7 +19,32 @@ class IlliadArticleSubmitter( object ):
     """ Contains code for views.illiad_handler() to actually submit the article request to ILLiad. """
 
     def __init__(self):
-        pass
+        self.log_id = '%s' % random.randint(10000, 99999)  # helps to track processing
+
+    def prepare_submit_params( self, usr_dct, openurl ):
+        """ Builds parameter_dict for the internal api hit.
+            Called by views.illiad_handler() """
+        param_dct = {
+            'auth_key': settings_app.ILLIAD_API_KEY,
+            'request_id': self.log_id,
+            'first_name': usr_dct['name_first'],
+            'last_name': usr_dct['name_last'],
+            'username': usr_dct['eppn'].split('@')[0],
+            'address': '',
+            'email': user_dct['email'],
+            'oclc_number': '',  # easyBorror tries to submit this
+            # 'openurl': self.make_openurl_segment( item_inst.knowledgebase_openurl, item_inst.volumes_info, patron_inst.barcode ),
+            'openurl': openurl,
+            'patron_barcode': usr_dct['patron_barcode'],
+            'patron_department': '',
+            'patron_status': '',
+            'phone': '',
+            # 'volumes': '',
+        }
+        return_dct = { 'param_dct': param_dct }
+        logger.debug( '`%s` - return_dct, ```%s```' % (self.log_id, pprint.pformat(return_dct)) )
+        return return_dct
+
 
     ## end class IlliadArticleSubmitter()
 
