@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint
+import logging, pprint, random
 import requests
 from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
@@ -25,16 +25,16 @@ class IlliadArticleSubmitter( object ):
         """ Builds parameter_dict for the internal api hit.
             Called by views.illiad_handler() """
         param_dct = {
-            'auth_key': settings_app.ILLIAD_API_KEY,
-            'request_id': self.log_id,
+            'auth_key': settings_app.ILLIAD_API_KEY,  # required
+            'request_id': self.log_id,  # required
             'first_name': usr_dct['name_first'],
             'last_name': usr_dct['name_last'],
-            'username': usr_dct['eppn'].split('@')[0],
+            'username': usr_dct['eppn'].split('@')[0],  # required
             'address': '',
-            'email': user_dct['email'],
+            'email': usr_dct['email'],
             'oclc_number': '',  # easyBorror tries to submit this
             # 'openurl': self.make_openurl_segment( item_inst.knowledgebase_openurl, item_inst.volumes_info, patron_inst.barcode ),
-            'openurl': openurl,
+            'openurl': openurl,  # required
             'patron_barcode': usr_dct['patron_barcode'],
             'patron_department': '',
             'patron_status': '',
@@ -42,7 +42,7 @@ class IlliadArticleSubmitter( object ):
             # 'volumes': '',
         }
         return_dct = { 'param_dct': param_dct }
-        logger.debug( '`%s` - return_dct, ```%s```' % (self.log_id, pprint.pformat(return_dct)) )
+        log.debug( '`%s` - return_dct, ```%s```' % (self.log_id, pprint.pformat(return_dct)) )
         return return_dct
 
 
