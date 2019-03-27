@@ -51,20 +51,46 @@ class IlliadArticleSubmitter( object ):
             url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'v2/make_request/' )
             headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
             r = requests.post( url, data=param_dct, headers=headers, timeout=60, verify=True )
-            content = r.content.decode('utf-8', 'replace')
-            log.debug( '`%s` - api response text, ```%s```' % (self.log_id, content) )
-            jdct = json.loads( content )
-            submission_response_dct = { 'success': False }
-            if jdct.get( 'status', None ) == 'submission_successful':
-                if jdct.get( 'transaction_number', None ):
-                    submission_response_dct = { 'success': True, 'transaction_number': jdct['transaction_number'] }
-            log.debug( '`%s` - submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+            api_response_text = r.content.decode('utf-8', 'replace')
+            log.debug( '`%s` - api response text, ```%s```' % (self.log_id, api_response_text) )
+            submission_response_dct = self.prep_response_dct( api_response_text )
             return submission_response_dct
         except Exception as e:
             log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
-            error_dct = { 'error_message': self.prep_submission_problem_message(), 'success': False }
-            log.debug( '`%s` - error_dct, ```%s```' % (self.log_id, pprint.pformat(error_dct)) )
-            return error_dct
+            submission_response_dct = { 'success': False, 'error_message': self.prep_submission_problem_message() }
+            log.debug( '`%s` - error submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+            return submission_response_dct
+
+    def prep_response_dct( self, api_response_text ):
+        jdct = json.loads( api_response_text )
+        submission_response_dct = { 'success': False, 'error_message': self.prep_submission_problem_message() }  # just initializing
+        if jdct.get( 'status', None ) == 'submission_successful':
+            if jdct.get( 'transaction_number', None ):
+                submission_response_dct = { 'success': True, 'transaction_number': jdct['transaction_number'] }
+        log.debug( '`%s` - submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+        return submission_response_dct
+
+    # def submit_request( self, param_dct ):
+    #     """ Hits api.
+    #         Called by views.illiad_handler() """
+    #     try:
+    #         url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'v2/make_request/' )
+    #         headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
+    #         r = requests.post( url, data=param_dct, headers=headers, timeout=60, verify=True )
+    #         content = r.content.decode('utf-8', 'replace')
+    #         log.debug( '`%s` - api response text, ```%s```' % (self.log_id, content) )
+    #         jdct = json.loads( content )
+    #         submission_response_dct = { 'success': False }
+    #         if jdct.get( 'status', None ) == 'submission_successful':
+    #             if jdct.get( 'transaction_number', None ):
+    #                 submission_response_dct = { 'success': True, 'transaction_number': jdct['transaction_number'] }
+    #         log.debug( '`%s` - submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+    #         return submission_response_dct
+    #     except Exception as e:
+    #         log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
+    #         error_dct = { 'error_message': self.prep_submission_problem_message(), 'success': False }
+    #         log.debug( '`%s` - error_dct, ```%s```' % (self.log_id, pprint.pformat(error_dct)) )
+    #         return error_dct
 
     def prep_submission_problem_message( self ):
         problem_message = """
