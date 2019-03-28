@@ -17,7 +17,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.http import urlquote
-from illiad.account import IlliadSession
+# from illiad.account import IlliadSession
 
 
 log = logging.getLogger( 'access' )
