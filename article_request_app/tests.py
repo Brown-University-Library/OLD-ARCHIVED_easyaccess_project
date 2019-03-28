@@ -134,147 +134,147 @@ class ViewsTest( TestCase ):
     # end class ViewsTest()
 
 
-class NewIlliadHelperTest( TestCase ):
-    """ Tests classes.illiad_helper.NewIlliadHelper() """
+# class NewIlliadHelperTest( TestCase ):
+#     """ Tests classes.illiad_helper.NewIlliadHelper() """
 
-    def setUp(self):
-        self.helper = NewIlliadHelper()
+#     def setUp(self):
+#         self.helper = NewIlliadHelper()
 
-    def test_connect__good(self):
-        """ Known good user connection should return logged-in status, no error-message, and registered status. """
-        ill_username = settings_app.TEST_ILLIAD_GOOD_USERNAME
-        result_dct = self.helper._connect( ill_username )
-        self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
-        self.assertEqual( None, result_dct['error_message'] )
-        self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
-        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-        self.assertEqual( False, result_dct['is_blocked'] )
-        self.assertEqual( True, result_dct['is_logged_in'] )
-        self.assertEqual( False, result_dct['is_new_user'] )
-        self.assertEqual( True, result_dct['is_registered'] )
-        result_dct['illiad_session_instance'].logout()
+#     def test_connect__good(self):
+#         """ Known good user connection should return logged-in status, no error-message, and registered status. """
+#         ill_username = settings_app.TEST_ILLIAD_GOOD_USERNAME
+#         result_dct = self.helper._connect( ill_username )
+#         self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+#         self.assertEqual( None, result_dct['error_message'] )
+#         self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
+#         self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#         self.assertEqual( False, result_dct['is_blocked'] )
+#         self.assertEqual( True, result_dct['is_logged_in'] )
+#         self.assertEqual( False, result_dct['is_new_user'] )
+#         self.assertEqual( True, result_dct['is_registered'] )
+#         result_dct['illiad_session_instance'].logout()
 
-    # def test_connect__newuser(self):
-    #     """ New-user connection should return unregistered status.
-    #         Test is good, but is disabled so as not to unnecessarily create new-users in ILLiad. """
-    #     ill_username = '{test_root}{random}'.format( test_root=settings_app.TEST_ILLIAD_NEW_USER_ROOT, random=random.randint(11111, 99999) )
-    #     result_dct = self.helper._connect( ill_username )
-    #     self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
-    #     self.assertEqual( None, result_dct['error_message'] )
-    #     self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
-    #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-    #     self.assertEqual( False, result_dct['is_blocked'] )
-    #     self.assertEqual( True, result_dct['is_logged_in'] )
-    #     self.assertEqual( False, result_dct['is_new_user'] )  # odd; perhaps all remote-auth connections indicate this
-    #     self.assertEqual( False, result_dct['is_registered'] )  # key indicator used in subsequent code
+#     # def test_connect__newuser(self):
+#     #     """ New-user connection should return unregistered status.
+#     #         Test is good, but is disabled so as not to unnecessarily create new-users in ILLiad. """
+#     #     ill_username = '{test_root}{random}'.format( test_root=settings_app.TEST_ILLIAD_NEW_USER_ROOT, random=random.randint(11111, 99999) )
+#     #     result_dct = self.helper._connect( ill_username )
+#     #     self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+#     #     self.assertEqual( None, result_dct['error_message'] )
+#     #     self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
+#     #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#     #     self.assertEqual( False, result_dct['is_blocked'] )
+#     #     self.assertEqual( True, result_dct['is_logged_in'] )
+#     #     self.assertEqual( False, result_dct['is_new_user'] )  # odd; perhaps all remote-auth connections indicate this
+#     #     self.assertEqual( False, result_dct['is_registered'] )  # key indicator used in subsequent code
 
-    ## test disabled for now because block indication comes later, on getting the initial request form, not on login.
-    ## the module will have to be reworked.
-    # def test_connect__blocked(self):
-    #     """ Blocked user connection should return is_blocked as True. """
-    #     ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
-    #     result_dct = self.helper._connect( ill_username )
-    #     self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
-    #     self.assertEqual( None, result_dct['error_message'] )  # populated by login_user()
-    #     self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
-    #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-    #     self.assertEqual( True, result_dct['is_blocked'] )
-    #     self.assertEqual( False, result_dct['is_logged_in'] )
-    #     self.assertEqual( False, result_dct['is_new_user'] )
-    #     self.assertEqual( False, result_dct['is_registered'] )
-    #     result_dct['illiad_session_instance'].logout()
+#     ## test disabled for now because block indication comes later, on getting the initial request form, not on login.
+#     ## the module will have to be reworked.
+#     # def test_connect__blocked(self):
+#     #     """ Blocked user connection should return is_blocked as True. """
+#     #     ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
+#     #     result_dct = self.helper._connect( ill_username )
+#     #     self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+#     #     self.assertEqual( None, result_dct['error_message'] )  # populated by login_user()
+#     #     self.assertEqual( dict, type(result_dct['illiad_login_dct']) )
+#     #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#     #     self.assertEqual( True, result_dct['is_blocked'] )
+#     #     self.assertEqual( False, result_dct['is_logged_in'] )
+#     #     self.assertEqual( False, result_dct['is_new_user'] )
+#     #     self.assertEqual( False, result_dct['is_registered'] )
+#     #     result_dct['illiad_session_instance'].logout()
 
-    def test_connect__disavowed(self):
-        """ Disavowed user connection should contain correct error_message. """
-        ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
-        result_dct = self.helper._connect( ill_username )
-        self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
-        self.assertTrue( 'there may be an issue with your ILLiad account' in result_dct['error_message'] )
-        self.assertEqual( NoneType, type(result_dct['illiad_login_dct']) )
-        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-        self.assertEqual( None, result_dct['is_blocked'] )
-        self.assertEqual( None, result_dct['is_logged_in'] )
-        self.assertEqual( None, result_dct['is_new_user'] )
-        self.assertEqual( None, result_dct['is_registered'] )
-        result_dct['illiad_session_instance'].logout()
+#     def test_connect__disavowed(self):
+#         """ Disavowed user connection should contain correct error_message. """
+#         ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
+#         result_dct = self.helper._connect( ill_username )
+#         self.assertEqual( [ 'error_message', 'illiad_login_dct', 'illiad_session_instance', 'is_blocked', 'is_logged_in', 'is_new_user', 'is_registered', 'submitted_username' ], sorted(result_dct.keys()) )
+#         self.assertTrue( 'there may be an issue with your ILLiad account' in result_dct['error_message'] )
+#         self.assertEqual( NoneType, type(result_dct['illiad_login_dct']) )
+#         self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#         self.assertEqual( None, result_dct['is_blocked'] )
+#         self.assertEqual( None, result_dct['is_logged_in'] )
+#         self.assertEqual( None, result_dct['is_new_user'] )
+#         self.assertEqual( None, result_dct['is_registered'] )
+#         result_dct['illiad_session_instance'].logout()
 
-    def test_login_user__good(self):
-        """ Known good user should return success as True. """
-        user_dct = { 'eppn': '%s@brown.edu' % settings_app.TEST_ILLIAD_GOOD_USERNAME, 'brown_type': 'Staff' }
-        title = 'a_title'  # needed for error-message preparation
-        result_dct = self.helper.login_user( user_dct, title )
-        self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
-        self.assertEqual( None, result_dct['error_message'] )
-        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-        self.assertEqual( True, result_dct['success'] )
-        result_dct['illiad_session_instance'].logout()
+#     def test_login_user__good(self):
+#         """ Known good user should return success as True. """
+#         user_dct = { 'eppn': '%s@brown.edu' % settings_app.TEST_ILLIAD_GOOD_USERNAME, 'brown_type': 'Staff' }
+#         title = 'a_title'  # needed for error-message preparation
+#         result_dct = self.helper.login_user( user_dct, title )
+#         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+#         self.assertEqual( None, result_dct['error_message'] )
+#         self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#         self.assertEqual( True, result_dct['success'] )
+#         result_dct['illiad_session_instance'].logout()
 
-    # def test_login_user__newuser(self):
-    #     """ New-user connection should return success and show status of registered.
-    #         Test is good, but is disabled so as not to unnecessarily create new-users in ILLiad. """
-    #     username = '{test_root}{random}'.format( test_root=settings_app.TEST_ILLIAD_NEW_USER_ROOT, random=random.randint(11111, 99999) )
-    #     user_dct = {
-    #         'eppn': '{}@brown.edu'.format(username),
-    #         'name_first': 'test_firstname',
-    #         'name_last': 'test_lastname',
-    #         'email': 'test@test.edu',
-    #         'brown_type': 'test_brown_type',
-    #         'phone': 'test_phone',
-    #         'department': 'test_department'
-    #         }
-    #     title = 'a_title'  # needed for error-message preparation
-    #     result_dct = self.helper.login_user( user_dct, title )
-    #     self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
-    #     self.assertEqual( None, result_dct['error_message'] )
-    #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-    #     self.assertEqual( True, result_dct['illiad_session_instance'].registered )
-    #     self.assertEqual( True, result_dct['success'] )
+#     # def test_login_user__newuser(self):
+#     #     """ New-user connection should return success and show status of registered.
+#     #         Test is good, but is disabled so as not to unnecessarily create new-users in ILLiad. """
+#     #     username = '{test_root}{random}'.format( test_root=settings_app.TEST_ILLIAD_NEW_USER_ROOT, random=random.randint(11111, 99999) )
+#     #     user_dct = {
+#     #         'eppn': '{}@brown.edu'.format(username),
+#     #         'name_first': 'test_firstname',
+#     #         'name_last': 'test_lastname',
+#     #         'email': 'test@test.edu',
+#     #         'brown_type': 'test_brown_type',
+#     #         'phone': 'test_phone',
+#     #         'department': 'test_department'
+#     #         }
+#     #     title = 'a_title'  # needed for error-message preparation
+#     #     result_dct = self.helper.login_user( user_dct, title )
+#     #     self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+#     #     self.assertEqual( None, result_dct['error_message'] )
+#     #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#     #     self.assertEqual( True, result_dct['illiad_session_instance'].registered )
+#     #     self.assertEqual( True, result_dct['success'] )
 
-    ## test disabled for now because block indication comes later, on getting the initial request form, not on login.
-    ## the module will have to be reworked.
-    # def test_login_user__blocked(self):
-    #     """ Known blocked user should ... """
-    #     ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
-    #     user_dct = {
-    #         'eppn': '{}@brown.edu'.format(ill_username),
-    #         'name_first': 'test_firstname',
-    #         'name_last': 'test_lastname',
-    #         'email': 'test@test.edu',
-    #         'brown_type': 'test_brown_type',
-    #         'phone': 'test_phone',
-    #         'department': 'test_department'
-    #     }
-    #     title = 'a_title'  # needed for error-message preparation
-    #     result_dct = self.helper.login_user( user_dct, title )
-    #     self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
-    #     self.assertTrue( 'It appears there is a problem' in result_dct['error_message'] )
-    #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-    #     self.assertEqual( True, result_dct['illiad_session_instance'].registered )
-    #     self.assertEqual( False, result_dct['success'] )
-    #     result_dct['illiad_session_instance'].logout()
+#     ## test disabled for now because block indication comes later, on getting the initial request form, not on login.
+#     ## the module will have to be reworked.
+#     # def test_login_user__blocked(self):
+#     #     """ Known blocked user should ... """
+#     #     ill_username = settings_app.TEST_ILLIAD_BLOCKED_USERNAME
+#     #     user_dct = {
+#     #         'eppn': '{}@brown.edu'.format(ill_username),
+#     #         'name_first': 'test_firstname',
+#     #         'name_last': 'test_lastname',
+#     #         'email': 'test@test.edu',
+#     #         'brown_type': 'test_brown_type',
+#     #         'phone': 'test_phone',
+#     #         'department': 'test_department'
+#     #     }
+#     #     title = 'a_title'  # needed for error-message preparation
+#     #     result_dct = self.helper.login_user( user_dct, title )
+#     #     self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+#     #     self.assertTrue( 'It appears there is a problem' in result_dct['error_message'] )
+#     #     self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#     #     self.assertEqual( True, result_dct['illiad_session_instance'].registered )
+#     #     self.assertEqual( False, result_dct['success'] )
+#     #     result_dct['illiad_session_instance'].logout()
 
-    def test_login__disavowed(self):
-        """ Disavowed user login response should contain correct error_message. """
-        ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
-        user_dct = {
-            'eppn': '{}@brown.edu'.format(ill_username),
-            'name_first': 'test_firstname',
-            'name_last': 'test_lastname',
-            'email': 'test@test.edu',
-            'brown_type': 'test_brown_type',
-            'phone': 'test_phone',
-            'department': 'test_department'
-        }
-        title = 'a_title'  # needed for error-message preparation
-        result_dct = self.helper.login_user( user_dct, title )
-        self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
-        self.assertTrue( 'there may be an issue with your ILLiad account' in result_dct['error_message'] )
-        self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
-        self.assertEqual( False, result_dct['illiad_session_instance'].registered )
-        self.assertEqual( False, result_dct['success'] )
-        result_dct['illiad_session_instance'].logout()
+#     def test_login__disavowed(self):
+#         """ Disavowed user login response should contain correct error_message. """
+#         ill_username = settings_app.TEST_ILLIAD_DISAVOWED_USERNAME
+#         user_dct = {
+#             'eppn': '{}@brown.edu'.format(ill_username),
+#             'name_first': 'test_firstname',
+#             'name_last': 'test_lastname',
+#             'email': 'test@test.edu',
+#             'brown_type': 'test_brown_type',
+#             'phone': 'test_phone',
+#             'department': 'test_department'
+#         }
+#         title = 'a_title'  # needed for error-message preparation
+#         result_dct = self.helper.login_user( user_dct, title )
+#         self.assertEqual( ['error_message', 'illiad_session_instance', 'success'], sorted(result_dct.keys()) )
+#         self.assertTrue( 'there may be an issue with your ILLiad account' in result_dct['error_message'] )
+#         self.assertEqual( "<type 'instance'>", unicode(type(result_dct['illiad_session_instance'])) )
+#         self.assertEqual( False, result_dct['illiad_session_instance'].registered )
+#         self.assertEqual( False, result_dct['success'] )
+#         result_dct['illiad_session_instance'].logout()
 
-    # end class IlliadHelperTest()
+#     # end class NewIlliadHelperTest()
 
 
 class LoginHelper_Test( TestCase ):
