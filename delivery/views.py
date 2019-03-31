@@ -7,7 +7,7 @@ from datetime import datetime
 
 import bibjsontools, markdown, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
-from common_classes.illiad_helper import IlliadHelper
+from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
 from delivery import app_settings as settings_app
 from delivery.classes.availability_helper import AvailabilityViewHelper
 from delivery.classes.availability_helper import JosiahAvailabilityChecker
@@ -33,7 +33,7 @@ from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_val
 log = logging.getLogger('access')
 SERSOL_KEY = settings.BUL_LINK_SERSOL_KEY
 availability_view_helper = AvailabilityViewHelper()
-illiad_helper = IlliadHelper()
+illiad_helper = CommonIlliadHelper()
 login_view_helper = LoginViewHelper()
 shib_login_helper = ShibLoginHelper()
 
@@ -278,10 +278,16 @@ def process_request( request ):
     #     return HttpResponseRedirect( reverse('delivery:message_url') )
 
     ## check for new-illiad-user
+    # try:
+    #     illiad_helper.check_illiad( shib_dct )
+    # except Exception as e:
+    #     log.error( 'exception checking illiad for new-user, ```{}```'.format(unicode(repr(e))) )
+
+    ## check illiad `type`
     try:
-        illiad_helper.check_illiad( shib_dct )
+        illiad_helper.check_illiad_type( shib_dct )
     except Exception as e:
-        log.error( 'exception checking illiad for new-user, ```{}```'.format(unicode(repr(e))) )
+        log.error( 'exception checking illiad for user-type, ```{}```'.format(unicode(repr(e))) )
 
     ## save new request
     # process_view_helper.save_request( user_obj, resource_obj )
