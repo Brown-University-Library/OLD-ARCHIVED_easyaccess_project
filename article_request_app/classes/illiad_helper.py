@@ -7,7 +7,6 @@ import requests
 from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
 from django.core.urlresolvers import reverse
-# from illiad.account import IlliadSession
 
 
 log = logging.getLogger('access')
@@ -263,54 +262,6 @@ Apologies for the inconvenience.
         log.debug( 'referrer_ok, `{referrer_ok}`; redirect_url, ```{redirect_url}```'.format(referrer_ok=referrer_ok, redirect_url=redirect_url) )
         return ( referrer_ok, redirect_url )
 
-    # def login_user( self, user_dct, title ):
-    #     """ Manager for illiad handling.
-    #         - Logs user into illiad;
-    #         - Checks for and handles 'blocked' and 'newuser' status;
-    #         - Returns 'problem_message' if necessary.
-    #         - If user is ok, checks and updates, if necessary, status.
-    #         Called by views.login_handler() """
-    #     log.debug( 'in article_request_app.classes.illiad_helper; user_dct, ```%s```' % pprint.pformat(user_dct) )
-    #     ( return_dct, connect_result_dct ) = ( {'illiad_session_instance': None, 'error_message': None, 'success': False}, self._connect(ill_username=user_dct['eppn'].split('@')[0]) )
-    #     return_dct['illiad_session_instance'] = connect_result_dct['illiad_session_instance']
-    #     if connect_result_dct['illiad_session_instance'] is False or connect_result_dct['is_blocked'] is True or connect_result_dct['error_message'] is not None:
-    #         return_dct = self._prepare_failure_message( connect_result_dct, user_dct, title, return_dct )
-    #     elif connect_result_dct['is_new_user'] is True or connect_result_dct['is_registered'] is False:
-    #         return_dct = self._handle_new_user( connect_result_dct['illiad_session_instance'], user_dct, title, return_dct )
-    #     else:
-    #         return_dct['success'] = True
-    #     common_illiad_helper.check_illiad( user_dct )
-    #     log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
-    #     return return_dct
-
-    # def _connect( self, ill_username ):
-    #     """ Makes session-connection, and tries login.
-    #         Called by login_user() """
-    #     return_dct = { 'error_message': None, 'illiad_login_dct': None, 'illiad_session_instance': False, 'is_blocked': None, 'is_logged_in': None, 'is_new_user': None, 'is_registered': None, 'submitted_username': ill_username }
-    #     illiad_session_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )  # illiad_session_instance.registered will always be False before login attempt
-    #     log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
-    #     return_dct['illiad_session_instance'] = illiad_session_instance
-    #     # return_dct['is_blocked'] = illiad_session_instance.blocked_patron
-    #     try:
-    #         return_dct = self._login( illiad_session_instance, return_dct )
-    #     except Exception as e:
-    #         log.error( 'Exception on illiad login, ```%s```' % unicode(repr(e)) )
-    #         return_dct['error_message'] = self.problem_message
-    #     log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
-    #     return return_dct
-
-    # def _login( self, illiad_session_instance, return_dct ):
-    #     """ Tries login.
-    #         Called by _connect() """
-    #     illiad_login_dct = illiad_session_instance.login()
-    #     # return_dct['is_blocked'] = illiad_login_dct['blocked']
-    #     return_dct['is_blocked'] = illiad_login_dct.get( 'blocked', illiad_session_instance.blocked_patron )  # will update value if it's in login_dct
-    #     return_dct['illiad_login_dct'] = illiad_login_dct
-    #     return_dct['is_logged_in'] = illiad_login_dct['authenticated']
-    #     return_dct['is_new_user'] = illiad_login_dct['new_user']
-    #     return_dct['is_registered'] = illiad_login_dct.get('registered', False)
-    #     return return_dct
-
     def _prepare_failure_message( self, connect_result_dct, user_dct, title, return_dct ):
         """ Sets return error_message on connect/login failure.
             Called by login_user() """
@@ -320,43 +271,6 @@ Apologies for the inconvenience.
             return_dct['error_message'] = self.make_illiad_blocked_message( user_dct['name_first'], user_dct['name_last'], title )
         log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
         return return_dct
-
-    # def _handle_new_user( self, illiad_session_instance, user_dct, item_dct, return_dct ):
-    #     """ Attempts to register new user, and prepares appropriate return_dct based on result.
-    #         Called by login_user() """
-    #     updated_illiad_session_instance = self._register_new_user( illiad_session_instance, user_dct )
-    #     if updated_illiad_session_instance.registered is False:
-    #         return_dct['error_message'] = self.make_illiad_unregistered_message( firstname, lastname, title )
-    #     else:
-    #         return_dct['success'] = True
-    #     log.debug( 'return_dct, ```{}```'.format(pprint.pformat(return_dct)) )
-    #     return return_dct
-
-    # def _register_new_user( self, illiad_session_instance, user_dct ):
-    #     """ Registers new user.
-    #         Called by _handle_new_user() """
-    #     try:
-    #         illiad_profile = {
-    #             'first_name': user_dct['name_first'], 'last_name': user_dct['name_last'],
-    #             'email': user_dct['email'], 'status': user_dct['brown_type'],
-    #             'phone': user_dct['phone'], 'department': user_dct['department'], }
-    #         log.info( 'will register new-user `%s` with illiad with illiad_profile, ```%s```' % (illiad_session_instance.username, pprint.pformat(illiad_profile)) )
-    #         reg_response = illiad_session_instance.register_user( illiad_profile )
-    #         log.info( 'illiad registration response for `%s` is `%s`' % (illiad_session_instance.username, reg_response) )
-    #     except Exception as e:
-    #         log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )
-    #     log.debug( 'illiad_session_instance.__dict__ AFTER registration, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
-    #     return illiad_session_instance
-
-    # def logout_user( self, illiad_instance ):
-    #     """ Logs out user & logs any errors.
-    #         Called by views.login_handler() """
-    #     try:
-    #         illiad_instance.logout()
-    #         log.debug( 'illiad logout successful' )
-    #     except Exception as e:
-    #         log.error( 'illiad logout exception, ```%s```' % unicode(repr(e)) )
-    #     return
 
     ##########################
     ### illiad blocked message
