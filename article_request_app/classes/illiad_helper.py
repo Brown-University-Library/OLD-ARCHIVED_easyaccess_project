@@ -150,6 +150,7 @@ class IlliadApiHelper( object ):
         else:
             return_dct = { 'success': True }
         log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
+        return return_dct
 
     def create_new_user( self, usr_dct ):
         """ Hits internal api to create new user.
