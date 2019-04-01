@@ -18,42 +18,85 @@ class IlliadHelper( object ):
     def __init__(self):
         pass
 
-    # def check_illiad( self, user_dct ):
-    #     """ Logs user into illiad to check for, and handle, 'newuser' status.
-    #         Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
-    #         Called by delivery.views.process_request()
-    #            and by article_request_app.classes.illiad_helper.NewIlliadHelper.login_user() """
+    def manage_illiad_user_check( self, usr_dct ):
+        """ Manager for illiad handling.
+            - hits the new illiad-api for the status (`blocked`, `registered`, etc)
+                # - if problem, prepares failure message as-is (creating return-dct)
+                - if new-user, runs manage_new_user() and creates proper success or failure return-dct
+                # - if neither problem or new-user, TODO -- incorporate the new update-status api call here
+            Called by delivery.views.process_request()...
+              # ...which, on any failure, will store the returned crafted error message to the session,
+              # ...and redirect to an error page. """
+        log.debug( '(common_classes) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
+        illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
+        if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
+            # return_dct = self.make_illiad_problem_message( usr_dct, title )
+            log.warning( '(common_classes) - blocked or disavowed status detected' )
+        elif illiad_status_dct['response']['status_data']['interpreted_new_user'] is True:
+            return_dct = self.manage_new_user( usr_dct )
+        else:
+            return_dct = { 'success': True }
+        log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
+        return return_dct
 
-    #     log.debug( 'user_dct, ```%s```' % pprint.pformat(user_dct) )
-    #     ( illiad_session_instance, connect_ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
-    #     if connect_ok is False: return False
-    #     ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
-    #     if login_ok is False: return False
-    #     if illiad_session_instance.registered is True:
-    #         self.check_status( username=user_dct['eppn'].split('@')[0], brown_type=user_dct['brown_type'] )
-    #         check_ok = True  # the check succeeded, nothing needs done (other than logout)
-    #     else:
-    #         check_ok = self.register_new_user( illiad_session_instance, user_dct )  # registers new user and returns True on success
-    #     self.logout_user( illiad_session_instance )
-    #     return check_ok
+    def check_illiad_status( self, auth_id ):
+        """ Hits our internal illiad-api for user's status (`blocked`, `registered`, etc).
+            Called by manage_illiad_user_check() """
+        rspns_dct = { 'response':
+            {'status_data': {'blocked': None, 'disavowed': None}} }
+        url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'check_user/' )
+        params = { 'user': auth_id }
+        try:
+            r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
+            rspns_dct = r.json()
+            log.debug( 'status_code, `%s`; content-dct, ```%s```' % (r.status_code, pprint.pformat(rspns_dct)) )
+        except Exception as e:
+            log.error( 'error on status check, ```%s```' % repr(e) )
+        return rspns_dct
 
-    # def check_illiad( self, user_dct ):
-    #     """ Logs user into illiad to check for, and handle, 'newuser' status.
-    #         Returns True if it's not a new-user, or if it is a new-user and the new-user is registered successfully.
-    #         Called by delivery.views.process_request()
-    #            and by article_request_app.classes.illiad_helper.NewIlliadHelper.login_user() """
-    #     log.debug( 'user_dct, ```%s```' % pprint.pformat(user_dct) )
-    #     ( illiad_session_instance, connect_ok ) = self.connect( ill_username=user_dct['eppn'].split('@')[0] )
-    #     if connect_ok is False: return False
-    #     ( illiad_session_instance, login_dct, login_ok ) = self.login( illiad_session_instance )  # login_dct only returned for testing purposes
-    #     if login_ok is False: return False
-    #     if illiad_session_instance.registered is True:
-    #         self.check_status( username=user_dct['eppn'].split('@')[0], brown_type=user_dct['brown_type'] )
-    #         check_ok = True  # the check succeeded, nothing needs done (other than logout)
-    #     else:
-    #         check_ok = self.register_new_user( illiad_session_instance, user_dct )  # registers new user and returns True on success
-    #     self.logout_user( illiad_session_instance )
-    #     return check_ok
+    def manage_new_user( self, usr_dct ):
+        """ Manages new-user creation and response-assessment.
+            Called by manage_illiad_user_check() """
+        success_check = self.create_new_user( usr_dct )
+        if not success_check == True:
+            log.warning( '(common_classes) - problem creating new user' )
+            # return_dct = self.make_illiad_unregistered_message( usr_dct, title )
+        else:
+            return_dct = { 'success': True }
+        log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
+        return return_dct
+
+    def create_new_user( self, usr_dct ):
+        """ Hits internal api to create new user.
+            Called by manage_new_user() """
+        ( params, success_check, url ) = self.setup_create_user( usr_dct )
+        try:
+            r = requests.post( url, data=params, verify=True, timeout=10 )
+            log.debug( 'status_code, `%s`; content, ```%s```' % (r.status_code, r.content.decode('utf-8', 'replace')) )
+            result = r.json()['response']['status_data']['status'].lower()
+            if result == 'registered':
+                success_check = True
+        except Exception as e:
+            log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )  ## success_check already initialized to False
+        log.debug( 'success_check, `%s`' % success_check )
+        return success_check
+
+    def setup_create_user( self, usr_dct ):
+        """ Initializes vars.
+            Called by create_new_user() """
+        params = {
+            'auth_key': settings_app.ILLIAD_API_KEY,
+            'auth_id': usr_dct['eppn'].split('@')[0],
+            'first_name': usr_dct['name_first'],
+            'last_name': usr_dct['name_last'],
+            'email': usr_dct['email'],
+            'status': usr_dct['brown_type'],
+            'phone': usr_dct['phone'],
+            'department': usr_dct['department'] }
+        success_check = False
+        url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'create_user/' )
+        log.debug( 'params, ```%s```; success_check, `%s`; url, ```%s```' % (pprint.pformat(params), success_check, url) )
+        return ( params, success_check, url )
 
     def check_illiad_type( self, usr_dct ):
         """ Hits api to update patron-type if needed ('Undergrad', 'Staff', etc).
@@ -69,68 +112,5 @@ class IlliadHelper( object ):
         except Exception as e:
             log.error( 'error on user-type check/update, ```%s```' % repr(e) )
         return
-
-    # def connect( self, ill_username ):
-    #     """ Initializes illiad-session instance -- does not yet contact ILLiad.
-    #         Called by check_illiad() """
-    #     illiad_session_instance = IlliadSession( settings_app.ILLIAD_REMOTE_AUTH_URL, settings_app.ILLIAD_REMOTE_AUTH_HEADER, ill_username )  # illiad_session_instance.registered will always be False before login attempt
-    #     ok = True
-    #     log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
-    #     log.debug( 'ill_username, `{name}`; ok, `{ok}`'.format(name=ill_username, ok=ok) )
-    #     return ( illiad_session_instance, ok )
-
-    # def login( self, illiad_session_instance ):
-    #     """ Tries login.
-    #         Called by check_illiad() """
-    #     try:
-    #         login_dct = illiad_session_instance.login()
-    #         log.debug( 'illiad_session_instance.__dict__, ```{}```'.format(pprint.pformat(illiad_session_instance.__dict__)) )
-    #         ok = True
-    #     except Exception as e:
-    #         log.error( 'exception on illiad login, ```{}```'.format(unicode(repr(e))) )
-    #         ( illiad_session_instance, login_dct, ok ) = ( None, None, False )
-    #     log.debug( 'illiad_session_instance, `{}`'.format(illiad_session_instance) )
-    #     log.debug( 'login_dct, ```{}```'.format(pprint.pformat(login_dct)) )
-    #     log.debug( 'ok, `{}`'.format(ok) )
-    #     return ( illiad_session_instance, login_dct, ok )
-
-    # def register_new_user( self, illiad_session_instance, user_dct ):
-    #     """ Registers new user.
-    #         Called by check_illiad() """
-    #     try:
-    #         ok = False
-    #         illiad_profile = self._make_profile( user_dct )
-    #         reg_response_dct = illiad_session_instance.register_user( illiad_profile )
-    #         log.info( 'illiad reg_response_dct, ```{}```'.format(pprint.pformat(reg_response_dct)) )
-    #         if reg_response_dct['status'] == 'Registered':
-    #             ok = True
-    #     except Exception as e:
-    #         log.error( 'Exception on new user registration, ```{}```'.format(unicode(repr(e))) )
-    #         ok = False
-    #     log.debug( 'ok, `{}`'.format(ok) )
-    #     return ok
-
-    # def _make_profile( self, user_dct ):
-    #     """ Builds illiad_profile dct.
-    #         Called by register_new_user() """
-    #     illiad_profile = {
-    #         'first_name': user_dct['name_first'],
-    #         'last_name': user_dct['name_last'],
-    #         'email': user_dct['email'],
-    #         'status': user_dct['brown_type'],
-    #         'phone': user_dct['phone'],
-    #         'department': user_dct['department'] }
-    #     log.info( 'illiad_profile, {}'.format(pprint.pformat(illiad_profile) ) )
-    #     return illiad_profile
-
-    # def logout_user( self, illiad_session_instance ):
-    #     """ Logs out user & logs any errors.
-    #         Called by check_illiad() """
-    #     try:
-    #         illiad_session_instance.logout()
-    #         log.debug( 'illiad logout successful' )
-    #     except Exception as e:
-    #         log.error( 'illiad logout exception, ```%s```' % unicode(repr(e)) )
-    #     return
 
     ## end class IlliadHelper()
