@@ -278,10 +278,10 @@ def process_request( request ):
     #     return HttpResponseRedirect( reverse('delivery:message_url') )
 
     ## check for new-illiad-user
-    # try:
-    #     illiad_helper.check_illiad( shib_dct )
-    # except Exception as e:
-    #     log.error( 'exception checking illiad for new-user, ```{}```'.format(unicode(repr(e))) )
+    try:
+        illiad_helper.manage_illiad_user_check( shib_dct )
+    except Exception as e:
+        log.error( 'exception checking illiad for new-user, ```{}```'.format(unicode(repr(e))) )
 
     ## check illiad `type`
     try:
