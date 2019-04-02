@@ -44,7 +44,7 @@ class IlliadHelper( object ):
             Called by manage_illiad_user_check() """
         rspns_dct = { 'response':
             {'status_data': {'blocked': None, 'disavowed': None}} }
-        url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'check_user/' )
+        url = '%s%s' % ( settings_app.ILLIAD_API_URL, 'check_user/' )
         params = { 'user': auth_id }
         try:
             r = requests.get( url, params=params, auth=(settings_app.ILLIAD_API_BASIC_AUTH_USER, settings_app.ILLIAD_API_BASIC_AUTH_PASSWORD), verify=True, timeout=10 )
@@ -94,7 +94,7 @@ class IlliadHelper( object ):
             'phone': usr_dct['phone'],
             'department': usr_dct['department'] }
         success_check = False
-        url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'create_user/' )
+        url = '%s%s' % ( settings_app.ILLIAD_API_URL, 'create_user/' )
         log.debug( 'params, ```%s```; success_check, `%s`; url, ```%s```' % (pprint.pformat(params), success_check, url) )
         return ( params, success_check, url )
 
