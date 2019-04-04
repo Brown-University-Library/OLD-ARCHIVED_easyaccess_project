@@ -105,6 +105,26 @@ class IlliadApiHelper( object ):
     def __init__(self):
         pass
 
+    # def manage_illiad_user_check( self, usr_dct, title ):
+    #     """ Manager for illiad handling.
+    #         - hits the new illiad-api for the status (`blocked`, `registered`, etc)
+    #             - if problem, prepares failure message as-is (creating return-dct)
+    #             - if new-user, runs manage_new_user() and creates proper success or failure return-dct
+    #             - if neither problem or new-user, TODO -- incorporate the new update-status api call here
+    #         Called by views.login_handler()...
+    #           ...which, on any failure, will store the returned crafted error message to the session,
+    #           ...and redirect to an error page. """
+    #     log.debug( '(article_request_app) - usr_dct, ```%s```' % pprint.pformat(usr_dct) )
+    #     illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
+    #     if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
+    #         return_dct = self.make_illiad_problem_message( usr_dct, title )
+    #     elif illiad_status_dct['response']['status_data']['interpreted_new_user'] is True:
+    #         return_dct = self.manage_new_user( usr_dct, title )
+    #     else:
+    #         return_dct = { 'success': True }
+    #     log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
+    #     return return_dct
+
     def manage_illiad_user_check( self, usr_dct, title ):
         """ Manager for illiad handling.
             - hits the new illiad-api for the status (`blocked`, `registered`, etc)
@@ -118,8 +138,11 @@ class IlliadApiHelper( object ):
         illiad_status_dct = self.check_illiad_status( usr_dct['eppn'].split('@')[0] )
         if illiad_status_dct['response']['status_data']['blocked'] is True or illiad_status_dct['response']['status_data']['disavowed'] is True:
             return_dct = self.make_illiad_problem_message( usr_dct, title )
-        elif illiad_status_dct['response']['status_data']['interpreted_new_user'] is True:
-            return_dct = self.manage_new_user( usr_dct, title )
+        elif 'interpreted_new_user' in illiad_status_dct['response']['status_data'].keys():  # temp handling during illiad switch-over
+            if illiad_status_dct['response']['status_data']['interpreted_new_user'] is True:
+                return_dct = self.manage_new_user( usr_dct, title )
+            else:
+                return_dct = { 'success': True }
         else:
             return_dct = { 'success': True }
         log.debug( 'return_dct, ```%s```' % pprint.pformat(return_dct) )
