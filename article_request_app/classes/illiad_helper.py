@@ -57,7 +57,7 @@ class IlliadArticleSubmitter( object ):
         """ Hits api.
             Called by views.illiad_handler() """
         try:
-            url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'v2/make_request/' )
+            url = '%s%s' % ( settings_app.ILLIAD_API_URL_ROOT, 'request_article/' )
             headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' }
             r = requests.post( url, data=param_dct, headers=headers, timeout=60, verify=True )
             api_response_text = r.content.decode('utf-8', 'replace')
