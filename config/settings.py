@@ -9,14 +9,15 @@ import dj_database_url
 ## standard project-level settings
 ## ============================================================================
 
-BASE_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )
+BASE_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )  # does not include trailing slash
+# print( 'BASE_DIR, ```%s```' % BASE_DIR )
 
 SECRET_KEY = os.environ['EZACS__SECRET_KEY']
 
 DEBUG = json.loads( os.environ['EZACS__DEBUG_JSON'] )  # will be True or False
 DEBUG2 = json.loads( os.environ['EZACS__DEBUG2_JSON'] )  # will be True or False
 
-TEMPLATE_DEBUG = DEBUG
+# TEMPLATE_DEBUG = DEBUG
 
 ADMINS = json.loads( os.environ['EZACS__ADMINS_JSON'] )
 MANAGERS = ADMINS
@@ -179,8 +180,31 @@ AUTHENTICATION_BACKENDS = (
 #     'django.contrib.messages.context_processors.messages',
 #     )
 
-TEMPLATE_DIRS = json.loads( os.environ['EZACS__TEMPLATE_DIRS_JSON'] )  # list
-
+# template_dirs = json.loads( os.environ['EZACS__TEMPLATE_DIRS_JSON'] )  # list
+# template_dirs = [
+#     '%s/findit' % BASE_DIR,
+#     '%s/delivery' % BASE_DIR,
+#     '%s/article_request_app' % BASE_DIR
+#     ]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            '%s/findit' % BASE_DIR,
+            '%s/delivery' % BASE_DIR,
+            '%s/article_request_app' % BASE_DIR
+            ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 LOGIN_URL = os.environ['EZACS__LOGIN_URL']
 LOGIN_REDIRECT_URL = os.environ['EZACS__LOGIN_REDIRECT_URL']
