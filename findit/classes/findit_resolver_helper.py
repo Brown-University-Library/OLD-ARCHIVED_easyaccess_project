@@ -93,7 +93,7 @@ class FinditResolver( object ):
             output = json.dumps( context, sort_keys=True, indent=2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
-            resp = render( request, 'findit/index.html', context )
+            resp = render( request, 'findit_templates/index.html', context )
         log.debug( '`{id}` returning index response'.format(id=self.log_id) )
         return resp
 
