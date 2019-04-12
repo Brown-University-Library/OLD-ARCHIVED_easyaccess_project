@@ -21,7 +21,7 @@ urlpatterns = [
 
     url( r'^article_request/', include('article_request_app.urls_app', namespace='article_request') ),  # article-requests
 
-    url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),  # will likely retire
+    # url( r'^bul_link/', include('bul_link.urls', namespace='bul_link') ),  # will likely retire
 
     url( r'^bul_search/$', findit_views.bul_search, name='bul_search_url' ),
 
