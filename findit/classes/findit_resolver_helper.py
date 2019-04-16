@@ -434,7 +434,7 @@ class FinditResolver( object ):
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
             # resp = render( request, 'findit/resolve.html', context )
-            resp = render( request, 'findit/resolve_josiah.html', context )
+            resp = render( request, 'findit_templates/resolve_josiah.html', context )
         log.debug( 'returning response' )
         return resp
 
