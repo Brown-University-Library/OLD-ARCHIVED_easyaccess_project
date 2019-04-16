@@ -271,7 +271,7 @@ class CitationFormHelper( object ):
     def build_get_response( self, request, context ):
         """ Prepares GET response
             Called by views.citation_form() """
-        resp = render( request, 'findit/citation_linker_2.html', context )
+        resp = render( request, 'findit_templates/citation_linker_2.html', context )
         # log.debug( 'returning response' )
         log.debug( '`{id}` returning response'.format(id=self.log_id) )
         return resp
