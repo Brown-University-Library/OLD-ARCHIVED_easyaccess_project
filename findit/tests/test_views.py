@@ -16,6 +16,11 @@ log = logging.getLogger(__name__)
 log.debug( 'logging ready' )
 
 
+# import logging
+# existing_logger_names = logging.getLogger().manager.loggerDict.keys()
+# print( '- EXISTING_LOGGER_NAMES, `%s`' % existing_logger_names )
+
+
 # class SessionHack(object):
 #     ## based on: http://stackoverflow.com/questions/4453764/how-do-i-modify-the-session-in-the-django-test-framework
 

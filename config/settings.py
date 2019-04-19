@@ -90,6 +90,10 @@ Note: to see the imported modules' loggers, add somewhere:
     existing_logger_names = logging.getLogger().manager.loggerDict.keys()
     print '- EXISTING_LOGGER_NAMES, `%s`' % existing_logger_names
     (from <https://bytes.com/topic/python/answers/830042-dynamically-getting-loggers>)
+
+    Running the above lines from findit/tests/test_views.py, I get...
+    [19/Apr/2019 10:10:15] DEBUG [test_views-<module>()::16] logging ready
+    - EXISTING_LOGGER_NAMES, `['bs4', 'urllib3.poolmanager', 'easyaccess_project.findit.tests', 'illiad.account', 'django.db.backends.schema', 'django.request', 'django.template', 'django.server', 'findit.classes', 'illiad', 'urllib3.connection', 'bibjsontools', 'access', 'django.security.csrf', 'urllib3.response', 'urllib3.util', 'django.db', 'django.db.backends', 'easyaccess_project', 'py360link2.link360', 'findit.classes.view_info_helper', 'link360', 'urllib3', 'findit', 'beautifulsoup4', 'easyaccess_project.findit.tests.test_views', 'easyaccess_project.findit', 'urllib3.util.retry', 'django.security', 'django', 'requests', 'urllib3.connectionpool', 'py360link2']`
 """
 
 # import logging
@@ -98,13 +102,20 @@ Note: to see the imported modules' loggers, add somewhere:
 
 ## disabling module loggers
 logging.getLogger('beautifulsoup4').setLevel( logging.WARNING )
-logging.getLogger('bs4').setLevel( logging.WARNING )
 logging.getLogger('bibjsontools').setLevel( logging.WARNING )
+logging.getLogger('bs4').setLevel( logging.WARNING )
 logging.getLogger('illiad').setLevel( logging.WARNING )
 logging.getLogger('illiad.account').setLevel( logging.WARNING )
 logging.getLogger('link360').setLevel( logging.WARNING )
 logging.getLogger('py360link2').setLevel( logging.WARNING )
 logging.getLogger('requests').setLevel( logging.WARNING )
+logging.getLogger('urllib3').setLevel( logging.WARNING )
+logging.getLogger('urllib3.connection').setLevel( logging.WARNING )
+logging.getLogger('urllib3.connectionpool').setLevel( logging.WARNING )
+logging.getLogger('urllib3.poolmanager').setLevel( logging.WARNING )
+logging.getLogger('urllib3.response').setLevel( logging.WARNING )
+logging.getLogger('urllib3.util').setLevel( logging.WARNING )
+logging.getLogger('urllib3.util.retry').setLevel( logging.WARNING )
 
 
 LOGGING = {
