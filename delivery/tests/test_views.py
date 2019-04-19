@@ -113,7 +113,7 @@ class LoginViewTest(TestCase):
             TODO -- add test for incomplete querystring. """
         encoded_querystring = urlquote( 'isbn=123' )
         response = self.client.get( "/borrow/login_handler/?bib_dct_json='{}'&last_querystring=%s" % encoded_querystring, SERVER_NAME='127.0.0.1' )
-        print( 'location, ```{}```'.format(response._headers['location'][1]) )
+        # print( 'location, ```{}```'.format(response._headers['location'][1]) )
         self.assertEqual( 302, response.status_code )
         self.assertEqual( '/borrow/process_request/?isbn=123', response._headers['location'][1] )
 
