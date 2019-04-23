@@ -356,7 +356,7 @@ Some useful information for your records:
 - Notification of arrival will be sent to email address: <{email}>
 
 You can check your Illiad account at the link:
-<https://illiad.brown.edu/illiad/>
+<https://brown.illiad.oclc.org/illiad/>
 
 If you have any questions, contact the Library's Interlibrary Loan office at <interlibrary_loan@brown.edu> or call 401-863-2169.
 
