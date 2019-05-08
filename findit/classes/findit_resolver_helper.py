@@ -411,6 +411,20 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    # def update_session( self, request, context ):
+    #     """ Updates session for illiad-request-check if necessary.
+    #         Called by views.findit_base_resolver() """
+    #     if context.get( 'resolved', False ) is False:
+    #         request.session['findit_illiad_check_flag'] = 'good'
+    #         request.session['format'] = context.get( 'format', '' )
+    #         request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
+    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
+    #         request.session['citation_json'] = citation_json
+    #         request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'], context['permalink'] )
+    #         request.session['last_path'] = request.path
+    #     log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
+    #     return
+
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
@@ -420,7 +434,8 @@ class FinditResolver( object ):
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation_json'] = citation_json
-            request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'], context['permalink'] )
+            request.session['illiad_url'] = ill_url_builder.make_illiad_url(
+                context['enhanced_querystring'], request.scheme, request.get_host(), context['permalink'] )
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return
