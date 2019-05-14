@@ -140,6 +140,11 @@ def findit_base_resolver( request ):
     else:
         alog.info( '`{id}` would have redirected to sersol direct-link, ```{url}``` if FLY_TO_FULLTEXT was True'.format(id=log_id, url=fresolver.direct_link) )
 
+    ## check if genre=bookitem should be changed to genre=article
+    if fresolver.check_for_errant_bookitem_genre( request.GET, log_id ) is True:
+        alog.info( '`%s`- redirecting to updated-genre-url, ```%s```' % (log_id, fresolver.redirect_url) )
+        return HttpResponseRedirect( fresolver.redirect_url )
+
     ## if there's an ebook, put it in the session
     ( ebook_exists, ebook_label, ebook_url ) = fresolver.check_ebook( sersol_dct )
     alog.info( '`{}` ebook check complete'.format(log_id) )

@@ -366,6 +366,21 @@ class FinditResolver( object ):
         log.debug( 'return_val, `{}`'.format(return_val) )
         return return_val
 
+    def check_for_errant_bookitem_genre( self, querydct, log_id ):
+        """ Checks if genre=bookitem should be changed to genre=article.
+            If so, builds and updates self.redirect_url, which is then used in the view.
+            Called by views.findit_base_resolver() """
+        check_result = False
+        if querydct.get( 'genre', '' ) == 'bookitem':
+            if len( querydct.get('atitle', '') ) > 0:
+                if self.direct_link is not False:  # direct-link to fulltext was found
+                    check_result = True
+                    querydct_copy = querydct.copy()
+                    querydct_copy['genre'] = 'article'
+                    self.redirect_url = '%s?%s' % ( reverse('findit:findit_base_resolver_url'), querydct_copy.urlencode() )  # not logged here; logged in calling view
+        log.debug( '`%s`- check_result, `%s`' % (log_id, check_result) )
+        return check_result
+
     def _check_group_for_direct_link( self, group ):
         """ Checks a linkGroup's data for an article url; if found, updates self.direct_link
             Called by check_direct_link() """
