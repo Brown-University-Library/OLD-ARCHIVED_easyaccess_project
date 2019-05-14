@@ -113,6 +113,30 @@ class IndexPageLinksTest( TestCase ):
     ## end class IndexPageLinksTest
 
 
+class GenreEqualsBookItemTest(TestCase):
+    """ Checks handling of genre=bookitem that should be genre=article. """
+
+    def test_bad_bookitem(self):
+        response = self.client.get( '/find/',
+            {'atitle': 'The Effects of Normalization, Transformation, and Rarefaction on Clustering of OTU Abundance',
+             'au': 'Tomlinson, DeAndre A.',
+             'date': '20181201',
+             'ebscoperma_link': 'http://search.ebscohost.com/login.aspx?direct=true&site=eds-live&scope=site&db=edseee&AN=edseee.8621347&authtype=ip,sso&custid=rock',
+             'genre': 'bookitem',
+             'isbn': '9781538654880',
+             'pages': '2810-2812',
+             'sid': 'EBSCO:IEEE Xplore Digital Library',
+             'spage': '2810',
+             'title': '2018 IEEE International Conference on Bioinformatics and Biomedicine (BIBM), Bioinformatics and Biomedicine (BIBM), 2018 IEEE International Conference on'
+             }
+         )
+        self.assertEqual( 302, response.status_code )
+        redirect_url = response._headers['location'][1]
+        self.assertTrue( 'genre=article' in redirect_url )
+
+    ## end class GenreEqualsBookItemTest()
+
+
 class PmidResolverTest(TestCase):
     """ New version of above. Under construction """
 
