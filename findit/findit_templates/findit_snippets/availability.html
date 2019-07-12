@@ -51,6 +51,7 @@
                         {% endcomment %}
                         {% ifequal held.location "Annex" %}
                             &nbsp;-- <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}">request for delivery via Josiah</a></span>
+                            &nbsp;-- <span class="request-link"><a href="https://search.library.brown.edu/catalog?utf8=✓&search_field=call_number&q={{ held.call_number }}">request for delivery via Josiah</a></span>
                         {% endifequal %}
                    </li>
                 {% endfor %}
