@@ -18,6 +18,7 @@ urlpatterns = [
 
     ## -- find
     url( r'^find/info/$', RedirectView.as_view(pattern_name='status_version_url') ),  # remove after 3 months, on 2019-October-12
+    url( r'^find/my_info/$', RedirectView.as_view(pattern_name='status_shib_info_url') ),  # remove after 3 months, on 2019-October-13
     url( r'^find/', include('findit.urls', namespace='findit') ),  # resolver -- enhances, finds, redirects
 
     ## -- book and article handling
@@ -30,6 +31,7 @@ urlpatterns = [
     ## -- support urls
     url( r'^version/$', status_views.version, name='status_version_url' ),
     url( r'^error_check/$', status_views.error_check, name='status_error_check_url' ),
+    url( r'^my_info/$', status_views.shib_info, name='status_shib_info_url' ),
 
     ## -- other
     url( r'^$', RedirectView.as_view(pattern_name='findit:findit_base_resolver_url') ),

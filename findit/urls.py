@@ -16,7 +16,7 @@ urlpatterns = [
 
     url( r'^link360/$', views.link360, name='link360_url' ),
 
-    url( r'^my_info/$', views.shib_info, name='shib_info_url' ),
+    # url( r'^my_info/$', views.shib_info, name='shib_info_url' ),
 
     # url( r'^info/$', views.info, name='info_url' ),
 

@@ -277,8 +277,6 @@ FINDIT_GSCHOLAR = os.environ['EZACS__FINDIT_GSCHOLAR']
 
 FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of referring sites to not consult Summon for.
 
-FINDIT_SHIB_FRAGMENT = unicode( os.environ['EZACS__FINDIT_SHIB_FRAGMENT'] )
-
 
 # ===============================================================================
 # common settings -- used different places
@@ -301,6 +299,13 @@ SHIB_SHORTID_KEY = unicode( os.environ['EZACS__COMMON_SHIB_SHORTID_KEY'] )
 SHIB_STATUS_KEY = unicode( os.environ['EZACS__COMMON_SHIB_STATUS_KEY'] )
 SHIB_TITLE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_TITLE_KEY'] )
 SHIB_TYPE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_TYPE_KEY'] )
+
+
+# ===============================================================================
+# status_app settings
+# ===============================================================================
+
+SHIB_FRAGMENT = unicode( os.environ['EZACS__SHIB_FRAGMENT'] )  # for /my_info/ url
 
 
 # ===============================================================================

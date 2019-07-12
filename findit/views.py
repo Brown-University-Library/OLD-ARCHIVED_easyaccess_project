@@ -254,35 +254,35 @@ def server_error(request, template_name='500.html'):
     return resp
 
 
-def shib_info( request ):
-    """ Displays user's shib_info. """
-    try:
-        shib_dct = { 'datetime': unicode(datetime.datetime.now()), 'ip_perceived': unicode(request.META.get('REMOTE_ADDR', 'unknown')) }
-        for key in request.META.keys():
-            if settings.FINDIT_SHIB_FRAGMENT in key:
-                if key in [ settings.SHIB_AFFILIATION_KEY, settings.SHIB_ENTITLEMENT_KEY, settings.SHIB_AFFILIATIONSCOPED_KEY, settings.SHIB_MEMBEROF_KEY ]:
-                    elements = request.META[key].split( ';' )
-                    shib_dct[key] = sorted( elements )
-                else:
-                    shib_dct[key] = request.META[key]
-        jsn = json.dumps( shib_dct, sort_keys=True, indent=2 )
-    except Exception as e:
-        alog.debug( 'exception, `{}`'.format(unicode(repr(e))) )
-        jsn = 'problem; unable to show your shib info'
-    return HttpResponse( jsn, content_type='application/javascript; charset=utf-8' )
+# def shib_info( request ):
+#     """ Displays user's shib_info. """
+#     try:
+#         shib_dct = { 'datetime': unicode(datetime.datetime.now()), 'ip_perceived': unicode(request.META.get('REMOTE_ADDR', 'unknown')) }
+#         for key in request.META.keys():
+#             if settings.FINDIT_SHIB_FRAGMENT in key:
+#                 if key in [ settings.SHIB_AFFILIATION_KEY, settings.SHIB_ENTITLEMENT_KEY, settings.SHIB_AFFILIATIONSCOPED_KEY, settings.SHIB_MEMBEROF_KEY ]:
+#                     elements = request.META[key].split( ';' )
+#                     shib_dct[key] = sorted( elements )
+#                 else:
+#                     shib_dct[key] = request.META[key]
+#         jsn = json.dumps( shib_dct, sort_keys=True, indent=2 )
+#     except Exception as e:
+#         alog.debug( 'exception, `{}`'.format(unicode(repr(e))) )
+#         jsn = 'problem; unable to show your shib info'
+#     return HttpResponse( jsn, content_type='application/javascript; charset=utf-8' )
 
 
-def info( request ):
-    """ Returns basic data including branch & commit. """
-    rq_now = datetime.datetime.now()
-    commit = view_info_helper.get_commit()
-    branch = view_info_helper.get_branch()
-    info_txt = commit.replace( 'commit', branch )
-    resp_now = datetime.datetime.now()
-    taken = resp_now - rq_now
-    context_dct = view_info_helper.make_context( request, rq_now, info_txt, taken )
-    output = json.dumps( context_dct, sort_keys=True, indent=2 )
-    return HttpResponse( output, content_type='application/json; charset=utf-8' )
+# def info( request ):
+#     """ Returns basic data including branch & commit. """
+#     rq_now = datetime.datetime.now()
+#     commit = view_info_helper.get_commit()
+#     branch = view_info_helper.get_branch()
+#     info_txt = commit.replace( 'commit', branch )
+#     resp_now = datetime.datetime.now()
+#     taken = resp_now - rq_now
+#     context_dct = view_info_helper.make_context( request, rq_now, info_txt, taken )
+#     output = json.dumps( context_dct, sort_keys=True, indent=2 )
+#     return HttpResponse( output, content_type='application/json; charset=utf-8' )
 
 
 def bul_search( request ):

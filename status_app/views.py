@@ -21,6 +21,9 @@ from django.http import HttpResponse
 # from django.core.urlresolvers import reverse
 
 
+log = logging.getLogger('access')
+
+
 def version( request ):
     """ Returns basic data including branch & commit. """
     # return HttpResponse( 'info coming' )
@@ -38,6 +41,28 @@ def version( request ):
 def error_check( request ):
     """ For checking that admins receive error-emails. """
     if project_settings.DEBUG == True:
-        1/0
+        try:
+            1/0
+        except Exception:
+            log.exception( 'exception; traceback...' )
+            raise
     else:
         return HttpResponseNotFound( '<div>404 / Not Found</div>' )
+
+
+def shib_info( request ):
+    """ Displays user's shib_info. """
+    try:
+        shib_dct = { 'datetime': unicode(datetime.datetime.now()), 'ip_perceived': unicode(request.META.get('REMOTE_ADDR', 'unknown')) }
+        for key in request.META.keys():
+            if project_settings.SHIB_FRAGMENT in key:
+                if key in [ settings.SHIB_AFFILIATION_KEY, settings.SHIB_ENTITLEMENT_KEY, settings.SHIB_AFFILIATIONSCOPED_KEY, settings.SHIB_MEMBEROF_KEY ]:
+                    elements = request.META[key].split( ';' )
+                    shib_dct[key] = sorted( elements )
+                else:
+                    shib_dct[key] = request.META[key]
+        jsn = json.dumps( shib_dct, sort_keys=True, indent=2 )
+    except Exception as e:
+        log.debug( 'exception, `{}`'.format(unicode(repr(e))) )
+        jsn = 'problem; unable to show your shib info'
+    return HttpResponse( jsn, content_type='application/javascript; charset=utf-8' )
