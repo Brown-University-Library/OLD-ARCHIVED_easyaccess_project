@@ -8,17 +8,7 @@ import datetime, json, logging, pprint
 ## other
 from status_app.lib import version_helper
 from django.conf import settings as project_settings
-from django.http import HttpResponse
-# import bibjsontools
-# from . import app_settings
-# from .classes import view_info_helper
-# from .classes.citation_form_helper import CitationFormHelper
-# from .classes.findit_resolver_helper import FinditResolver
-# from .classes.findit_resolver_helper import RisHelper
-# from .classes.permalink_helper import Permalink
-# from bibjsontools import ris as bibjsontools_ris
-# from django.conf import settings
-# from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseNotFound
 
 
 log = logging.getLogger('access')
