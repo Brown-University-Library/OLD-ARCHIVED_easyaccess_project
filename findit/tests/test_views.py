@@ -145,17 +145,18 @@ class PmidResolverTest(TestCase):
             Should show W.H.O. link, and local Annex holding. """
         from findit.models import PrintTitle
         print_title = PrintTitle(
-            key='051230541950', issn='0512-3054', start='1950', end='2015', location='Annex', call_number='RA8 .A27' )
+            key=u'051230541950', issn=u'0512-3054', start=u'1950', end=u'2015', location=u'Annex', call_number=u'RA8 .A27' )
         print_title.save()
-        url = '/find/?pmid=11234459'
+        url = u'/find/?pmid=11234459'
         c = Client()
         response = c.get( url )
-        html = response.content
+        html8 = response.content
+        html = html8.decode( u'utf-8' )
         # log.debug( 'html, ```%s```' % html )
-        self.assertEqual( True, 'available online' in html.lower() )
-        self.assertEqual( True, 'https://login.revproxy.brown.edu/login?url=http://search.who.int/search?' in html )
-        self.assertEqual( True, 'request for delivery via josiah' in html.lower() )
-        self.assertEqual( True, 'RA8 .A27 -- ANNEX' in html )
+        self.assertEqual( True, u'available online' in html.lower() )
+        self.assertEqual( True, u'https://login.revproxy.brown.edu/login?url=http://search.who.int/search?' in html )
+        self.assertEqual( True, u'request for delivery via josiah' in html.lower() )
+        self.assertEqual( True, u'RA8 .A27 -- ANNEX' in html )
 
     # end class PmidResolverTest
 
