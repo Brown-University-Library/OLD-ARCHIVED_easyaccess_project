@@ -247,8 +247,9 @@ class BulSerSol(Resolved):
         else:
             return True
 
-    def get_citation_form(self):
-        return self.prep_resolver_form()
+    ## 2019-July-15 -- I see no references to this in the rest of the code
+    # def get_citation_form(self):
+    #     return self.prep_resolver_form()
 
     def _mapper(self, key, format):
         """
@@ -291,61 +292,63 @@ class BulSerSol(Resolved):
         ## default is to return original key
         return key
 
-    def citation_form_dict(self):
-        """
-        Map the resolved citation to the form field names.
-        Putting the original OCLC number, if present, in rfe_dat
-        """
-        ## Sent to 360 link to get a citation object.
-        # query = self.query
-        citation = self.citation
-        format = self.format
-        ## Always just use the first issn or isbn
-        issn = citation.get('issn', None)
-        if issn:
-            citation['issn'] = issn.values()[0]
-        isbn = citation.get('isbn', None)
-        if isbn:
-            citation['isbn'] = isbn[0]
+    ## 2019-July-15 -- i see no active code-references to this -- outside of findit/tests/test_utils.py
+    # def citation_form_dict(self):
+    #     """
+    #     Map the resolved citation to the form field names.
+    #     Putting the original OCLC number, if present, in rfe_dat
+    #     """
+    #     ## Sent to 360 link to get a citation object.
+    #     # query = self.query
+    #     citation = self.citation
+    #     format = self.format
+    #     ## Always just use the first issn or isbn
+    #     issn = citation.get('issn', None)
+    #     if issn:
+    #         citation['issn'] = issn.values()[0]
+    #     isbn = citation.get('isbn', None)
+    #     if isbn:
+    #         citation['isbn'] = isbn[0]
 
 
-        ## mapping lambda from http://stackoverflow.com/questions/2213334/in-python-i-have-a-dictionary-how-do-i-change-the-keys-of-this-dictionary
-        # cd = dict(map(lambda (key, value): (self._mapper(str(key), format), value), citation.items()))
-        cd = dict( map( lambda (key, value): (self._mapper(str(key), format), value), citation.items() ) )
-        ## python3 fix, from <https://stackoverflow.com/a/26543472>
-        # TODO
+    #     ## mapping lambda from http://stackoverflow.com/questions/2213334/in-python-i-have-a-dictionary-how-do-i-change-the-keys-of-this-dictionary
+    #     # cd = dict(map(lambda (key, value): (self._mapper(str(key), format), value), citation.items()))
+    #     cd = dict( map( lambda (key, value): (self._mapper(str(key), format), value), citation.items() ) )
+    #     ## python3 fix, from <https://stackoverflow.com/a/26543472>
+    #     # TODO
 
-        citation_form_dict = cd
-        citation_form_dict['rfe_dat'] = self.oclc_number
-        ## massage pages.
-        pages = citation_form_dict.get('pages', None)
-        if not pages:
-            spage = citation_form_dict.get('spage', None)
-            epage = citation_form_dict.get('epage', None)
-            if spage:
-                if epage:
-                    cpages = "%s-%s" % (spage, epage)
-                else:
-                    cpages = "%s-EOA" % (spage)
-                citation_form_dict['pages'] = cpages
-        return citation_form_dict
+    #     citation_form_dict = cd
+    #     citation_form_dict['rfe_dat'] = self.oclc_number
+    #     ## massage pages.
+    #     pages = citation_form_dict.get('pages', None)
+    #     if not pages:
+    #         spage = citation_form_dict.get('spage', None)
+    #         epage = citation_form_dict.get('epage', None)
+    #         if spage:
+    #             if epage:
+    #                 cpages = "%s-%s" % (spage, epage)
+    #             else:
+    #                 cpages = "%s-EOA" % (spage)
+    #             citation_form_dict['pages'] = cpages
+    #     return citation_form_dict
 
-    def prep_resolver_form(self):
-        citation_form_dict = self.citation_form_dict()
-        d = {}
-        format = self.format
-        ## Hook in forms.
-        if format == 'journal':
-            ## citation_form_dict['title'] = citation['atitle']
-            d['form_type'] = 'article'
-        else:
-            d['form_type'] = format
+    ## 2019-July-15 -- i see no active code-references to this
+    # def prep_resolver_form(self):
+    #     citation_form_dict = self.citation_form_dict()
+    #     d = {}
+    #     format = self.format
+    #     ## Hook in forms.
+    #     if format == 'journal':
+    #         ## citation_form_dict['title'] = citation['atitle']
+    #         d['form_type'] = 'article'
+    #     else:
+    #         d['form_type'] = format
 
-        d['article_form'] = forms.ArticleForm(citation_form_dict)
-        d['book_form'] = forms.BookForm(citation_form_dict)
-        d['dissertation_form'] = forms.DissertationForm(citation_form_dict)
-        d['patent_form'] = forms.PatentForm(citation_form_dict)
-        return d
+    #     d['article_form'] = forms.ArticleForm(citation_form_dict)
+    #     d['book_form'] = forms.BookForm(citation_form_dict)
+    #     d['dissertation_form'] = forms.DissertationForm(citation_form_dict)
+    #     d['patent_form'] = forms.PatentForm(citation_form_dict)
+    #     return d
 
     def easy_borrow_query(self):
         """
