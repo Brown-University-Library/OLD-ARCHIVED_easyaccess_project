@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 from django.contrib import admin
-from easyborrow_models import EasyBorrowRequest
-from models import Resource, Request, UserMessage, LibraryProfile
+from delivery.easyborrow_models import EasyBorrowRequest
+from delivery.models import Resource, Request, UserMessage, LibraryProfile
 
 
 class MultiDBModelAdmin(admin.ModelAdmin):

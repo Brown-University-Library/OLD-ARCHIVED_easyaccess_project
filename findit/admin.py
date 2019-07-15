@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from models import PrintTitle, Request, UserMessage
+from findit.models import PrintTitle, Request, UserMessage
 
 
 class RequestAdmin(admin.ModelAdmin):
