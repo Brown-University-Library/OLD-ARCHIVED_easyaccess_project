@@ -2,8 +2,9 @@
 
 from __future__ import unicode_literals
 
-import json, logging, pprint, random, re, time, urllib, urlparse
+import json, logging, pprint, random, re, time, urllib
 from datetime import datetime
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
