@@ -120,18 +120,19 @@ class CitationLinkerTests(unittest.TestCase):
         resolved = BulSerSol(data)
         return resolved
 
-    def test_citation_linker(self):
-        #Start page only
-        resolved = self._fetch('rft.spage=299&rft.volume=32&rft.issue=4&rft.aulast=El-Dib&SS_authors=El-Dib+M&rft.au=El-Dib+M&rft.title=Journal+of+Perinatology&SS_ReferentFormat=JournalFormat&citationsubmit=Look+Up&rft.aufirst=M&rft.atitle=Neurobehavioral+assessment+as+a+predictor+of+neurodevelopmental+outcome+in+preterm+infants&rft.genre=article&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal')
-        citation_form = resolved.citation_form_dict()
-        self.assertEqual(citation_form['pages'],
-                         '299-EOA')
-        #No pages.
-        resolved = self._fetch('rft.volume=32&rft.issue=4&rft.aulast=El-Dib&SS_authors=El-Dib+M&rft.au=El-Dib+M&rft.title=Journal+of+Perinatology&SS_ReferentFormat=JournalFormat&citationsubmit=Look+Up&rft.aufirst=M&rft.atitle=Neurobehavioral+assessment+as+a+predictor+of+neurodevelopmental+outcome+in+preterm+infants&rft.genre=article&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal')
-        citation_form = resolved.citation_form_dict()
-        self.assertEqual(citation_form.get('pages', None), None)
-        #Full page range - not supported at the moment since we are relying
-        #on 360link data and it doesn't include end pages.
+    ## 2019-July-15 -- outside of these tests, there are no active code references to citation_form_dict()
+    # def test_citation_linker(self):
+    #     #Start page only
+    #     resolved = self._fetch('rft.spage=299&rft.volume=32&rft.issue=4&rft.aulast=El-Dib&SS_authors=El-Dib+M&rft.au=El-Dib+M&rft.title=Journal+of+Perinatology&SS_ReferentFormat=JournalFormat&citationsubmit=Look+Up&rft.aufirst=M&rft.atitle=Neurobehavioral+assessment+as+a+predictor+of+neurodevelopmental+outcome+in+preterm+infants&rft.genre=article&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal')
+    #     citation_form = resolved.citation_form_dict()
+    #     self.assertEqual(citation_form['pages'],
+    #                      '299-EOA')
+    #     #No pages.
+    #     resolved = self._fetch('rft.volume=32&rft.issue=4&rft.aulast=El-Dib&SS_authors=El-Dib+M&rft.au=El-Dib+M&rft.title=Journal+of+Perinatology&SS_ReferentFormat=JournalFormat&citationsubmit=Look+Up&rft.aufirst=M&rft.atitle=Neurobehavioral+assessment+as+a+predictor+of+neurodevelopmental+outcome+in+preterm+infants&rft.genre=article&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal')
+    #     citation_form = resolved.citation_form_dict()
+    #     self.assertEqual(citation_form.get('pages', None), None)
+    #     #Full page range - not supported at the moment since we are relying
+    #     #on 360link data and it doesn't include end pages.
 
 
 
