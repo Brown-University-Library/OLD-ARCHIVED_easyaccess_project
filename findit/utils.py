@@ -307,8 +307,14 @@ class BulSerSol(Resolved):
         isbn = citation.get('isbn', None)
         if isbn:
             citation['isbn'] = isbn[0]
+
+
         ## mapping lambda from http://stackoverflow.com/questions/2213334/in-python-i-have-a-dictionary-how-do-i-change-the-keys-of-this-dictionary
-        cd = dict(map(lambda (key, value): (self._mapper(str(key), format), value), citation.items()))
+        # cd = dict(map(lambda (key, value): (self._mapper(str(key), format), value), citation.items()))
+        cd = dict( map( lambda (key, value): (self._mapper(str(key), format), value), citation.items() ) )
+        ## python3 fix, from <https://stackoverflow.com/a/26543472>
+        # TODO
+
         citation_form_dict = cd
         citation_form_dict['rfe_dat'] = self.oclc_number
         ## massage pages.
