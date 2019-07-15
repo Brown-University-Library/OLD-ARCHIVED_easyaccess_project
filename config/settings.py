@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+# from __future__ import unicode_literals
 import json, logging, os
 import dj_database_url
 
@@ -282,30 +282,30 @@ FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of ref
 # common settings -- used different places
 # ===============================================================================
 
-SHIB_AFFILIATION_KEY = unicode( os.environ['EZACS__COMMON_SHIB_AFFILIATION_KEY'] )
-SHIB_AFFILIATIONPRIMARY_KEY = unicode( os.environ['EZACS__COMMON_SHIB_AFFILIATIONPRIMARY_KEY'] )
-SHIB_AFFILIATIONSCOPED_KEY = unicode( os.environ['EZACS__COMMON_SHIB_AFFILIATIONSCOPED_KEY'] )
-SHIB_BARCODE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_BARCODE_KEY'] )
-SHIB_DEPARTMENT_KEY = unicode( os.environ['EZACS__COMMON_SHIB_DEPARTMENT_KEY'] )
-SHIB_ENTITLEMENT_KEY = unicode( os.environ['EZACS__COMMON_SHIB_ENTITLEMENT_KEY'] )
-SHIB_EPPN_KEY = unicode( os.environ['EZACS__COMMON_SHIB_EPPN_KEY'] )
-SHIB_MAIL_KEY = unicode( os.environ['EZACS__COMMON_SHIB_MAIL_KEY'] )
-SHIB_MEMBEROF_KEY = unicode( os.environ['EZACS__COMMON_SHIB_MEMBEROF_KEY'] )
-SHIB_NAMEFIRST_KEY = unicode( os.environ['EZACS__COMMON_SHIB_NAMEFIRST_KEY'] )
-SHIB_NAMELAST_KEY = unicode( os.environ['EZACS__COMMON_SHIB_NAMELAST_KEY'] )
-SHIB_NETID_KEY = unicode( os.environ['EZACS__COMMON_SHIB_NETID_KEY'] )
-SHIB_PHONE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_PHONE_KEY'] )
-SHIB_SHORTID_KEY = unicode( os.environ['EZACS__COMMON_SHIB_SHORTID_KEY'] )
-SHIB_STATUS_KEY = unicode( os.environ['EZACS__COMMON_SHIB_STATUS_KEY'] )
-SHIB_TITLE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_TITLE_KEY'] )
-SHIB_TYPE_KEY = unicode( os.environ['EZACS__COMMON_SHIB_TYPE_KEY'] )
+SHIB_AFFILIATION_KEY = os.environ['EZACS__COMMON_SHIB_AFFILIATION_KEY']
+SHIB_AFFILIATIONPRIMARY_KEY = os.environ['EZACS__COMMON_SHIB_AFFILIATIONPRIMARY_KEY']
+SHIB_AFFILIATIONSCOPED_KEY = os.environ['EZACS__COMMON_SHIB_AFFILIATIONSCOPED_KEY']
+SHIB_BARCODE_KEY = os.environ['EZACS__COMMON_SHIB_BARCODE_KEY']
+SHIB_DEPARTMENT_KEY = os.environ['EZACS__COMMON_SHIB_DEPARTMENT_KEY']
+SHIB_ENTITLEMENT_KEY = os.environ['EZACS__COMMON_SHIB_ENTITLEMENT_KEY']
+SHIB_EPPN_KEY = os.environ['EZACS__COMMON_SHIB_EPPN_KEY']
+SHIB_MAIL_KEY = os.environ['EZACS__COMMON_SHIB_MAIL_KEY']
+SHIB_MEMBEROF_KEY = os.environ['EZACS__COMMON_SHIB_MEMBEROF_KEY']
+SHIB_NAMEFIRST_KEY = os.environ['EZACS__COMMON_SHIB_NAMEFIRST_KEY']
+SHIB_NAMELAST_KEY = os.environ['EZACS__COMMON_SHIB_NAMELAST_KEY']
+SHIB_NETID_KEY = os.environ['EZACS__COMMON_SHIB_NETID_KEY']
+SHIB_PHONE_KEY = os.environ['EZACS__COMMON_SHIB_PHONE_KEY']
+SHIB_SHORTID_KEY = os.environ['EZACS__COMMON_SHIB_SHORTID_KEY']
+SHIB_STATUS_KEY = os.environ['EZACS__COMMON_SHIB_STATUS_KEY']
+SHIB_TITLE_KEY = os.environ['EZACS__COMMON_SHIB_TITLE_KEY']
+SHIB_TYPE_KEY = os.environ['EZACS__COMMON_SHIB_TYPE_KEY']
 
 
 # ===============================================================================
 # status_app settings
 # ===============================================================================
 
-SHIB_FRAGMENT = unicode( os.environ['EZACS__SHIB_FRAGMENT'] )  # for /my_info/ url
+SHIB_FRAGMENT = os.environ['EZACS__SHIB_FRAGMENT']   # for /my_info/ url
 
 
 # ===============================================================================
