@@ -2,8 +2,10 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint, urlparse
+# import logging, pprint, urlparse
+import logging, pprint
 from datetime import datetime
+from urllib.parse import parse_qs
 
 from . import forms
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
@@ -443,10 +445,11 @@ def illiad_date(datestr):
 
 
 def make_illiad_url(openurl):
-    import urlparse
-    import urllib
+    # import urlparse
+    # import urllib
     o = urllib.unquote(openurl)
-    odict = urlparse.parse_qs(o)
+    # odict = urlparse.parse_qs(o)
+    odict = parse_qs( o )
     # pprint(odict)
     out = odict
     # out['sid'] = sid
@@ -495,7 +498,8 @@ def make_illiad_url(openurl):
 class Ourl(object):
     def __init__(self, query):
         self.query = query
-        self.qdict = urlparse.parse_qs(query)
+        # self.qdict = urlparse.parse_qs(query)
+        self.qdict = parse_qs( query )
         self.cite = {}
 
     def make_cite(self):
