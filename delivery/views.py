@@ -27,7 +27,7 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.generic import TemplateView
 from py360link2 import get_sersol_data, Resolved
-from utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
+from delivery.utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 
 
 log = logging.getLogger('access')
