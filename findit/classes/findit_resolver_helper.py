@@ -265,7 +265,7 @@ class FinditResolver( object ):
             if type( sersol_dct['results'] ) == list:
                 for results_element in sersol_dct['results']:
                     # log.debug( 'results_element, ```%s```' % pprint.pformat(results_element) )
-                    ( key, value_lst ) = results_element.items()[0]
+                    ( key, value_lst ) = list( results_element.items() )[0]
                     if key == 'linkGroups':
                         if type( results_element['linkGroups'] ) == list:
                             new_holdings_dct = {
