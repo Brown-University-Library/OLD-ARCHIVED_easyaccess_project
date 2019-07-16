@@ -59,7 +59,7 @@ def findit_base_resolver( request ):
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
-    for key in request.session.keys():
+    for key in list( request.session.keys() ):
         del request.session[key]
     alog.debug( 'session.items() after refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
     alog.info( '`{}` session cleared'.format(log_id) )
