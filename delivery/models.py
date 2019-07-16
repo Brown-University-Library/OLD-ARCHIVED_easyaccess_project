@@ -471,7 +471,8 @@ def _send_admin_message(request):
     request_link = 'http://%s%s' % (Site.objects.get_current().domain,
                                     request.item.get_absolute_url())
     btext = u''
-    for k,v in request.bib.iteritems():
+    # for k,v in request.bib.iteritems():  # python2
+    for k,v in request.bib.items():
         btext += u"%s=>%s\n" % (k, v)
     body = "Request failed for request %s\n%s" % (request.item, btext)
     body += '\n\n%s' % request_link

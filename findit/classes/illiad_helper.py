@@ -51,7 +51,8 @@ class IlliadUrlBuilder( object ):
         log.debug( 'full_permalink, ```%s```' % full_permalink )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
-        for k, v in extra_dct.iteritems():
+        # for k, v in extra_dct.iteritems():  # python2
+        for k, v in extra_dct.items():
             openurl += '&%s=%s' % ( urllib.quote_plus(k), urllib.quote_plus(v) )
         illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
         log.debug( 'illiad_url, ```%s```' % illiad_url )

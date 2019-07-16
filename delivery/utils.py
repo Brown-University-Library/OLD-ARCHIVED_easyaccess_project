@@ -61,7 +61,8 @@ def make_illiad_url(bibjson):
             extra['Notes'] = ''
         extra['Notes'] += "\rNot enough data provided by original request."
     ourl = to_openurl(bib)
-    for k,v in extra.iteritems():
+    # for k,v in extra.iteritems():  # python2
+    for k,v in extra.items():
         ourl += "&%s=%s" % (urllib.quote_plus(k), urllib.quote_plus(v))
     illiad = base % ourl
     return illiad
