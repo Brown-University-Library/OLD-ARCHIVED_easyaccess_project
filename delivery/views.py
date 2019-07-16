@@ -73,7 +73,7 @@ def availability( request ):
                 oclc_num = identifier['id']
     bib_dct['isbn'] = isbn
     bib_dct['oclc_num'] = oclc_num
-    request.session['bib_dct_json'] = json.dumps(bib_dct).decode( 'utf-8' )
+    request.session['bib_dct_json'] = json.dumps(bib_dct)
 
     ## run recent-request check -- TODO
 
@@ -159,7 +159,7 @@ def shib_login( request ):
     if easyborrow_volumes != '':
         bib_dct = json.loads( request.session.get('bib_dct_json', '{}') )
         bib_dct['easyborrow_volumes'] = easyborrow_volumes
-        request.session['bib_dct_json'] = json.dumps( bib_dct ).decode( 'utf-8' )
+        request.session['bib_dct_json'] = json.dumps( bib_dct )
     bib_dct_json = request.session['bib_dct_json']
 
     ## get other info from session
@@ -303,7 +303,7 @@ def process_request( request ):
     ## redirect to shib-logout url (which will redirect to message-url)
     request.session['message'] = message
     redirect_url = '{main_url}?{querystring}'.format(
-        main_url=reverse('delivery:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
+        main_url=reverse('delivery:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '') )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
     return HttpResponseRedirect( redirect_url )
 
