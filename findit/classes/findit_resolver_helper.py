@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import json, logging, pprint, random, re, time, urllib
 from datetime import datetime
 from urllib.parse import parse_qs
@@ -37,7 +35,7 @@ class RisHelper( object ):
     def make_title( self, bib_dct ):
         """ Grabs title from bib_dct else uses datestamp.
             Called by views.ris_citation() """
-        title = bib_dct.get( 'title', unicode(datetime.now()).replace(' ', '_') )
+        title = bib_dct.get( 'title', str(datetime.now()).replace(' ', '_') )
         slugified_title = slugify( title )
         log.debug( 'slugified_title, `{}`'.format(slugified_title) )
         return slugified_title
@@ -236,7 +234,7 @@ class FinditResolver( object ):
         try:
             sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of py360link2
         except Exception as e:
-            log.debug( '`{id}` problem grabbing sersol data, ```{val}```'.format(id=self.log_id, val=unicode(repr(e))) )
+            log.debug( '`{id}` problem grabbing sersol data, ```{val}```'.format(id=self.log_id, val=repr(e)) )
             sersol_dct = {}
         log.debug( '`{id}` sersol_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(sersol_dct)) )
         return sersol_dct
@@ -330,7 +328,7 @@ class FinditResolver( object ):
                     sersol_dct['results'][0]['format'] = 'journal'
                     log.debug( 'sersol_dct updated, now, ```{}```'.format(pprint.pformat(sersol_dct)) )
         except Exception as e:
-            log.debug( 'ok error on pubmed book check, ```{}```'.format(unicode(repr(e))) )
+            log.debug( 'ok error on pubmed book check, ```{}```'.format(repr(e)) )
             sersol_dct = sersol_dct
         log.debug( 'sersol_dct not updated' )
         return sersol_dct
@@ -503,7 +501,7 @@ class FinditResolver( object ):
             ( context['citation'], context['link_groups'], context['format'] ) = ( resolved_obj.citation, resolved_obj.link_groups, resolved_obj.format )
             context['enhanced_querystring'] = resolved_obj.openurl
         except Exception as e:
-            log.error( 'exception resolving object, ```%s```' % unicode(repr(e)) )
+            log.error( 'exception resolving object, ```%s```' % repr(e) )
             context['citation'] = {}
         log.debug( 'context after resolve, ```%s```' % pprint.pformat(context) )
         return context
