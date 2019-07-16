@@ -514,7 +514,8 @@ class FinditResolver( object ):
         citation = context.get( 'citation', None )
         if citation:
             try:
-                issn = citation.get('issn', {}).values()[0]
+                # issn = citation.get('issn', {}).values()[0]
+                issn = list( citation.get('issn', {}).values() )[0]
             except ( IndexError, AttributeError ):
                 issn = citation.get('issn', '')
             citation['issn_display'] = issn
