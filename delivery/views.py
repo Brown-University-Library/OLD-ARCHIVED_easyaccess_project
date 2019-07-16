@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-import json, logging, os, pprint, urlparse
+import json, logging, os, pprint
 from datetime import datetime
 
 import bibjsontools, markdown, requests
