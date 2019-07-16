@@ -2,6 +2,11 @@
 
 from __future__ import unicode_literals
 
+"""
+This file is not used.
+Here temporarily to see the python2 version.
+"""
+
 import logging, pprint, urlparse
 from datetime import datetime
 
