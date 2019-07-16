@@ -9,16 +9,16 @@ import datetime, json, logging, pprint, re
 
 ## other
 import bibjsontools
-from . import app_settings
-from .classes import view_info_helper
-from .classes.citation_form_helper import CitationFormHelper
-from .classes.findit_resolver_helper import FinditResolver
-from .classes.findit_resolver_helper import RisHelper
-from .classes.permalink_helper import Permalink
 from bibjsontools import ris as bibjsontools_ris
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
+from findit import app_settings
+from findit.classes import view_info_helper
+from findit.classes.citation_form_helper import CitationFormHelper
+from findit.classes.findit_resolver_helper import FinditResolver
+from findit.classes.findit_resolver_helper import RisHelper
+from findit.classes.permalink_helper import Permalink
 
 
 EXTRAS_CACHE_TIMEOUT = 604800  # 60*60*24*7 == one week

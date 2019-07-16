@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
-# import logging, pprint, urlparse
 import logging, pprint
+log = logging.getLogger('access')
+
 from datetime import datetime
 from urllib.parse import parse_qs
 
-from . import forms
-from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
-from .app_settings import PRINT_PROVIDER
-from .models import PrintTitle
+from findit import forms
+from findit.app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
+from findit.app_settings import PRINT_PROVIDER
+from findit.models import PrintTitle
+log.debug( 'HERE-A' )
+import py360link2
+log.debug( 'HERE-B' )
 from py360link2 import Resolved
-
+log.debug( 'HERE-C' )
 
 CURRENT_YEAR = datetime.now().year
 
