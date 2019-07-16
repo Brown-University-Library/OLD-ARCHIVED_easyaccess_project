@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import logging, pprint
 import bibjsontools
 from django.core.urlresolvers import reverse
@@ -185,7 +183,7 @@ class CitationFormDctMaker( object ):
         # log.debug( 'initial v, `%s`' % v )
         if (v) and (v != '') and (type(v) == list):
             v = v[0]
-        if type(v) == unicode and 'accessionnumber' in v:
+        if type(v) == str and 'accessionnumber' in v:
             v = v.replace('<accessionnumber>', '').replace('</accessionnumber>', '')  # for oclc numbers
         log.debug( 'returned v, `%s`' % v )
         return v
