@@ -2,7 +2,8 @@
 
 from __future__ import unicode_literals
 
-import json, logging, pprint, random, urllib, urlparse
+import json, logging, pprint, random, urllib
+from urllib.parse import urlparse
 import requests
 from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
