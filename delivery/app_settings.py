@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import json, os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -9,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 SHIB_LOGIN_URL = os.environ['EZACS__BORROW_SHIB_LOGIN_URL']
 SHIB_LOGOUT_URL_ROOT = os.environ['EZACS__COMMON_SHIB_LOGOUT_URL_ROOT']
-SHIB_LOGOUT_URL_RETURN_ROOT = unicode( os.environ['EZACS__BORROW_SHIB_LOGOUT_URL_RETURN_ROOT'] )
+SHIB_LOGOUT_URL_RETURN_ROOT = os.environ['EZACS__BORROW_SHIB_LOGOUT_URL_RETURN_ROOT']
 DEVELOPMENT_SHIB_DCT = json.loads( os.environ['EZACS__COMMON_DEVELOPMENT_SHIB_JSON'] )
 
 AVAILABILITY_URL_ROOT = os.environ['EZACS__BORROW_AVAILABILITY_URL_ROOT']
@@ -57,6 +55,6 @@ SERVICE_CHECK_STRING = getattr(settings, 'DELIVERY_SERVICE_CHECK_STRING', None)
 
 SERSOL_KEY = os.environ['EZACS__BUL_LINK_SERSOL_KEY']
 
-REQUIRED_GROUPER_GROUP = unicode( os.environ['EZACS__BORROW_REQUIRED_GROUP'] )
-PERMISSION_DENIED_PHONE = unicode( os.environ['EZACS__BORROW_PERMISSION_DENIED_PHONE'] )
-PERMISSION_DENIED_EMAIL = unicode( os.environ['EZACS__BORROW_PERMISSION_DENIED_EMAIL'] )
+REQUIRED_GROUPER_GROUP = os.environ['EZACS__BORROW_REQUIRED_GROUP']
+PERMISSION_DENIED_PHONE = os.environ['EZACS__BORROW_PERMISSION_DENIED_PHONE']
+PERMISSION_DENIED_EMAIL = os.environ['EZACS__BORROW_PERMISSION_DENIED_EMAIL']
