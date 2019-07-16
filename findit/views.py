@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
 """
 Views for the resolver.
 """
@@ -74,7 +73,7 @@ def findit_base_resolver( request ):
     #     return resp
 
     ## temp fix for testing from in-production redirects
-    if fresolver.check_double_encoded_querystring( unicode(request.META.get('QUERY_STRING', '')) ):
+    if fresolver.check_double_encoded_querystring( request.META.get('QUERY_STRING', '') ):
         alog.info( '`{id}` double-encoded querystring found, gonna redirect to, ```{url}```'.format(id=log_id, url=fresolver.redirect_url) )
         return HttpResponseRedirect( fresolver.redirect_url )
 
