@@ -42,7 +42,7 @@ def availability( request ):
     """ Manages borrow landing page where availability checks happen.
         Should get here after landing at 'find' urls, when item is a book. """
     log_id = request.session.get( 'log_id', '' )
-    querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+    querystring = request.META.get('QUERY_STRING', '')
     log.debug( '`{id}` starting; querystring, `{val}`'.format(id=log_id, val=querystring) )
     log.debug( '`{id}` availability() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
