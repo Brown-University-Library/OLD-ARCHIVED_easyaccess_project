@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import json, logging, pprint
 import bibjsontools, requests
 from django.utils.encoding import uri_to_iri
@@ -30,7 +28,7 @@ class AvailabilityViewHelper(object):
             Called by views.availability() """
         log.debug( 'querystring, ```{}```'.format(querystring) )
         log.debug( 'type(querystring), `{}`'.format(type(querystring)) )
-        assert type(querystring) == unicode
+        assert type(querystring) == str
         iri_querystring = uri_to_iri( querystring )
         bib_dct = bibjsontools.from_openurl( iri_querystring )
         log.debug( 'bib_dct, ```{}```'.format(pprint.pformat(bib_dct)) )
@@ -76,7 +74,7 @@ class JosiahAvailabilityChecker(object):
             self.store_other_holdings( api_jdct )
             log.debug( 'run_isbn_search() complete' )
         except Exception as e:
-            log.warning( 'isbn-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
+            log.warning( 'isbn-availability-check may have timed out, error, ```%s```' % repr(e) )
 
     def run_oclc_search( self, oclc_num ):
         """ Runs availability-api oclcl search.
@@ -96,7 +94,7 @@ class JosiahAvailabilityChecker(object):
             self.store_other_holdings( api_jdct )
             log.debug( 'run_oclc_search() complete' )
         except Exception as e:
-            log.warning( 'oclc-availability-check may have timed out, error, ```%s```' % unicode(repr(e)) )
+            log.warning( 'oclc-availability-check may have timed out, error, ```%s```' % repr(e) )
 
     def store_available_bibs( self, api_jdct ):
         """ Updates self.available_bibs
