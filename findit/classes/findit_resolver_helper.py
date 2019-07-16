@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import json, logging, pprint, random, re, time, urllib
 from datetime import datetime
+from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -245,12 +246,12 @@ class FinditResolver( object ):
             Updates it and returns it.
             Called by views.findit_base_resolver() """
         eds_fulltext_url = None
-        parse_result = urlparse.parse_qs( querystring )
+        parse_result = parse_qs( querystring )
         log.debug( 'parse_result, ```%s```' % pprint.pformat(parse_result) )
         url_lst = parse_result.get( 'ebscoperma_link', None )  # single-element list
         if url_lst:
             probable_url = url_lst[0]
-            parse2_result = urlparse.parse_qs( probable_url )
+            parse2_result = parse_qs( probable_url )
             log.debug( 'parse2_result, ```%s```' % pprint.pformat(parse2_result) )
             if 'AN' in parse2_result.keys() and 'db' in parse2_result.keys():
                 eds_fulltext_url = 'https://login.revproxy.brown.edu/login?url=%s' % probable_url  # url-param intentionally not encoded for revproxy
