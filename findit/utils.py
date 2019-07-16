@@ -2,8 +2,10 @@
 
 from __future__ import unicode_literals
 
-import logging, pprint, urlparse
+# import logging, pprint, urlparse
+import logging, pprint
 from datetime import datetime
+from urllib.parse import parse_qs
 
 from . import forms
 from .app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
@@ -310,6 +312,7 @@ class BulSerSol(Resolved):
     #     if isbn:
     #         citation['isbn'] = isbn[0]
     #     ## mapping lambda from http://stackoverflow.com/questions/2213334/in-python-i-have-a-dictionary-how-do-i-change-the-keys-of-this-dictionary
+    #     ## line below fails in python3; for python3 fix, see <https://stackoverflow.com/a/26543472>
     #     cd = dict(map(lambda (key, value): (self._mapper(str(key), format), value), citation.items()))
     #     citation_form_dict = cd
     #     citation_form_dict['rfe_dat'] = self.oclc_number
@@ -437,10 +440,11 @@ def illiad_date(datestr):
 
 
 def make_illiad_url(openurl):
-    import urlparse
-    import urllib
+    # import urlparse
+    # import urllib
     o = urllib.unquote(openurl)
-    odict = urlparse.parse_qs(o)
+    # odict = urlparse.parse_qs(o)
+    odict = parse_qs( o )
     # pprint(odict)
     out = odict
     # out['sid'] = sid
@@ -489,7 +493,8 @@ def make_illiad_url(openurl):
 class Ourl(object):
     def __init__(self, query):
         self.query = query
-        self.qdict = urlparse.parse_qs(query)
+        # self.qdict = urlparse.parse_qs(query)
+        self.qdict = parse_qs( query )
         self.cite = {}
 
     def make_cite(self):
