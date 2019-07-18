@@ -371,6 +371,8 @@ class FinditResolver( object ):
         """ Checks if genre=bookitem should be changed to genre=article.
             If so, builds and updates self.redirect_url, which is then used in the view.
             Called by views.findit_base_resolver() """
+        log.debug( f'`{log_id}` - querydct, ```{pprint.pformat(querydct)}```' )
+        log.debug( f'`{log_id}` - self.direct_link, `{self.direct_link}`' )
         check_result = False
         if querydct.get( 'genre', '' ) == 'bookitem':
             if len( querydct.get('atitle', '') ) > 0:

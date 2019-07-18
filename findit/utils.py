@@ -10,16 +10,10 @@ from findit import forms
 from findit.app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM
 from findit.app_settings import PRINT_PROVIDER
 from findit.models import PrintTitle
-log.debug( 'HERE-A' )
-import py360link2
-log.debug( 'HERE-B' )
 from py360link2 import Resolved
-log.debug( 'HERE-C' )
+
 
 CURRENT_YEAR = datetime.now().year
-
-
-# dictConfig( settings.LOGGING )
 log = logging.getLogger('access')
 
 
