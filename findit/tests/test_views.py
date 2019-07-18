@@ -131,6 +131,7 @@ class GenreEqualsBookItemTest(TestCase):
              }
          )
         self.assertEqual( 302, response.status_code )
+        print( f'response._headers, ```{pprint.pformat(response._headers)}```' )
         redirect_url = response._headers['location'][1]
         self.assertTrue( 'genre=article' in redirect_url )
 

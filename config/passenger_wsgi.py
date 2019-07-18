@@ -14,13 +14,13 @@ Note: no need to activate the virtual-environment here for passenger.
 - the project's httpd/passenger.conf section allows specification of the python-path via `PassengerPython`, which auto-activates it.
 - the auto-activation provides access to modules, but not, automatically, env-vars.
 - passenger env-vars loading under python3.x is enabled via the `SenEnv` entry in the project's httpd/passenger.conf section.
-  - usage: `SetEnv BUL_CBP__SETTINGS_PATH /path/to/BUL_CBP__env_settings.sh`
+  - usage: `SetEnv PREFIX__ENV_SETTINGS_PATH /path/to/project_env_settings.sh`
   - `SenEnv` requires apache env_module; info: <https://www.phusionpassenger.com/library/indepth/environment_variables.html>,
      enabled by default on macOS 10.12.4, and our dev and production servers.
 
 For activating the virtual-environment manually, don't source the settings file directly. Instead, add to `project_env/bin/activate`:
-  export BUL_CBP__SETTINGS_PATH="/path/to/BUL_CBP__env_settings.sh"
-  source $BUL_CBP__SETTINGS_PATH
+  export PREFIX__ENV_SETTINGS_PATH="/path/to/project_env_settings.sh"
+  source $PREFIX__ENV_SETTINGS_PATH
 This allows not only the sourcing, but also creates the env-var used below by shellvars.
 """
 
