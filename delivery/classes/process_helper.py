@@ -80,8 +80,7 @@ If you believe you should be permitted to use interlibrary-loan services, please
                 'group': shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
         except Exception as e:
             # log.error( 'exception creating patron_dct, ```{}```'.format(unicode(repr(e))) )  # py2
-            log.exception( 'exception creating patron_dct' )
-            raise Exception( 'Problem creating patron information.' )
+            log.exception( 'exception creating patron_dct; will show traceback, but continue and return `{}`' )
         log.debug( f'patron_dct, ```{pprint.pformat(patron_dct)}```' )
         return patron_dct
 
@@ -147,7 +146,8 @@ If you believe you should be permitted to use interlibrary-loan services, please
             log.debug( 'ezb_rqst.created, ```%s```' % unicode(ezb_rqst.created) )
             return ezb_rqst
         except Exception as e:
-            log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )
+            # log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )  # py2
+            log.exception( 'error populating the ezb-request instance; will show traceback, but continue and return `None`.' )
             return None
 
     def build_submitted_message( self, firstname, lastname, bib_dct, ezb_db_id, email ):
