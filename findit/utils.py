@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging, pprint
+import logging, pprint, urllib
 log = logging.getLogger('access')
 
 from datetime import datetime
@@ -438,7 +438,8 @@ def illiad_date(datestr):
 def make_illiad_url(openurl):
     # import urlparse
     # import urllib
-    o = urllib.unquote(openurl)
+    # o = urllib.unquote(openurl)  # py2
+    o = urllib.parse.unquote( openurl )
     # odict = urlparse.parse_qs(o)
     odict = parse_qs( o )
     # pprint(odict)
