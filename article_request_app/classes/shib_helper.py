@@ -23,8 +23,9 @@ class ShibLoginHelper( object ):
             ill_url=urlquote(illiad_url),
             qs=urlquote(querystring),
             id=log_id )
-        querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'
-        assert type(querystring) == unicode, type(querystring)
+        # querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'  # py2
+        querystring = urlencode( {'target': segment} )  # yields 'target=(encoded-segment)'
+        assert type(querystring) == str, type(querystring)
         log.debug( 'querystring for redirect to shib SP login url, ```%s```' % querystring )
         return querystring
 
@@ -46,7 +47,7 @@ class ShibLoginHelper( object ):
         """ Checks that params are unicode-strings.
             Called by build_localdev_querystring() and build_shib_sp_querystring() """
         for param in params_list:
-            assert type(param) == unicode, type(param)
+            assert type(param) == str, type(param)
         return
 
     ## end class ShibLoginHelper()
