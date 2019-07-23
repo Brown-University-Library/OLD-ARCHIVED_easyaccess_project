@@ -21,8 +21,9 @@ class ShibLoginHelper( object ):
             qs=urlquote( last_querystring ),
             shrtlnk=urlquote( shortlink_url ),
             id=log_id )
-        querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'
-        assert type(querystring) == unicode, type(querystring)
+        # querystring = urlencode( {'target': segment} ).decode( 'utf-8' )  # yields 'target=(encoded-segment)'  # py2
+        querystring = urlencode( {'target': segment} )  # yields 'target=(encoded-segment)'
+        assert type(querystring) == str, type(querystring)
         log.debug( 'querystring for redirect to shib SP login url, ```%s```' % querystring )
         return querystring
 
