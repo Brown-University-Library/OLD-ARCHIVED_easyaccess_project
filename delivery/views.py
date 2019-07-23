@@ -167,7 +167,8 @@ def shib_login( request ):
     shortlink_url = request.session['permalink_url']
 
     ## clear session so we know that regular-processing happens same way as revproxy-processing
-    for key in request.session.keys():
+    # for key in request.session.keys():  # py2
+    for key in list( request.session.keys() ):
         del request.session[key]
     log.debug( '`{id}` session.items() after deletion, ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
