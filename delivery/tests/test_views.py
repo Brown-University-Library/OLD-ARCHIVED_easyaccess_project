@@ -55,7 +55,7 @@ class AvailabilityViewTest(TestCase):
         session.save()
         response = self.client.get( '/borrow/availability/?isbn=123' )
         self.assertEqual( 200, response.status_code )
-        self.assertTrue( 'easyBorrow' in response.content )
+        self.assertTrue( b'easyBorrow' in response.content )
 
     def test_availability_w_ebook(self):
         """ Good hit should return response. """
