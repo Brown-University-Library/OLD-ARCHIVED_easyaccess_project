@@ -103,7 +103,8 @@ class FinditResolver( object ):
             Called by views.findit_base_resolver() """
         return_val = False
         if '%25' in querystring:
-            good_querystring = urllib.unquote( querystring )
+            # good_querystring = urllib.unquote( querystring )  # py2
+            good_querystring = urllib.parse.unquote( querystring )
             self.redirect_url = '{main_url}?{querystring}'.format( main_url=reverse('findit:findit_base_resolver_url'), querystring=good_querystring )
             return_val = True
         # log.debug( 'bad url found, {}'.format(return_val) )
@@ -267,7 +268,7 @@ class FinditResolver( object ):
                     log.debug( f'key, `{key}`' )
                     log.debug( f'value_lst, ```{value_lst}```' )
                     if key == 'linkGroups':
-                        log.debug( f'type(results_element["link_groups"]), ```{type(results_element["link_groups"])}```' )
+                        log.debug( f'type(results_element["linkGroups"]), ```{type(results_element["linkGroups"])}```' )
                         if type( results_element['linkGroups'] ) == list:
                             new_holdings_dct = {
                                 'holdingData': {
