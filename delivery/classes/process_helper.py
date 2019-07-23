@@ -66,6 +66,7 @@ If you believe you should be permitted to use interlibrary-loan services, please
     def _make_patron_dct( self, shib_dct ):
         """ Maps shib info to db info.
             Called by save_to_easyborrow() """
+        log.debug( f'shib_dct, ```{pprint.pformat(shib_dct)}```' )
         patron_dct = {}
         try:
             patron_dct = {
@@ -78,8 +79,10 @@ If you believe you should be permitted to use interlibrary-loan services, please
                 'email': shib_dct['email'],
                 'group': shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
         except Exception as e:
-            log.error( 'exception creating patron_dct, ```{}```'.format(unicode(repr(e))) )
-        log.debug( 'patron_dct, ```{}```'.format(pprint.pformat(patron_dct)) )
+            # log.error( 'exception creating patron_dct, ```{}```'.format(unicode(repr(e))) )  # py2
+            log.exception( 'exception creating patron_dct' )
+            raise Exception( 'Problem creating patron information.' )
+        log.debug( f'patron_dct, ```{pprint.pformat(patron_dct)}```' )
         return patron_dct
 
     # def _make_item_dct( self, bib_dct, querystring ):
