@@ -148,7 +148,7 @@ class ProcessViewTest(TestCase):
         """ Direct hit should redirect to /find/?a=b. """
         response = self.client.get( '/borrow/process_request/?isbn=123', follow=True )
         # log.debug( 'response.context, ```{}```'.format(pprint.pformat(response.context)) )
-        self.assertEqual( True, 'div id="citation-linker"' in response.content )  # first redirects back to '/find/?isbn=123', then to 'find/citation_form/?isbn=123'
+        self.assertEqual( True, b'div id="citation-linker"' in response.content )  # first redirects back to '/find/?isbn=123', then to 'find/citation_form/?isbn=123'
 
     # def test_hit_process_properly(self):
     #     """ Direct hit should redirect to 'message' with a link to findit/find. """
