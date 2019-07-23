@@ -258,36 +258,84 @@ class FinditResolver( object ):
         return eds_fulltext_url
 
     def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
-        """ Adds fulltext-url to sersol-dct.
+        """ Adds eds_fulltext_url to sersol-dct if the sersol-dct contains a linkGroup.
             Called by views.findit_base_resolver() """
         if 'results' in sersol_dct.keys():
             if type( sersol_dct['results'] ) == list:
                 for results_element in sersol_dct['results']:
-                    log.debug( f'results_element, ```{pprint.pformat(results_element)}```' )
-                    ( key, value_lst ) = list( results_element.items() )[0]
-                    log.debug( f'key, `{key}`' )
-                    log.debug( f'value_lst, ```{value_lst}```' )
-                    if key == 'linkGroups':
-                        log.debug( f'type(results_element["linkGroups"]), ```{type(results_element["linkGroups"])}```' )
-                        if type( results_element['linkGroups'] ) == list:
-                            new_holdings_dct = {
-                                'holdingData': {
-                                    'databaseId': '',
-                                    'databaseName': 'EBSCO Discovery Service',
-                                    'providerId': '',
-                                    'providerName': 'EBSCO Discovery Service',
-                                    'startDate': ''},
-                                'type': 'holding',
-                                'url': {
-                                    'article': eds_fulltext_url,
-                                    'issue': '',
-                                    'journal': '',
-                                    'source': ''}
-                            }
-                            results_element['linkGroups'].append(new_holdings_dct)
-                            break
+                    append_complete = False
+                    for segment in list( results_element.items() ):  # segment example, `('format', 'book')`, or `('linkGroups', [])`, or `('citation', {long:dict})`
+                        ( key, value_lst ) = ( segment[0], segment[1] )
+                        if key == 'linkGroups':
+                            if type( results_element['linkGroups'] ) == list:
+                                results_element['linkGroups'].append( self.define_new_holdings_dct(eds_fulltext_url) )
+                                append_complete = True
+                                break
+                    if append_complete is True:
+                        log.debug( 'additional break occurring' )
+                        break
         log.debug( 'returning sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
         return sersol_dct
+
+    def define_new_holdings_dct( self, eds_fulltext_url ):
+        """ Builds and returns the dct structure with the added eds_fulltext_url.
+            Called by add_eds_fulltext_url() """
+        new_holdings_dct = {
+            'holdingData': {
+                'databaseId': '',
+                'databaseName': 'EBSCO Discovery Service',
+                'providerId': '',
+                'providerName': 'EBSCO Discovery Service',
+                'startDate': ''},
+            'type': 'holding',
+            'url': {
+                'article': eds_fulltext_url,
+                'issue': '',
+                'journal': '',
+                'source': ''}
+        }
+        log.debug( 'added new_holdings_dct' )
+        return new_holdings_dct
+
+    ## good, but refactoring
+    # def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
+    #     """ Adds fulltext-url to sersol-dct if the sersol-dct contains a linkGroup.
+    #         Called by views.findit_base_resolver() """
+    #     if 'results' in sersol_dct.keys():
+    #         if type( sersol_dct['results'] ) == list:
+    #             for results_element in sersol_dct['results']:
+    #                 log.debug( f'results_element, ```{pprint.pformat(results_element)}```' )
+    #                 log.debug( f'results_element.items(), ```{pprint.pformat(results_element.items())}```' )
+    #                 append_complete = False
+    #                 for segment in list( results_element.items() ):  # segment example, `('format', 'book')`, or `('linkGroups', [])`, or `('citation', {long:dict})`
+    #                     ( key, value_lst ) = ( segment[0], segment[1] )
+    #                     log.debug( f'key, `{key}`' )
+    #                     log.debug( f'value_lst, ```{value_lst}```' )
+    #                     if key == 'linkGroups':
+    #                         log.debug( f'type(results_element["linkGroups"]), ```{type(results_element["linkGroups"])}```' )
+    #                         if type( results_element['linkGroups'] ) == list:
+    #                             new_holdings_dct = {
+    #                                 'holdingData': {
+    #                                     'databaseId': '',
+    #                                     'databaseName': 'EBSCO Discovery Service',
+    #                                     'providerId': '',
+    #                                     'providerName': 'EBSCO Discovery Service',
+    #                                     'startDate': ''},
+    #                                 'type': 'holding',
+    #                                 'url': {
+    #                                     'article': eds_fulltext_url,
+    #                                     'issue': '',
+    #                                     'journal': '',
+    #                                     'source': ''}
+    #                             }
+    #                             results_element['linkGroups'].append(new_holdings_dct)
+    #                             append_complete = True
+    #                             break
+    #                 if append_complete is True:
+    #                     log.debug( 'additional break occurring' )
+    #                     break
+    #     log.debug( 'returning sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
+    #     return sersol_dct
 
     def check_bad_issn( self, sersol_dct ):
         """ Checks for invalid issn and builds redirect url.
