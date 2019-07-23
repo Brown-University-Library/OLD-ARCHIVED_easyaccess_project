@@ -3,7 +3,9 @@
 
 from __future__ import unicode_literals
 
-import json, logging, pprint, urlparse
+import json, logging, pprint
+from urllib.parse import parse_qs, urlparse
+
 from delivery import views
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -97,7 +99,8 @@ class LoginViewTest(TestCase):
         log.debug( 'response.status_code, {}'.format(response.status_code) )
         self.assertEqual( 302, response.status_code )
         redirect_url = response._headers['location'][1]
-        parse_result = urlparse.urlparse( redirect_url )
+        # parse_result = urlparse.urlparse( redirect_url )  # py2
+        parse_result = urlparse( redirect_url )
         self.assertEqual( '/borrow/login_handler/', parse_result.path )
         self.assertEqual(
             'bib_dct_json=%7B%22color%22%3A%20%22r%5Cu00e9d%22%7D&last_querystring=isbn%3D123&permalink_url=foo&ezlogid=',
@@ -105,7 +108,8 @@ class LoginViewTest(TestCase):
             )
         self.assertEqual(
             { 'bib_dct_json': ['{"color": "r\\u00e9d"}'], 'last_querystring': ['isbn=123'], 'permalink_url': ['foo'] },
-            urlparse.parse_qs(parse_result.query)
+            # urlparse.parse_qs(parse_result.query)  # py2
+            parse_qs(parse_result.query)
             )
 
     def test_hit_login_handler_complete_querystring(self):
