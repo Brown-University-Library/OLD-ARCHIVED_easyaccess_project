@@ -35,7 +35,7 @@ class ShibLoginHelper( object ):
             qs=urlquote( last_querystring ),
             shrtlnk=urlquote( shortlink_url ),
             id=log_id )
-        assert type(querystring) == unicode, type(querystring)
+        assert type(querystring) == str, type(querystring)
         log.debug( 'querystring for localdev redirect to views.login_handler(), ```%s```' % querystring )
         return querystring
 
@@ -43,7 +43,7 @@ class ShibLoginHelper( object ):
         """ Checks that params are unicode-strings.
             Called by build_localdev_querystring() and build_shib_sp_querystring() """
         for param in params_list:
-            assert type(param) == unicode, type(param)
+            assert type(param) == str, type(param)
         return
 
     ## end class ShibLoginHelper()
