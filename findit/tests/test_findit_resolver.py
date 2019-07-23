@@ -232,9 +232,6 @@ class FinditResolverTest( TestCase ):
             self.resolver.prep_eds_fulltext_url( querystring )
             )
 
-    ######################################################################
-    ## add add_eds_fulltext_url()
-
     def test_add_eds_fulltext_url__360_direct_links_exist(self):
         """ Checks addition of eds url when 360Link direct-links are found. """
         fulltext_url = 'https://foo/'
