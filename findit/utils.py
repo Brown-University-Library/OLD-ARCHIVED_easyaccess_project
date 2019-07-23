@@ -478,7 +478,8 @@ def make_illiad_url(openurl):
     endpage = odict.get('rft.epage', None)
     if (not endpage) or (endpage == ''):
         out['rft.epage'] = 'EOA'
-    ourl = urllib.urlencode(out, doseq=True)
+    # ourl = urllib.urlencode(out, doseq=True)  # py2
+    ourl = urllib.parse.urlencode( out, doseq=True )
     return ourl
 
 
