@@ -39,7 +39,7 @@ class ShibLoginHelper( object ):
             ill_url=urlquote(illiad_url),
             qs=urlquote(querystring),
             id=log_id )
-        assert type(querystring) == unicode, type(querystring)
+        assert type(querystring) == str, type(querystring)
         log.debug( 'querystring for localdev redirect to views.login_handler(), ```%s```' % querystring )
         return querystring
 
