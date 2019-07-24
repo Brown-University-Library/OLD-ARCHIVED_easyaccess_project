@@ -12,27 +12,27 @@ import dj_database_url
 BASE_DIR = os.path.dirname( os.path.dirname(os.path.abspath(__file__)) )  # does not include trailing slash
 # print( 'BASE_DIR, ```%s```' % BASE_DIR )
 
-SECRET_KEY = os.environ['EZACS__SECRET_KEY']
+SECRET_KEY = os.environ['EZACS3__SECRET_KEY']
 
-DEBUG = json.loads( os.environ['EZACS__DEBUG_JSON'] )  # will be True or False
-DEBUG2 = json.loads( os.environ['EZACS__DEBUG2_JSON'] )  # will be True or False
+DEBUG = json.loads( os.environ['EZACS3__DEBUG_JSON'] )  # will be True or False
+DEBUG2 = json.loads( os.environ['EZACS3__DEBUG2_JSON'] )  # will be True or False
 
 # TEMPLATE_DEBUG = DEBUG
 
-ADMINS = json.loads( os.environ['EZACS__ADMINS_JSON'] )
+ADMINS = json.loads( os.environ['EZACS3__ADMINS_JSON'] )
 MANAGERS = ADMINS
 
 SITE_ID = 1
 
-DATABASES = json.loads( os.environ['EZACS__DATABASES_JSON'] )
+DATABASES = json.loads( os.environ['EZACS3__DATABASES_JSON'] )
 
 TIME_ZONE = 'America/New_York'
 
 USE_TZ = False
 
 ## https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_URL = os.environ['EZACS__STATIC_URL']
-STATIC_ROOT = os.environ['EZACS__STATIC_ROOT']  # needed for collectstatic command
+STATIC_URL = os.environ['EZACS3__STATIC_URL']
+STATIC_ROOT = os.environ['EZACS3__STATIC_ROOT']  # needed for collectstatic command
 
 APPEND_SLASH = True
 
@@ -71,13 +71,13 @@ SESSION_ENGINE="django.contrib.sessions.backends.signed_cookies"
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.environ['EZACS__CACHE_LOCATION'],
+        'LOCATION': os.environ['EZACS3__CACHE_LOCATION'],
     }
 }
 
-SERVER_EMAIL = os.environ['EZACS__SERVER_EMAIL']
-EMAIL_HOST = os.environ['EZACS__EMAIL_HOST']
-EMAIL_PORT = int( os.environ['EZACS__EMAIL_PORT'] )
+SERVER_EMAIL = os.environ['EZACS3__SERVER_EMAIL']
+EMAIL_HOST = os.environ['EZACS3__EMAIL_HOST']
+EMAIL_PORT = int( os.environ['EZACS3__EMAIL_PORT'] )
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
@@ -143,13 +143,13 @@ LOGGING = {
         'illiad_log_file':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.environ['EZACS__ILLIAD_LOG_FILE'],
+            'filename': os.environ['EZACS3__ILLIAD_LOG_FILE'],
             'formatter': 'verbose'
         },
         'access_log_file':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.environ['EZACS__ACCESS_LOG_FILE'],
+            'filename': os.environ['EZACS3__ACCESS_LOG_FILE'],
             'formatter': 'verbose'
         },
         'mail_admins': {
@@ -162,17 +162,17 @@ LOGGING = {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
+            'propagate': json.loads( os.environ['EZACS3__LOG_PROPAGATE_LEVEL_JSON'] ),
             },
         'illiad': {
             'handlers': ['illiad_log_file'],
-            'level': os.environ['EZACS__ILLIAD_LOG_LEVEL'],
-            'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
+            'level': os.environ['EZACS3__ILLIAD_LOG_LEVEL'],
+            'propagate': json.loads( os.environ['EZACS3__LOG_PROPAGATE_LEVEL_JSON'] ),
             },
         'access': {
             'handlers': ['access_log_file'],
-            'level': os.environ['EZACS__ACCESS_LOG_LEVEL'],
-            'propagate': json.loads( os.environ['EZACS__LOG_PROPAGATE_LEVEL_JSON'] ),
+            'level': os.environ['EZACS3__ACCESS_LOG_LEVEL'],
+            'propagate': json.loads( os.environ['EZACS3__LOG_PROPAGATE_LEVEL_JSON'] ),
             },
         }
     }
@@ -191,7 +191,7 @@ AUTHENTICATION_BACKENDS = (
 #     'django.contrib.messages.context_processors.messages',
 #     )
 
-# template_dirs = json.loads( os.environ['EZACS__TEMPLATE_DIRS_JSON'] )  # list
+# template_dirs = json.loads( os.environ['EZACS3__TEMPLATE_DIRS_JSON'] )  # list
 # template_dirs = [
 #     '%s/findit' % BASE_DIR,
 #     '%s/delivery' % BASE_DIR,
@@ -217,12 +217,12 @@ TEMPLATES = [
     },
 ]
 
-LOGIN_URL = os.environ['EZACS__LOGIN_URL']
-LOGIN_REDIRECT_URL = os.environ['EZACS__LOGIN_REDIRECT_URL']
+LOGIN_URL = os.environ['EZACS3__LOGIN_URL']
+LOGIN_REDIRECT_URL = os.environ['EZACS3__LOGIN_REDIRECT_URL']
 
-ALLOWED_HOSTS = json.loads( os.environ['EZACS__ALLOWED_HOSTS_JSON'] )
+ALLOWED_HOSTS = json.loads( os.environ['EZACS3__ALLOWED_HOSTS_JSON'] )
 
-CSRF_TRUSTED_ORIGINS = json.loads( os.environ['EZACS__CSRF_TRUSTED_ORIGINS_JSON'] )
+CSRF_TRUSTED_ORIGINS = json.loads( os.environ['EZACS3__CSRF_TRUSTED_ORIGINS_JSON'] )
 
 ## end of project-level settings
 
@@ -231,31 +231,31 @@ CSRF_TRUSTED_ORIGINS = json.loads( os.environ['EZACS__CSRF_TRUSTED_ORIGINS_JSON'
 ## findit app settings
 ## ============================================================================
 
-BUL_LINK_SERSOL_KEY = os.environ['EZACS__BUL_LINK_SERSOL_KEY']
-BUL_LINK_CACHE_TIMEOUT = int( os.environ['EZACS__BUL_LINK_CACHE_TIMEOUT'] ) * ( (60 * 60) * 24 )  # days, converted to required seconds
-BUL_LINK_PERMALINK_PREFIX = os.environ['EZACS__BUL_LINK_PERMALINK_PREFIX']
-BUL_LINK_SERSOL_TIMEOUT = int( os.environ['EZACS__BUL_LINK_SERSOL_TIMEOUT'] )  # seconds to wait for hitting the sersol api
+BUL_LINK_SERSOL_KEY = os.environ['EZACS3__BUL_LINK_SERSOL_KEY']
+BUL_LINK_CACHE_TIMEOUT = int( os.environ['EZACS3__BUL_LINK_CACHE_TIMEOUT'] ) * ( (60 * 60) * 24 )  # days, converted to required seconds
+BUL_LINK_PERMALINK_PREFIX = os.environ['EZACS3__BUL_LINK_PERMALINK_PREFIX']
+BUL_LINK_SERSOL_TIMEOUT = int( os.environ['EZACS3__BUL_LINK_SERSOL_TIMEOUT'] )  # seconds to wait for hitting the sersol api
 
-FINDIT_PERMALINK_PREFIX = os.environ['EZACS__FINDIT_PERMALINK_PREFIX']
-FINDIT_PRINT_PROVIDER = os.environ['EZACS__FINDIT_PRINT_PROVIDER']
+FINDIT_PERMALINK_PREFIX = os.environ['EZACS3__FINDIT_PERMALINK_PREFIX']
+FINDIT_PRINT_PROVIDER = os.environ['EZACS3__FINDIT_PRINT_PROVIDER']
 
-FINDIT_BOOK_RESOLVER = os.environ['EZACS__FINDIT_BOOK_RESOLVER']
+FINDIT_BOOK_RESOLVER = os.environ['EZACS3__FINDIT_BOOK_RESOLVER']
 
-FINDIT_ILLIAD_URL = os.environ['EZACS__FINDIT_ILLIAD_URL']
-FINDIT_ILLIAD_KEY = os.environ['EZACS__FINDIT_ILLIAD_KEY']
-FINDIT_ILLIAD_REMOTE_AUTH_URL = os.environ['EZACS__FINDIT_ILLIAD_REMOTE_AUTH_URL']
-FINDIT_ILLIAD_REMOTE_AUTH_HEADER = os.environ['EZACS__FINDIT_ILLIAD_REMOTE_AUTH_HEADER']
-FINDIT_EMAIL_FROM = os.environ['EZACS__FINDIT_EMAIL_FROM']
+FINDIT_ILLIAD_URL = os.environ['EZACS3__FINDIT_ILLIAD_URL']
+FINDIT_ILLIAD_KEY = os.environ['EZACS3__FINDIT_ILLIAD_KEY']
+FINDIT_ILLIAD_REMOTE_AUTH_URL = os.environ['EZACS3__FINDIT_ILLIAD_REMOTE_AUTH_URL']
+FINDIT_ILLIAD_REMOTE_AUTH_HEADER = os.environ['EZACS3__FINDIT_ILLIAD_REMOTE_AUTH_HEADER']
+FINDIT_EMAIL_FROM = os.environ['EZACS3__FINDIT_EMAIL_FROM']
 
-FINDIT_MENDELEY_CONSUMER_KEY = os.environ['EZACS__FINDIT_MENDELEY_CONSUMER_KEY']
-FINDIT_MENDELEY_SECRET_KEY = os.environ['EZACS__FINDIT_MENDELEY_SECRET_KEY']
+FINDIT_MENDELEY_CONSUMER_KEY = os.environ['EZACS3__FINDIT_MENDELEY_CONSUMER_KEY']
+FINDIT_MENDELEY_SECRET_KEY = os.environ['EZACS3__FINDIT_MENDELEY_SECRET_KEY']
 
-FINDIT_MAS_KEY = os.environ['EZACS__FINDIT_MAS_KEY']  # microsoft academic search?
+FINDIT_MAS_KEY = os.environ['EZACS3__FINDIT_MAS_KEY']  # microsoft academic search?
 
-FINDIT_STAFF_USERS = json.loads( os.environ['EZACS__FINDIT_STAFF_USERS_JSON'] )  # list; these will be given staff status for the admin app
+FINDIT_STAFF_USERS = json.loads( os.environ['EZACS3__FINDIT_STAFF_USERS_JSON'] )  # list; these will be given staff status for the admin app
 
-FINDIT_SUMMON_ID = os.environ['EZACS__FINDIT_SUMMON_ID']
-FINDIT_SUMMON_KEY = os.environ['EZACS__FINDIT_SUMMON_KEY']
+FINDIT_SUMMON_ID = os.environ['EZACS3__FINDIT_SUMMON_ID']
+FINDIT_SUMMON_KEY = os.environ['EZACS3__FINDIT_SUMMON_KEY']
 
 FINDIT_SERVICE_ACTIVE = True  # notes said "Turn on or off." -- why would this ever be off?
 
@@ -273,7 +273,7 @@ FINDIT_DB_SORT_BY = [
 FINDIT_DB_PUSH_TOP = []
 FINDIT_DB_PUSH_BOTTOM = ['EBSCOhost', 'LexisNexis', 'EBSCO Discovery Service']
 
-FINDIT_GSCHOLAR = os.environ['EZACS__FINDIT_GSCHOLAR']
+FINDIT_GSCHOLAR = os.environ['EZACS3__FINDIT_GSCHOLAR']
 
 FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of referring sites to not consult Summon for.
 
@@ -282,44 +282,44 @@ FINDIT_SKIP_SUMMON_DIRECT_LINK = ['summon', 'worldcat', 'pubmed']  # list of ref
 # common settings -- used different places
 # ===============================================================================
 
-SHIB_AFFILIATION_KEY = os.environ['EZACS__COMMON_SHIB_AFFILIATION_KEY']
-SHIB_AFFILIATIONPRIMARY_KEY = os.environ['EZACS__COMMON_SHIB_AFFILIATIONPRIMARY_KEY']
-SHIB_AFFILIATIONSCOPED_KEY = os.environ['EZACS__COMMON_SHIB_AFFILIATIONSCOPED_KEY']
-SHIB_BARCODE_KEY = os.environ['EZACS__COMMON_SHIB_BARCODE_KEY']
-SHIB_DEPARTMENT_KEY = os.environ['EZACS__COMMON_SHIB_DEPARTMENT_KEY']
-SHIB_ENTITLEMENT_KEY = os.environ['EZACS__COMMON_SHIB_ENTITLEMENT_KEY']
-SHIB_EPPN_KEY = os.environ['EZACS__COMMON_SHIB_EPPN_KEY']
-SHIB_MAIL_KEY = os.environ['EZACS__COMMON_SHIB_MAIL_KEY']
-SHIB_MEMBEROF_KEY = os.environ['EZACS__COMMON_SHIB_MEMBEROF_KEY']
-SHIB_NAMEFIRST_KEY = os.environ['EZACS__COMMON_SHIB_NAMEFIRST_KEY']
-SHIB_NAMELAST_KEY = os.environ['EZACS__COMMON_SHIB_NAMELAST_KEY']
-SHIB_NETID_KEY = os.environ['EZACS__COMMON_SHIB_NETID_KEY']
-SHIB_PHONE_KEY = os.environ['EZACS__COMMON_SHIB_PHONE_KEY']
-SHIB_SHORTID_KEY = os.environ['EZACS__COMMON_SHIB_SHORTID_KEY']
-SHIB_STATUS_KEY = os.environ['EZACS__COMMON_SHIB_STATUS_KEY']
-SHIB_TITLE_KEY = os.environ['EZACS__COMMON_SHIB_TITLE_KEY']
-SHIB_TYPE_KEY = os.environ['EZACS__COMMON_SHIB_TYPE_KEY']
+SHIB_AFFILIATION_KEY = os.environ['EZACS3__COMMON_SHIB_AFFILIATION_KEY']
+SHIB_AFFILIATIONPRIMARY_KEY = os.environ['EZACS3__COMMON_SHIB_AFFILIATIONPRIMARY_KEY']
+SHIB_AFFILIATIONSCOPED_KEY = os.environ['EZACS3__COMMON_SHIB_AFFILIATIONSCOPED_KEY']
+SHIB_BARCODE_KEY = os.environ['EZACS3__COMMON_SHIB_BARCODE_KEY']
+SHIB_DEPARTMENT_KEY = os.environ['EZACS3__COMMON_SHIB_DEPARTMENT_KEY']
+SHIB_ENTITLEMENT_KEY = os.environ['EZACS3__COMMON_SHIB_ENTITLEMENT_KEY']
+SHIB_EPPN_KEY = os.environ['EZACS3__COMMON_SHIB_EPPN_KEY']
+SHIB_MAIL_KEY = os.environ['EZACS3__COMMON_SHIB_MAIL_KEY']
+SHIB_MEMBEROF_KEY = os.environ['EZACS3__COMMON_SHIB_MEMBEROF_KEY']
+SHIB_NAMEFIRST_KEY = os.environ['EZACS3__COMMON_SHIB_NAMEFIRST_KEY']
+SHIB_NAMELAST_KEY = os.environ['EZACS3__COMMON_SHIB_NAMELAST_KEY']
+SHIB_NETID_KEY = os.environ['EZACS3__COMMON_SHIB_NETID_KEY']
+SHIB_PHONE_KEY = os.environ['EZACS3__COMMON_SHIB_PHONE_KEY']
+SHIB_SHORTID_KEY = os.environ['EZACS3__COMMON_SHIB_SHORTID_KEY']
+SHIB_STATUS_KEY = os.environ['EZACS3__COMMON_SHIB_STATUS_KEY']
+SHIB_TITLE_KEY = os.environ['EZACS3__COMMON_SHIB_TITLE_KEY']
+SHIB_TYPE_KEY = os.environ['EZACS3__COMMON_SHIB_TYPE_KEY']
 
 
 # ===============================================================================
 # status_app settings
 # ===============================================================================
 
-SHIB_FRAGMENT = os.environ['EZACS__SHIB_FRAGMENT']   # for /my_info/ url
+SHIB_FRAGMENT = os.environ['EZACS3__SHIB_FRAGMENT']   # for /my_info/ url
 
 
 # ===============================================================================
 # misc settings to properly categorize
 # ===============================================================================
 
-DELIVERY_SERVICE_CHECK_STRING = os.environ['EZACS__DELIVERY_SERVICE_CHECK_STRING']
+DELIVERY_SERVICE_CHECK_STRING = os.environ['EZACS3__DELIVERY_SERVICE_CHECK_STRING']
 
 ## Previous note:
     #We will use this setting to redirect users coming from some IPs to the old
     #interface.  This is a temporary solution to the Shib logout issue.
 ## Don't know if the old url is still there.
-CLASSIC_EZBORROW = os.environ['EZACS__CLASSIC_EZBORROW']  # url to old landing page.
-CLASSIC_IPS = json.loads( os.environ['EZACS__CLASSIC_IPS_JSON'] )
+CLASSIC_EZBORROW = os.environ['EZACS3__CLASSIC_EZBORROW']  # url to old landing page.
+CLASSIC_IPS = json.loads( os.environ['EZACS3__CLASSIC_IPS_JSON'] )
 
 
 ## eof

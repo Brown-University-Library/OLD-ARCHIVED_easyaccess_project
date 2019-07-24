@@ -336,7 +336,7 @@ def prep_book_request(request):
         pass
     req.volumes = bib.get('_volume_note', '')
     #This sersol url is required at the moment for the controller code.
-    req.sfxurl = 'http://%s.search.serialssolutions.com/?%s' % ( os.environ['EZACS__BUL_LINK_SERSOL_KEY'], bib.get('_query') )
+    req.sfxurl = 'http://%s.search.serialssolutions.com/?%s' % ( os.environ['EZACS3__BUL_LINK_SERSOL_KEY'], bib.get('_query') )
     req.eppn = user.username.replace('@brown.edu', '')
     req.name = "%s %s" % (user.first_name, user.last_name)
     req.firstname = user.first_name

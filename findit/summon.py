@@ -7,8 +7,8 @@ import httplib2, requests
 from datetime import datetime
 
 
-api_id = os.environ['EZACS__SUMMON_API_ID']
-api_key = os.environ['EZACS__SUMMON_API_KEY']
+api_id = os.environ['EZACS3__SUMMON_API_ID']
+api_key = os.environ['EZACS3__SUMMON_API_KEY']
 
 log = logging.getLogger('access')
 log.debug( 'summon.py loaded' )

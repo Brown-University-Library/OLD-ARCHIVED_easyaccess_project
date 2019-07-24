@@ -11,9 +11,9 @@ import os, urllib
 import sys
 
 
-base = os.environ['EZACS__FINDIT_TESTS__PROFILE_REQUEST__BASE']
-host = os.environ['EZACS__FINDIT_TESTS__PROFILE_REQUEST__HOST']
-path = os.environ['EZACS__FINDIT_TESTS__PROFILE_REQUEST__PATH']
+base = os.environ['EZACS3__FINDIT_TESTS__PROFILE_REQUEST__BASE']
+host = os.environ['EZACS3__FINDIT_TESTS__PROFILE_REQUEST__HOST']
+path = os.environ['EZACS3__FINDIT_TESTS__PROFILE_REQUEST__PATH']
 
 infile = open(sys.argv[1])
 

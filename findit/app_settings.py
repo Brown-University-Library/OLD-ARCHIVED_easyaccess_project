@@ -22,7 +22,7 @@ SERVICE_OFFLINE = getattr(settings, 'FINDIT_SERVICE_OFFLINE', False)
 # End service status settings.
 # ===============================================================================
 
-SERSOL_KEY = os.environ['EZACS__BUL_LINK_SERSOL_KEY']
+SERSOL_KEY = os.environ['EZACS3__BUL_LINK_SERSOL_KEY']
 
 # For admin
 STAFF_USERS = getattr(settings, 'FINDIT_STAFF_USERS', [])
@@ -46,7 +46,7 @@ ILLIAD_REMOTE_AUTH_HEADER = getattr(settings, 'FINDIT_ILLIAD_REMOTE_AUTH_HEADER'
 if ILLIAD_REMOTE_AUTH_HEADER is None:
     raise ImproperlyConfigured('Illiad remote auth header is required.')
 
-ILLIAD_URL_ROOT = os.environ['EZACS__FINDIT_ILLIAD_URL']  # `http...OpenURL?%s`
+ILLIAD_URL_ROOT = os.environ['EZACS3__FINDIT_ILLIAD_URL']  # `http...OpenURL?%s`
 
 EMAIL_FROM = getattr(settings, 'FINDIT_EMAIL_FROM', None)
 
@@ -66,7 +66,7 @@ if not (SUMMON_ID or SUMMON_KEY):
     raise ImproperlyConfigured('Summon creditials are required SUMMON_ID and SUMMON_KEY.')
 
 # For reporting problems
-PROBLEM_URL = os.environ['EZACS__PROBLEM_REPORT_URL'] + '%s&entry_4=%s'
+PROBLEM_URL = os.environ['EZACS3__PROBLEM_REPORT_URL'] + '%s&entry_4=%s'
 
 # Timeout for urllib2 requests to third party sources
 EXTRAS_TIMEOUT = getattr(settings, 'FINDIT_EXTRAS_TIMEOUT', 10)
@@ -79,7 +79,7 @@ DB_PUSH_TOP = getattr(settings, 'FINDIT_DB_PUSH_TOP', [])
 DB_PUSH_BOTTOM = getattr(settings, 'FINDIT_DB_PUSH_BOTTOM', [])
 
 ## if true, will take user directly to full text when it's found; if false, will show landing page.
-FLY_TO_FULLTEXT = json.loads( os.environ['EZACS__FINDIT_GO_DIRECT_TO_FULLTEXT_JSON'] )
+FLY_TO_FULLTEXT = json.loads( os.environ['EZACS3__FINDIT_GO_DIRECT_TO_FULLTEXT_JSON'] )
 
 
 ## EOF ###

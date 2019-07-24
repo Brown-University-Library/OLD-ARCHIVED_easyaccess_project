@@ -54,7 +54,7 @@ class FinditResolver( object ):
         self.referrer = ''
         self.redirect_url = ''
         self.log_id = ''
-        # self.ABOUT_PATH = unicode( os.environ['EZACS__FINDIT_ABOUT_PATH'] )
+        # self.ABOUT_PATH = unicode( os.environ['EZACS3__FINDIT_ABOUT_PATH'] )
 
     def get_log_id( self ):
         """ Returns log-identifier string.

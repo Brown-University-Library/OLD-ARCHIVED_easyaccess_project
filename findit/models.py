@@ -45,8 +45,8 @@ class Request(models.Model):
                 self.user.username.rstrip('@brown.edu'),
                 self.item.referrer,
                 self.item.query ),
-            os.environ['EZACS__FINDIT_MODELS_REQUEST_MAIL_FROM'],
-            json.loads( os.environ['EZACS__FINDIT_MODELS_REQUEST_MAIL_TO_JSON'] ),
+            os.environ['EZACS3__FINDIT_MODELS_REQUEST_MAIL_FROM'],
+            json.loads( os.environ['EZACS3__FINDIT_MODELS_REQUEST_MAIL_TO_JSON'] ),
             fail_silently=False
         )
 
