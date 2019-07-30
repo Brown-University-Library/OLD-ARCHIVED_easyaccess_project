@@ -173,8 +173,6 @@ def illiad_request( request ):
     return resp
 
 
-
-
 def illiad_handler( request ):
     """ Processes the confirmation 'Submit' button behind-the-scenes by submitting the request to illiad and reading the result.
         Then redirects user (behind-the-scenes) to views.shib_logout() for the SP shib-logout ( which will then direct user to views.message() )
