@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 import json, logging, pprint, random, urllib
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 import requests
 from article_request_app import settings_app
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
@@ -51,7 +51,7 @@ class IlliadArticleSubmitter( object ):
         querystring = parse_obj.query
         log.debug( '`%s` - querystring, ```%s```' % (self.log_id, querystring) )
         log.debug( 'type(querystring), `%s`' % type(querystring) )
-        decoded_querystring = urllib.unquote( querystring )
+        decoded_querystring = unquote( querystring )
         log.debug( '`%s` - decoded_querystring, ```%s```' % (self.log_id, decoded_querystring) )
         return decoded_querystring
 

@@ -4,7 +4,7 @@ import logging, pprint, urllib
 log = logging.getLogger('access')
 
 from datetime import datetime
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, unquote
 
 from findit import forms
 from findit.app_settings import DB_SORT_BY, DB_PUSH_TOP, DB_PUSH_BOTTOM

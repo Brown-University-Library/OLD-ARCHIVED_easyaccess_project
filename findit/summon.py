@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import base64, hashlib, hmac, json, logging, os, pprint, unittest, urllib
 import httplib2, requests
 from datetime import datetime
@@ -34,7 +32,7 @@ class SummonSearch(object):
         summonAccept = self.accept
         summonThedate = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
         summonQS = "&".join(sorted(query.split('&')))
-        summonQS = urllib.unquote_plus(summonQS)
+        summonQS = urllib.parse.unquote_plus(summonQS)
         summonIdString = summonAccept + "\n" + summonThedate + "\n" + self.host + "\n" + self.path + "\n" + summonQS + "\n"
         summonDigest = base64.encodestring(hmac.new(summonSecretKey, unicode(summonIdString), hashlib.sha1).digest())
         summonAuthstring = "Summon " + summonAccessID + ';' + summonDigest

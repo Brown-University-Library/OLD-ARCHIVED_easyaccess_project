@@ -441,7 +441,7 @@ def illiad_date(datestr):
 def make_illiad_url(openurl):
     import urlparse
     import urllib
-    o = urllib.unquote(openurl)
+    o = urllib.parse.unquote(openurl)
     odict = urlparse.parse_qs(o)
     # pprint(odict)
     out = odict
