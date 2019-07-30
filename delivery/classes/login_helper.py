@@ -25,7 +25,8 @@ class LoginViewHelper(object):
             Called by views.login_handler() """
         ( referrer_ok, redirect_url, last_path, shib_status ) = ( False, '', session_dct.get('last_path', ''), session_dct.get('shib_status', '') )
         log.debug( 'last_path, `{}`'.format(session_dct.get('last_path', '')) )
-        if last_path == '/easyaccess/borrow/availability/':
+        # if last_path == '/easyaccess/borrow/availability/':
+        if '/borrow/availability/' in last_path:
             referrer_ok = True
         if referrer_ok is False:
             redirect_url = '{findit_url}?{querystring}'.format( findit_url=reverse('findit:findit_base_resolver_url'), querystring=meta_dct.get('QUERY_STRING', '') )
