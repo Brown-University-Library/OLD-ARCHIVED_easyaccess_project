@@ -45,12 +45,6 @@ def shib_login( request ):
     for key in list( request.session.keys() ):
         del request.session[key]
 
-
-        # for key in list(d):
-        #     if not d[key]:
-        #         d.pop(key)
-
-
     ## check if localdev
     if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
         log.debug( 'localdev, so redirecting right to login_handler' )
@@ -58,7 +52,15 @@ def shib_login( request ):
         redirect_url = '%s?%s' % ( reverse('article_request:login_handler_url'), querystring )
     else:
         log.debug( 'not localdev, so building target url, and redirecting to shib SP login url' )
-        querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
+        # querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
+        querystring = shib_login_helper.build_shib_sp_querystring(
+            reverse('article_request:login_handler_url'),
+            citation_json,
+            format,
+            illiad_url,
+            querystring,
+            log_id
+            )
         redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
     return HttpResponseRedirect( redirect_url )
 

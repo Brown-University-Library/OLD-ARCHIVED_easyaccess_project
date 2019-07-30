@@ -124,7 +124,8 @@ class ViewsTest( TestCase ):
         """ If from '/easyaccess/article_request/login_handler/', should display page. """
         ## with session
         session = self.session_hack.session
-        session['last_path'] = '/easyaccess/article_request/login_handler/'
+        # session['last_path'] = '/easyaccess/article_request/login_handler/'
+        session['last_path'] = '/article_request/login_handler/'
         # session['last_querystring'] = 'isbn=123'
         session.save()
         response = self.client.get( '/article_request/illiad/?a=b', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed
