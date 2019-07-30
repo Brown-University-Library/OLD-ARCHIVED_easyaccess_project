@@ -37,7 +37,7 @@ def shib_login( request ):
     citation_json = request.session.get( 'citation_json', '{}' )
     format = request.session.get( 'format', '' )
     illiad_url = request.session.get( 'illiad_url', '' )
-    querystring = request.META.get('QUERY_STRING', '').decode('utf-8')
+    querystring = request.META.get('QUERY_STRING', '')
 
     ## clear session so non-rev and rev work same way
     for key in request.session.keys():
@@ -244,7 +244,7 @@ def illiad_handler( request ):
 
     ## build shib_logout() redirect url
     redirect_url = '{main_url}?{querystring}'.format(
-        main_url=reverse('article_request:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '').decode('utf-8') )
+        main_url=reverse('article_request:shib_logout_url'), querystring=request.META.get('QUERY_STRING', '') )
     log.debug( 'redirect_url, ```{}```'.format(redirect_url) )
 
     ## redirect
