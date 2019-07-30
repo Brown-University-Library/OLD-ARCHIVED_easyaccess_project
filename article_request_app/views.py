@@ -40,8 +40,16 @@ def shib_login( request ):
     querystring = request.META.get('QUERY_STRING', '')
 
     ## clear session so non-rev and rev work same way
-    for key in request.session.keys():
+    # for key in request.session.keys():
+    #     del request.session[key]
+    for key in list( request.session.keys() ):
         del request.session[key]
+
+
+        # for key in list(d):
+        #     if not d[key]:
+        #         d.pop(key)
+
 
     ## check if localdev
     if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
