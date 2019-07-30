@@ -131,6 +131,16 @@ class ViewsTest( TestCase ):
         self.assertEqual( 200, response.status_code )
         self.assertTrue( b'Please click submit to confirm.' in response.content )
 
+    def test_try_request_from_illiad_link(self):
+        """ '/easyaccess/article_request/shib_login/?...', should get to...
+            '/article_request/login_handler/?...', and eventually end up at...
+            '/easyaccess/article_request/illiad/?...' """
+        response = self.client.get( '/article_request/shib_login/?a=b', SERVER_NAME='127.0.0.1' )
+        self.assertEqual( 302, response.status_code )
+        # print( 'response._headers, ```%s```' % response._headers )
+        redirect_url = response._headers['location'][1]
+        self.assertTrue( '/article_request/login_handler/?' in redirect_url )
+
     # end class ViewsTest()
 
 
