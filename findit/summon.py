@@ -34,7 +34,7 @@ class SummonSearch(object):
         summonQS = "&".join(sorted(query.split('&')))
         summonQS = urllib.parse.unquote_plus(summonQS)
         summonIdString = summonAccept + "\n" + summonThedate + "\n" + self.host + "\n" + self.path + "\n" + summonQS + "\n"
-        summonDigest = base64.encodestring(hmac.new(summonSecretKey, unicode(summonIdString), hashlib.sha1).digest())
+        summonDigest = base64.encodestring(hmac.new(summonSecretKey, str(summonIdString), hashlib.sha1).digest())
         summonAuthstring = "Summon " + summonAccessID + ';' + summonDigest
         summonAuthstring = summonAuthstring.replace('\n', '')
         header_dct = {

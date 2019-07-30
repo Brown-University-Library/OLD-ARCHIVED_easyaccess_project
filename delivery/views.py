@@ -282,13 +282,15 @@ def process_request( request ):
     try:
         illiad_helper.manage_illiad_user_check( shib_dct )
     except Exception as e:
-        log.error( 'exception checking illiad for new-user, ```{}```'.format(unicode(repr(e))) )
+        # log.error( 'exception checking illiad for new-user, ```{}```'.format(unicode(repr(e))) )
+        log.exception( 'exception checking illiad for new-user; traceback follows, but processing continues' )
 
     ## check illiad `type`
     try:
         illiad_helper.check_illiad_type( shib_dct )
     except Exception as e:
-        log.error( 'exception checking illiad for user-type, ```{}```'.format(unicode(repr(e))) )
+        # log.error( 'exception checking illiad for user-type, ```{}```'.format(unicode(repr(e))) )
+        log.exception( 'exception checking illiad for user-type; traceback follows, but processing continues' )
 
     ## save new request
     # process_view_helper.save_request( user_obj, resource_obj )

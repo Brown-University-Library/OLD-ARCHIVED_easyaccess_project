@@ -39,7 +39,7 @@ class EasyBorrowRequest(models.Model):
     staffnote = models.CharField(max_length=765, default='')
     request_status = models.CharField(max_length=90, default='not_yet_processed')
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.id)
 
     class Meta:

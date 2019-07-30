@@ -86,7 +86,7 @@ class LibraryProfile(models.Model):
         d['status'] = self.primary_affiliation()
         return d
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.user.username
 
 #===============================================================================
@@ -117,7 +117,7 @@ class UserMessage(models.Model):
         self.date_modified = datetime.now()
         super(UserMessage, self).save()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.type)
 
 #===============================================================================
@@ -148,8 +148,8 @@ class Resource(models.Model):
             return ('delivery:request-short', (),
                     {'tiny': tiny})
 
-    def __unicode__(self):
-        return unicode(self.id)
+    def __str__(self):
+        return str( self.id )
 
 #===============================================================================
 # Holds request information.  Processes the request in the appropriate system -
@@ -215,7 +215,7 @@ class Request(models.Model):
         self.date_modified = datetime.now()
         super(Request, self).save()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s-%s" % (self.item, self.user)
 
 

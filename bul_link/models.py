@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+""" STILL USED? """
 
 from datetime import datetime
 
@@ -31,5 +31,5 @@ class Resource(models.Model):
                 {'tiny': tiny})
 
 
-    def __unicode__(self):
-        return unicode(self.id)
+    def __str__(self):
+        return str( self.id )

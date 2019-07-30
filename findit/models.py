@@ -21,7 +21,7 @@ class PrintTitle(models.Model):
     location = models.CharField(max_length=25, blank=True, null=True)
     call_number = models.CharField(max_length=50, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s to %s" % (self.issn, self.start, self.end)
 
 
@@ -50,7 +50,7 @@ class Request(models.Model):
             fail_silently=False
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s-%s" % (self.item, self.user)
 
 
@@ -79,5 +79,5 @@ class UserMessage(models.Model):
         self.date_modified = datetime.now()
         super(UserMessage, self).save()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.type)

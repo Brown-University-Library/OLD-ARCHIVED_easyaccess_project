@@ -77,7 +77,8 @@ class IlliadHelper( object ):
             if result == 'registered':
                 success_check = True
         except Exception as e:
-            log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )  ## success_check already initialized to False
+            # log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )  # success_check already initialized to False
+            log.exception( '(common classes) - exception on new user registration; traceback follows, but processing will continue' )  # success_check already initialized to False
         log.debug( 'success_check, `%s`' % success_check )
         return success_check
 

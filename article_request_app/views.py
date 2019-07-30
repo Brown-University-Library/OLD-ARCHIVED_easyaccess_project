@@ -237,7 +237,8 @@ def illiad_handler( request ):
             subject, body, ffrom, [addr], fail_silently=True )
         log.debug( 'mail sent' )
     except Exception as e:
-        log.error( 'exception sending mail, ```{}```'.format(unicode(repr(e))) )
+        # log.error( 'exception sending mail, ```{}```'.format(unicode(repr(e))) )
+        log.exception( f'exception sending mail' )
 
     ## store message
     request.session['message'] = '{}\n---'.format( body )

@@ -43,7 +43,7 @@ def error_check( request ):
 def shib_info( request ):
     """ Displays user's shib_info. """
     try:
-        shib_dct = { 'datetime': unicode(datetime.datetime.now()), 'ip_perceived': unicode(request.META.get('REMOTE_ADDR', 'unknown')) }
+        shib_dct = { 'datetime': str(datetime.datetime.now()), 'ip_perceived': request.META.get('REMOTE_ADDR', 'unknown') }
         for key in request.META.keys():
             if project_settings.SHIB_FRAGMENT in key:
                 if key in [ project_settings.SHIB_AFFILIATION_KEY, project_settings.SHIB_ENTITLEMENT_KEY, project_settings.SHIB_AFFILIATIONSCOPED_KEY, project_settings.SHIB_MEMBEROF_KEY ]:

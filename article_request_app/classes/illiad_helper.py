@@ -67,9 +67,11 @@ class IlliadArticleSubmitter( object ):
             submission_response_dct = self.prep_response_dct( api_response_text )
             return submission_response_dct
         except Exception as e:
-            log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
+            # log.error( '`%s` - exception on illiad-article-submission, ```%s```' % (self.log_id, unicode(repr(e))) )
+            log.exception( f'{self.log_id} - exception on illiad-article-submission; traceback follows, but problem-message will be created and returned to user.' )
             submission_response_dct = { 'success': False, 'error_message': self.prep_submission_problem_message() }
-            log.debug( '`%s` - error submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+            # log.debug( '`%s` - error submission_response_dct, ```%s```' % (self.log_id, pprint.pformat(submission_response_dct)) )
+            log.debug( f'`{self.log_id}` - error submission_response_dct, ```{pprint.pformat(submission_response_dct)}```' )
             return submission_response_dct
 
     def prep_response_dct( self, api_response_text ):
@@ -187,7 +189,8 @@ class IlliadApiHelper( object ):
             if result == 'registered':
                 success_check = True
         except Exception as e:
-            log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )  ## success_check already initialized to False
+            # log.error( 'Exception on new user registration, ```%s```' % unicode(repr(e)) )  ## success_check already initialized to False
+            log.exception( f'(article_request_app) - exception on new user registration; traceback follows, but processing will continue' )
         log.debug( 'success_check, `%s`' % success_check )
         return success_check
 

@@ -80,7 +80,7 @@ If you believe you should be permitted to use interlibrary-loan services, please
                 'group': shib_dct['brown_type'] }  # NB: could be shib_dct['edu_person_primary_affiliation']
         except Exception as e:
             # log.error( 'exception creating patron_dct, ```{}```'.format(unicode(repr(e))) )  # py2
-            log.exception( 'exception creating patron_dct; will show traceback, but continue and return `{}`' )
+            log.exception( 'exception creating patron_dct; will show traceback, but continue and return `{}` (empty dct)' )
         log.debug( f'patron_dct, ```{pprint.pformat(patron_dct)}```' )
         return patron_dct
 
@@ -143,7 +143,8 @@ If you believe you should be permitted to use interlibrary-loan services, please
             ## request-meta-dynamic
             # ezb_rqst.created = datetime.datetime.now()
             ezb_rqst.created = timezone.now()  # if settings.USE_TZ were True, would automatically create proper UTC time
-            log.debug( 'ezb_rqst.created, ```%s```' % unicode(ezb_rqst.created) )
+            # log.debug( 'ezb_rqst.created, ```%s```' % unicode(ezb_rqst.created) )
+            log.debug( f'ezb_rqst.created, ```{ezb_rqst.created}```' )
             return ezb_rqst
         except Exception as e:
             # log.error( 'exception ezb record, ```{}```'.format(unicode(repr(e))) )  # py2
