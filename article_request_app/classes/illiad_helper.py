@@ -46,7 +46,8 @@ class IlliadArticleSubmitter( object ):
     def grab_openurl_from_illiad_full_url( self, illiad_full_url ):
         """ Takes the query part of the url, since this was enhanced in the findit app to include useful 'Notes'.
             Called by prepare_submit_params() """
-        parse_obj = urlparse.urlparse( illiad_full_url )
+        # parse_obj = urlparse.urlparse( illiad_full_url )  # py2
+        parse_obj = urlparse( illiad_full_url )
         querystring = parse_obj.query
         log.debug( '`%s` - querystring, ```%s```' % (self.log_id, querystring) )
         log.debug( 'type(querystring), `%s`' % type(querystring) )
