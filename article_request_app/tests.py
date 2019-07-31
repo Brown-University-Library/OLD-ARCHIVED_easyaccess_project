@@ -59,10 +59,10 @@ class ShibLoginHelperTest( TestCase ):
         illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
         querystring = 'rft.atitle=Stalking the Wild Basenji'
         log_id = 'foo'
-        dummy_reverse_string = '/foo/article_request/login_handler/'  #  really, this will be sent: `reverse('article_request:login_handler_url')`
+        mock_reverse_string = '/foo/article_request/login_handler/'  #  the view will actually send: `reverse('article_request:login_handler_url')`
         self.assertEqual(
             'target=%2Ffoo%2Farticle_request%2Flogin_handler%2F%3Fcitation_json%3D%257B%2522param_a%2522%253A%2520%2522a%255Cu00e1a%2522%257D%26format%3Djournal%26illiad_url%3Dhttps%253A%2F%2Fdomain%2Faa%2Fbb%2FOpenURL%253Frft.atitle%253DStalking%2520the%2520Wild%2520Basenji%26querystring%3Drft.atitle%253DStalking%2520the%2520Wild%2520Basenji%26ezlogid%3Dfoo',
-            self.helper.build_shib_sp_querystring( dummy_reverse_string, citation_json, format, illiad_url, querystring, log_id )
+            self.helper.build_shib_sp_querystring( mock_reverse_string, citation_json, format, illiad_url, querystring, log_id )
         )
 
     def test_build_localdev_querystring(self):
