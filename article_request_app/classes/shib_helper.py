@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import logging
 from article_request_app import settings_app
 from django.utils.http import urlencode, urlquote
@@ -25,10 +23,10 @@ class ShibLoginHelper( object ):
         #     id=log_id )
         segment = '{path}?citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
             path=url_path,
-            ctn_jsn=urlquote(citation_json),
-            fmt=urlquote(format),
-            ill_url=urlquote(illiad_url),
-            qs=urlquote(querystring),
+            ctn_jsn=urlquote( citation_json ),
+            fmt=urlquote( format ),
+            ill_url=urlquote( illiad_url ),
+            qs=urlquote( querystring ),
             id=log_id )
         log.debug( f'segment, ```{segment}```' )
         querystring = urlencode( {'target': segment} )  # yields 'target=(encoded-segment)'

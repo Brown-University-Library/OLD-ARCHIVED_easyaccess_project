@@ -179,7 +179,8 @@ def shib_login( request ):
         redirect_url = '%s?%s' % ( reverse('delivery:login_handler_url'), querystring )
     else:
         log.debug( 'not localdev, so building target url, and redirecting to shib SP login url' )
-        querystring = shib_login_helper.build_shib_sp_querystring( bib_dct_json, last_querystring, shortlink_url, log_id )
+        # querystring = shib_login_helper.build_shib_sp_querystring( bib_dct_json, last_querystring, shortlink_url, log_id )
+        querystring = shib_login_helper.build_shib_sp_querystring( reverse('delivery:login_handler_url'), bib_dct_json, last_querystring, shortlink_url, log_id )
         redirect_url = '%s?%s' % ( settings_app.SHIB_LOGIN_URL, querystring )
     return HttpResponseRedirect( redirect_url )
 
