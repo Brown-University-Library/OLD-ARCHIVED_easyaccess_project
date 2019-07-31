@@ -90,7 +90,8 @@ class LoginViewTest(TestCase):
     def test_hit_shib_login_from_availability_clean(self):
         """ Hitting shib_login with good session info should redirect to login_handler. """
         session = self.session_hack.session
-        session['last_path'] = '/easyaccess/borrow/availability/'
+        # session['last_path'] = '/easyaccess/borrow/availability/'
+        session['last_path'] = reverse( 'delivery:availability_url' )
         session['last_querystring'] = 'isbn=123'
         session['bib_dct_json'] = '{"color": "r\\u00e9d"}'
         session['permalink_url']= 'foo'
