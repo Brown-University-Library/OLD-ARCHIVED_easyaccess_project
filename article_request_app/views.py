@@ -206,7 +206,7 @@ def illiad_handler( request ):
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
     ## submit to illiad
-    # submission_dct = submitter.prepare_submit_params( shib_dct, openurl )  # prepare parameters
+    illiad_url = submitter.enhance_if_necessary( illiad_url )
     submission_dct = submitter.prepare_submit_params( shib_dct, illiad_url )  # prepare parameters
     submission_result_dct = submitter.submit_request( submission_dct )  # send request to illiad
     if submission_result_dct['success'] is True:
