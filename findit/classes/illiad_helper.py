@@ -18,20 +18,18 @@ class IlliadUrlBuilder( object ):
     def __init__( self ):
         self.validator = IlliadValidator()
 
-    # def make_illiad_url( self, initial_querystring, permalink ):
+    # def make_illiad_url( self, initial_querystring, scheme, host, permalink ):
     #     """ Manages steps of constructing illiad url for possible use in article-requesting.
     #         Called by FinditResolver.update_session() """
     #     bib_dct = bibjsontools.from_openurl( initial_querystring )
     #     ill_bib_dct = self.validator.add_required_kvs( bib_dct )
-    #     log.debug( 'validator call complete' )
     #     extra_dct = self.check_identifiers( ill_bib_dct )
-    #     log.debug( 'check_identifiers call complete' )
     #     extra_dct = self.check_validity( ill_bib_dct, extra_dct )
-    #     log.debug( 'check_validity call complete' )
-    #     extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <{}>`'.format(permalink) )
+    #     full_permalink = '%s://%s%s' % ( scheme, host, permalink )
+    #     extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
     #     openurl = bibjsontools.to_openurl( ill_bib_dct )
-    #     for k, v in extra_dct.iteritems():
-    #         openurl += '&%s=%s' % ( urllib.quote_plus(k), urllib.quote_plus(v) )
+    #     for k, v in extra_dct.items():
+    #         openurl += '&%s=%s' % ( urllib.parse.quote_plus(k), urllib.parse.quote_plus(v) )
     #     illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
     #     log.debug( 'illiad_url, ```%s```' % illiad_url )
     #     return illiad_url
@@ -40,22 +38,15 @@ class IlliadUrlBuilder( object ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
             Called by FinditResolver.update_session() """
         bib_dct = bibjsontools.from_openurl( initial_querystring )
+        log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
         ill_bib_dct = self.validator.add_required_kvs( bib_dct )
-        log.debug( 'validator call complete' )
         extra_dct = self.check_identifiers( ill_bib_dct )
-        log.debug( 'check_identifiers call complete' )
         extra_dct = self.check_validity( ill_bib_dct, extra_dct )
-        log.debug( 'check_validity call complete' )
-        # extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <{}>`'.format(permalink) )
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
-        log.debug( 'full_permalink, ```%s```' % full_permalink )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
-        # for k, v in extra_dct.iteritems():  # python2
         for k, v in extra_dct.items():
-            # openurl += '&%s=%s' % ( urllib.quote_plus(k), urllib.quote_plus(v) )
             openurl += '&%s=%s' % ( urllib.parse.quote_plus(k), urllib.parse.quote_plus(v) )
-
         illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
         log.debug( 'illiad_url, ```%s```' % illiad_url )
         return illiad_url
@@ -71,6 +62,7 @@ class IlliadUrlBuilder( object ):
                 # extra_dct['Notes'] = self.update_note( 'foo', 'bar' )
             elif idt['type'] == 'oclc':
                 extra_dct['ESPNumber'] = idt['id']
+        log.debug( f'extra_dct, ```{extra_dct}```' )
         return extra_dct
 
     def check_validity( self, ill_bib_dct, extra_dct ):
@@ -81,6 +73,7 @@ class IlliadUrlBuilder( object ):
                 extra_dct['Notes'] = ''
             # extra_dct['Notes'] += '\rNot enough data provided by original request.'
             extra_dct['Notes'] = self.update_note( extra_dct['Notes'], '`not enough original-request data`' )
+        log.debug( f'extra_dct, ```{extra_dct}```' )
         return extra_dct
 
     def update_note( self, initial_note, additional_note ):
@@ -115,6 +108,7 @@ class IlliadValidator( object ):
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
         bib_dct['_valid'] = valid_check
+        log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
         return bib_dct
 
     def _handle_article( self, bib_dct, valid_check ):
