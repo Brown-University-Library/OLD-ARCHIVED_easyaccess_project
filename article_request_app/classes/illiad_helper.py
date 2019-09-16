@@ -20,13 +20,13 @@ class IlliadArticleSubmitter( object ):
     def __init__(self):
         self.log_id = '%s' % random.randint(10000, 99999)  # helps to track processing
 
-    def enhance_if_necessary( self, illiad_url ):
-        """ Examines basic title/author info and attempts to populate it from other fields if available.
-            Called by views.illiad_handler() """
-        # TODO
-        log.debug( f'initial illiad_url, ```{illiad_url}```' )
-        log.debug( f'returning illiad_url, ```{illiad_url}```' )
-        return illiad_url
+    # def enhance_if_necessary( self, illiad_url ):
+    #     """ Examines basic title/author info and attempts to populate it from other fields if available.
+    #         Called by views.illiad_handler() """
+    #     # TODO -- no, enhancing in findit-app, cuz that's where the illiad-openurl is built
+    #     log.debug( f'initial illiad_url, ```{illiad_url}```' )
+    #     log.debug( f'returning illiad_url, ```{illiad_url}```' )
+    #     return illiad_url
 
     def prepare_submit_params( self, usr_dct, illiad_full_url ):
         """ Builds parameter_dict for the internal api hit.

@@ -140,7 +140,6 @@ class IlliadValidator( object ):
             bib_dct['pages'] = '? - ?'; valid_check = False
         return ( bib_dct, valid_check )
 
-
     def _examine_book( self, bib_dct, valid_check ):
         """ Updates bib_dct genre if necessary.
             Called by add_required_kvs() """
