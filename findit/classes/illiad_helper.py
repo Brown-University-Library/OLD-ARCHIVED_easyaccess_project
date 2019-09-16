@@ -96,6 +96,22 @@ class IlliadValidator( object ):
     """ Adds required keys and values for illiad.
         Called by IlliadHelper.make_illiad_url() """
 
+    # def add_required_kvs( self, bib_dct ):
+    #     """ Adds required keys and values for illiad.
+    #         Called by IlliadHelper.make_illiad_url() """
+    #     original_bib_dct = bib_dct.copy()
+    #     valid_check = True
+    #     if bib_dct['type'] == 'article':
+    #         ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
+    #     elif bib_dct['type'] == 'book':
+    #         ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
+    #     elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
+    #         ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
+    #     bib_dct['_valid'] = valid_check
+    #     # log.debug( f'modifed_bib_dct, ```{pprint.pformat(bib_dct)}```' )
+    #     misc.diff_dicts( original_bib_dct, 'original_bib_dct', bib_dct, 'modified_dct' )  # just logs diffs
+    #     return bib_dct
+
     def add_required_kvs( self, bib_dct ):
         """ Adds required keys and values for illiad.
             Called by IlliadHelper.make_illiad_url() """
@@ -104,11 +120,20 @@ class IlliadValidator( object ):
         if bib_dct['type'] == 'article':
             ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
         elif bib_dct['type'] == 'book':
-            ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
+            log.debug( 'here' )
+            handle_book_flag = True
+            if bib_dct.get( 'identifier', None ):
+                for element_dct in bib_dct['identifier']:
+                    if 'type' in element_dct.keys():
+                        if element_dct['type'] == 'pmid':
+                            bib_dct['type'] = 'article'
+                            handle_book_flag = False
+                            ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
+            if handle_book_flag is True:
+                ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
         bib_dct['_valid'] = valid_check
-        # log.debug( f'modifed_bib_dct, ```{pprint.pformat(bib_dct)}```' )
         misc.diff_dicts( original_bib_dct, 'original_bib_dct', bib_dct, 'modified_dct' )  # just logs diffs
         return bib_dct
 
