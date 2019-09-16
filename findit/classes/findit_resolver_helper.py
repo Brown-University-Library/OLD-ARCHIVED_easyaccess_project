@@ -441,6 +441,8 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
+    ## TODO: build the illiad-url here, and send it to update_session
+
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
