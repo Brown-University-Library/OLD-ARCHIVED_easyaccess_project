@@ -297,46 +297,6 @@ class FinditResolver( object ):
         log.debug( 'added new_holdings_dct' )
         return new_holdings_dct
 
-    ## good, but refactoring
-    # def add_eds_fulltext_url( self, eds_fulltext_url, sersol_dct ):
-    #     """ Adds fulltext-url to sersol-dct if the sersol-dct contains a linkGroup.
-    #         Called by views.findit_base_resolver() """
-    #     if 'results' in sersol_dct.keys():
-    #         if type( sersol_dct['results'] ) == list:
-    #             for results_element in sersol_dct['results']:
-    #                 log.debug( f'results_element, ```{pprint.pformat(results_element)}```' )
-    #                 log.debug( f'results_element.items(), ```{pprint.pformat(results_element.items())}```' )
-    #                 append_complete = False
-    #                 for segment in list( results_element.items() ):  # segment example, `('format', 'book')`, or `('linkGroups', [])`, or `('citation', {long:dict})`
-    #                     ( key, value_lst ) = ( segment[0], segment[1] )
-    #                     log.debug( f'key, `{key}`' )
-    #                     log.debug( f'value_lst, ```{value_lst}```' )
-    #                     if key == 'linkGroups':
-    #                         log.debug( f'type(results_element["linkGroups"]), ```{type(results_element["linkGroups"])}```' )
-    #                         if type( results_element['linkGroups'] ) == list:
-    #                             new_holdings_dct = {
-    #                                 'holdingData': {
-    #                                     'databaseId': '',
-    #                                     'databaseName': 'EBSCO Discovery Service',
-    #                                     'providerId': '',
-    #                                     'providerName': 'EBSCO Discovery Service',
-    #                                     'startDate': ''},
-    #                                 'type': 'holding',
-    #                                 'url': {
-    #                                     'article': eds_fulltext_url,
-    #                                     'issue': '',
-    #                                     'journal': '',
-    #                                     'source': ''}
-    #                             }
-    #                             results_element['linkGroups'].append(new_holdings_dct)
-    #                             append_complete = True
-    #                             break
-    #                 if append_complete is True:
-    #                     log.debug( 'additional break occurring' )
-    #                     break
-    #     log.debug( 'returning sersol_dct, ```%s```' % pprint.pformat(sersol_dct) )
-    #     return sersol_dct
-
     def check_bad_issn( self, sersol_dct ):
         """ Checks for invalid issn and builds redirect url.
             Called by views.findit_base_resolver()
@@ -481,31 +441,18 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
-    # def update_session( self, request, context ):
-    #     """ Updates session for illiad-request-check if necessary.
-    #         Called by views.findit_base_resolver() """
-    #     if context.get( 'resolved', False ) is False:
-    #         request.session['findit_illiad_check_flag'] = 'good'
-    #         request.session['format'] = context.get( 'format', '' )
-    #         request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
-    #         citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
-    #         request.session['citation_json'] = citation_json
-    #         request.session['illiad_url'] = ill_url_builder.make_illiad_url( context['enhanced_querystring'], context['permalink'] )
-    #         request.session['last_path'] = request.path
-    #     log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
-    #     return
-
     def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
+        ill_url = ill_url_builder.make_illiad_url(
+                        context['enhanced_querystring'], request.scheme, request.get_host(), context['permalink'] )
         if context.get( 'resolved', False ) is False:
             request.session['findit_illiad_check_flag'] = 'good'
             request.session['format'] = context.get( 'format', '' )
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation_json'] = citation_json
-            request.session['illiad_url'] = ill_url_builder.make_illiad_url(
-                context['enhanced_querystring'], request.scheme, request.get_host(), context['permalink'] )
+            request.session['illiad_url'] = ill_url
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return

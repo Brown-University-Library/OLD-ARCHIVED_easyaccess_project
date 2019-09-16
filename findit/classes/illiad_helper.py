@@ -21,6 +21,7 @@ class IlliadUrlBuilder( object ):
     #     """ Manages steps of constructing illiad url for possible use in article-requesting.
     #         Called by FinditResolver.update_session() """
     #     bib_dct = bibjsontools.from_openurl( initial_querystring )
+    #     log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
     #     ill_bib_dct = self.validator.add_required_kvs( bib_dct )
     #     extra_dct = self.check_identifiers( ill_bib_dct )
     #     extra_dct = self.check_validity( ill_bib_dct, extra_dct )
@@ -35,12 +36,14 @@ class IlliadUrlBuilder( object ):
 
     def make_illiad_url( self, initial_querystring, scheme, host, permalink ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
-            Called by FinditResolver.update_session() """
+            Called by FinditResolver.update_session()
+            TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
         bib_dct = bibjsontools.from_openurl( initial_querystring )
         log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
         ill_bib_dct = self.validator.add_required_kvs( bib_dct )
         extra_dct = self.check_identifiers( ill_bib_dct )
         extra_dct = self.check_validity( ill_bib_dct, extra_dct )
+        ill_bib_dct = self.enhance_citation( ill_bib_dct, initial_querystring )
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
@@ -74,6 +77,13 @@ class IlliadUrlBuilder( object ):
             extra_dct['Notes'] = self.update_note( extra_dct['Notes'], '`not enough original-request data`' )
         log.debug( f'extra_dct, ```{extra_dct}```' )
         return extra_dct
+
+    def enhance_citation( self, ill_bib_dct, querystring ):
+        """ Enhances low-quality bib-dct data from querystring-data when possible.
+            Called by: make_illiad_url() """
+        log.debug( f'ill_bib_dct, ```{pprint.pformat(ill_bib_dct)}```' )
+        log.debug( f'querystring, ```{querystring}```' )
+        return ill_bib_dct
 
     def update_note( self, initial_note, additional_note ):
         """ Updates notes with correct spacing & punctuation.
