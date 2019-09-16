@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import logging, pprint, urllib
 
 import bibjsontools  # requirements.txt module
@@ -110,7 +108,8 @@ class IlliadValidator( object ):
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
         bib_dct['_valid'] = valid_check
-        misc.diff_dicts( original_bib_dct, 'original_bib_dct', bib_dct, 'modified_dct' )  # just for logging
+        # log.debug( f'modifed_bib_dct, ```{pprint.pformat(bib_dct)}```' )
+        misc.diff_dicts( original_bib_dct, 'original_bib_dct', bib_dct, 'modified_dct' )  # just logs diffs
         return bib_dct
 
     def _handle_article( self, bib_dct, valid_check ):
