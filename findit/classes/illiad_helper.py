@@ -120,17 +120,7 @@ class IlliadValidator( object ):
         if bib_dct['type'] == 'article':
             ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
         elif bib_dct['type'] == 'book':
-            log.debug( 'here' )
-            handle_book_flag = True
-            if bib_dct.get( 'identifier', None ):
-                for element_dct in bib_dct['identifier']:
-                    if 'type' in element_dct.keys():
-                        if element_dct['type'] == 'pmid':
-                            bib_dct['type'] = 'article'
-                            handle_book_flag = False
-                            ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
-            if handle_book_flag is True:
-                ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
+            ( bib_dct, valid_check ) = self._examine_book( bib_dct, valid_check )
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
         bib_dct['_valid'] = valid_check
@@ -148,6 +138,23 @@ class IlliadValidator( object ):
             bib_dct['title'] = 'Title not specified'; valid_check = False
         if bib_dct.get('pages') is None:
             bib_dct['pages'] = '? - ?'; valid_check = False
+        return ( bib_dct, valid_check )
+
+
+    def _examine_book( self, bib_dct, valid_check ):
+        """ Updates bib_dct genre if necessary.
+            Called by add_required_kvs() """
+        log.debug( 'here' )
+        handle_book_flag = True
+        if bib_dct.get( 'identifier', None ):
+            for element_dct in bib_dct['identifier']:
+                if 'type' in element_dct.keys():
+                    if element_dct['type'] == 'pmid':
+                        bib_dct['type'] = 'article'
+                        handle_book_flag = False
+                        ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
+        if handle_book_flag is True:
+            ( bib_dct, valid_check ) = self._handle_book( bib_dct, valid_check )
         return ( bib_dct, valid_check )
 
     def _handle_book( self, bib_dct, valid_check ):
