@@ -2,9 +2,10 @@
 
 from __future__ import unicode_literals
 
-import logging, urllib
-# import urlparse  # remove?
+import logging, pprint, urllib
+
 import bibjsontools  # requirements.txt module
+from common_classes import misc
 from findit import app_settings
 
 
@@ -100,6 +101,7 @@ class IlliadValidator( object ):
     def add_required_kvs( self, bib_dct ):
         """ Adds required keys and values for illiad.
             Called by IlliadHelper.make_illiad_url() """
+        original_bib_dct = bib_dct.copy()
         valid_check = True
         if bib_dct['type'] == 'article':
             ( bib_dct, valid_check ) = self._handle_article( bib_dct, valid_check )
@@ -108,7 +110,7 @@ class IlliadValidator( object ):
         elif (bib_dct['type'] == 'bookitem') or (bib_dct['type'] == 'inbook'):  # TL: These should all be inbooks but checking for now.
             ( bib_dct, valid_check ) = self._handle_bookish( bib_dct, valid_check )
         bib_dct['_valid'] = valid_check
-        log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
+        misc.diff_dicts( original_bib_dct, 'original_bib_dct', bib_dct, 'modified_dct' )  # just for logging
         return bib_dct
 
     def _handle_article( self, bib_dct, valid_check ):
