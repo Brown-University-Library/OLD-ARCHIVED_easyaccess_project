@@ -31,5 +31,12 @@ class IlliadUrlBuilderTest( TestCase ):
              'type': 'article',
              'year': '2018'}
         returned_bib_dct = self.builder.enhance_citation( initial_bib_dct, querystring )
+        print( f'returned_bib_dct, ```{pprint.pformat(returned_bib_dct)}```' )
         self.assertEqual(
-            'Yu, Xingfeng', returned_bib_dct['rft.au'] )
+            '(?) Yu, Xingfeng', returned_bib_dct['rft.au'] )
+        self.assertEqual(
+            '(?) Effectiveness of a Nurse-Led Integrative Health and Wellness (NIHaW) Programme on Behavioural, Psychosocial and Biomedical Outcomes among Individuals with Newly Diagnosed Type 2 Diabetes: A Randomised Controlled Trial',
+            returned_bib_dct['rft.atitle'] )
+        self.assertEqual(
+            '(?) (perhaps listed article title is journal title)',
+            returned_bib_dct['rft.jtitle'] )

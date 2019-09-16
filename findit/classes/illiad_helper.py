@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging, pprint, urllib
+from urllib.parse import parse_qs
 
 import bibjsontools  # requirements.txt module
 from common_classes import misc
 from findit import app_settings
+
 
 
 log = logging.getLogger('access')
@@ -81,8 +83,20 @@ class IlliadUrlBuilder( object ):
     def enhance_citation( self, ill_bib_dct, querystring ):
         """ Enhances low-quality bib-dct data from querystring-data when possible.
             Called by: make_illiad_url() """
+        original_bib_dct = ill_bib_dct.copy()
         log.debug( f'ill_bib_dct, ```{pprint.pformat(ill_bib_dct)}```' )
         log.debug( f'querystring, ```{querystring}```' )
+        param_dct = parse_qs( querystring )
+        if ill_bib_dct['type'] == 'article':
+            if 'rft.au' not in ill_bib_dct.keys():
+                if 'rft.creator' in param_dct.keys():
+                    auth_string = ', '.join( param_dct['rft.creator'] )
+                    ill_bib_dct['rft.au'] = f'(?) {auth_string}'
+            if 'rft.atitle' not in ill_bib_dct.keys():
+                if 'rft.source' in param_dct.keys():
+                    atitle_string = ', '.join( param_dct['rft.source'] )
+                    ill_bib_dct['rft.atitle'] = f'(?) {atitle_string}'
+        misc.diff_dicts( original_bib_dct, 'original_bib_dct', ill_bib_dct, 'modified_dct' )  # just logs diffs
         return ill_bib_dct
 
     def update_note( self, initial_note, additional_note ):
