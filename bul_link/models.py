@@ -13,6 +13,9 @@ class Resource( models.Model ):
     date_created = models.DateTimeField( auto_now_add=True )
     date_modified = models.DateTimeField( auto_now=True )
 
+    item_json = models.TextField( default='{}' )
+    patron_json = models.TextField( default='{}' )
+
     def save(self, *args, **kwargs):
         pass
         super( Resource, self ).save()
