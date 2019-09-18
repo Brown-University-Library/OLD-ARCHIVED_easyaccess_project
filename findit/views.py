@@ -10,6 +10,7 @@ import datetime, json, logging, pprint, re
 ## other
 import bibjsontools
 from bibjsontools import ris as bibjsontools_ris
+from bul_link.models import Resource as B_L_Resource
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -55,7 +56,8 @@ def findit_base_resolver( request ):
     fresolver = FinditResolver()
     log_id = fresolver.get_log_id()
     alog.info( '\n===\n`{}` starting...\n==='.format(log_id) )
-    alog.info( '`{id}` request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
+    # alog.info( '`{id}` request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
+    alog.info( f'`{log_id}` - request.__dict__, ```{request.__dict__}```' )
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
@@ -84,6 +86,15 @@ def findit_base_resolver( request ):
     )['permalink']
     request.session['permalink_url'] = permalink_url
     alog.info( '`{id}` permalink made, ```{url}```'.format(id=log_id, url=permalink_url) )
+
+    ## save info
+    shortlink = fresolver.epoch_micro_to_str()
+    alog.debug( f'shortlink, `{shortlink}`' )
+    bl_rsrc = B_L_Resource(
+        shortlink=shortlink,
+        item_json=json.dumps( {'querystring_original': request.META.get('QUERY_STRING', '')} )
+        )
+    bl_rsrc.save()
 
     ## if index-page call
     if fresolver.check_index_page( request.GET ):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import json, logging, pprint, random, re, time, urllib
-from datetime import datetime
+import datetime, json, logging, pprint, random, re, time, urllib
+# from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
@@ -35,7 +35,7 @@ class RisHelper( object ):
     def make_title( self, bib_dct ):
         """ Grabs title from bib_dct else uses datestamp.
             Called by views.ris_citation() """
-        title = bib_dct.get( 'title', str(datetime.now()).replace(' ', '_') )
+        title = bib_dct.get( 'title', str(datetime.datetime.now()).replace(' ', '_') )
         slugified_title = slugify( title )
         log.debug( 'slugified_title, `{}`'.format(slugified_title) )
         return slugified_title
@@ -585,5 +585,20 @@ class FinditResolver( object ):
             genre_type = 'easyBorrow'
         log.debug( 'genre, `%s`; genre_type, `%s`' % (genre, genre_type) )
         return ( genre, genre_type )
+
+    def epoch_micro_to_str( self, n=None, base=None ):
+        """ Returns string for shortlink based on the number of microseconds since the epoch.
+            Called by views.findit_base_resolver()
+            Based on code from <http://interactivepython.org/runestone/static/pythonds/Recursion/pythondsConvertinganIntegertoaStringinAnyBase.html> """
+        if n is None:
+            epoch_datetime = datetime.datetime( 1970, 1, 1, tzinfo=datetime.timezone.utc )
+            n = epoch_microseconds = int( (datetime.datetime.now(tz=datetime.timezone.utc) - epoch_datetime).total_seconds() * 1000000 )
+        convert_string = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789"
+        if base is None:
+            base = len( convert_string )
+        if n < base:
+            return convert_string[n]
+        else:
+            return self.epoch_micro_to_str( n//base, base ) + convert_string[n%base]  # the `//` is a math.floor() function
 
     ## end class FinditResolver
