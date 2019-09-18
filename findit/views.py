@@ -19,6 +19,7 @@ from findit.classes.citation_form_helper import CitationFormHelper
 from findit.classes.findit_resolver_helper import FinditResolver
 from findit.classes.findit_resolver_helper import RisHelper
 from findit.classes.permalink_helper import Permalink
+from findit.classes.illiad_helper import IlliadUrlBuilder
 
 
 EXTRAS_CACHE_TIMEOUT = 604800  # 60*60*24*7 == one week
@@ -30,6 +31,8 @@ ris_helper = RisHelper()
 
 ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
+
+ill_url_builder = IlliadUrlBuilder()
 
 
 def citation_form( request ):
@@ -55,7 +58,8 @@ def findit_base_resolver( request ):
     fresolver = FinditResolver()
     log_id = fresolver.get_log_id()
     alog.info( '\n===\n`{}` starting...\n==='.format(log_id) )
-    alog.info( '`{id}` request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
+    # alog.info( '`{id}` request.__dict__, ```{dct}```'.format( id=log_id, dct=pprint.pformat(request.__dict__)) )
+    alog.info( f'`{log_id}` request.__dict__, ```{request.__dict__}```' )
 
     ## start fresh
     alog.debug( 'session.items() before refresh, ```{}```'.format(pprint.pformat(request.session.items())) )
@@ -176,8 +180,18 @@ def findit_base_resolver( request ):
         alog.info( '`{id}` weirdness detected; redirecting to citation-form, ```{url}```'.format(id=log_id, url=redirect_url) )
         return HttpResponseRedirect( redirect_url )
 
+    ## build or enhance illiad url
+    illiad_url = ill_url_builder.make_illiad_url(
+        querystring,
+        context['enhanced_querystring'],
+        request.scheme,
+        request.get_host(),
+        context['permalink']
+        )
+    context['illiad_url'] = illiad_url
+
     ## update session if necessary
-    fresolver.update_session( request, context )
+    fresolver.update_session( request, context, illiad_url )
     alog.info( '`{}` session updated'.format(log_id) )
 
     ## return resolve response

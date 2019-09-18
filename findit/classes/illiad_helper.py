@@ -19,14 +19,17 @@ class IlliadUrlBuilder( object ):
     def __init__( self ):
         self.validator = IlliadValidator()
 
+
     # def make_illiad_url( self, initial_querystring, scheme, host, permalink ):
     #     """ Manages steps of constructing illiad url for possible use in article-requesting.
-    #         Called by FinditResolver.update_session() """
+    #         Called by FinditResolver.update_session()
+    #         TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
     #     bib_dct = bibjsontools.from_openurl( initial_querystring )
     #     log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
     #     ill_bib_dct = self.validator.add_required_kvs( bib_dct )
     #     extra_dct = self.check_identifiers( ill_bib_dct )
     #     extra_dct = self.check_validity( ill_bib_dct, extra_dct )
+    #     ill_bib_dct = self.enhance_citation( ill_bib_dct, initial_querystring )
     #     full_permalink = '%s://%s%s' % ( scheme, host, permalink )
     #     extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
     #     openurl = bibjsontools.to_openurl( ill_bib_dct )
@@ -36,19 +39,22 @@ class IlliadUrlBuilder( object ):
     #     log.debug( 'illiad_url, ```%s```' % illiad_url )
     #     return illiad_url
 
-    def make_illiad_url( self, initial_querystring, scheme, host, permalink ):
+    def make_illiad_url( self, initial_querystring, enhanced_querystring, scheme, host, permalink ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
             Called by FinditResolver.update_session()
             TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
-        bib_dct = bibjsontools.from_openurl( initial_querystring )
+        bib_dct = bibjsontools.from_openurl( enhanced_querystring )
         log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
         ill_bib_dct = self.validator.add_required_kvs( bib_dct )
         extra_dct = self.check_identifiers( ill_bib_dct )
         extra_dct = self.check_validity( ill_bib_dct, extra_dct )
+        log.debug( f'bib_dct before enhance, ```{ill_bib_dct}```' )
         ill_bib_dct = self.enhance_citation( ill_bib_dct, initial_querystring )
+        log.debug( f'bib_dct after enhance, ```{ill_bib_dct}```' )
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
+        log.debug( f'openurl from bibjsontools, ```{openurl}```' )
         for k, v in extra_dct.items():
             openurl += '&%s=%s' % ( urllib.parse.quote_plus(k), urllib.parse.quote_plus(v) )
         illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
@@ -80,22 +86,22 @@ class IlliadUrlBuilder( object ):
         log.debug( f'extra_dct, ```{extra_dct}```' )
         return extra_dct
 
-    def enhance_citation( self, ill_bib_dct, querystring ):
-        """ Enhances low-quality bib-dct data from querystring-data when possible.
+    def enhance_citation( self, ill_bib_dct, original_querystring ):
+        """ Enhances low-quality bib-dct data from original_querystring-data when possible.
             Called by: make_illiad_url() """
         original_bib_dct = ill_bib_dct.copy()
         log.debug( f'ill_bib_dct, ```{pprint.pformat(ill_bib_dct)}```' )
-        log.debug( f'querystring, ```{querystring}```' )
-        param_dct = parse_qs( querystring )
+        log.debug( f'original_querystring, ```{original_querystring}```' )
+        param_dct = parse_qs( original_querystring )
         if ill_bib_dct['type'] == 'article':
-            if 'rft.au' not in ill_bib_dct.keys():
+            if 'author' not in ill_bib_dct.keys():
                 if 'rft.creator' in param_dct.keys():
                     auth_string = ', '.join( param_dct['rft.creator'] )
-                    ill_bib_dct['rft.au'] = f'(?) {auth_string}'
-            if 'rft.atitle' not in ill_bib_dct.keys():
+                    ill_bib_dct['author'] = [ {'name': f'(?) {auth_string}'} ]
+            if 'title' not in ill_bib_dct.keys() or ill_bib_dct.get( 'title', '' ).lower() == 'unknown':
                 if 'rft.source' in param_dct.keys():
                     atitle_string = ', '.join( param_dct['rft.source'] )
-                    ill_bib_dct['rft.atitle'] = f'(?) {atitle_string}'
+                    ill_bib_dct['title'] = f'(?) {atitle_string}'
         misc.diff_dicts( original_bib_dct, 'original_bib_dct', ill_bib_dct, 'modified_dct' )  # just logs diffs
         return ill_bib_dct
 

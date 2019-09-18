@@ -12,14 +12,14 @@ from django.shortcuts import render
 from django.utils.text import slugify
 # from findit import app_settings, summon
 from findit import app_settings
-from findit.classes.illiad_helper import IlliadUrlBuilder
+# from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
 from py360link2 import get_sersol_data
 # from shorturls import baseconv
 
 
 log = logging.getLogger('access')
-ill_url_builder = IlliadUrlBuilder()
+# ill_url_builder = IlliadUrlBuilder()
 
 
 class RisHelper( object ):
@@ -443,18 +443,16 @@ class FinditResolver( object ):
 
     ## TODO: build the illiad-url here, and send it to update_session
 
-    def update_session( self, request, context ):
+    def update_session( self, request, context, illiad_url ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
-        ill_url = ill_url_builder.make_illiad_url(
-                        context['enhanced_querystring'], request.scheme, request.get_host(), context['permalink'] )
         if context.get( 'resolved', False ) is False:
             request.session['findit_illiad_check_flag'] = 'good'
             request.session['format'] = context.get( 'format', '' )
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation_json'] = citation_json
-            request.session['illiad_url'] = ill_url
+            request.session['illiad_url'] = illiad_url
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return
@@ -468,7 +466,7 @@ class FinditResolver( object ):
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
         else:
             resp = render( request, 'findit_templates/resolve_josiah.html', context )
-        log.debug( 'returning response' )
+        log.debug( f'returning response, ```{pprint.pformat(context)}```' )
         return resp
 
     ## helper defs
