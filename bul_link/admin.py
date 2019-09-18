@@ -6,10 +6,18 @@ from bul_link.models import Resource
 
 
 class ResourceAdmin(admin.ModelAdmin):
-    search_fields = ['id', 'referrer']
-    list_display = ['id', 'referrer', 'truncated_query', 'date_created', 'date_modified']
+    search_fields = ['id', 'shortlink', 'referrer']
+    list_display = ['id', 'shortlink', 'truncated_item_json', 'date_created', 'date_modified']
     list_filter = ['referrer', 'date_created', 'date_modified']
-    pass
+
+
+    def truncated_item_json(self, obj):
+        tij = 'init'
+        if len( obj.item_json ) <= 50:
+            tij = obj.item_json
+        else:
+            tij = f'{obj.item_json[0:47]}...'
+        return tij
 
     def truncated_query(self, obj):
         tq = 'init'
