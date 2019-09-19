@@ -67,8 +67,8 @@ If you believe you should be permitted to use interlibrary-loan services, please
         """ Updates necessary session attributes.
             Called by views.login_handler() """
         request.session['illiad_login_check_flag'] = 'good'
-        request.session['findit_illiad_check_flag'] = ''
-        request.session['findit_illiad_check_enhanced_querystring'] = ''
+        # request.session['findit_illiad_check_flag'] = ''
+        # request.session['findit_illiad_check_enhanced_querystring'] = ''
         # request.session['shib_status'] = ''
         return
 

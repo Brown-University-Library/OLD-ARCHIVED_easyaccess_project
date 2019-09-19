@@ -445,9 +445,9 @@ class FinditResolver( object ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
         if context.get( 'resolved', False ) is False:
-            request.session['findit_illiad_check_flag'] = 'good'
+            # request.session['findit_illiad_check_flag'] = 'good'
             request.session['format'] = context.get( 'format', '' )
-            request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
+            # request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation_json'] = citation_json
             request.session['last_path'] = request.path

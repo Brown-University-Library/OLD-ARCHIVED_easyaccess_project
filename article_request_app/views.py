@@ -36,7 +36,7 @@ def shib_login( request ):
     ## store vars we're gonna need
     citation_json = request.session.get( 'citation_json', '{}' )
     format = request.session.get( 'format', '' )
-    illiad_url = request.session.get( 'illiad_url', '' )
+    # illiad_url = request.session.get( 'illiad_url', '' )
     querystring = request.META.get('QUERY_STRING', '')
 
     ## clear session so non-rev and rev work same way
@@ -48,7 +48,8 @@ def shib_login( request ):
     ## check if localdev
     if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
         log.debug( 'localdev, so redirecting right to article_request_app.views.login_handler' )
-        querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
+        # querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
+        querystring = shib_login_helper.build_localdev_querystring( citation_json, format, querystring, log_id )
         redirect_url = '%s?%s' % ( reverse('article_request:login_handler_url'), querystring )
     else:
         log.debug( 'not localdev, so building target-return url (to article_request_app.views.login_handler), and redirecting to shib SP login url' )
@@ -57,7 +58,7 @@ def shib_login( request ):
             reverse('article_request:login_handler_url'),
             citation_json,
             format,
-            illiad_url,
+            # illiad_url,
             querystring,
             log_id
             )
@@ -82,7 +83,8 @@ def login_handler( request ):
     #     request.session['last_path'] = request.path
     #     return HttpResponseRedirect( redirect_url )
     log.debug( '`{id}` request.GET.keys(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.GET.keys())) )
-    for key in [ 'citation_json', 'format', 'illiad_url', 'querystring' ]:
+    # for key in [ 'citation_json', 'format', 'illiad_url', 'querystring' ]:
+    for key in [ 'citation_json', 'format', 'querystring' ]:
         if key not in request.GET.keys():
             redirect_url = '{main}?{qs}'.format( main=reverse('findit:findit_base_resolver_url'), qs=request.META.get('QUERY_STRING', '') )
             log.debug( 'referrer-check failed, redirecting to, ```{}```'.format(redirect_url) )
@@ -94,7 +96,7 @@ def login_handler( request ):
     request.session['log_id'] = log_id
     request.session['citation_json'] = request.GET['citation_json']
     request.session['format'] = request.GET['format']
-    request.session['illiad_url'] = request.GET['illiad_url']
+    # request.session['illiad_url'] = request.GET['illiad_url']
     request.session['login_openurl'] = request.GET['querystring']
     log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
 
@@ -126,9 +128,6 @@ def login_handler( request ):
         request.session['message'] = illiad_user_check_dct['error_message']
         log.debug( 'message put in session, redirecting to message-url' )
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
-
-    ## illiad logout
-    # new_ill_helper.logout_user( login_result_dct['illiad_session_instance'] )
 
     ## build redirect to illiad-landing-page for submit
     illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
