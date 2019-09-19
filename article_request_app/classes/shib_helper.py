@@ -12,11 +12,11 @@ class ShibLoginHelper( object ):
     """ Contains helpers for views.login_handler() """
 
     # def build_shib_sp_querystring( self, url_path, citation_json, format, illiad_url, querystring, log_id ):
-    def build_shib_sp_querystring( self, url_path, citation_json, format, illiad_url, querystring, log_id ):
+    def build_shib_sp_querystring( self, url_path, shortkey, citation_json, format, illiad_url, querystring, log_id ):
         """ Builds querystring for redirect to shib SP url, which will redirect back to views.login_handler().
             Called by views.shib_login() """
         # self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )
-        self.check_params( [ citation_json, format, querystring, log_id ] )
+        self.check_params( [ shortkey, citation_json, format, querystring, log_id ] )
         # segment = '{path}?citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
         #     path=url_path,
         #     ctn_jsn=urlquote( citation_json ),
@@ -24,8 +24,9 @@ class ShibLoginHelper( object ):
         #     ill_url=urlquote( illiad_url ),
         #     qs=urlquote( querystring ),
         #     id=log_id )
-        segment = '{path}?citation_json={ctn_jsn}&format={fmt}&querystring={qs}&ezlogid={id}'.format(
+        segment = '{path}?shortkey={shortkey}citation_json={ctn_jsn}&format={fmt}&querystring={qs}&ezlogid={id}'.format(
             path=url_path,
+            shortkey=shortkey,
             ctn_jsn=urlquote( citation_json ),
             fmt=urlquote( format ),
             # ill_url=urlquote( illiad_url ),
@@ -38,18 +39,19 @@ class ShibLoginHelper( object ):
         return querystring
 
     # def build_localdev_querystring( self, citation_json, format, illiad_url, querystring, log_id ):
-    def build_localdev_querystring( self, citation_json, format, querystring, log_id ):
+    def build_localdev_querystring( self, shortkey, citation_json, format, querystring, log_id ):
         """ Builds querystring for redirect right to views.login_handler()
             Called by views.shib_login() """
         # self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )
-        self.check_params( [ citation_json, format, querystring, log_id ] )
+        self.check_params( [ shortkey, citation_json, format, querystring, log_id ] )
         # querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
         #     ctn_jsn=urlquote(citation_json),
         #     fmt=urlquote(format),
         #     ill_url=urlquote(illiad_url),
         #     qs=urlquote(querystring),
         #     id=log_id )
-        querystring = 'citation_json={ctn_jsn}&format={fmt}&querystring={qs}&ezlogid={id}'.format(
+        querystring = 'shortkey={shortkey}&citation_json={ctn_jsn}&format={fmt}&querystring={qs}&ezlogid={id}'.format(
+            shortkey=shortkey,
             ctn_jsn=urlquote(citation_json),
             fmt=urlquote(format),
             # ill_url=urlquote(illiad_url),

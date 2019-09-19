@@ -27,7 +27,10 @@ def shib_login( request ):
     """ Builds the SP login and target-return url; redirects to the SP login, which then lands back at the login_handler() url.
         Called when views.availability() returns a Request button that's clicked.
         Session cleared and info put in url due to revproxy resetting session. """
+    # log.debug( f'TEMP article_request_app initial hit; request.__dict__, ```{pprint.pformat(request.__dict__)}```' )
+    log.debug( f'request.GET.keys(), ```{ sorted(request.GET.keys()) }```' )
     log_id = request.session.get( 'log_id', '' )
+    shortkey = request.GET['shortkey']
     log.debug( '`{id}` article_request shib_login() starting session.items(), ```{val}```'.format(id=log_id, val=pprint.pformat(request.session.items())) )
 
     ## store vars we're gonna need
@@ -46,13 +49,14 @@ def shib_login( request ):
     if '127.0.0.1' in request.get_host() and project_settings.DEBUG2 is True:  # eases local development
         log.debug( 'localdev, so redirecting right to article_request_app.views.login_handler' )
         # querystring = shib_login_helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
-        querystring = shib_login_helper.build_localdev_querystring( citation_json, format, querystring, log_id )
+        querystring = shib_login_helper.build_localdev_querystring( shortkey, citation_json, format, querystring, log_id )
         redirect_url = '%s?%s' % ( reverse('article_request:login_handler_url'), querystring )
     else:
         log.debug( 'not localdev, so building target-return url (to article_request_app.views.login_handler), and redirecting to shib SP login url' )
         # querystring = shib_login_helper.build_shib_sp_querystring( citation_json, format, illiad_url, querystring, log_id )
         querystring = shib_login_helper.build_shib_sp_querystring(
             reverse('article_request:login_handler_url'),
+            shortkey,
             citation_json,
             format,
             # illiad_url,
@@ -94,7 +98,7 @@ def login_handler( request ):
     request.session['citation_json'] = request.GET['citation_json']
     request.session['format'] = request.GET['format']
     # request.session['illiad_url'] = request.GET['illiad_url']
-    request.session['login_openurl'] = request.GET['querystring']
+    # request.session['login_openurl'] = request.GET['querystring']
     log.debug( 'session.items() after rebuild, ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## get user info
@@ -127,8 +131,9 @@ def login_handler( request ):
         return HttpResponseRedirect( reverse('article_request:message_url') )  # handles blocked or failed-user-registration problems
 
     ## build redirect to illiad-landing-page for submit
-    illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
-    log.debug( 'illiad_landing_redirect_url, `%s`' % illiad_landing_redirect_url )
+    # illiad_landing_redirect_url = '%s://%s%s?%s' % ( request.scheme, request.get_host(), reverse('article_request:illiad_request_url'), request.session['login_openurl'] )
+    illiad_landing_redirect_url = f'{request.scheme}://{request.get_host()}{reverse("article_request:illiad_request_url")}?shortkey={request.GET["shortkey"]}'
+    log.debug( f'illiad_landing_redirect_url, `{illiad_landing_redirect_url}`' )
 
     ## cleanup
     # login_helper.update_session( request )
@@ -143,6 +148,9 @@ def illiad_request( request ):
     """ Gives users chance to confirm their request via clicking 'Submit'.
         Gets here from views.login_handler()
         After 'Submit' button is hit, redirects to views.illiad_handler() """
+
+    log.debug( f'request.GET.keys(), ```{ pprint.pformat(request.GET.keys()) }```' )
+    log.debug( f'request.session.keys(), ```{ pprint.pformat(request.session.keys()) }```' )
 
     ## check that we're here legitimately
     # ( referrer_ok, redirect_url ) = ill_helper.check_referrer( request.session, request.META )
@@ -174,6 +182,9 @@ def illiad_handler( request ):
         Then redirects user (behind-the-scenes) to views.shib_logout() for the SP shib-logout ( which will then direct user to views.message() )
         """
 
+    log.debug( f'request.GET.keys(), ```{ pprint.pformat(request.GET.keys()) }```' )
+    log.debug( f'request.session.keys(), ```{ pprint.pformat(request.session.keys()) }```' )
+
     submitter = IlliadArticleSubmitter()
 
     # ## here check
@@ -203,11 +214,13 @@ def illiad_handler( request ):
 
     ## get illiad openurl
     try:
-        shortkey = request.GET['shortkey']
-        rsrc = B_L_Resource.objects.get( 'shortkey'=shortkey )
+        shortkey = request.session['shortkey']
+        # shortkey = request.GET['shortkey']  # it's a post
+        rsrc = B_L_Resource.objects.get( shortlink=shortkey )
         item_dct = json.loads( rsrc.item_json )
         illiad_url = item_dct['querystring_original']
     except:
+        log.exception( 'problem loading item-data' )
         log.warning( f'`{submitter.log_id}` - bad attempt from source-url, ```{request.META.get("HTTP_REFERER", "")}```; ip, `{request.META.get("REMOTE_ADDR", "")}`' )
         request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
