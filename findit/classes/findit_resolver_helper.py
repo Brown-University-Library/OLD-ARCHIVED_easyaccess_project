@@ -423,14 +423,36 @@ class FinditResolver( object ):
         log.debug( 'is_book, `%s`; self.borrow_link, `%s`' % (is_book, self.borrow_link) )
         return is_book
 
+    # def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
+    #     """ Preps the template view.
+    #         Called by views.findit_base_resolver() """
+    #     context = self._try_resolved_obj_citation( sersol_dct )
+    #     context = self.check_citation_issn( context )
+    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+    #     if context.get( 'enhanced_querystring', '' ) == '':
+    #         context['enhanced_querystring'] = querystring
+    #     context['querystring'] = querystring
+    #     context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
+    #     context['permalink'] = permalink
+    #     context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
+    #     ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+    #     full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
+    #     context['feedback_link'] = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+    #     log.debug( 'context, ```%s```' % pprint.pformat(context) )
+    #     return context
+
     def make_resolve_context( self, request, permalink, querystring, sersol_dct ):
         """ Preps the template view.
             Called by views.findit_base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
-        context = self.check_citation_issn( context )
-        ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         if context.get( 'enhanced_querystring', '' ) == '':
             context['enhanced_querystring'] = querystring
+        if 'shortkey' not in context['enhanced_querystring']:
+            parse_result = parse_qs( querystring )
+            shortkey = parse_result['shortkey'][0]  # single-element list
+            context['enhanced_querystring'] = f'{ context["enhanced_querystring"] }&shortkey={shortkey}'
+        context = self.check_citation_issn( context )
+        ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         context['querystring'] = querystring
         context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
         context['permalink'] = permalink

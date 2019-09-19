@@ -91,6 +91,9 @@ def findit_base_resolver( request ):
         item_json=json.dumps( {'querystring_original': request.META.get('QUERY_STRING', '')} )
         )
     bl_rsrc.save()
+    if querystring != '':
+        querystring = f'{querystring}&shortkey={shortlink}'
+    alog.debug( f'updated querystring, ```{querystring}```' )
 
     ## if index-page call
     if fresolver.check_index_page( request.GET ):
@@ -171,6 +174,7 @@ def findit_base_resolver( request ):
             - Then, the citation_dct should be passed to fresolver.make_resolve_context() instead of the sersol_dct. '''
 
     ## build response context
+    # alog.debug( f'querystring before fresolver.make_resolve_context(), ```{querystring}``` ' )  # contains `shortkey`
     context = fresolver.make_resolve_context( request, permalink_url, querystring, sersol_dct )
     alog.info( '`{}` context built'.format(log_id) )
 
