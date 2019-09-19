@@ -94,6 +94,7 @@ def login_handler( request ):
     # request.session['login_openurl'] = request.META.get('QUERY_STRING', '')
 
     ## rebuild session (revproxy can destroy it, so all info must be in querystring)
+    request.session['shortkey'] = request.GET['shortkey']
     request.session['log_id'] = log_id
     request.session['citation_json'] = request.GET['citation_json']
     request.session['format'] = request.GET['format']
@@ -212,15 +213,20 @@ def illiad_handler( request ):
     #     request.session['last_path'] = request.path
     #     return HttpResponseRedirect( reverse('article_request:message_url') )
 
-    ## get illiad openurl
+    ## get necessary data
     try:
+        ## get illiad openurl
         shortkey = request.session['shortkey']
         # shortkey = request.GET['shortkey']  # it's a post
         rsrc = B_L_Resource.objects.get( shortlink=shortkey )
         item_dct = json.loads( rsrc.item_json )
         illiad_url = item_dct['querystring_original']
+        ## get shib_dct
+        shib_dct = json.loads( request.session['user_json'] )
+        if 'eppn' not in shib_dct.keys():
+            raise Exception()
     except:
-        log.exception( 'problem loading item-data' )
+        log.exception( 'problem getting necessary data; traceback follows; problem screen will be shown' )
         log.warning( f'`{submitter.log_id}` - bad attempt from source-url, ```{request.META.get("HTTP_REFERER", "")}```; ip, `{request.META.get("REMOTE_ADDR", "")}`' )
         request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
