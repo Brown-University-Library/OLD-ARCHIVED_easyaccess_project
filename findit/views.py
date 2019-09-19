@@ -70,13 +70,6 @@ def findit_base_resolver( request ):
     alog.info( '`{}` session cleared'.format(log_id) )
     request.session['log_id'] = log_id
 
-    # ## if index-page call
-    # if fresolver.check_index_page( request.GET ):
-    #     context = fresolver.make_index_context( request.GET )
-    #     resp = fresolver.make_index_response( request, context )
-    #     alog.info( '`{}`returning index page'.format(log_id) )
-    #     return resp
-
     ## temp fix for testing from in-production redirects
     if fresolver.check_double_encoded_querystring( request.META.get('QUERY_STRING', '') ):
         alog.info( '`{id}` double-encoded querystring found, gonna redirect to, ```{url}```'.format(id=log_id, url=fresolver.redirect_url) )
@@ -106,12 +99,6 @@ def findit_base_resolver( request ):
         resp = fresolver.make_index_response( request, context )
         alog.info( '`{}`returning index page'.format(log_id) )
         return resp
-
-    # ## if summon returns an enhanced link, go to it
-    # if fresolver.check_summon( request.GET ):
-    #     if fresolver.enhance_link( request.GET.get('direct', None), querystring ):
-    #         alog.info( '`{id}` redirecting to summon enhanced link, ```{link}```'.format(id=log_id, link=fresolver.enhanced_link) )
-    #         return HttpResponseRedirect( fresolver.enhanced_link )
 
     ## if journal, redirect to 360link for now
     if fresolver.check_sersol_publication( request.GET, querystring ):
@@ -176,6 +163,12 @@ def findit_base_resolver( request ):
         request.session['last_querystring'] = querystring
         alog.info( '`{id}` book found on second-check, redirecting to, ```{url}```'.format(id=log_id, url=fresolver.borrow_link) )
         return HttpResponseRedirect( fresolver.borrow_link )
+
+    ''' TODO: the first line in the following `fresolver.make_resolve_context()` function is:
+            `context = self._try_resolved_obj_citation( sersol_dct )`
+            - _Here_, there should be a function like: `citation_dct = fresolver._try_resolved_obj_citation( sersol_dct )`.
+            - Then, that citation_dct should be inspected, and the current illiad-url enhancement work should be applied if there's no title/author.
+            - Then, the citation_dct should be passed to fresolver.make_resolve_context() instead of the sersol_dct. '''
 
     ## build response context
     context = fresolver.make_resolve_context( request, permalink_url, querystring, sersol_dct )
