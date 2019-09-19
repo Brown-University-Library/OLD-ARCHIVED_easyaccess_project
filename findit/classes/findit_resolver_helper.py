@@ -441,7 +441,7 @@ class FinditResolver( object ):
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
-    def update_session( self, request, context, illiad_url ):
+    def update_session( self, request, context ):
         """ Updates session for illiad-request-check if necessary.
             Called by views.findit_base_resolver() """
         if context.get( 'resolved', False ) is False:
@@ -450,7 +450,6 @@ class FinditResolver( object ):
             request.session['findit_illiad_check_enhanced_querystring'] = context['enhanced_querystring']
             citation_json = json.dumps( context.get('citation', {}), sort_keys=True, indent=2 )
             request.session['citation_json'] = citation_json
-            request.session['illiad_url'] = illiad_url
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return
