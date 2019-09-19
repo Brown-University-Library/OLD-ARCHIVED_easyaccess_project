@@ -1,15 +1,12 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import json, logging, pprint
+
 import markdown
-# from .classes.illiad_helper import NewIlliadHelper
 from .classes.illiad_helper import IlliadApiHelper, IlliadArticleSubmitter
-from .classes.illiad_helper import NewIlliadHelper  # TO REMOVE
+from .classes.illiad_helper import NewIlliadHelper  # still used for problem message; TODO, merge into other class.
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from article_request_app import settings_app
+from bul_link.models import Resource as B_L_Resource
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.core.mail import send_mail
@@ -207,6 +204,9 @@ def illiad_handler( request ):
     ## get illiad openurl
     try:
         shortkey = request.GET['shortkey']
+        rsrc = B_L_Resource.objects.get( 'shortkey'=shortkey )
+        item_dct = json.loads( rsrc.item_json )
+        illiad_url = item_dct['querystring_original']
     except:
         log.warning( f'`{submitter.log_id}` - bad attempt from source-url, ```{request.META.get("HTTP_REFERER", "")}```; ip, `{request.META.get("REMOTE_ADDR", "")}`' )
         request.session['message'] = new_ill_helper.problem_message
