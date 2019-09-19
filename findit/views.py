@@ -183,18 +183,18 @@ def findit_base_resolver( request ):
         alog.info( '`{id}` weirdness detected; redirecting to citation-form, ```{url}```'.format(id=log_id, url=redirect_url) )
         return HttpResponseRedirect( redirect_url )
 
-    ## build or enhance illiad url
-    illiad_url = ill_url_builder.make_illiad_url(
-        querystring,
-        context['enhanced_querystring'],
-        request.scheme,
-        request.get_host(),
-        context['permalink']
-        )
-    context['illiad_url'] = illiad_url
+    # ## build or enhance illiad url
+    # illiad_url = ill_url_builder.make_illiad_url(
+    #     querystring,
+    #     context['enhanced_querystring'],
+    #     request.scheme,
+    #     request.get_host(),
+    #     context['permalink']
+    #     )
+    # context['illiad_url'] = illiad_url
 
     ## update session if necessary
-    fresolver.update_session( request, context, illiad_url )
+    fresolver.update_session( request, context )
     alog.info( '`{}` session updated'.format(log_id) )
 
     ## return resolve response
