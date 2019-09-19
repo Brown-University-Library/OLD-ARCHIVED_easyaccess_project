@@ -134,7 +134,7 @@ def login_handler( request ):
     log.debug( 'illiad_landing_redirect_url, `%s`' % illiad_landing_redirect_url )
 
     ## cleanup
-    login_helper.update_session( request )
+    # login_helper.update_session( request )
 
     ## redirect
     return HttpResponseRedirect( illiad_landing_redirect_url )
@@ -154,7 +154,7 @@ def illiad_request( request ):
         request.session['last_path'] = request.path
         return HttpResponseRedirect( redirect_url )
     request.session['last_path'] = request.path
-    request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
+    # request.session['illiad_request_openurl'] = request.META.get('QUERY_STRING', '')
 
     ## prep data
     citation_json = request.session.get( 'citation_json', '{}' )
@@ -164,7 +164,7 @@ def illiad_request( request ):
 
     ## cleanup
     request.session['format'] = ''
-    request.session['illiad_login_check_flag'] = ''
+    # request.session['illiad_login_check_flag'] = ''
     log.debug( 'request.session.items(), ```{}```'.format(pprint.pformat(request.session.items())) )
 
     ## respond
@@ -179,27 +179,36 @@ def illiad_handler( request ):
 
     submitter = IlliadArticleSubmitter()
 
-    ## here check
-    here_check = 'init'
-    illiad_url = request.session.get( 'illiad_url', '' )  # this is in the format of: https://illiad.brown.edu/illiad/illiad.dll/OpenURL?key=value,etc...
-    log.debug( '`%s` - illiad_url, ```%s```' % (submitter.log_id, illiad_url) )
-    # log.debug( 'illiad_url, ``{}```'.format(illiad_url) )
-    if len( illiad_url ) == 0:
-        here_check = 'problem'
-    if here_check == 'init':
-        shib_dct = json.loads( request.session.get('user_json', '{}') )
-        if 'eppn' not in shib_dct.keys():
-            here_check = 'problem'
+    # ## here check
+    # here_check = 'init'
+    # illiad_url = request.session.get( 'illiad_url', '' )  # this is in the format of: https://illiad.brown.edu/illiad/illiad.dll/OpenURL?key=value,etc...
+    # log.debug( '`%s` - illiad_url, ```%s```' % (submitter.log_id, illiad_url) )
+    # # log.debug( 'illiad_url, ``{}```'.format(illiad_url) )
+    # if len( illiad_url ) == 0:
+    #     here_check = 'problem'
+    # if here_check == 'init':
+    #     shib_dct = json.loads( request.session.get('user_json', '{}') )
+    #     if 'eppn' not in shib_dct.keys():
+    #         here_check = 'problem'
 
-    if here_check == 'init':
-        ## TODO -- the session has access to the original login openurl, this `illiad_request_openurl`, and the full `illiad_url` -- simplify and refactor
-        openurl = request.session.get( 'illiad_request_openurl', None )
-        if openurl is None:
-            here_check = 'problem'
+    # if here_check == 'init':
+    #     ## TODO -- the session has access to the original login openurl, this `illiad_request_openurl`, and the full `illiad_url` -- simplify and refactor
+    #     openurl = request.session.get( 'illiad_request_openurl', None )
+    #     if openurl is None:
+    #         here_check = 'problem'
 
-    if here_check == 'problem':
-        log.warning( '`%s` - bad attempt from source-url, ```%s```; ip, `%s`' % (
-            submitter.log_id, request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+    # if here_check == 'problem':
+    #     log.warning( '`%s` - bad attempt from source-url, ```%s```; ip, `%s`' % (
+    #         submitter.log_id, request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
+    #     request.session['message'] = new_ill_helper.problem_message
+    #     request.session['last_path'] = request.path
+    #     return HttpResponseRedirect( reverse('article_request:message_url') )
+
+    ## get illiad openurl
+    try:
+        shortkey = request.GET['shortkey']
+    except:
+        log.warning( f'`{submitter.log_id}` - bad attempt from source-url, ```{request.META.get("HTTP_REFERER", "")}```; ip, `{request.META.get("REMOTE_ADDR", "")}`' )
         request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
