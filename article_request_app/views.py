@@ -213,7 +213,7 @@ def illiad_handler( request ):
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
     ## build illiad-querystring
-    illiad_url = illiad_url_builder.make_illiad_url( original_querystring, enhanced_querystring, permalink )
+    illiad_url = illiad_url_builder.make_illiad_url( original_querystring, enhanced_querystring, request.scheme, request.get_host(), permalink )
 
     ## submit to illiad
     # illiad_url = submitter.enhance_if_necessary( illiad_url )

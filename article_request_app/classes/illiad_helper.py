@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import json, logging, pprint, random, urllib
-from urllib.parse import urlparse, unquote
+from urllib.parse import parse_qs, urlparse, unquote
 
-import requests
+import bibjsontools, requests
 from article_request_app import settings_app
+from common_classes import misc
 from django.core.urlresolvers import reverse
 
 
@@ -20,7 +21,7 @@ class IlliadUrlBuilder( object ):
     def __init__( self ):
         self.validator = IlliadValidator()
 
-    def make_illiad_url( self, original_querystring, enhanced_querystring, permalink ):
+    def make_illiad_url( self, original_querystring, enhanced_querystring, scheme, host, permalink ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
             Called by FinditResolver.update_session()
             TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
@@ -38,7 +39,8 @@ class IlliadUrlBuilder( object ):
         log.debug( f'openurl from bibjsontools, ```{openurl}```' )
         for k, v in extra_dct.items():
             openurl += '&%s=%s' % ( urllib.parse.quote_plus(k), urllib.parse.quote_plus(v) )
-        illiad_url = app_settings.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
+        # illiad_url = settings_app.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
+        illiad_url = openurl
         log.debug( 'illiad_url, ```%s```' % illiad_url )
         return illiad_url
 
