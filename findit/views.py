@@ -20,7 +20,7 @@ from findit.classes.citation_form_helper import CitationFormHelper
 from findit.classes.findit_resolver_helper import FinditResolver
 from findit.classes.findit_resolver_helper import RisHelper
 from findit.classes.permalink_helper import Permalink
-from findit.classes.illiad_helper import IlliadUrlBuilder
+# from findit.classes.illiad_helper import IlliadUrlBuilder
 
 
 EXTRAS_CACHE_TIMEOUT = 604800  # 60*60*24*7 == one week
@@ -33,7 +33,7 @@ ris_helper = RisHelper()
 ilog = logging.getLogger('illiad')
 alog = logging.getLogger('access')
 
-ill_url_builder = IlliadUrlBuilder()
+# ill_url_builder = IlliadUrlBuilder()
 
 
 def citation_form( request ):
