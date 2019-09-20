@@ -20,7 +20,7 @@ class IlliadUrlBuilder( object ):
     def __init__( self ):
         self.validator = IlliadValidator()
 
-    def make_illiad_url( self, initial_querystring, enhanced_querystring, scheme, host, permalink ):
+    def make_illiad_url( self, original_querystring, enhanced_querystring, permalink ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
             Called by FinditResolver.update_session()
             TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
@@ -30,7 +30,7 @@ class IlliadUrlBuilder( object ):
         extra_dct = self.check_identifiers( ill_bib_dct )
         extra_dct = self.check_validity( ill_bib_dct, extra_dct )
         log.debug( f'bib_dct before enhance, ```{ill_bib_dct}```' )
-        ill_bib_dct = self.enhance_citation( ill_bib_dct, initial_querystring )
+        ill_bib_dct = self.enhance_citation( ill_bib_dct, original_querystring )
         log.debug( f'bib_dct after enhance, ```{ill_bib_dct}```' )
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )

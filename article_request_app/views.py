@@ -1,7 +1,7 @@
 import json, logging, pprint
 
 import markdown
-from .classes.illiad_helper import IlliadApiHelper, IlliadArticleSubmitter
+from .classes.illiad_helper import IlliadUrlBuilder, IlliadArticleSubmitter, IlliadApiHelper
 from .classes.illiad_helper import NewIlliadHelper  # still used for problem message; TODO, merge into other class.
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
@@ -18,8 +18,6 @@ from django.utils.http import urlquote
 
 log = logging.getLogger( 'access' )
 ilog = logging.getLogger( 'illiad' )
-illiad_api_helper = IlliadApiHelper()
-new_ill_helper = NewIlliadHelper()  # TO REMOVE
 shib_login_helper = ShibLoginHelper()
 
 
@@ -77,6 +75,8 @@ def login_handler( request ):
 
     log_id = request.GET.get( 'ezlogid', '' )
     login_helper = LoginHelper( log_id )
+
+    illiad_api_helper = IlliadApiHelper()
 
     ## check referrer
     # ( referrer_ok, redirect_url ) = login_helper.check_referrer( request.session, request.META )
@@ -152,6 +152,7 @@ def illiad_request( request ):
 
     log.debug( f'request.GET.keys(), ```{ pprint.pformat(request.GET.keys()) }```' )
     log.debug( f'request.session.keys(), ```{ pprint.pformat(request.session.keys()) }```' )
+    new_ill_helper = NewIlliadHelper()  # TO REMOVE
 
     ## check that we're here legitimately
     # ( referrer_ok, redirect_url ) = ill_helper.check_referrer( request.session, request.META )
@@ -186,32 +187,9 @@ def illiad_handler( request ):
     log.debug( f'request.GET.keys(), ```{ pprint.pformat(request.GET.keys()) }```' )
     log.debug( f'request.session.keys(), ```{ pprint.pformat(request.session.keys()) }```' )
 
-    submitter = IlliadArticleSubmitter()
-
-    # ## here check
-    # here_check = 'init'
-    # illiad_url = request.session.get( 'illiad_url', '' )  # this is in the format of: https://illiad.brown.edu/illiad/illiad.dll/OpenURL?key=value,etc...
-    # log.debug( '`%s` - illiad_url, ```%s```' % (submitter.log_id, illiad_url) )
-    # # log.debug( 'illiad_url, ``{}```'.format(illiad_url) )
-    # if len( illiad_url ) == 0:
-    #     here_check = 'problem'
-    # if here_check == 'init':
-    #     shib_dct = json.loads( request.session.get('user_json', '{}') )
-    #     if 'eppn' not in shib_dct.keys():
-    #         here_check = 'problem'
-
-    # if here_check == 'init':
-    #     ## TODO -- the session has access to the original login openurl, this `illiad_request_openurl`, and the full `illiad_url` -- simplify and refactor
-    #     openurl = request.session.get( 'illiad_request_openurl', None )
-    #     if openurl is None:
-    #         here_check = 'problem'
-
-    # if here_check == 'problem':
-    #     log.warning( '`%s` - bad attempt from source-url, ```%s```; ip, `%s`' % (
-    #         submitter.log_id, request.META.get('HTTP_REFERER', ''), request.META.get('REMOTE_ADDR', '') ) )
-    #     request.session['message'] = new_ill_helper.problem_message
-    #     request.session['last_path'] = request.path
-    #     return HttpResponseRedirect( reverse('article_request:message_url') )
+    illiad_url_builder = IlliadUrlBuilder()
+    illiad_submitter = IlliadArticleSubmitter()
+    new_ill_helper = NewIlliadHelper()  # TO REMOVE
 
     ## get necessary data
     try:
@@ -220,22 +198,27 @@ def illiad_handler( request ):
         # shortkey = request.GET['shortkey']  # it's a post
         rsrc = B_L_Resource.objects.get( shortlink=shortkey )
         item_dct = json.loads( rsrc.item_json )
-        illiad_url = item_dct['querystring_original']
+        original_querystring = item_dct['querystring_original']
+        enhanced_querystring = item_dct['enhanced_querystring']
+        permalink = item_dct['permalink']
         ## get shib_dct
         shib_dct = json.loads( request.session['user_json'] )
         if 'eppn' not in shib_dct.keys():
             raise Exception()
     except:
         log.exception( 'problem getting necessary data; traceback follows; problem screen will be shown' )
-        log.warning( f'`{submitter.log_id}` - bad attempt from source-url, ```{request.META.get("HTTP_REFERER", "")}```; ip, `{request.META.get("REMOTE_ADDR", "")}`' )
+        log.warning( f'`{illiad_submitter.log_id}` - bad attempt from source-url, ```{request.META.get("HTTP_REFERER", "")}```; ip, `{request.META.get("REMOTE_ADDR", "")}`' )
         request.session['message'] = new_ill_helper.problem_message
         request.session['last_path'] = request.path
         return HttpResponseRedirect( reverse('article_request:message_url') )
 
+    ## build illiad-querystring
+    illiad_url = illiad_url_builder.make_illiad_url( original_querystring, enhanced_querystring, permalink )
+
     ## submit to illiad
     # illiad_url = submitter.enhance_if_necessary( illiad_url )
-    submission_dct = submitter.prepare_submit_params( shib_dct, illiad_url )  # prepare parameters
-    submission_result_dct = submitter.submit_request( submission_dct )  # send request to illiad
+    submission_dct = illiad_submitter.prepare_submit_params( shib_dct, illiad_url )  # prepare parameters
+    submission_result_dct = illiad_submitter.submit_request( submission_dct )  # send request to illiad
     if submission_result_dct['success'] is True:
         illiad_transaction_number = submission_result_dct['transaction_number']
     else:
