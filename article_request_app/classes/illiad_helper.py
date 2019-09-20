@@ -107,6 +107,8 @@ class IlliadUrlBuilder( object ):
 
 class IlliadValidator( object ):
     """ Adds required keys and values for illiad.
+        Also returns a 'validity' check to indicate to the url-builder whether the supplied information is complete.
+            If the validity-check is false, the url-builder will add a note that there was not enough information supplied.
         Called by IlliadHelper.make_illiad_url() """
 
     # def add_required_kvs( self, bib_dct ):
@@ -226,7 +228,7 @@ class IlliadArticleSubmitter( object ):
             'phone': '',
             # 'volumes': '',
         }
-        log.debug( '`%s` - param_dct, ```%s```' % (self.log_id, pprint.pformat(param_dct)) )
+        log.debug( '`%s` - submission param_dct prepared, ```%s```' % (self.log_id, pprint.pformat(param_dct)) )
         return param_dct
 
     def grab_openurl_from_illiad_full_url( self, illiad_full_url ):
