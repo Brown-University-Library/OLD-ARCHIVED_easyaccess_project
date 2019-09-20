@@ -40,8 +40,8 @@ class IlliadArticleSubmitter( object ):
             'address': '',
             'email': usr_dct['email'],
             'oclc_number': '',  # easyBorror tries to submit this
-            # 'openurl': self.make_openurl_segment( item_inst.knowledgebase_openurl, item_inst.volumes_info, patron_inst.barcode ),
-            'openurl': self.grab_openurl_from_illiad_full_url( illiad_full_url ),  # required
+            # 'openurl': self.grab_openurl_from_illiad_full_url( illiad_full_url ),  # required
+            'openurl': illiad_full_url,  # required
             'patron_barcode': usr_dct['patron_barcode'],
             'patron_department': '',
             'patron_status': '',
