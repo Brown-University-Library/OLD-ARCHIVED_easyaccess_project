@@ -86,10 +86,12 @@ def findit_base_resolver( request ):
     ## save info
     shortlink = fresolver.epoch_micro_to_str()
     alog.debug( f'shortlink, `{shortlink}`' )
+    bl_item_dct = {
+        'querystring_original': request.META.get('QUERY_STRING', ''),
+        'permalink': permalink_url }
     bl_rsrc = B_L_Resource(
         shortlink=shortlink,
-        item_json=json.dumps( {'querystring_original': request.META.get('QUERY_STRING', '')} )
-        )
+        item_json=json.dumps( bl_item_dct ) )
     bl_rsrc.save()
     if querystring != '':
         querystring = f'{querystring}&shortkey={shortlink}'
@@ -178,6 +180,12 @@ def findit_base_resolver( request ):
     context = fresolver.make_resolve_context( request, permalink_url, querystring, sersol_dct )
     alog.info( '`{}` context built'.format(log_id) )
 
+    ## save additional item-data
+    bl_item_dct['enhanced_querystring'] = context['enhanced_querystring']
+    bl_rsrc.item_json = json.dumps( bl_item_dct )  # overwrites previous minimally-saved info
+    bl_rsrc.save()
+    # alog.debug( f'bl_rsrc.__dict__, ```{bl_rsrc.__dict__}```' )
+
     ## check for problem
     """ Saw this when findit_resolver_helper._try_resolved_obj_citation() had the exception:
           `Link360Exception(u'Invalid syntax Invalid check sum',)` -- eventually handle elsewhere, but here for now. """
@@ -186,16 +194,6 @@ def findit_base_resolver( request ):
         request.session['citation_form_message'] = 'Please confirm or enhance your request and click "Submit". A Journal, ISSN, DOI, or PMID is required.'
         alog.info( '`{id}` weirdness detected; redirecting to citation-form, ```{url}```'.format(id=log_id, url=redirect_url) )
         return HttpResponseRedirect( redirect_url )
-
-    # ## build or enhance illiad url
-    # illiad_url = ill_url_builder.make_illiad_url(
-    #     querystring,
-    #     context['enhanced_querystring'],
-    #     request.scheme,
-    #     request.get_host(),
-    #     context['permalink']
-    #     )
-    # context['illiad_url'] = illiad_url
 
     ## update session if necessary
     fresolver.update_session( request, context )
