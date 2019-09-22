@@ -23,7 +23,7 @@ class IlliadUrlBuilder( object ):
 
     def make_illiad_url( self, original_querystring, enhanced_querystring, scheme, host, permalink ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
-            Called by FinditResolver.update_session()
+            Called by views.illiad_handler()
             TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
         bib_dct = bibjsontools.from_openurl( enhanced_querystring )
         log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
@@ -76,6 +76,7 @@ class IlliadUrlBuilder( object ):
         log.debug( f'ill_bib_dct, ```{pprint.pformat(ill_bib_dct)}```' )
         log.debug( f'original_querystring, ```{original_querystring}```' )
         param_dct = parse_qs( original_querystring )
+        log.debug( f'param_dct, ```{pprint.pformat(param_dct)}```' )
         if ill_bib_dct['type'] == 'article':
             if 'author' not in ill_bib_dct.keys():
                 if 'rft.creator' in param_dct.keys():
@@ -85,8 +86,45 @@ class IlliadUrlBuilder( object ):
                 if 'rft.source' in param_dct.keys():
                     atitle_string = ', '.join( param_dct['rft.source'] )
                     ill_bib_dct['title'] = f'(?) {atitle_string}'
+            found_issn = False
+            found_isbn_str = None
+            if 'identifier' in ill_bib_dct.keys():
+                log.debug( 'hereA' )
+                id_dct_lst = ill_bib_dct['identifier']
+                for id_dct in id_dct_lst:
+                    log.debug( f'id_dct, ```{id_dct}```' )
+                    if 'type' in id_dct.keys():
+                        if id_dct['type'] == 'issn':
+                            found_issn = True
+                            break
+                        elif id_dct['type'] == 'isbn':
+                            log.debug( 'hereB' )
+                            found_isbn_str = id_dct['id']
+                log.debug( f'found_issn, `{found_issn}`; found_isbn_str, `{found_isbn_str}`' )
+                if found_issn is False and found_isbn_str is not None:
+                    ill_bib_dct['identifier'].append( {'type': 'issn', 'id': f'(?)_{found_isbn_str}' } )
         misc.diff_dicts( original_bib_dct, 'original_bib_dct', ill_bib_dct, 'modified_dct' )  # just logs diffs
         return ill_bib_dct
+
+    # def enhance_citation( self, ill_bib_dct, original_querystring ):
+    #     """ Enhances low-quality bib-dct data from original_querystring-data when possible.
+    #         Called by: make_illiad_url() """
+    #     original_bib_dct = ill_bib_dct.copy()
+    #     log.debug( f'ill_bib_dct, ```{pprint.pformat(ill_bib_dct)}```' )
+    #     log.debug( f'original_querystring, ```{original_querystring}```' )
+    #     param_dct = parse_qs( original_querystring )
+    #     log.debug( f'param_dct, ```{pprint.pformat(param_dct)}```' )
+    #     if ill_bib_dct['type'] == 'article':
+    #         if 'author' not in ill_bib_dct.keys():
+    #             if 'rft.creator' in param_dct.keys():
+    #                 auth_string = ', '.join( param_dct['rft.creator'] )
+    #                 ill_bib_dct['author'] = [ {'name': f'(?) {auth_string}'} ]
+    #         if 'title' not in ill_bib_dct.keys() or ill_bib_dct.get( 'title', '' ).lower() == 'unknown':
+    #             if 'rft.source' in param_dct.keys():
+    #                 atitle_string = ', '.join( param_dct['rft.source'] )
+    #                 ill_bib_dct['title'] = f'(?) {atitle_string}'
+    #     misc.diff_dicts( original_bib_dct, 'original_bib_dct', ill_bib_dct, 'modified_dct' )  # just logs diffs
+    #     return ill_bib_dct
 
     def update_note( self, initial_note, additional_note ):
         """ Updates notes with correct spacing & punctuation.
