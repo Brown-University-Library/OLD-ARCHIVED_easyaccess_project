@@ -41,8 +41,8 @@ class ShibLoginHelper( object ):
     # def build_localdev_querystring( self, citation_json, format, illiad_url, querystring, log_id ):
     def build_localdev_querystring( self, shortkey, citation_json, format, querystring, log_id ):
         """ Builds querystring for redirect right to views.login_handler()
-            Called by views.shib_login() """
-        # self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )
+            Called by views.shib_login()
+            TODO: I think the only param should be the short-key, with everything else saved, and later retrieved from the bul_link_db. """
         self.check_params( [ shortkey, citation_json, format, querystring, log_id ] )
         # querystring = 'citation_json={ctn_jsn}&format={fmt}&illiad_url={ill_url}&querystring={qs}&ezlogid={id}'.format(
         #     ctn_jsn=urlquote(citation_json),
