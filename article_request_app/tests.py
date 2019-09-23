@@ -86,14 +86,19 @@ class ShibLoginHelperTest( TestCase ):
     def test_build_shib_sp_querystring(self):
         """ Checks localdev querystring. """
         citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
+        shortkey = 'sk-foo'
         format = 'journal'
         illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
         querystring = 'rft.atitle=Stalking the Wild Basenji'
-        log_id = 'foo'
+        log_id = 'id-foo'
         mock_reverse_string = '/foo/article_request/login_handler/'  #  the view will actually send: `reverse('article_request:login_handler_url')`
-        self.assertEqual(
-            'target=%2Ffoo%2Farticle_request%2Flogin_handler%2F%3Fcitation_json%3D%257B%2522param_a%2522%253A%2520%2522a%255Cu00e1a%2522%257D%26format%3Djournal%26illiad_url%3Dhttps%253A%2F%2Fdomain%2Faa%2Fbb%2FOpenURL%253Frft.atitle%253DStalking%2520the%2520Wild%2520Basenji%26querystring%3Drft.atitle%253DStalking%2520the%2520Wild%2520Basenji%26ezlogid%3Dfoo',
-            self.helper.build_shib_sp_querystring( mock_reverse_string, citation_json, format, illiad_url, querystring, log_id )
+        built_param_string = self.helper.build_shib_sp_querystring( mock_reverse_string, shortkey, citation_json, format, illiad_url, querystring, log_id )
+        log.debug( f'built_param_string, ```{built_param_string}```' )
+        param_dct = parse_qs( built_param_string )
+        self.assertEqual( {
+            'target': ['/foo/article_request/login_handler/?shortkey=sk-foo&citation_json=%7B%22param_a%22%3A%20%22a%5Cu00e1a%22%7D&format=journal&querystring=rft.atitle%3DStalking%20the%20Wild%20Basenji&ezlogid=id-foo']
+            },
+            param_dct
         )
 
     def test_build_localdev_querystring(self):

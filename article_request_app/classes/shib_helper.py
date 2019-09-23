@@ -24,7 +24,7 @@ class ShibLoginHelper( object ):
         #     ill_url=urlquote( illiad_url ),
         #     qs=urlquote( querystring ),
         #     id=log_id )
-        segment = '{path}?shortkey={shortkey}citation_json={ctn_jsn}&format={fmt}&querystring={qs}&ezlogid={id}'.format(
+        segment = '{path}?shortkey={shortkey}&citation_json={ctn_jsn}&format={fmt}&querystring={qs}&ezlogid={id}'.format(
             path=url_path,
             shortkey=shortkey,
             ctn_jsn=urlquote( citation_json ),
