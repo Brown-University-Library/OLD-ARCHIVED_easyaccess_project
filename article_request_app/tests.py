@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import logging, pprint, random
-# from types import NoneType
+from urllib.parse import parse_qs
 
 from . import settings_app
 from .classes.illiad_helper import IlliadApiHelper, NewIlliadHelper  # under development
@@ -67,15 +65,34 @@ class ShibLoginHelperTest( TestCase ):
 
     def test_build_localdev_querystring(self):
         """ Checks localdev querystring. """
+        shortkey = 'sk-foo'
         citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
         format = 'journal'
-        illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
         querystring = 'rft.atitle=Stalking the Wild Basenji'
-        log_id = 'foo'
-        self.assertEqual(
-            'citation_json=%7B%22param_a%22%3A%20%22a%5Cu00e1a%22%7D&format=journal&illiad_url=https%3A//domain/aa/bb/OpenURL%3Frft.atitle%3DStalking%20the%20Wild%20Basenji&querystring=rft.atitle%3DStalking%20the%20Wild%20Basenji&ezlogid=foo',
-            self.helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
+        log_id = 'id-foo'
+        built_param_string = self.helper.build_localdev_querystring( shortkey, citation_json, format, querystring, log_id )
+        log.debug( f'built_param_string, ```{built_param_string}```' )
+        param_dct = parse_qs( built_param_string )
+        self.assertEqual( {
+            'citation_json': ['{"param_a": "a\\u00e1a"}'],
+            'ezlogid': ['id-foo'],
+            'format': ['journal'],
+            'querystring': ['rft.atitle=Stalking the Wild Basenji'],
+            'shortkey': ['sk-foo'] },
+            param_dct
         )
+
+    # def test_build_localdev_querystring(self):
+    #     """ Checks localdev querystring. """
+    #     citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
+    #     format = 'journal'
+    #     illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
+    #     querystring = 'rft.atitle=Stalking the Wild Basenji'
+    #     log_id = 'foo'
+    #     self.assertEqual(
+    #         'citation_json=%7B%22param_a%22%3A%20%22a%5Cu00e1a%22%7D&format=journal&illiad_url=https%3A//domain/aa/bb/OpenURL%3Frft.atitle%3DStalking%20the%20Wild%20Basenji&querystring=rft.atitle%3DStalking%20the%20Wild%20Basenji&ezlogid=foo',
+    #         self.helper.build_localdev_querystring( citation_json, format, illiad_url, querystring, log_id )
+    #     )
 
     ## end class ShibLoginHelperTest()
 

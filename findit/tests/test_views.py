@@ -220,8 +220,8 @@ class ConferenceReportResolverTest(TestCase):
         c = Client()
         response = c.get( url, SERVER_NAME='127.0.0.1' )
         redirect_url = response._headers['location'][1]
-        # log.debug( 'redirect_url, ```%s```' % redirect_url )
-        self.assertEqual( '/borrow/availability/?id=10.1109/CCECE.2011.6030651', redirect_url )
+        self.assertTrue( '/borrow/availability/?id=10.1109/CCECE.2011.6030651' in redirect_url )  # may also include a shortkey=x key/val where the shortkey changes each time
+        # self.assertEqual( '/borrow/availability/?id=10.1109/CCECE.2011.6030651', redirect_url )
 
     # end class ConferenceReportResolverTest
 
