@@ -187,7 +187,8 @@ class ViewsTest( TestCase ):
         """ '/easyaccess/article_request/shib_login/?...', should get to...
             '/article_request/login_handler/?...', and eventually end up at...
             '/easyaccess/article_request/illiad/?...' """
-        response = self.client.get( '/article_request/shib_login/?a=b', SERVER_NAME='127.0.0.1' )
+        # response = self.client.get( '/article_request/shib_login/?a=b', SERVER_NAME='127.0.0.1' )
+        response = self.client.get( '/article_request/shib_login/?a=b&shortkey=sk-foo', SERVER_NAME='127.0.0.1' )
         self.assertEqual( 302, response.status_code )
         # print( 'response._headers, ```%s```' % response._headers )
         redirect_url = response._headers['location'][1]
