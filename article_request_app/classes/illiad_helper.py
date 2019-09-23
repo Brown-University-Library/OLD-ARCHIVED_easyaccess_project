@@ -79,11 +79,17 @@ class IlliadUrlBuilder( object ):
         log.debug( f'param_dct, ```{pprint.pformat(param_dct)}```' )
         if ill_bib_dct['type'] == 'article':
             if 'author' not in ill_bib_dct.keys():
-                if 'rft.creator' in param_dct.keys():
+                if 'rft.au' in param_dct.keys():
+                    auth_string = ', '.join( param_dct['rft.au'] )
+                    ill_bib_dct['author'] = [ {'name': auth_string} ]
+                elif 'rft.creator' in param_dct.keys():
                     auth_string = ', '.join( param_dct['rft.creator'] )
                     ill_bib_dct['author'] = [ {'name': f'(?) {auth_string}'} ]
             if 'title' not in ill_bib_dct.keys() or ill_bib_dct.get( 'title', '' ).lower() == 'unknown':
-                if 'rft.source' in param_dct.keys():
+                if 'rft.title' in param_dct.keys():
+                    atitle_string = ', '.join( param_dct['rft.title'] )
+                    ill_bib_dct['title'] = atitle_string
+                elif 'rft.source' in param_dct.keys():
                     atitle_string = ', '.join( param_dct['rft.source'] )
                     ill_bib_dct['title'] = f'(?) {atitle_string}'
             found_issn = False
