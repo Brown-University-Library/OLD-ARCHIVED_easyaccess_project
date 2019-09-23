@@ -4,7 +4,7 @@ import logging, pprint, random
 from urllib.parse import parse_qs
 
 from . import settings_app
-from .classes.illiad_helper import IlliadApiHelper, NewIlliadHelper, IlliadApiHelper
+from .classes.illiad_helper import IlliadApiHelper, NewIlliadHelper, IlliadUrlBuilder
 from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from django.conf import settings
@@ -66,7 +66,7 @@ class IlliadUrlBuilderTest( TestCase ):
              'type': 'article',
              'year': '2018'}
         returned_bib_dct = self.builder.enhance_citation( initial_bib_dct, querystring )
-        print( f'returned_bib_dct, ```{pprint.pformat(returned_bib_dct)}```' )
+        log.debug( f'returned_bib_dct, ```{pprint.pformat(returned_bib_dct)}```' )
         self.assertEqual(
             [ {'name': '(?) Yu, Xingfeng'} ],
             returned_bib_dct['author'] )
