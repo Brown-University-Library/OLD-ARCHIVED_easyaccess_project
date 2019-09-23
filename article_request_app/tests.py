@@ -164,9 +164,15 @@ class ViewsTest( TestCase ):
 
     def test_direct_login_good_session(self):
         """ If a good request, should redirect to display submission page. """
-        response = self.client.get( '/article_request/login_handler/?citation_json=%7b%22foo%22%3a+%22bar%22%7d&format=bb&illiad_url=cc&querystring=the_querystring', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed; &, fyi, ```citation_json={"foo": "bar"}```
+        response = self.client.get( '/article_request/login_handler/?shortkey=sk-foo&citation_json=%7b%22foo%22%3a+%22bar%22%7d&format=bb&illiad_url=cc&querystring=the_querystring', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed; &, fyi, ```citation_json={"foo": "bar"}```
         redirect_url = response._headers['location'][1]
-        self.assertEqual( 'http://127.0.0.1/article_request/illiad/?the_querystring', redirect_url )
+        self.assertEqual( 'http://127.0.0.1/article_request/illiad/?shortkey=sk-foo', redirect_url )
+
+    # def test_direct_login_good_session(self):
+    #     """ If a good request, should redirect to display submission page. """
+    #     response = self.client.get( '/article_request/login_handler/?shortkey=sk-foo&citation_json=%7b%22foo%22%3a+%22bar%22%7d&format=bb&illiad_url=cc&querystring=the_querystring', SERVER_NAME="127.0.0.1" )  # project root part of url is assumed; &, fyi, ```citation_json={"foo": "bar"}```
+    #     redirect_url = response._headers['location'][1]
+    #     self.assertEqual( 'http://127.0.0.1/article_request/illiad/?the_querystring', redirect_url )
 
     def test_direct_article_request_no_session(self):
         """ If not from '/easyaccess/article_request/login_handler/', should redirect to index page. """
