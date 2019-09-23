@@ -12,7 +12,8 @@ class ShibLoginHelper( object ):
     """ Contains helpers for views.login_handler() """
 
     # def build_shib_sp_querystring( self, url_path, citation_json, format, illiad_url, querystring, log_id ):
-    def build_shib_sp_querystring( self, url_path, shortkey, citation_json, format, illiad_url, querystring, log_id ):
+    # def build_shib_sp_querystring( self, url_path, shortkey, citation_json, format, illiad_url, querystring, log_id ):
+    def build_shib_sp_querystring( self, url_path, shortkey, citation_json, format, querystring, log_id ):
         """ Builds querystring for redirect to shib SP url, which will redirect back to views.login_handler().
             Called by views.shib_login() """
         # self.check_params( [ citation_json, format, illiad_url, querystring, log_id ] )

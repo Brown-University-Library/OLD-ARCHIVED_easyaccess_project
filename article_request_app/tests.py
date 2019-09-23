@@ -88,11 +88,11 @@ class ShibLoginHelperTest( TestCase ):
         citation_json = '{"param_a": "a\\u00e1a"}'  # json version of {'param_a': 'aáa'}
         shortkey = 'sk-foo'
         format = 'journal'
-        illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
+        # illiad_url = 'https://domain/aa/bb/OpenURL?rft.atitle=Stalking the Wild Basenji'
         querystring = 'rft.atitle=Stalking the Wild Basenji'
         log_id = 'id-foo'
         mock_reverse_string = '/foo/article_request/login_handler/'  #  the view will actually send: `reverse('article_request:login_handler_url')`
-        built_param_string = self.helper.build_shib_sp_querystring( mock_reverse_string, shortkey, citation_json, format, illiad_url, querystring, log_id )
+        built_param_string = self.helper.build_shib_sp_querystring( mock_reverse_string, shortkey, citation_json, format, querystring, log_id )
         log.debug( f'built_param_string, ```{built_param_string}```' )
         param_dct = parse_qs( built_param_string )
         self.assertEqual( {
