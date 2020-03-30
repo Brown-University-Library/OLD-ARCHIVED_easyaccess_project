@@ -35,6 +35,25 @@
             font-size: 80%;
         }
 
+        div#alert {
+            background-color : #FFE6A0 ;
+            /*font-family : CircularStd ;*/
+            padding : 25px ;
+            margin-top : 0 ;
+            margin-bottom : 0 ;
+        }
+        h2#notice_title {
+            margin-top: 0 ;
+        }
+        div#main-container {
+            margin-top: 4em ;
+        }
+        a.alert_link {
+            color: maroon ;
+            border-bottom: 1px dotted ;
+            font-weight: bold;
+        }
+
     </style>
 
     {% block javascripts %}
@@ -106,13 +125,16 @@
 
     <div id="main-container" class="container">
 
+
+
         <div id="alert">
-            <h2 style="color:red;font-weight: bold;">Important Notice</h2>
+            <h2 id="notice_title" style="color:maroon;font-weight: bold;">Important Notice</h2>
             <p><strong>Checking-out of physical materials from Brown University Library, interlibrary loan, and BorrowDirect have been suspended until further notice.</strong> In the meantime, patrons are asked to keep any items now in their possession -- including those obtained through Borrow Direct, easyBorrow, and ILLiad -- until the libraries reopen. All fines and late fees will be waived.</p>
-            <p>While you may submit new requests, they will be held for future processing. We will reassess all Library services on an ongoing basis. Check <a href="https://blogs.brown.edu/libnews/covid/">the Library's COVID-19 announcements page</a> frequently for updates about Library services.</p>
-            <hr/>
-            <hr/>
+            <p>While you may submit new requests, they will be held for future processing. We will reassess all Library services on an ongoing basis.</p>
+            <p>Check <a class="alert_link" href="https://blogs.brown.edu/libnews/covid/">the Library's COVID-19 announcements page</a> frequently for updates about Library services.</p>
         </div>
+        <hr/>
+
 
         <div class="row">
 
