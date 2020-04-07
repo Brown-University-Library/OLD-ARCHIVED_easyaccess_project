@@ -74,7 +74,8 @@
     <hr/>
 
     <div class="availability_info">
-        {% include "findit_templates/findit_snippets/availability.html" %}
+         {% comment %} {% include "findit_templates/findit_snippets/availability.html" %}  {% endcomment %}
+        {% include "findit_templates/findit_snippets/availability_covid.html" %}
     </div>
 {% endblock content %}
 

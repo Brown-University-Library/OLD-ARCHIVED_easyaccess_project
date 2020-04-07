@@ -476,10 +476,25 @@ class FinditResolver( object ):
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return
 
+    # def make_resolve_response( self, request, context ):
+    #     """ Returns json or html response object for index.html or resolve.html template.
+    #         Called by views.base_resolver()
+    #         TODO: refactor. """
+    #     if request.GET.get('output', '') == 'json':
+    #         output = json.dumps( context, sort_keys=True, indent=2 )
+    #         resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
+    #     else:
+    #         resp = render( request, 'findit_templates/resolve_josiah.html', context )
+    #     log.debug( f'returning response, ```{pprint.pformat(context)}```' )
+    #     return resp
+
     def make_resolve_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.
             Called by views.base_resolver()
             TODO: refactor. """
+        log.debug( f'context.keys(), ```{pprint.pformat(context.keys())}```' )
+        if context.get( 'resolved', None ) == True:
+            context['resolved'] = False
         if request.GET.get('output', '') == 'json':
             output = json.dumps( context, sort_keys=True, indent=2 )
             resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )

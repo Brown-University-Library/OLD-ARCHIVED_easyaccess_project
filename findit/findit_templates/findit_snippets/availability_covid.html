@@ -28,7 +28,7 @@
 
         {# Do print #}
         {% if print %}
-            <h2>Available at the library</h2>
+            <h2 style="text-decoration: line-through;">Available at the library</h2>
             <ul class="print-holdings">
 
                 {% for held in print %}
@@ -64,13 +64,16 @@
 
 
 {% if not resolved %}
+{% if online|length < 1 %}
     <div id="request-message" class="notice">
-        <h2>This article couldn&#8217;t be located in the library&#8217;s collections.</h2>
+        <!-- <h2>This article couldn&#8217;t be located in the library&#8217;s collections.</h2> -->
+        <h2>We can try to get this for you via InterLibrary Loan.</h2>
         <ul>
             {% url 'article_request:shib_login_url' as login_url %}
             <li class="request-link"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request from another library</a></li>
             <li><a href="https://library.brown.edu/libweb/askalib.php">Ask a librarian</a></li>
         </ul>
     </div>
+{% endif %}
 {% endif %}
 
