@@ -28,7 +28,12 @@
 
         {# Do print #}
         {% if print %}
-            <h2 style="text-decoration: line-through;">Available at the library</h2>
+            <style type="text/css">
+                .request_via_josiah {
+                    text-decoration: line-through;
+                }
+            </style>
+            <h2 class="request_via_josiah">Available at the library</h2>
             <ul class="print-holdings">
 
                 {% for held in print %}
@@ -51,7 +56,7 @@
                         {% endcomment %}
                         {% ifequal held.location "Annex" %}
                             <!-- &nbsp;-- <span class="request-link"><a href="http://josiah.brown.edu/search/c{{ held.call_number }}">request for delivery via Josiah</a></span> -->
-                            &nbsp;-- <span class="request-link"><a href="https://search.library.brown.edu/catalog?utf8=✓&search_field=call_number&q={{ held.call_number }}">request for delivery via Josiah</a></span>
+                            &nbsp;-- <span class="request-link"><a class="request_via_josiah" href="https://search.library.brown.edu/catalog?utf8=✓&search_field=call_number&q={{ held.call_number }}">request for delivery via Josiah</a></span>
                         {% endifequal %}
                    </li>
                 {% endfor %}
