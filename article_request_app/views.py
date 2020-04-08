@@ -231,6 +231,7 @@ def illiad_handler( request ):
     ## send email
     citation_json = request.session.get( 'citation_json', '{}' )
     citation_dct = json.loads( citation_json )
+    log.debug( f'citation_dct, ```{pprint.pformat(citation_dct)}```' )
     if citation_dct.get( 'title', '' ) != '':
         citation_title = citation_dct['title']
     else:
