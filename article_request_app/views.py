@@ -198,6 +198,7 @@ def illiad_handler( request ):
         # shortkey = request.GET['shortkey']  # it's a post
         rsrc = B_L_Resource.objects.get( shortlink=shortkey )
         item_dct = json.loads( rsrc.item_json )
+        log.debug( f'item_dct, ```{pprint.pformat(item_dct)}```' )
         original_querystring = item_dct['querystring_original']
         enhanced_querystring = item_dct['enhanced_querystring']
         permalink = item_dct['permalink']
@@ -234,8 +235,14 @@ def illiad_handler( request ):
     log.debug( f'citation_dct, ```{pprint.pformat(citation_dct)}```' )
     if citation_dct.get( 'title', '' ) != '':
         citation_title = citation_dct['title']
+    elif illiad_url_builder.bib_title:
+        citation_title = illiad_url_builder.bib_title
     else:
         citation_title = citation_dct.get('source', 'title_unavailable')
+    # if citation_dct.get( 'title', '' ) != '':
+    #     citation_title = citation_dct['title']
+    # else:
+    #     citation_title = citation_dct.get('source', 'title_unavailable')
     #
     subject = 'easyAccess request confirmation'
     body = new_ill_helper.make_illiad_success_message(

@@ -20,6 +20,7 @@ class IlliadUrlBuilder( object ):
 
     def __init__( self ):
         self.validator = IlliadValidator()
+        self.bib_title = None
 
     def make_illiad_url( self, original_querystring, enhanced_querystring, scheme, host, permalink ):
         """ Manages steps of constructing illiad url for possible use in article-requesting.
@@ -33,6 +34,7 @@ class IlliadUrlBuilder( object ):
         log.debug( f'bib_dct before enhance, ```{ill_bib_dct}```' )
         ill_bib_dct = self.enhance_citation( ill_bib_dct, original_querystring )
         log.debug( f'bib_dct after enhance, ```{ill_bib_dct}```' )
+        self.bib_title = ill_bib_dct.get( 'title', None )
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
         extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
         openurl = bibjsontools.to_openurl( ill_bib_dct )
@@ -43,6 +45,32 @@ class IlliadUrlBuilder( object ):
         illiad_url = openurl
         log.debug( 'illiad_url, ```%s```' % illiad_url )
         return illiad_url
+
+    # def __init__( self ):
+    #     self.validator = IlliadValidator()
+
+    # def make_illiad_url( self, original_querystring, enhanced_querystring, scheme, host, permalink ):
+    #     """ Manages steps of constructing illiad url for possible use in article-requesting.
+    #         Called by views.illiad_handler()
+    #         TODO: The scheme://host is no longer used, now that the illiad-api is hit; that should be phased out from the code and settings. """
+    #     bib_dct = bibjsontools.from_openurl( enhanced_querystring )
+    #     log.debug( f'bib_dct, ```{pprint.pformat(bib_dct)}```' )
+    #     ill_bib_dct = self.validator.add_required_kvs( bib_dct )
+    #     extra_dct = self.check_identifiers( ill_bib_dct )
+    #     extra_dct = self.check_validity( ill_bib_dct, extra_dct )
+    #     log.debug( f'bib_dct before enhance, ```{ill_bib_dct}```' )
+    #     ill_bib_dct = self.enhance_citation( ill_bib_dct, original_querystring )
+    #     log.debug( f'bib_dct after enhance, ```{ill_bib_dct}```' )
+    #     full_permalink = '%s://%s%s' % ( scheme, host, permalink )
+    #     extra_dct['Notes'] = self.update_note( extra_dct.get('Notes', ''), '`shortlink: <%s>`' % full_permalink )
+    #     openurl = bibjsontools.to_openurl( ill_bib_dct )
+    #     log.debug( f'openurl from bibjsontools, ```{openurl}```' )
+    #     for k, v in extra_dct.items():
+    #         openurl += '&%s=%s' % ( urllib.parse.quote_plus(k), urllib.parse.quote_plus(v) )
+    #     # illiad_url = settings_app.ILLIAD_URL_ROOT % openurl  # ILLIAD_URL_ROOT is like `http...OpenURL?%s
+    #     illiad_url = openurl
+    #     log.debug( 'illiad_url, ```%s```' % illiad_url )
+    #     return illiad_url
 
     def check_identifiers( self, ill_bib_dct ):
         """ Gets oclc or pubmed IDs.
