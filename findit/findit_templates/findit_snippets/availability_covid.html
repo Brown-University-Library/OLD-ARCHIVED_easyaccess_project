@@ -1,5 +1,31 @@
 {# This file is included by resolve_josiah.html. It displays various kinds of availability. #}
 
+
+
+{# START: Temporarily (re COVID) allow ILLiad-requesting #}
+{% if not resolved %}
+    {% if online|length < 1 %}
+
+        <style type="text/css">
+            .request_link_text {
+                font-size: 18px;
+            }
+        </style>
+        <div id="request-message" class="notice">
+            <!-- <h2>This article couldn&#8217;t be located in the library&#8217;s collections.</h2> -->
+            <h2>We can try to get this for you via InterLibrary Loan.</h2>
+            <ul>
+                {% url 'article_request:shib_login_url' as login_url %}
+                <li class="request-link request_link_text"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request scan/pdf from another library</a></li>
+                <li class="request_link_text"><a href="https://library.brown.edu/libweb/askalib.php">Ask a librarian</a></li>
+            </ul>
+        </div>
+    {% endif %}
+{% endif %}
+{# END: Temporarily (re COVID) allow ILLiad-requesting #}
+
+
+
 {% if print or online %}
     <div class="holdings">
 
@@ -28,6 +54,7 @@
 
         {# Do print #}
         {% if print %}
+
             <style type="text/css">
                 .request_via_josiah {
                     text-decoration: line-through;
@@ -66,25 +93,3 @@
 
     </div>  <!-- end of div class="holdings"-->
 {% endif %}  {# end of {% if print or online %} #}
-
-
-{% if not resolved %}
-{% if online|length < 1 %}
-
-    <style type="text/css">
-        .request_link_text {
-            font-size: 18px;
-        }
-    </style>
-    <div id="request-message" class="notice">
-        <!-- <h2>This article couldn&#8217;t be located in the library&#8217;s collections.</h2> -->
-        <h2>We can try to get this for you via InterLibrary Loan.</h2>
-        <ul>
-            {% url 'article_request:shib_login_url' as login_url %}
-            <li class="request-link request_link_text"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request scan/pdf from another library</a></li>
-            <li class="request_link_text"><a href="https://library.brown.edu/libweb/askalib.php">Ask a librarian</a></li>
-        </ul>
-    </div>
-{% endif %}
-{% endif %}
-
