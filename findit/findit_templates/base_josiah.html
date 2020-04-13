@@ -158,16 +158,21 @@
                     padding-left : 20px ;
                     padding-right: 20px ;
                     padding-bottom: 15px ;
-                    margin-top : 0 ;
+                    margin-top : -.5em ;
                     margin-bottom : 0 ;
                     font-size: 13px ;
                 }
-                td#tbl_announcement_cell {
+                td#tbl_covid_announcement_cell {
+                    /*vertical-align: top;*/
+                    padding-right: 1.5em;
+                }
+                td#tbl_eresource_announcement_cell {
                     vertical-align: top;
-                    padding-left: 2em;
+                    padding-left: 0em;
                 }
                 .tbl_eresources_announcment_title {
                     margin-top: 1em;
+                    margin-bottom: 1em;
                     color:maroon;
                     font-weight: bold;
                     text-align: center;
@@ -181,10 +186,13 @@
                     border-bottom: 1px dotted ;
                     font-weight: normal;
                 }
+                hr#tbl_post_alert {
+                    margin-top: .5em ;
+                }
             </style>
             <table>
                 <tr>
-                    <td>
+                    <td id="tbl_covid_announcement_cell">
                         <div id="tbl_alert">
                             <h2 id="notice_title" style="color:maroon;font-weight: bold;">Important Notice</h2>
                             <p><strong id="suspended_notice">Checking-out of physical materials from Brown University Library, interlibrary loan, and BorrowDirect have been suspended until further notice.</strong> In the meantime, patrons are asked to keep any items now in their possession -- including those obtained through Borrow Direct, easyBorrow, and ILLiad -- until the libraries reopen. All fines and late fees will be waived.</p>
@@ -192,7 +200,7 @@
                             <p>Check <a class="alert_link" href="https://blogs.brown.edu/libnews/covid/">the Library's COVID-19 announcements page</a> frequently for updates about Library services.</p>
                         </div>
                     </td>
-                    <td id="tbl_announcement_cell">
+                    <td id="tbl_eresource_announcement_cell">
                         <div>
                             <h4 class="tbl_eresources_announcment_title" ">Announcement...</h4>
                             <p class="tbl_eresources_announcment_spacing">For a limited time, the Library has expanded electronic-resources available to the Brown Community.</p>
@@ -201,7 +209,7 @@
                     </td>
                 </tr>
             </table>
-            <hr/>
+            <hr id="tbl_post_alert"/>
 
         </div>
 
