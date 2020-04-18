@@ -7,6 +7,7 @@ from .classes.login_helper import LoginHelper
 from .classes.shib_helper import ShibLoginHelper
 from article_request_app import settings_app
 from bul_link.models import Resource as B_L_Resource
+from common_classes import common
 from django.conf import settings as project_settings
 from django.contrib.auth import logout
 from django.core.mail import send_mail
@@ -166,7 +167,12 @@ def illiad_request( request ):
     ## prep data
     citation_json = request.session.get( 'citation_json', '{}' )
     format = request.session.get( 'format', '' )
-    context = { 'citation': json.loads(citation_json), 'format': format }
+    # context = { 'citation': json.loads(citation_json), 'format': format }
+    context = {
+        'pattern_header': common.prep_pattern_header( '', 'easyArticle' ),
+        'citation': json.loads(citation_json),
+        'format': format
+        }
     log.debug( 'context, ```{}```'.format(pprint.pformat(context)) )
 
     ## cleanup

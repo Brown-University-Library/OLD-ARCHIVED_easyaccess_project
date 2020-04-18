@@ -13,8 +13,7 @@
 
     <title>{{ easyWhat }} - Brown University Library</title>
 
-    <link href="//library.brown.edu/css_2011/BUL2011.css" rel="stylesheet" type="text/css" />
-    <!-- <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css" type="text/css"/> -->
+    <!-- <link href="//library.brown.edu/css_2011/BUL2011.css" rel="stylesheet" type="text/css" /> -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css"/>
 
     <!-- script below from http://code.google.com/p/css3-mediaqueries-js/ - forces earlier browsers to interpret CSS media queries -->
@@ -35,18 +34,8 @@
     <div id="wrapper">
 
         <div id="header">
-
+            {% comment %}
             <p class="top_header_links"><a href="http://library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp; <a href="http://library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a>
-                {% comment %}
-                &nbsp;&nbsp;&#124;&nbsp;&nbsp;
-                {% if user and user.is_authenticated %}
-                       Hello {{ user.first_name}} {{ user.last_name }}
-                       &nbsp;&nbsp;&#124;&nbsp;&nbsp;
-                       <a href="{{ logout_link }}">Logout</a>
-                {% else %}
-                     <a href="{{ login_link }}">Login</a>
-                {% endif %}
-                {% endcomment %}
             </p>
 
             <div class="BUhomelink">
@@ -56,6 +45,13 @@
             <div class="BULhomelink">
                 <a href="http://library.brown.edu/"><img src="//library.brown.edu/images/spacer.gif" width="440" height="30" alt="Brown University Library Homepage" title="Brown University Library Homepage" /></a>
             </div>
+            {% endcomment %}
+
+
+            <!-- PATTERN-LIBRARY-HEADER start... -->
+            {{ pattern_header | safe }}
+            <!-- PATTERN-LIBRARY-HEADER end -->
+
 
         </div> <!-- end #header -->
 
