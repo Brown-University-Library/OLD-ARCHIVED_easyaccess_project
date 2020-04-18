@@ -14,14 +14,9 @@
         easyAccess
         {% endblock page_title %}
     </title>
-    <link href="{% static 'css/all_search_css_pretty-print.css' %}" rel="stylesheet" type="text/css"/>
-
-
-    <!-- <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/typography.css"> -->
-
-
-    <script src="{% static 'js/jquery_3-3-1.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap_3-3-7.min.js' %}"></script>
+    <!-- <link href="{% static 'css/all_search_css_pretty-print.css' %}" rel="stylesheet" type="text/css"/> -->
+    <!-- <script src="{% static 'js/jquery_3-3-1.min.js' %}"></script> -->
+    <!-- <script src="{% static 'js/bootstrap_3-3-7.min.js' %}"></script> -->
 
     {% block extra_css %}
     {% endblock %}
@@ -39,8 +34,6 @@
         .right-click {
             font-size: 80%;
         }
-
-
         @font-face {
             font-family: CircularStd;
             src: url("https://library.brown.edu/common/fonts/CircularStd-Book.otf");
@@ -74,8 +67,6 @@
             font-weight: bold ;
             font-size: 15px ;
         }
-
-
     </style>
 
     {% block javascripts %}
@@ -85,63 +76,16 @@
 
 <body class="blacklight-catalog blacklight-catalog-show">
 
-    <!-- BANNER start... -->
 
-    <div id="topmost-nav-links">
-        <ul>
-            <li><a href="https://library.brown.edu/borrowing/">Find &amp; Borrow</a></li>
-            <li><a href="https://library.brown.edu/info/ajdb">Articles, Journals, &amp; Databases</a></li>
-            <li><a href="https://library.brown.edu/about/specialists.php">Research Help</a></li>
-            <li><a href="https://library.brown.edu/libweb/hours.php">Hours, Locations, &amp; Events</a></li>
-            <li><a href="https://library.brown.edu/libweb/askalib.php">Ask a Question Now</a></li>
-            <li><a href="https://library.brown.edu/libweb/proxy.php">Off-Campus Access</a></li>
-            <li><a href="https://josiah.brown.edu/patroninfo">My Library Account</a></li>
-        </ul>
-    </div>
+    <!-- PATTERN-LIBRARY-HEADER start... -->
+    {{ pattern_header | safe }}
+    <!-- PATTERN-LIBRARY-HEADER end -->
 
-    <div id="header-navbar" class="navbar navbar-inverse navbar-static-top" role="navigation">
 
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#user-util-collapse">
-                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
-                    <span class="icon-bar"></span> <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="//library.brown.edu" title="link to library.brown.edu"><span id="hide">library.brown.edu</span></a>
-            </div>
-        </div>
-
-        <div id="search-navbar" class="navbar navbar-default navbar-static-top" role="navigation">
-            <div class="container">
-                <form accept-charset="UTF-8" action="{% url 'bul_search_url' %}" class="search-query-form form-inline clearfix navbar-form" method="get">
-                    <div style="display:none">
-                        <input name="utf8" type="hidden" value="&#x2713;" />
-                    </div>
-                    <div class="input-group col-md-9 col-md-offset-1">
-                        <label for="q" class="sr-only">Enter keywords to search library resources</label>
-                        <input class="search_q q form-control" id="q" name="q" placeholder="Enter keywords to search library resources" type="text" value="" />
-                        <span class="input-group-btn"> <button type="submit" class="btn btn-primary search-btn" id="search"> <span class="submit-search-text">Search</span> <span class="glyphicon glyphicon-search"></span> </button> </span>
-                    </div>
-                    <span class="start-over"><a href="/">Start over</a></span>
-                </form>
-            </div>
-        </div>
-
-        <div class="collapse navbar-collapse" id="user-util-collapse">
-            <div class="navbar-right">
-                <ul class="nav navbar-nav">
-                    {% block extra_tools %}
-                    {% endblock %}
-                    <li> <a href="{{ feedback_link }}" rel="tooltip" title="link to form for suggestions or reporting a problem">Feedback</a> </li>
-                    <li> <a href="http://library.brown.edu/libweb/askalib.php" rel="tooltip" title="link to contact-librarian information">Help</a> </li>
-                    <li> <a href="{% url 'findit:findit_base_resolver_url' %}" rel="tooltip" title="about easyBorrow and easyArticle"><span is_index_page="{{ is_index_page }}">About</span></a> </li>
-                </ul>
-            </div>
-        </div>
-
-    </div>  <!-- end of: <div id="header-navbar"...  -->
-
-    <!-- ...BANNER end -->
+    <link href="{% static 'css/local.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/all_search_css_pretty-print.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static 'js/jquery_3-3-1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap_3-3-7.min.js' %}"></script>
 
     <!-- CONTENT start... -->
 
@@ -151,6 +95,16 @@
 
         <div id="alert_table">
             <style type="text/css">
+
+
+                /*div#alert_table {
+                    margin-top: 4em;
+                }*/
+                div#main-container{
+                    margin-top: 1.5em;
+                }
+
+
                 div#tbl_alert {
                     background-color : #FFE6A0 ;
                     font-family : CircularStd ;

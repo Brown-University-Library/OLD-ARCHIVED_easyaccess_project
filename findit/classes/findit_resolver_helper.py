@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import datetime, json, logging, pprint, random, re, time, urllib
-# from datetime import datetime
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
+from common_classes import common
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.text import slugify
-# from findit import app_settings, summon
 from findit import app_settings
-# from findit.classes.illiad_helper import IlliadUrlBuilder
 from findit.utils import BulSerSol
 from py360link2 import get_sersol_data
-# from shorturls import baseconv
 
 
 log = logging.getLogger('access')
@@ -73,17 +70,32 @@ class FinditResolver( object ):
         log.debug( '`{id}` return_val, `{val}`'.format(id=self.log_id, val=return_val) )
         return return_val
 
+    # def make_index_context( self, querydict, scheme, host, permalink, ip ):
+    #     """ Builds context for index page.
+    #         Called by views.findit_base_resolver() """
+    #     # full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
+    #     full_permalink = '%s://%s%s' % ( scheme, host, permalink )
+    #     log.debug( 'full_permalink, ```%s```' % full_permalink )
+    #     context = {
+    #         'is_index_page': True,  # enables css to apply underline
+    #         'SS_KEY': settings.BUL_LINK_SERSOL_KEY,
+    #         'easyWhat': 'easyAccess',
+    #         'feedback_link': app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+    #     }
+    #     return context
+
     def make_index_context( self, querydict, scheme, host, permalink, ip ):
         """ Builds context for index page.
             Called by views.findit_base_resolver() """
-        # full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
         full_permalink = '%s://%s%s' % ( scheme, host, permalink )
         log.debug( 'full_permalink, ```%s```' % full_permalink )
+        feedback_url = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
         context = {
+            'pattern_header': common.prep_pattern_header( feedback_url, 'easyAccess' ),
             'is_index_page': True,  # enables css to apply underline
             'SS_KEY': settings.BUL_LINK_SERSOL_KEY,
             'easyWhat': 'easyAccess',
-            'feedback_link': app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+            # 'feedback_link': app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
         }
         return context
 
@@ -427,10 +439,14 @@ class FinditResolver( object ):
     #     """ Preps the template view.
     #         Called by views.findit_base_resolver() """
     #     context = self._try_resolved_obj_citation( sersol_dct )
-    #     context = self.check_citation_issn( context )
-    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
     #     if context.get( 'enhanced_querystring', '' ) == '':
     #         context['enhanced_querystring'] = querystring
+    #     if 'shortkey' not in context['enhanced_querystring']:
+    #         parse_result = parse_qs( querystring )
+    #         shortkey = parse_result['shortkey'][0]  # single-element list
+    #         context['enhanced_querystring'] = f'{ context["enhanced_querystring"] }&shortkey={shortkey}'
+    #     context = self.check_citation_issn( context )
+    #     ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
     #     context['querystring'] = querystring
     #     context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
     #     context['permalink'] = permalink
@@ -445,6 +461,12 @@ class FinditResolver( object ):
         """ Preps the template view.
             Called by views.findit_base_resolver() """
         context = self._try_resolved_obj_citation( sersol_dct )
+        ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+        full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
+        ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+        feedback_url = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+        context['pattern_header'] = common.prep_pattern_header( feedback_url, context['easyWhat'] )
+        log.debug( f'pattern_header after context-insertion, ```{context["pattern_header"]}```' )
         if context.get( 'enhanced_querystring', '' ) == '':
             context['enhanced_querystring'] = querystring
         if 'shortkey' not in context['enhanced_querystring']:
@@ -452,14 +474,14 @@ class FinditResolver( object ):
             shortkey = parse_result['shortkey'][0]  # single-element list
             context['enhanced_querystring'] = f'{ context["enhanced_querystring"] }&shortkey={shortkey}'
         context = self.check_citation_issn( context )
-        ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
+        # ( context['genre'], context['easyWhat'] ) = self._check_genre( context )
         context['querystring'] = querystring
         context['ris_url'] = '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=context['enhanced_querystring'] )
         context['permalink'] = permalink
         context['SS_KEY'] = settings.BUL_LINK_SERSOL_KEY
-        ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
-        full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
-        context['feedback_link'] = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
+        # ip = request.META.get( 'REMOTE_ADDR', 'unknown' )
+        # full_permalink = '%s://%s%s' % ( request.scheme, request.get_host(), permalink )
+        # context['feedback_link'] = app_settings.PROBLEM_URL % ( full_permalink, ip )  # settings contains string-substitution for permalink & ip
         log.debug( 'context, ```%s```' % pprint.pformat(context) )
         return context
 
@@ -475,18 +497,6 @@ class FinditResolver( object ):
             request.session['last_path'] = request.path
         log.debug( 'request.session.items(), `%s`' % pprint.pformat(request.session.items()) )
         return
-
-    # def make_resolve_response( self, request, context ):
-    #     """ Returns json or html response object for index.html or resolve.html template.
-    #         Called by views.base_resolver()
-    #         TODO: refactor. """
-    #     if request.GET.get('output', '') == 'json':
-    #         output = json.dumps( context, sort_keys=True, indent=2 )
-    #         resp = HttpResponse( output, content_type=u'application/javascript; charset=utf-8' )
-    #     else:
-    #         resp = render( request, 'findit_templates/resolve_josiah.html', context )
-    #     log.debug( f'returning response, ```{pprint.pformat(context)}```' )
-    #     return resp
 
     def make_resolve_response( self, request, context ):
         """ Returns json or html response object for index.html or resolve.html template.

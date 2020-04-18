@@ -81,5 +81,14 @@ DB_PUSH_BOTTOM = getattr(settings, 'FINDIT_DB_PUSH_BOTTOM', [])
 ## if true, will take user directly to full text when it's found; if false, will show landing page.
 FLY_TO_FULLTEXT = json.loads( os.environ['EZACS3__FINDIT_GO_DIRECT_TO_FULLTEXT_JSON'] )
 
+# =========================================================================================================================
+# - Note that settings.py contains the cache-location setting -- applicable to this and any other caching.
+# - Cache is handled in seconds, so `PATTERN_LIB_CACHE_TIMEOUT` setting converts the envar hour-integer to seconds
+# - Also, `LIB` instead of `HEADER` used for following setting because the header url _is_ to a header file specifically...
+#   ...but it's likely that there will be at least another pattern-url; i.e. 'footer'.
+# =========================================================================================================================
+PATTERN_LIB_CACHE_TIMEOUT = int( os.environ['EZACS3__COMMON__PATTERN_HEADER_CACHE_TIMEOUT_IN_HOURS'] ) * 60 * 60  # cache() requires seconds.
+PATTERN_HEADER_URL = os.environ['EZACS3__COMMON__PATTERN_HEADER_URL']
+
 
 ## EOF ###
