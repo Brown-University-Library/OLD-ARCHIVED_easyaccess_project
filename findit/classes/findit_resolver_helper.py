@@ -232,12 +232,15 @@ class FinditResolver( object ):
             Error note:
                 Occational ```XMLSyntaxError(u'Opening and ending tag mismatch: hr line 1 and body, line 1, column 922',)``` caused by unknown blip.
                 Result: eventual redirect to  citation form for confirmation -- always seems to work second time. """
+        start_time = datetime.datetime.now()
         try:
             sersol_dct = get_sersol_data( querystring, key=app_settings.SERSOL_KEY )  # get_sersol_data() is a function of py360link2
         except Exception as e:
             log.debug( '`{id}` problem grabbing sersol data, ```{val}```'.format(id=self.log_id, val=repr(e)) )
             sersol_dct = {}
         log.debug( '`{id}` sersol_dct, ```{val}```'.format(id=self.log_id, val=pprint.pformat(sersol_dct)) )
+        elapsed_time = datetime.datetime.now() - start_time
+        log.debug( f'sersol lookup-code elapsed-time, ``{elapsed_time}``' )
         return sersol_dct
 
     def prep_eds_fulltext_url( self, querystring ):
