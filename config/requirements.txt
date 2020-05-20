@@ -2,7 +2,7 @@ dj-database-url==0.3.0
 django-jsonfield==1.1.0
 django-shorturls==2.0.0
 Django==1.11.28
-httplib2==0.9.1
+httplib2==0.18.0
 #lxml==3.7.3
 lxml==4.5.0
 Markdown==2.6.5
