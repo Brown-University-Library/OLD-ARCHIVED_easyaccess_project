@@ -24,7 +24,8 @@ def prep_pattern_header( feedback_url, easy_type ) -> str:
 
 
 def grab_pattern_header() -> str:
-    """ Prepares html for header. """
+    """ Prepares html for header.
+        Called by: prep_pattern_header() """
     cache_key = 'pattern_header'
     header_html = cache.get( cache_key, None )
     if header_html:

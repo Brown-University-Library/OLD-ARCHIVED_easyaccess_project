@@ -1,4 +1,3 @@
-{% load staticfiles %}
 
 <!DOCTYPE html>
 
@@ -14,8 +13,7 @@
 	<title>Brown University Library</title>
 
 	<!-- Included CSS Files -->
-    <!--
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/globals.css">
+	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/globals.css">
 	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/typography.css">
 	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/grid.css">
 	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/ui.css">
@@ -26,7 +24,6 @@
 	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/mobile.css">
 
 	<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/BULadditions.css">
-    -->
 
 	<!--[if lt IE 9]>
 		<link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/ie.css">
@@ -49,30 +46,6 @@
 
 <body>
 
-
-
-    <!-- PATTERN-LIBRARY-HEADER start... -->
-    {{ pattern_header | safe }}
-    <!-- PATTERN-LIBRARY-HEADER end -->
-    <link href="{% static 'css/local.css' %}" rel="stylesheet" type="text/css"/>
-
-
-
-    <!-- Old CSS Files -->
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/globals.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/typography.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/grid.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/ui.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/forms.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/orbit.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/reveal.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/app.css">
-    <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/mobile.css">
-
-    <!-- <link rel="stylesheet" href="//library.brown.edu/foundation/stylesheets/BULadditions.css"> -->
-
-
-
     <div class="row">
       <div class="twelve columns">
 
@@ -80,24 +53,20 @@
 
           <div id="header_contents">
 
-
-<!--
               <div class="BUhomelink">
                   <a href="http://www.brown.edu"><img src="//library.brown.edu/images/spacer.gif" width="50" alt="Brown University Homepage" title="Brown University Homepage" /></a>
-              </div>
+              </div> <!-- end .BUhomelink -->
 
               <div class="BULhomelink">
                   <a href="//library.brown.edu/"><img src="//library.brown.edu/images/spacer.gif" width="440" height="30" alt="Brown University Library Homepage" title="Brown University Library Homepage" /></a>
-              </div>
+              </div> <!-- end .BULhomelink -->
 
               <div class="row">
                   <div class=".five.columns.offset-by-six">
                       <p class="top_header_links"><a href="//library.brown.edu/libweb/proxy.php">Off-Campus Access</a> &nbsp;&nbsp;&#124;&nbsp;&nbsp; <a href="//library.brown.edu/libweb/atoz.php">Library A&ndash;Z</a>
                       </p>
-                  </div>
-              </div>
-
- -->
+                  </div> <!-- end .five.columns.offset-by-six -->
+              </div> <!-- end .row -->
 
           </div> <!-- end #header_contents -->
 
@@ -112,24 +81,21 @@
 
 		<div class="row">
 
-
             <div class="three columns">
                 {% block left_sidebar %}{% endblock %}
             </div>
 
 
-
             <div class="six columns">
                 {% block content %}{% endblock %}
-			</div>
-
+			</div> <!-- end six columns -->
 
 
     		<div class="three columns show-on-desktops">
 				<div class="panel">
 					{% block right_sidebar %}{% endblock %}
-				</div>
-			</div>
+				</div> <!-- end .panel -->
+			</div> <!-- end three columns show-on-desktops -->
 
 
     	</div> <!-- end .row -->

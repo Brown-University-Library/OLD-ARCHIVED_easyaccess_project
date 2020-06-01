@@ -7,6 +7,7 @@ from datetime import datetime
 
 import bibjsontools, markdown, requests
 from bibjsontools import from_dict, from_openurl, to_openurl
+from common_classes import common
 from common_classes.illiad_helper import IlliadHelper as CommonIlliadHelper
 from delivery import app_settings as settings_app
 from delivery.classes.availability_helper import AvailabilityViewHelper
@@ -14,6 +15,7 @@ from delivery.classes.availability_helper import JosiahAvailabilityChecker
 from delivery.classes.login_helper import LoginViewHelper
 from delivery.classes.process_helper import ProcessViewHelper
 from delivery.classes.shib_helper import ShibLoginHelper
+from delivery.utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -27,7 +29,6 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlquote
 from django.views.generic import TemplateView
 from py360link2 import get_sersol_data, Resolved
-from delivery.utils import DeliveryBaseView, JSONResponseMixin, merge_bibjson, illiad_validate
 
 
 log = logging.getLogger('access')
@@ -118,7 +119,11 @@ def availability( request ):
     #     'ebook_lst': ebook_lst,
     #     'ris_url': '{ris_url}?{eq}'.format( ris_url=reverse('findit:ris_url'), eq=querystring )
     #     }
+
+
+
     context = {
+        'pattern_header': common.prep_pattern_header( '', 'easyBorrow' ),
         'permalink_url': permalink,
         'bib': bib_dct,
         'exact_available_holdings': available_holdings,
