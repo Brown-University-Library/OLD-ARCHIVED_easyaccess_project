@@ -77,9 +77,11 @@
 <body class="blacklight-catalog blacklight-catalog-show">
 
 
+
     <!-- PATTERN-LIBRARY-HEADER start... -->
     {{ pattern_header | safe }}
     <!-- PATTERN-LIBRARY-HEADER end -->
+
 
 
     <link href="{% static 'css/local.css' %}" rel="stylesheet" type="text/css"/>
@@ -91,11 +93,8 @@
 
     <div id="main-container" class="container">
 
-
-
         <div id="alert_table">
             <style type="text/css">
-
 
                 /*div#alert_table {
                     margin-top: 4em;
@@ -169,7 +168,7 @@
 
 
 
-<!--
+        <!--
         <div id="alert">
             <h2 id="notice_title" style="color:maroon;font-weight: bold;">Important Notice</h2>
             <p><strong id="suspended_notice">Checking-out of physical materials from Brown University Library, interlibrary loan, and BorrowDirect have been suspended until further notice.</strong> In the meantime, patrons are asked to keep any items now in their possession -- including those obtained through Borrow Direct, easyBorrow, and ILLiad -- until the libraries reopen. All fines and late fees will be waived.</p>
@@ -196,7 +195,7 @@
             <p class="eresources_announcment_spacing">See our <a class="alert_link" href="http://libguides.brown.edu/covid-19">"Expanded Access to Digital Content" page</a> for more information.</p>
         </div>
         <hr/>
- -->
+        -->
 
 
 
@@ -210,7 +209,6 @@
             {% if not is_index_page %}
             </div>
             {% endif %}
-
 
             {% if not is_index_page %}
             <!-- TOOLS start... -->
@@ -303,8 +301,8 @@
         })();
     </script>
 
-{% block footer_javascripts %}
-{% endblock footer_javascripts %}
+    {% block footer_javascripts %}
+    {% endblock footer_javascripts %}
 
 </body>
 
