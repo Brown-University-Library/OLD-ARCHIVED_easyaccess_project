@@ -5,7 +5,8 @@
 
 {% block page_title %}
     {% autoescape off %}
-        easyAccess &rarr; {{ easyWhat }}
+        {# easyAccess &rarr; {{ easyWhat }} #}
+        easyAccess
     {% endautoescape %}
 {% endblock page_title %}
 
@@ -65,7 +66,7 @@
 
 
 {% block content %}
-    <h4 class="easy_what">{{ easyWhat }}</h4>
+    {# <h4 class="easy_what">{{ easyWhat }}</h4> <!-- 2020-June-16: commenting this out because I can imagine folk wanting it back. --> #}
 
     <div class="citation">
         {% include "findit_templates/findit_snippets/citation_display_josiah.html" %}
