@@ -13,7 +13,7 @@
         </style>
         <div id="request-message" class="notice">
             <!-- <h2>This article couldn&#8217;t be located in the library&#8217;s collections.</h2> -->
-            <h2>We can try to get this for you via InterLibrary Loan.</h2>
+            <h2 id="we_can_try">We can try to get this for you via InterLibrary Loan.</h2>
             <ul>
                 {% url 'article_request:shib_login_url' as login_url %}
                 <li class="request-link request_link_text"><a href="{{ login_url }}?{{ enhanced_querystring }}">Request scan/pdf from another library</a></li>
