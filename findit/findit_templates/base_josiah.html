@@ -75,6 +75,10 @@
             font-size: 15px ;
         }
 
+        div#alert_table {
+            margin-top: -2em;
+        }
+
 
     </style>
 
@@ -147,8 +151,6 @@
 
     <div id="main-container" class="container">
 
-
-
         <div id="alert_table">
             <style type="text/css">
                 div#tbl_alert {
@@ -178,7 +180,7 @@
                     text-align: center;
                 }
                 p.tbl_eresources_announcment_spacing {
-                    line-height: 140%;
+                    line-height: 100%;
                     text-align: center;
                     font-size: 85%;
                 }
@@ -192,7 +194,15 @@
                 }
             </style>
             <table>
-                <tr>
+                <!-- <tr> -->
+                <tr id="tbl_covid_announcement_cell">
+                    <div>
+                        <h4 class="tbl_eresources_announcment_title" ">Announcement...</h4>
+                        <p class="tbl_eresources_announcment_spacing">For a limited time, the Library has expanded electronic-resources available to the Brown Community.</p>
+                        <p class="tbl_eresources_announcment_spacing">See our <a class="tbl_alert_link" href="http://libguides.brown.edu/covid-19">"Expanded Access to Digital Content" page</a> for more information.</p>
+                    </div>
+
+                    <!--
                     <td id="tbl_covid_announcement_cell">
 
                         <div id="tbl_alert">
@@ -202,6 +212,9 @@
                         </div>
 
                     </td>
+                    -->
+
+                    <!--
                     <td id="tbl_eresource_announcement_cell">
                         <div>
                             <h4 class="tbl_eresources_announcment_title" ">Announcement...</h4>
@@ -209,11 +222,13 @@
                             <p class="tbl_eresources_announcment_spacing">See our <a class="tbl_alert_link" href="http://libguides.brown.edu/covid-19">"Expanded Access to Digital Content" page</a> for more information.</p>
                         </div>
                     </td>
+                    -->
+
                 </tr>
             </table>
             <hr id="tbl_post_alert"/>
 
-        </div>
+        </div>  <!-- end of `<div id="alert_table">` -->
 
 
 
