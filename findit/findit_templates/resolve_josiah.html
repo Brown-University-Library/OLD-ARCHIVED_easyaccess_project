@@ -6,7 +6,11 @@
 {% block page_title %}
     {% autoescape off %}
         {# easyAccess &rarr; {{ easyWhat }} #}
-        easyAccess
+        {% ifequal format "book" %}
+            easyAccess (book)
+        {% else %}
+            easyAccess (article)
+        {% endifequal %}
     {% endautoescape %}
 {% endblock page_title %}
 
